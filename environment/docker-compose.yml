@@ -1,0 +1,82 @@
+version: '3.7'
+services:
+  ipsec-1:
+    container_name: site1
+    build:
+      context: strongswan
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site1.conf
+    volumes:
+      - /lib/modules:/lib/modules
+      - /etc/localtime:/etc/localtime
+#      - shared-super:/etc/swanctl.d/
+    environment:
+      - VPN_PEER=10.5.0.102
+      - XFRM_IP=10.0.0.1/30
+    privileged: yes
+    restart: always
+    networks:
+      ipsec:
+        ipv4_address: 10.5.0.101
+
+  supervisor-1:
+    container_name: supervisor1
+    pid: service:ipsec-1
+    network_mode: service:ipsec-1
+    build:
+      context: supervisor
+      dockerfile: Dockerfile
+#    volumes:
+#      - shared-super:/etc/supervisor.d/
+    privileged: yes
+    restart: always
+
+  ip-utils-1:
+    container_name: utils1
+    pid: service:ipsec-1
+    image: alpine
+    volumes:
+      - shared-ipsec:/opt/ipsec/
+      - shared-super:/opt/super/
+    restart: always
+    network_mode: service:ipsec-1
+    command: sleep 3600
+
+  ipsec-2:
+    container_name: site2
+    build:
+      context: strongswan
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site2.conf
+    volumes:
+      - /lib/modules:/lib/modules
+      - /etc/localtime:/etc/localtime
+    environment:
+      - VPN_PEER=10.5.0.101
+      - XFRM_IP=10.0.0.2/30
+    privileged: yes
+    restart: always
+    networks:
+      ipsec:
+        ipv4_address: 10.5.0.102
+
+  ip-utils-2:
+    container_name: utils2
+    pid: service:ipsec-2
+    image: alpine
+    restart: always
+    network_mode: service:ipsec-2
+    command: sleep 3600
+
+networks:
+  ipsec:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+
+volumes:
+   shared-super:
+   shared-ipsec:
