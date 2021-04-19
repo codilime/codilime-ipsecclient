@@ -212,8 +212,8 @@ func main() {
 	r := mux.NewRouter()
 	// r.NotFoundHandler = nil
 
-	r.Handle("/test", HTTPWrapper{Handler: TestHandler})
-	r.Handle("/test2", HTTPWrapper{Handler: Test2Handler})
+	r.Handle("/api/test", HTTPWrapper{Handler: TestHandler})
+	r.Handle("/api/test2", HTTPWrapper{Handler: Test2Handler})
 
 	handler := cors.Default().Handler(r)
 
