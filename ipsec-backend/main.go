@@ -197,8 +197,7 @@ func main() {
 	// r.NotFoundHandler = nil
 
 	r.Handle("/api/test", HTTPWrapper{Handler: TestHandler})
-	r.Handle("/api/test2", HTTPWrapper{Handler: Test2Handler})
-	r.Handle("/api/template", HTTPWrapper{Handler: TestTemplateHandler})
+	r.Handle("/api/updateconfig", HTTPWrapper{Handler: UpdateConfigHandler})
 
 	handler := cors.Default().Handler(r)
 
@@ -209,7 +208,7 @@ func main() {
 		WriteTimeout:   30 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-
+	fmt.Println("backend is starting")
 	err := s.ListenAndServe()
 	if err != nil {
 		Error(err)
