@@ -64,20 +64,3 @@ func UpdateConfigHandler(req *http.Request) (interface{}, http.Header, int) {
 	}
 	return JSON{"status": "ok"}, nil, 200
 }
-
-// func TestTemplateHandler(req *http.Request) (interface{}, http.Header, int) {
-// 	testVars := StrongswanVars{
-// 		123,
-// 		"Client",
-// 		234,
-// 		"1.2.3.4",
-// 		"aes128-sha256-x25519",
-// 		"dfsghjidfashgjidhfsgdsghfdighi",
-// 	}
-// 	str, err := generateStrongswanTemplate(&testVars)
-// 	if err != nil {
-// 		return err, nil, 500
-// 	}
-// 	fmt.Println(str)
-// 	return JSON{"generated": str}, nil, 200
-// }
