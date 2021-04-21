@@ -190,22 +190,6 @@ func (wrapper HTTPWrapper) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func TestHandler(req *http.Request) (interface{}, http.Header, int) {
-	return JSON{"status": "ok"}, http.Header{}, 200
-}
-
-func testFun2() error {
-	return ReturnNewError("test error")
-}
-
-func testFun() error {
-	return ReturnError(testFun2())
-}
-
-func Test2Handler(req *http.Request) (interface{}, http.Header, int) {
-	return ReturnError(testFun()), http.Header{}, 500
-}
-
 func main() {
 
 	logrus.SetFormatter(&ErrorFormatter{})
@@ -214,6 +198,7 @@ func main() {
 
 	r.Handle("/api/test", HTTPWrapper{Handler: TestHandler})
 	r.Handle("/api/test2", HTTPWrapper{Handler: Test2Handler})
+	r.Handle("/api/template", HTTPWrapper{Handler: TestTemplateHandler})
 
 	handler := cors.Default().Handler(r)
 
