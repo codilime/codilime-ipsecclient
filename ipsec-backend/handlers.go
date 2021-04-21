@@ -7,7 +7,7 @@ import (
 	"text/template"
 )
 
-const STRONGSWAN_TEMPLATE_FILE = "templates/strongswan.conf.template"
+const strongswanTemplateFile = "templates/strongswan.conf.template"
 
 func TestHandler(req *http.Request) (interface{}, http.Header, int) {
 	return JSON{"status": "ok"}, http.Header{}, 200
@@ -35,7 +35,7 @@ type StrongswanVars struct {
 }
 
 func generateStrongswanTemplate(vars *StrongswanVars) (string, error) {
-	t, err := template.ParseFiles(STRONGSWAN_TEMPLATE_FILE)
+	t, err := template.ParseFiles(strongswanTemplateFile)
 	if err != nil {
 		return "", ReturnError(err)
 	}

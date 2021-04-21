@@ -11,10 +11,9 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/sirupsen/logrus"
-
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	"github.com/sirupsen/logrus"
 )
 
 type JSON = map[string]interface{}
@@ -46,7 +45,7 @@ func (f *ErrorFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 		if len(entry.Data) != 0 {
 			fmt.Println("ENTRY HAS DATA")
 		}
-		return []byte(fmt.Sprintf("\x1b[0;94m%s\x1b[0m\n", ("INFO: " + entry.Message))), nil
+		return []byte(fmt.Sprintf("\x1b[0;94m%s\x1b[0m\n", "INFO: " + entry.Message)), nil
 	}
 
 	if entry.Level == logrus.DebugLevel {
@@ -186,12 +185,14 @@ func (wrapper HTTPWrapper) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	_, err = w.Write(marshalled)
 	if err != nil {
 		Error(err)
-		http.Error(w, "{\"status\":\"error\", \"error\":\""+err.Error()+"\"}", 500)
+		http.Error(w, "{\"status\":\"error\", \"error\":\""+err.Error()+"\"}", http.StatusInternalServerError)
 	}
 }
 
 func main() {
-
+	//app := App{}
+	//app.Initialize("./ipsec.db")
+	//app.Run("localhost:8000")
 	logrus.SetFormatter(&ErrorFormatter{})
 	r := mux.NewRouter()
 	// r.NotFoundHandler = nil
