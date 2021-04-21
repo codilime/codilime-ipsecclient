@@ -33,7 +33,7 @@ func generateStrongswanTemplate(vars []StrongswanVars) (string, error) {
 		return "", ReturnError(err)
 	}
 	builder := strings.Builder{}
-	err = t.Execute(&builder, vars[0]) // temporarily take 1st element until we have a new template file
+	err = t.Execute(&builder, vars)
 	if err != nil {
 		return "", ReturnError(err)
 	}

@@ -1,3 +1,4 @@
+{{range .}}
 {{.ID}}-{{.ClientName}}-{{.TunnelNumber}} {
 	remote_addrs = {{.RemoteIPSec}}
 
@@ -27,3 +28,4 @@ secrets {
 		secret = {{.PSK}}
 	}
 }
+{{end}}
