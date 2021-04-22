@@ -5,6 +5,7 @@ RUN set -xe \
 
 COPY content/ipsec.sh /usr/local/sbin/
 COPY content/ipsec-01.ini /etc/supervisor.d/
+COPY content/ipsec-02.ini /etc/supervisor.d/
 
 
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]

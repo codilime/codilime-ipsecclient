@@ -4,7 +4,11 @@
 # function to use when this script recieves a SIGTERM.
 _term() {
   echo "Caught SIGTERM signal! Stopping..."
-  ip link del ipsec-$VRF
+  ITER=$(( $VRF * 100 + 1 ))
+  for IP in $XFRM_IP; do
+    ip link del ipsec-$ITER
+    ITER=$(( $ITER + 1 ))
+  done
   ip link del $PHYS_IF.$VRF
   ip link del vrf-$VRF
   # remove iptable rules
@@ -21,11 +25,16 @@ ip link set dev vrf-$VRF up
 ip link add link $PHYS_IF name $PHYS_IF.$VRF type vlan id $VRF
 ip link set dev $PHYS_IF.$VRF master vrf-$VRF
 ip link set dev $PHYS_IF.$VRF up
+
 #Create IPSEC interface and add to VRF
-ip link add ipsec-$VRF type xfrm dev lo if_id $VRF
-ip link set dev ipsec-$VRF master vrf-$VRF
-ip link set dev ipsec-$VRF up
-ip addr add $XFRM_IP dev ipsec-$VRF
+ITER=$(( $VRF * 100 + 1 ))
+for IP in $XFRM_IP; do
+  ip link add ipsec-$ITER type xfrm dev lo if_id $ITER
+  ip link set dev ipsec-$ITER master vrf-$VRF
+  ip link set dev ipsec-$ITER up
+  ip addr add ${IP}/30 dev ipsec-$ITER
+  ITER=$(( $ITER + 1 ))
+done 
 
 tail -f /dev/null &
 

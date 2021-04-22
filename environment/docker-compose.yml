@@ -6,14 +6,10 @@ services:
       context: strongswan
       dockerfile: Dockerfile
       args:
-        CONFIG: site1.conf
+        CONFIG: site1
     volumes:
       - /lib/modules:/lib/modules
       - /etc/localtime:/etc/localtime
-#      - shared-super:/etc/swanctl.d/
-    environment:
-      - VPN_PEER=10.5.0.102
-      - XFRM_IP=10.0.0.1/30
     privileged: yes
     restart: always
     networks:
@@ -43,32 +39,100 @@ services:
     network_mode: service:ipsec-1
     command: sleep 3600
 
+  bird-1:
+    container_name: bird1
+    pid: service:ipsec-1
+    network_mode: service:ipsec-1
+    privileged: yes
+    build:
+      context: bird
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site1
+        
+
   ipsec-2:
     container_name: site2
     build:
       context: strongswan
       dockerfile: Dockerfile
       args:
-        CONFIG: site2.conf
+        CONFIG: site2
     volumes:
       - /lib/modules:/lib/modules
       - /etc/localtime:/etc/localtime
-    environment:
-      - VPN_PEER=10.5.0.101
-      - XFRM_IP=10.0.0.2/30
     privileged: yes
     restart: always
     networks:
       ipsec:
         ipv4_address: 10.5.0.102
 
-  ip-utils-2:
-    container_name: utils2
+  bird-2:
+    container_name: bird2
     pid: service:ipsec-2
-    image: alpine
-    restart: always
     network_mode: service:ipsec-2
-    command: sleep 3600
+    privileged: yes
+    build:
+      context: bird
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site2
+
+  ipsec-3:
+    container_name: site3
+    build:
+      context: strongswan
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site3
+    volumes:
+      - /lib/modules:/lib/modules
+      - /etc/localtime:/etc/localtime
+    privileged: yes
+    restart: always
+    networks:
+      ipsec:
+        ipv4_address: 10.5.0.103
+
+  bird-3:
+    container_name: bird3
+    pid: service:ipsec-3
+    network_mode: service:ipsec-3
+    privileged: yes
+    build:
+      context: bird
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site3
+
+  ipsec-4:
+    container_name: site4
+    build:
+      context: strongswan
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site4
+    volumes:
+      - /lib/modules:/lib/modules
+      - /etc/localtime:/etc/localtime
+    privileged: yes
+    restart: always
+    networks:
+      ipsec:
+        ipv4_address: 10.5.0.104
+
+  bird-4:
+    container_name: bird4
+    pid: service:ipsec-4
+    network_mode: service:ipsec-4
+    privileged: yes
+    build:
+      context: bird
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site4
+
+
 
 networks:
   ipsec:
