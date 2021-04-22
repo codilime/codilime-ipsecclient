@@ -1,22 +1,44 @@
 <div id=root>
   <div id=content>
     <h1>IPSEC test app</h1>
-    <table class="table table-striped">
-      <tbody>
-        <tr>
-          <td>remote address</td>
-          <td><input #remoteAddress type="text" /></td>
-        </tr>
-        <tr>
-          <td>rsa key</td>
-          <td><textarea></textarea></td>
-        </tr>
-        <tr>
-          <td>hardware acceleration</td>
-          <td><input #hwAcc type="checkbox" /></td>
-        </tr>
-      </tbody>
-    </table>
+    <div *ngFor="let tunnel of tunnels; index as i">
+      <div class="tunnel_header">
+        <span>
+          Tunnel {{tunnel.ID}}
+        </span>
+        <i class="fas fa-trash-alt" (click)="deleteTunnel(i)"></i>
+      </div>
+      <table class="table table-striped">
+        <tbody>
+          <tr>
+            <td>client name</td>
+            <td><input [(ngModel)]="tunnel.ClientName" /></td>
+          </tr>
+          <tr>
+            <td>tunnel number</td>
+            <td><input type="number" [(ngModel)]="tunnel.TunnelNumber" /></td>
+          </tr>
+          <tr>
+            <td>remote ipsec</td>
+            <td><input [(ngModel)]="tunnel.RemoteIPSec" /></td>
+          </tr>
+          <tr>
+            <td>crypto ph1</td>
+            <td>
+              <select [(ngModel)]="tunnel.CryptoPH1">
+                <option>aes128-sha256-x25519</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>psk</td>
+            <td><input [(ngModel)]="tunnel.PSK" /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <hr />
+    <button (click)="addTunnel()" type="button" class="btn btn-primary">add tunnel</button>
     <button (click)="onClick()" type="button" class="btn btn-success">update configuration</button>
   </div>
 </div>
