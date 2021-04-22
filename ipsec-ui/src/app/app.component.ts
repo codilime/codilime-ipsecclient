@@ -3,20 +3,22 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-let lastID: number = 0;
-
-class Tunnel {
-  ID: number;
-  ClientName: string = "";
-  TunnelNumber: number = 0;
-  RemoteIPSec: string = "";
-  CryptoPH1: string = "aes128-sha256-x25519";
+class Endpoint {
+  remoteIPSec: string = "";
+  localIP: string = "";
+  peerIP: string = "";
   PSK: string = "";
-
-  constructor() {
-    this.ID = lastID++;
-  }
 };
+
+class VRF {
+  VLAN: number = -1;
+  customName: string = "New VRF";
+  cryptoPh1: string = "aes128-sha256-x25519";
+  cryptoPh2: string = "aes128gcm128-x25519";
+  physicalInterface: string = "eth0";
+  endpoints: Endpoint[] = [];
+};
+
 
 @Component({
   selector: 'app-root',
@@ -28,7 +30,11 @@ export class AppComponent {
 
   httpClient: HttpClient;
 
-  tunnels: Tunnel[] = [];
+  vrfs: VRF[] = [];
+  currentVRF: VRF | null = null;
+  addingNewEndpoint = false;
+
+  newEndpoint: Endpoint = new Endpoint();
 
   constructor(private http: HttpClient) {
     this.httpClient = http;
@@ -43,7 +49,7 @@ export class AppComponent {
       // The response body may contain clues as to what went wrong.
       console.error(
         `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
+        `body was:`, error.error);
     }
     alert("an error occurred");
     // Return an observable with a user-facing error message.
@@ -51,22 +57,28 @@ export class AppComponent {
       'Something bad happened; please try again later.');
   }
 
-  public onClick() {
-    this.httpClient.post("/api/updateconfig", this.tunnels)
-      .pipe(
-        catchError(this.handleError)
-      )
-      .subscribe((data: any) => {
-        console.log(data);
-        alert("ok");
-      });
+  public setCurrentVRF(i: number) {
+    this.currentVRF = this.vrfs[i];
+    this.addingNewEndpoint = false;
   }
 
-  public addTunnel() {
-    this.tunnels.push(new Tunnel());
+  public addVRF() {
+    this.vrfs.push(new VRF());
+    this.addingNewEndpoint = false;
   }
 
-  public deleteTunnel(i: number) {
-    this.tunnels.splice(i, 1);
+  public deleteVRF(i: number) {
+    this.vrfs.splice(i, 1);
+    this.addingNewEndpoint = false;
+  }
+
+  public startAddingEndpoint() {
+    this.newEndpoint = new Endpoint();
+    this.addingNewEndpoint = true;
+  }
+
+  public finishAddingEndpoint() {
+    this.addingNewEndpoint = false;
+    this.currentVRF?.endpoints.push(this.newEndpoint);
   }
 }

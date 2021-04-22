@@ -1,21 +1,23 @@
 #root {
-        left: 0;
-        top: 0;
-        bottom: 0;
-        right: 0;
         display: flex;
-        justify-content: center;
+        flex-direction: row;
+        margin: 2%;
 }
 
-#content {
-        margin-top: 2%;
+#edit_vrf {
+        flex-grow: 1;
+}
+
+#list {
+        width: 30%;
+        margin-right: 5%;
         display: flex;
         flex-direction: column;
 }
 
-
-.tunnel_header {
+#edit_title {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        margin-bottom: 1%;
 }

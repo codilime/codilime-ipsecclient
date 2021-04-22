@@ -1,44 +1,90 @@
 <div id=root>
-  <div id=content>
-    <h1>IPSEC test app</h1>
-    <div *ngFor="let tunnel of tunnels; index as i">
-      <div class="tunnel_header">
-        <span>
-          Tunnel {{tunnel.ID}}
-        </span>
-        <i class="fas fa-trash-alt" (click)="deleteTunnel(i)"></i>
-      </div>
-      <table class="table table-striped">
-        <tbody>
-          <tr>
-            <td>client name</td>
-            <td><input [(ngModel)]="tunnel.ClientName" /></td>
-          </tr>
-          <tr>
-            <td>tunnel number</td>
-            <td><input type="number" [(ngModel)]="tunnel.TunnelNumber" /></td>
-          </tr>
-          <tr>
-            <td>remote ipsec</td>
-            <td><input [(ngModel)]="tunnel.RemoteIPSec" /></td>
-          </tr>
-          <tr>
-            <td>crypto ph1</td>
-            <td>
-              <select [(ngModel)]="tunnel.CryptoPH1">
-                <option>aes128-sha256-x25519</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>psk</td>
-            <td><input [(ngModel)]="tunnel.PSK" /></td>
-          </tr>
-        </tbody>
-      </table>
+  <div id=list>
+    <h3>VRFs</h3>
+    <ul id=list_ul class="list-group" *ngFor="let vrf of vrfs; index as i">
+      <li class="list-group-item" (click)="setCurrentVRF(i)">{{vrf.customName}}</li>
+    </ul>
+    <button type="button" class="btn btn-primary" (click)="addVRF()">Add a new VRF</button>
+  </div>
+  <div id=edit_vrf *ngIf="currentVRF !== null">
+    <div id=edit_title>
+      <h3>{{currentVRF.customName}}</h3>
+      <button type="button" class="btn btn-success">Save & Apply</button>
     </div>
-    <hr />
-    <button (click)="addTunnel()" type="button" class="btn btn-primary">add tunnel</button>
-    <button (click)="onClick()" type="button" class="btn btn-success">update configuration</button>
+    <table class="table table-striped">
+      <tbody>
+        <tr>
+          <td>
+            VLAN
+          </td>
+          <td><input type=number class="form-control" [(ngModel)]=currentVRF.VLAN /></td>
+        </tr>
+        <tr>
+          <td>Name</td>
+          <td><input type=text class="form-control" [(ngModel)]=currentVRF.customName /></td>
+        </tr>
+        <tr>
+          <td>Crypto phase 1</td>
+          <td>
+            <select class="custom-select" [(ngModel)]=currentVRF.cryptoPh1>
+              <option>aes128-sha256-x25519</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Crypto phase 2</td>
+          <td>
+            <select class="custom-select" [(ngModel)]=currentVRF.cryptoPh2>
+              <option>aes128gcm128-x25519</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h4>Endpoints</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            Remote IP
+          </th>
+          <th>
+            Local IP
+          </th>
+          <th>
+            Peer IP
+          </th>
+          <th>
+            PSK
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let endpoint of currentVRF.endpoints">
+          <td>{{endpoint.remoteIPSec}}</td>
+          <td>{{endpoint.localIP}}</td>
+          <td>{{endpoint.peerIP}}</td>
+          <td>{{endpoint.PSK}}</td>
+        </tr>
+        <tr *ngIf="addingNewEndpoint">
+          <td>
+            <input type="text" class="form-control" [(ngModel)]="newEndpoint.remoteIPSec"/>
+          </td>
+          <td>
+            <input type="text" class="form-control" [(ngModel)]="newEndpoint.localIP"/>
+          </td>
+          <td>
+            <input type="text" class="form-control" [(ngModel)]="newEndpoint.peerIP"/>
+          </td>
+          <td>
+            <input type="text" class="form-control" [(ngModel)]="newEndpoint.PSK"/>
+          </td>
+          <td>
+            <button type="button" class="btn btn-success" (click)="finishAddingEndpoint()"><i class="fas fa-check"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button type="button" class="btn btn-primary" *ngIf="!addingNewEndpoint" (click)="startAddingEndpoint()">Add a new endpoint</button>
   </div>
 </div>
