@@ -1,22 +1,12 @@
 pipeline {
-    agent any
+    agent { docker { image 'golang' } }
     stages {
         stage('Build') {
             steps {
-                sh './gradlew build'
+                dir("${env.WORKSPACE}/ipsec-backend"){
+                    sh 'go build'
+                }
             }
-        }
-        stage('Test') {
-            steps {
-                sh './gradlew check'
-            }
-        }
-    }
-
-    post {
-        always {
-            archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
-            junit 'build/reports/**/*.xml'
         }
     }
 }
