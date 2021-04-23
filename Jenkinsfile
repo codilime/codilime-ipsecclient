@@ -1,12 +1,14 @@
 pipeline {
-    agent {
-        docker {
-            image 'golang'
-            args '-u root:root'   
-        }
-    }
+    agent none
+
     stages {
-        stage('Build') {
+        stage('Build backend') {
+            agent {
+                docker {
+                    image 'golang'
+                    args '-u root:root'   
+                }
+            }
             steps {
                 dir("${env.WORKSPACE}/ipsec-backend"){
                     sh 'go build'
