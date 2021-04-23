@@ -2,6 +2,16 @@ pipeline {
     agent none
 
     stages {
+        stage('Build frontend') {
+            agent any
+            steps {
+                dir("${env.WORKSPACE}/ipsec-ui"){
+                    script {
+                        def customImage = docker.build("my-image:${env.BUILD_ID}")
+                    }
+                }
+            }
+        }
         stage('Build backend') {
             agent {
                 docker {
