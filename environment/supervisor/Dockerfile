@@ -1,11 +1,10 @@
 FROM alpine:latest
+ARG CONFIG
 
-RUN set -xe \
-    && apk add --no-cache supervisor iproute2
+RUN apk add --no-cache supervisor iproute2
 
+COPY content/supervisord.conf /etc/
+COPY content/$CONFIG/*.ini /etc/supervisor.d/
 COPY content/ipsec.sh /usr/local/sbin/
-COPY content/ipsec-01.ini /etc/supervisor.d/
-COPY content/ipsec-02.ini /etc/supervisor.d/
-
 
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]

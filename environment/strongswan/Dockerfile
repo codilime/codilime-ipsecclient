@@ -3,17 +3,16 @@ ARG CONFIG
 
 RUN apk add --no-cache strongswan 
 
-
-COPY content/entry-$CONFIG.sh /entrypoint.sh
+COPY content/$CONFIG/entrypoint.sh /
 RUN chmod 0755 /entrypoint.sh
 
-COPY content/$CONFIG.conf /etc/swanctl/conf.d/cisco.conf
+COPY content/$CONFIG/*.conf /etc/swanctl/conf.d/
 RUN chown -R ipsec:ipsec /etc/swanctl
 
 COPY content/no_route.conf /etc/strongswan.d/no_route.conf
 
-COPY content/xfrm.sh /xfrm.sh
-RUN chmod 0755 /xfrm.sh
+#COPY content/xfrm.sh /xfrm.sh
+#RUN chmod 0755 /xfrm.sh
 
 #RUN echo '%ipsec ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/ipsec
 #RUN chmod 0440 /etc/sudoers.d/ipsec

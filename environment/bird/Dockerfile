@@ -3,19 +3,7 @@ ARG CONFIG
 
 RUN apk add --no-cache bird --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
 
-COPY content/bird-$CONFIG.conf /etc/bird.conf
-#RUN chmod 0755 /entrypoint.sh
+COPY content/bird.conf /etc/bird.conf
+COPY content/$CONFIG/*.conf /etc/bird.d/
 
-#COPY content/$CONFIG.conf /etc/swanctl/conf.d/cisco.conf
-#RUN chown -R ipsec:ipsec /etc/swanctl
-
-#COPY content/no_route.conf /etc/strongswan.d/no_route.conf
-
-#COPY content/xfrm.sh /xfrm.sh
-#RUN chmod 0755 /xfrm.sh
-
-#RUN echo '%ipsec ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/ipsec
-#RUN chmod 0440 /etc/sudoers.d/ipsec
-
-#ENTRYPOINT ["/entrypoint.sh"]
-CMD bird -c /etc/bird.conf -d
+CMD bird -c /etc/bird.conf -d -s /etc/bird.d/bird.ctl

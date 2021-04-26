@@ -10,6 +10,7 @@ services:
     volumes:
       - /lib/modules:/lib/modules
       - /etc/localtime:/etc/localtime
+      - shared-ipsec:/etc/swanctl/conf.d/
     privileged: yes
     restart: always
     networks:
@@ -23,8 +24,10 @@ services:
     build:
       context: supervisor
       dockerfile: Dockerfile
-#    volumes:
-#      - shared-super:/etc/supervisor.d/
+      args:
+        CONFIG: site1
+    volumes:
+      - shared-super:/etc/supervisor.d/
     privileged: yes
     restart: always
 
@@ -35,6 +38,7 @@ services:
     volumes:
       - shared-ipsec:/opt/ipsec/
       - shared-super:/opt/super/
+      - shared-bird:/opt/bird/
     restart: always
     network_mode: service:ipsec-1
     command: sleep 3600
@@ -43,13 +47,15 @@ services:
     container_name: bird1
     pid: service:ipsec-1
     network_mode: service:ipsec-1
+    volumes:
+      - shared-bird:/etc/bird.d/
+
     privileged: yes
     build:
       context: bird
       dockerfile: Dockerfile
       args:
         CONFIG: site1
-        
 
   ipsec-2:
     container_name: site2
@@ -144,3 +150,4 @@ networks:
 volumes:
    shared-super:
    shared-ipsec:
+   shared-bird:
