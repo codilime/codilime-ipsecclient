@@ -39,3 +39,7 @@
 .vrf_trash {
         margin-left: 1vw;
 }
+
+.trash_cell {
+        width: 50px;
+}

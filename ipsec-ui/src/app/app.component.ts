@@ -8,6 +8,7 @@ class Endpoint {
   localIP: string = "";
   peerIP: string = "";
   PSK: string = "";
+  hover: boolean = false;
 };
 
 class VRF {
@@ -120,5 +121,9 @@ export class AppComponent {
         console.log("put:", data);
         alert("save & apply succeeded");
       });
+  }
+
+  public deleteEndpoint(i: number) {
+    this.currentVRF?.endpoints.splice(i, 1);
   }
 }

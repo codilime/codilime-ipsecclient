@@ -69,11 +69,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let endpoint of currentVRF.endpoints">
+        <tr *ngFor="let endpoint of currentVRF.endpoints; index as i"
+        (mouseover)="endpoint.hover=true" (mouseleave)="endpoint.hover=false">
           <td>{{endpoint.remoteIPSec}}</td>
           <td>{{endpoint.localIP}}</td>
           <td>{{endpoint.peerIP}}</td>
           <td>{{endpoint.PSK}}</td>
+          <td class=trash_cell>
+            <i *ngIf="endpoint.hover" class="fas fa-trash-alt"
+              (click)="deleteEndpoint(i)"></i>
+          </td>
         </tr>
         <tr *ngIf="addingNewEndpoint">
           <td>
