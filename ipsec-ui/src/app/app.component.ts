@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 
 class Endpoint {
   remoteIPSec: string = "";
@@ -12,11 +12,13 @@ class Endpoint {
 
 class VRF {
   VLAN: number = -1;
+  Active: boolean = false;
   customName: string = "New VRF";
   cryptoPh1: string = "aes128-sha256-x25519";
   cryptoPh2: string = "aes128gcm128-x25519";
   physicalInterface: string = "eth0";
   endpoints: Endpoint[] = [];
+  hover: boolean = false;
 };
 
 
@@ -57,19 +59,45 @@ export class AppComponent {
       'Something bad happened; please try again later.');
   }
 
+  ngOnInit() {
+    this.httpClient.get("/api/vrfs")
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe((data) => {
+        this.vrfs = JSON.parse(data as string) as VRF[];
+      });
+  }
+
   public setCurrentVRF(i: number) {
     this.currentVRF = this.vrfs[i];
     this.addingNewEndpoint = false;
   }
 
   public addVRF() {
-    this.vrfs.push(new VRF());
     this.addingNewEndpoint = false;
+    this.httpClient.post("/api/vrfs", {})
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe((data) => {
+        this.vrfs.push(new VRF());
+      })
   }
 
-  public deleteVRF(i: number) {
-    this.vrfs.splice(i, 1);
+  public deleteVRF(event: MouseEvent, i: number) {
+    event.stopPropagation();
     this.addingNewEndpoint = false;
+    this.httpClient.delete("/api/vrfs/" + this.vrfs[i].VLAN)
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe((data) => {
+        let deletedVRF = this.vrfs.splice(i, 1);
+        if (this.currentVRF?.VLAN === deletedVRF[0].VLAN) {
+          this.currentVRF = null;
+        }
+      })
   }
 
   public startAddingEndpoint() {
@@ -80,5 +108,17 @@ export class AppComponent {
   public finishAddingEndpoint() {
     this.addingNewEndpoint = false;
     this.currentVRF?.endpoints.push(this.newEndpoint);
+  }
+
+  public saveAndApply() {
+    // console.log(JSON.stringify(this.vrfs));
+    this.httpClient.put("/api/vrfs/" + this.currentVRF?.VLAN, this.currentVRF)
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe((data) => {
+        console.log("put:", data);
+        alert("save & apply succeeded");
+      });
   }
 }

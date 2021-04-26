@@ -2,14 +2,23 @@
   <div id=list>
     <h3>VRFs</h3>
     <ul id=list_ul class="list-group" *ngFor="let vrf of vrfs; index as i">
-      <li class="list-group-item" (click)="setCurrentVRF(i)">{{vrf.customName}}</li>
+      <li class="list-group-item" (click)="setCurrentVRF(i)"
+      (mouseover)="vrf.hover=true" (mouseleave)="vrf.hover=false"
+      [ngStyle]="{'background-color': vrf.Active ? '#00800020' : '#ffffff'}"
+      ><span>{{vrf.customName}}</span><i *ngIf="vrf.hover" class="fas fa-trash-alt vrf_trash"
+        (click)="deleteVRF($event, i)"></i></li>
     </ul>
     <button type="button" class="btn btn-primary" (click)="addVRF()">Add a new VRF</button>
   </div>
   <div id=edit_vrf *ngIf="currentVRF !== null">
-    <div id=edit_title>
-      <h3>{{currentVRF.customName}}</h3>
-      <button type="button" class="btn btn-success">Save & Apply</button>
+    <div id=edit_title
+    [ngStyle]="{'background-color': currentVRF.Active ? '#00800020' : '#ffffff'}">
+      <div id=vrf_header>
+        <input id=vrf_header_checkbox type="checkbox" class="form-control"
+        [(ngModel)]=currentVRF.Active/>
+        <h3 id=vrf_header_text>{{currentVRF.customName}}</h3>
+      </div>
+      <button type="button" class="btn btn-success" (click)="saveAndApply()">Save & Apply</button>
     </div>
     <table class="table table-striped">
       <tbody>

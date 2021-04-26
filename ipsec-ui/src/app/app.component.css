@@ -20,4 +20,22 @@
         flex-direction: row;
         justify-content: space-between;
         margin-bottom: 1%;
+        padding: 40px;
+}
+
+#vrf_header {
+        display: flex;
+        flex-direction: row;
+}
+
+#vrf_header_text {
+        white-space: nowrap;
+}
+
+#vrf_header_checkbox {
+        width: 50px;
+}
+
+.vrf_trash {
+        margin-left: 1vw;
 }
