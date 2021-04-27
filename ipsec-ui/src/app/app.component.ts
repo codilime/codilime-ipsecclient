@@ -1,22 +1,32 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 
-let lastID: number = 0;
-
-class Tunnel {
-  ID: number;
-  ClientName: string = "";
-  TunnelNumber: number = 0;
-  RemoteIPSec: string = "";
-  CryptoPH1: string = "aes128-sha256-x25519";
+class Endpoint {
+  remoteIPSec: string = "";
+  localIP: string = "";
+  peerIP: string = "";
   PSK: string = "";
-
-  constructor() {
-    this.ID = lastID++;
-  }
+  NAT: boolean = false;
+  BGP: boolean = false;
+  hover: boolean = false;
 };
+
+class VRF {
+  id: number = -1;
+  vlan: number = -1;
+  active: boolean = false;
+  client_name: string = "New VRF";
+  crypto_ph1: string = "aes128-sha256-x25519";
+  crypto_ph2: string = "aes128gcm128-x25519";
+  physical_interface: string = "eth0";
+  as: number = -1;
+  endpoints: Endpoint[] = [];
+
+  hover: boolean = false;
+};
+
 
 @Component({
   selector: 'app-root',
@@ -28,7 +38,11 @@ export class AppComponent {
 
   httpClient: HttpClient;
 
-  tunnels: Tunnel[] = [];
+  vrfs: VRF[] = [];
+  currentVRF: VRF | null = null;
+  addingNewEndpoint = false;
+
+  newEndpoint: Endpoint = new Endpoint();
 
   constructor(private http: HttpClient) {
     this.httpClient = http;
@@ -43,7 +57,7 @@ export class AppComponent {
       // The response body may contain clues as to what went wrong.
       console.error(
         `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
+        `body was:`, error.error);
     }
     alert("an error occurred");
     // Return an observable with a user-facing error message.
@@ -51,22 +65,74 @@ export class AppComponent {
       'Something bad happened; please try again later.');
   }
 
-  public onClick() {
-    this.httpClient.post("/api/updateconfig", this.tunnels)
+  ngOnInit() {
+    this.httpClient.get("/api/vrfs")
       .pipe(
         catchError(this.handleError)
       )
-      .subscribe((data: any) => {
-        console.log(data);
-        alert("ok");
+      .subscribe((data) => {
+        this.vrfs = data as VRF[];
       });
   }
 
-  public addTunnel() {
-    this.tunnels.push(new Tunnel());
+  public setCurrentVRF(i: number) {
+    this.currentVRF = this.vrfs[i];
+    this.addingNewEndpoint = false;
   }
 
-  public deleteTunnel(i: number) {
-    this.tunnels.splice(i, 1);
+  public addVRF() {
+    this.addingNewEndpoint = false;
+    this.httpClient.post("/api/vrfs", {})
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe((data) => {
+        let newVRF: VRF = data as VRF;
+        this.vrfs.push(newVRF);
+      })
+  }
+
+  public deleteVRF(event: MouseEvent, i: number) {
+    event.stopPropagation();
+    this.addingNewEndpoint = false;
+    this.httpClient.delete("/api/vrfs/" + this.vrfs[i].id)
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe((data) => {
+        let deletedVRF = this.vrfs.splice(i, 1);
+        if (this.currentVRF?.id === deletedVRF[0].id) {
+          this.currentVRF = null;
+        }
+      })
+  }
+
+  public startAddingEndpoint() {
+    this.newEndpoint = new Endpoint();
+    this.addingNewEndpoint = true;
+  }
+
+  public finishAddingEndpoint() {
+    this.addingNewEndpoint = false;
+    if (this.currentVRF?.endpoints === null) {
+      this.currentVRF.endpoints = [];
+    }
+    this.currentVRF?.endpoints.push(this.newEndpoint);
+  }
+
+  public saveAndApply() {
+    // console.log(JSON.stringify(this.vrfs));
+    this.httpClient.put("/api/vrfs/" + this.currentVRF?.id, this.currentVRF)
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe((data) => {
+        console.log("put:", data);
+        alert("save & apply succeeded");
+      });
+  }
+
+  public deleteEndpoint(i: number) {
+    this.currentVRF?.endpoints.splice(i, 1);
   }
 }
