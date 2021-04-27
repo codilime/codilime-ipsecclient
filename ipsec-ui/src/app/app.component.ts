@@ -14,15 +14,16 @@ class Endpoint {
 };
 
 class VRF {
-  ID: number = -1;
-  VLAN: number = -1;
-  Active: boolean = false;
-  customName: string = "New VRF";
-  cryptoPh1: string = "aes128-sha256-x25519";
-  cryptoPh2: string = "aes128gcm128-x25519";
-  physicalInterface: string = "eth0";
-  AS: number = -1;
+  id: number = -1;
+  vlan: number = -1;
+  active: boolean = false;
+  client_name: string = "New VRF";
+  crypto_ph1: string = "aes128-sha256-x25519";
+  crypto_ph2: string = "aes128gcm128-x25519";
+  physical_interface: string = "eth0";
+  as: number = -1;
   endpoints: Endpoint[] = [];
+
   hover: boolean = false;
 };
 
@@ -70,7 +71,7 @@ export class AppComponent {
         catchError(this.handleError)
       )
       .subscribe((data) => {
-        this.vrfs = JSON.parse(data as string) as VRF[];
+        this.vrfs = data as VRF[];
       });
   }
 
@@ -86,20 +87,21 @@ export class AppComponent {
         catchError(this.handleError)
       )
       .subscribe((data) => {
-        this.vrfs.push(new VRF());
+        let newVRF: VRF = data as VRF;
+        this.vrfs.push(newVRF);
       })
   }
 
   public deleteVRF(event: MouseEvent, i: number) {
     event.stopPropagation();
     this.addingNewEndpoint = false;
-    this.httpClient.delete("/api/vrfs/" + this.vrfs[i].ID)
+    this.httpClient.delete("/api/vrfs/" + this.vrfs[i].id)
       .pipe(
         catchError(this.handleError)
       )
       .subscribe((data) => {
         let deletedVRF = this.vrfs.splice(i, 1);
-        if (this.currentVRF?.ID === deletedVRF[0].ID) {
+        if (this.currentVRF?.id === deletedVRF[0].id) {
           this.currentVRF = null;
         }
       })
@@ -112,12 +114,15 @@ export class AppComponent {
 
   public finishAddingEndpoint() {
     this.addingNewEndpoint = false;
+    if (this.currentVRF?.endpoints === null) {
+      this.currentVRF.endpoints = [];
+    }
     this.currentVRF?.endpoints.push(this.newEndpoint);
   }
 
   public saveAndApply() {
     // console.log(JSON.stringify(this.vrfs));
-    this.httpClient.put("/api/vrfs/" + this.currentVRF?.ID, this.currentVRF)
+    this.httpClient.put("/api/vrfs/" + this.currentVRF?.id, this.currentVRF)
       .pipe(
         catchError(this.handleError)
       )

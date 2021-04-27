@@ -4,40 +4,40 @@
     <ul id=list_ul class="list-group" *ngFor="let vrf of vrfs; index as i">
       <li class="list-group-item" (click)="setCurrentVRF(i)"
       (mouseover)="vrf.hover=true" (mouseleave)="vrf.hover=false"
-      [ngStyle]="{'background-color': vrf.Active ? '#00800020' : '#ffffff'}"
-      ><span>{{vrf.customName}}</span><i *ngIf="vrf.hover" class="fas fa-trash-alt vrf_trash"
+      [ngStyle]="{'background-color': vrf.active ? '#00800020' : '#ffffff'}"
+      ><span>{{vrf.client_name}}</span><i *ngIf="vrf.hover" class="fas fa-trash-alt vrf_trash"
         (click)="deleteVRF($event, i)"></i></li>
     </ul>
     <button type="button" class="btn btn-primary" (click)="addVRF()">Add a new VRF</button>
   </div>
   <div id=edit_vrf *ngIf="currentVRF !== null">
     <div id=edit_title
-    [ngStyle]="{'background-color': currentVRF.Active ? '#00800020' : '#ffffff'}">
-      <h3>{{currentVRF.customName}}</h3>
+    [ngStyle]="{'background-color': currentVRF.active ? '#00800020' : '#ffffff'}">
+      <h3>{{currentVRF.client_name}}</h3>
       <button type="button" class="btn btn-success" (click)="saveAndApply()">Save & Apply</button>
     </div>
     <table class="table table-striped">
       <tbody>
         <tr>
           <td>Name</td>
-          <td><input type=text class="form-control" [(ngModel)]=currentVRF.customName /></td>
+          <td><input type=text class="form-control" [(ngModel)]=currentVRF.client_name /></td>
         </tr>
         <tr>
-          <td>Active</td>
-          <td><input type="checkbox" class="form-control" [(ngModel)]=currentVRF.Active/></td>
+          <td>active</td>
+          <td><input type="checkbox" class="form-control" [(ngModel)]=currentVRF.active/></td>
         </tr>
         <tr>
-          <td>VLAN</td>
-          <td><input type=number class="form-control" [(ngModel)]=currentVRF.VLAN /></td>
+          <td>vlan</td>
+          <td><input type=number class="form-control" [(ngModel)]=currentVRF.vlan /></td>
         </tr>
         <tr>
-          <td>AS</td>
-          <td><input type=number class="form-control" [(ngModel)]=currentVRF.AS /></td>
+          <td>as</td>
+          <td><input type=number class="form-control" [(ngModel)]=currentVRF.as /></td>
         </tr>
         <tr>
           <td>Crypto phase 1</td>
           <td>
-            <select class="custom-select" [(ngModel)]=currentVRF.cryptoPh1>
+            <select class="custom-select" [(ngModel)]=currentVRF.crypto_ph1>
               <option>aes128-sha256-x25519</option>
             </select>
           </td>
@@ -45,7 +45,7 @@
         <tr>
           <td>Crypto phase 2</td>
           <td>
-            <select class="custom-select" [(ngModel)]=currentVRF.cryptoPh2>
+            <select class="custom-select" [(ngModel)]=currentVRF.crypto_ph2>
               <option>aes128gcm128-x25519</option>
             </select>
           </td>
