@@ -93,13 +93,13 @@ export class AppComponent {
   public deleteVRF(event: MouseEvent, i: number) {
     event.stopPropagation();
     this.addingNewEndpoint = false;
-    this.httpClient.delete("/api/vrfs/" + this.vrfs[i].VLAN)
+    this.httpClient.delete("/api/vrfs/" + this.vrfs[i].ID)
       .pipe(
         catchError(this.handleError)
       )
       .subscribe((data) => {
         let deletedVRF = this.vrfs.splice(i, 1);
-        if (this.currentVRF?.VLAN === deletedVRF[0].VLAN) {
+        if (this.currentVRF?.ID === deletedVRF[0].ID) {
           this.currentVRF = null;
         }
       })
@@ -117,7 +117,7 @@ export class AppComponent {
 
   public saveAndApply() {
     // console.log(JSON.stringify(this.vrfs));
-    this.httpClient.put("/api/vrfs/" + this.currentVRF?.VLAN, this.currentVRF)
+    this.httpClient.put("/api/vrfs/" + this.currentVRF?.ID, this.currentVRF)
       .pipe(
         catchError(this.handleError)
       )
