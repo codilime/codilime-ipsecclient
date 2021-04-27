@@ -6,6 +6,8 @@
 
 #edit_vrf {
         flex-grow: 1;
+        display: flex;
+        flex-direction: column;
 }
 
 #list {
@@ -23,17 +25,13 @@
         padding: 40px;
 }
 
-#vrf_header {
-        display: flex;
-        flex-direction: row;
+#ui_topo {
+        margin-top: 2cm;
+        width: 80%;
 }
 
-#vrf_header_text {
-        white-space: nowrap;
-}
-
-#vrf_header_checkbox {
-        width: 50px;
+#new_endpoint_btn {
+        width: 20%;
 }
 
 .vrf_trash {

@@ -8,16 +8,20 @@ class Endpoint {
   localIP: string = "";
   peerIP: string = "";
   PSK: string = "";
+  NAT: boolean = false;
+  BGP: boolean = false;
   hover: boolean = false;
 };
 
 class VRF {
+  ID: number = -1;
   VLAN: number = -1;
   Active: boolean = false;
   customName: string = "New VRF";
   cryptoPh1: string = "aes128-sha256-x25519";
   cryptoPh2: string = "aes128gcm128-x25519";
   physicalInterface: string = "eth0";
+  AS: number = -1;
   endpoints: Endpoint[] = [];
   hover: boolean = false;
 };
