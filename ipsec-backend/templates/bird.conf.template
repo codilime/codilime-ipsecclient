@@ -1,0 +1,29 @@
+ipv4 table cisco_vrf_{{ .Vlan }};
+
+protocol kernel k_cisco_vrf_{{ .Vlan}} {
+    vrf "vrf-{{ .Vlan }}";
+    kernel table {{ .Vlan}};
+    merge paths yes;
+    ipv4 {
+        table cisco_vrf_{{ .Vlan }};
+        import none;
+        export filter local_net;
+    };
+}
+
+protocol direct c_cisco_vrf_{{ .Vlan }} {
+    vrf "vrf-{{ .Vlan }}";
+    ipv4 {
+        table cisco_vrf_{{ .Vlan }};
+    };
+}
+{{ range $i, $val := .Endpoints }}{{ if .BGP }}
+protocol bgp d_cisco_vrf_{{ $.Vlan }}_{{ $i }} from remote_peer {
+    vrf "vrf-{{ $.Vlan }}";
+    ipv4 {
+        table cisco_vrf_{{ $.Vlan }};
+    };
+    local as {{ $.LocalAs }};
+    neighbor {{ .PeerIP }} external;
+}
+{{end}}{{end}}

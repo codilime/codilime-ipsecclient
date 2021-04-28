@@ -14,6 +14,7 @@ type Vrf struct {
 	CryptoPh2         string         `json:"crypto_ph2"`
 	PhysicalInterface string         `json:"physical_interface"`
 	Active            bool           `json:"active"`
+	LocalAs           int            `json:"local_as"`
 	Endpoints         datatypes.JSON `json:"endpoints"`
 }
 
