@@ -145,7 +145,7 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
-	respondWithJSON(w, code, map[string]string{"error": message})
+	respondWithJSON(w, code, map[string]string{"result": "error", "error": message})
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
