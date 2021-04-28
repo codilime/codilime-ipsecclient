@@ -1,6 +1,6 @@
 [program:{{ $.Vlan }}-{{ $.ClientName }}]
 command=/usr/local/sbin/ipsec.sh
-environment=PHYS_IF="{{ $.PhysicalInterface }}", VRF="{{ $.Vlan }}", XFRM_IP="{{ $.LocalIPs }}", XFRM_PEER="{{ $.PeerIPs }}", NAT="{{ $.Nats }}", LAN_IP="{{ $.LanIPs }}"
+environment=PHYS_IF="{{ $.PhysicalInterface }}", VRF="{{ $.Vlan }}", XFRM_IP="{{ $.LocalIPs }}", XFRM_PEER="{{ $.PeerIPs }}", NAT="{{ $.Nats }}", LAN_IP="{{ $.LanIP }}"
 redirect_stderr=true
 stdout_logfile=/dev/stdout
 stdout_logfile_maxbytes = 0

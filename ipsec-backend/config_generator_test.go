@@ -47,31 +47,8 @@ func TestGenerateBirdTemplate(t *testing.T) {
 
 const expectedStrongswanConfig = `connections {
 
-    1042_google_0 {
-        remote_addrs = 192.168.0.42
-        local {
-            auth = psk
-            id = ike_1042_google_0
-        }
-        remote {
-            auth = psk
-        }
-        children {
-            site-cisco {
-                remote_ts = 0.0.0.0/0
-                local_ts = 0.0.0.0/0
-                if_id_in = 104200
-                if_id_out = 104200
-                esp_proposals = aes128-sha256-x25519
-                start_action = start
-            }
-        }
-        version = 2
-        proposals = aes128-sha256-x25519
-    }
-
     1042_google_1 {
-        remote_addrs = 192.168.10.142
+        remote_addrs = 192.168.0.42
         local {
             auth = psk
             id = ike_1042_google_1
@@ -93,28 +70,53 @@ const expectedStrongswanConfig = `connections {
         proposals = aes128-sha256-x25519
     }
 
+    1042_google_2 {
+        remote_addrs = 192.168.10.142
+        local {
+            auth = psk
+            id = ike_1042_google_2
+        }
+        remote {
+            auth = psk
+        }
+        children {
+            site-cisco {
+                remote_ts = 0.0.0.0/0
+                local_ts = 0.0.0.0/0
+                if_id_in = 104202
+                if_id_out = 104202
+                esp_proposals = aes128-sha256-x25519
+                start_action = start
+            }
+        }
+        version = 2
+        proposals = aes128-sha256-x25519
+    }
+
 }
 secrets {
 
-    ike-1042_google_0 {
-        id = 1042_google_0
+    ike-1042_google_1 {
+        id = ike_1042_google_1
         secret = Qy0oakYuYzI+4n7N3GhDZIvOf81dywVD
     }
 
-    ike-1042_google_1 {
-        id = 1042_google_1
+    ike-1042_google_2 {
+        id = ike_1042_google_2
         secret = Cty+3M9e82VV5NVgkIPu2PP3U7G8v5Ja
     }
 
-}`
+}
+`
 
 const expectedSupervisorConfig = `[program:1042-google]
 command=/usr/local/sbin/ipsec.sh
-environment=PHYS_IF="ens192", VRF="1042", XFRM_IP="10.10.10.10 10.20.20.20", XFRM_PEER="10.10.10.20 10.20.20.30", NAT="NO YES", LAN_IP="10.10.10.10/30 10.20.20.20/30"
+environment=PHYS_IF="ens192", VRF="1042", XFRM_IP="10.10.10.10 10.20.20.20", XFRM_PEER="10.10.10.20 10.20.20.30", NAT="NO YES", LAN_IP="10.10.10.10/30"
 redirect_stderr=true
 stdout_logfile=/dev/stdout
 stdout_logfile_maxbytes = 0
-stderr_logfile_maxbytes = 0`
+stderr_logfile_maxbytes = 0
+`
 
 const expectedBirdConfig = `ipv4 table cisco_vrf_1042;
 
@@ -144,6 +146,7 @@ protocol bgp d_cisco_vrf_1042_0 from remote_peer {
     local as 65001;
     neighbor 10.10.10.20 external;
 }
+
 `
 
 func generateExampleVrf() *VrfWithEndpoints {
@@ -151,7 +154,6 @@ func generateExampleVrf() *VrfWithEndpoints {
 		{
 			LocalIP:     "10.10.10.10",
 			PeerIP:      "10.10.10.20",
-			LanIP:       "10.10.10.10/30",
 			RemoteIPSec: "192.168.0.42",
 			PSK:         "Qy0oakYuYzI+4n7N3GhDZIvOf81dywVD",
 			BGP:         true,
@@ -160,7 +162,6 @@ func generateExampleVrf() *VrfWithEndpoints {
 		{
 			LocalIP:     "10.20.20.20",
 			PeerIP:      "10.20.20.30",
-			LanIP:       "10.20.20.20/30",
 			RemoteIPSec: "192.168.10.142",
 			PSK:         "Cty+3M9e82VV5NVgkIPu2PP3U7G8v5Ja",
 			BGP:         false,
@@ -168,17 +169,18 @@ func generateExampleVrf() *VrfWithEndpoints {
 		},
 	}
 	data, _ := json.Marshal(endpoints)
-	vrf := Vrf {
+	vrf := Vrf{
 		ClientName:        "google",
 		Vlan:              1042,
 		CryptoPh1:         "aes128-sha256-x25519",
 		CryptoPh2:         "aes128gcm128-x25519",
 		PhysicalInterface: "ens192",
 		LocalAs:           65001,
+		LanIP:             "10.10.10.10/30",
 		Endpoints:         datatypes.JSON(data),
 	}
 	return &VrfWithEndpoints{
-		Vrf: vrf,
+		Vrf:       vrf,
 		Endpoints: endpoints,
 	}
 }

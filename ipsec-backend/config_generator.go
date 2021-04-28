@@ -22,7 +22,6 @@ type Endpoint struct {
 	RemoteIPSec string `json:"remote_ip_sec"`
 	LocalIP     string `json:"local_ip"`
 	PeerIP      string `json:"peer_ip"`
-	LanIP       string `json:"lan_ip"`
 	PSK         string `json:"psk"`
 	NAT         bool   `json:"nat"`
 	BGP         bool   `json:"bgp"`
@@ -86,7 +85,7 @@ func calculatePrefix(vrf *VrfWithEndpoints) string {
 
 func generateStrongswanTemplate(vrf *VrfWithEndpoints) (string, error) {
 	t, err := template.New(strongswanTemplateFile).
-		Funcs(template.FuncMap{"calc": calculateIndex}).
+		Funcs(template.FuncMap{"calc": calculateIndex, "inc": inc}).
 		ParseFiles(strongswanTemplatePath)
 	if err != nil {
 		return "", err
@@ -106,12 +105,10 @@ func generateSupervisorTemplate(vrf *VrfWithEndpoints) (string, error) {
 
 	localIps := make([]string, 0, len(vrf.Endpoints))
 	peerIps := make([]string, 0, len(vrf.Endpoints))
-	lanIps := make([]string, 0, len(vrf.Endpoints))
 	nats := make([]string, 0, len(vrf.Endpoints))
 	for _, endpoint := range vrf.Endpoints {
 		localIps = append(localIps, endpoint.LocalIP)
 		peerIps = append(peerIps, endpoint.PeerIP)
-		lanIps = append(lanIps, endpoint.LanIP)
 		if endpoint.NAT {
 			nats = append(nats, "YES")
 		} else {
@@ -130,7 +127,6 @@ func generateSupervisorTemplate(vrf *VrfWithEndpoints) (string, error) {
 		VrfWithEndpoints: vrf,
 		LocalIPs:         strings.Join(localIps, " "),
 		PeerIPs:          strings.Join(peerIps, " "),
-		LanIPs:           strings.Join(lanIps, " "),
 		Nats:             strings.Join(nats, " "),
 	}); err != nil {
 		return "", err
@@ -141,7 +137,6 @@ func generateSupervisorTemplate(vrf *VrfWithEndpoints) (string, error) {
 
 func generateBirdTemplate(vrf *VrfWithEndpoints) (string, error) {
 	t, err := template.New(birdTemplateFile).
-		Funcs(template.FuncMap{"calc": calculateIndex}).
 		ParseFiles(birdTemplatePath)
 	if err != nil {
 		return "", err
@@ -151,6 +146,11 @@ func generateBirdTemplate(vrf *VrfWithEndpoints) (string, error) {
 		return "", err
 	}
 	return builder.String(), nil
+}
+
+
+func inc(i int) int {
+	return i+1
 }
 
 func calculateIndex(vlan, index int) int {

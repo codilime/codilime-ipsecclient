@@ -1,5 +1,5 @@
 connections {
-{{ range $i, $val := .Endpoints }}
+{{ range $index, $val := .Endpoints }}{{ $i := inc $index }}
     {{ $.Vlan }}_{{ $.ClientName }}_{{ $i }} {
         remote_addrs = {{ $val.RemoteIPSec }}
         local {
@@ -25,9 +25,9 @@ connections {
 {{ end }}
 }
 secrets {
-{{ range $i, $val := .Endpoints }}
+{{ range $index, $val := .Endpoints }}{{ $i := inc $index }}
     ike-{{ $.Vlan }}_{{ $.ClientName }}_{{ $i }} {
-        id = {{ $.Vlan }}_{{ $.ClientName }}_{{ $i }}
+        id = ike_{{ $.Vlan }}_{{ $.ClientName }}_{{ $i }}
         secret = {{ $val.PSK }}
     }
 {{ end }}
