@@ -11,7 +11,7 @@
     <button type="button" class="btn btn-primary" (click)="addVRF()">Add a new VRF</button>
   </div>
   <div id=edit_vrf *ngIf="currentVRF !== null">
-    <img src="/assets/UI-topo.png" id=ui_topo />
+    <img src="/assets/UI-topo.svg" id=ui_topo />
     <div id=edit_title
     [ngStyle]="{'background-color': currentVRF.active ? '#00800020' : '#ffffff'}">
       <h3>{{currentVRF.client_name}}</h3>
