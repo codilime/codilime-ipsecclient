@@ -43,6 +43,19 @@ services:
     network_mode: service:ipsec-1
     command: sleep 3600
 
+  ui-api:
+    container_name: ui_api
+    pid: service:ipsec-1
+    build:
+      context: ui-api
+      dockerfile: Dockerfile
+    volumes:
+      - shared-ipsec:/opt/ipsec/
+      - shared-super:/opt/super/
+      - shared-bird:/opt/bird/
+    restart: always
+    network_mode: service:ipsec-1
+
   bird-1:
     container_name: bird1
     pid: service:ipsec-1
@@ -137,7 +150,6 @@ services:
       dockerfile: Dockerfile
       args:
         CONFIG: site4
-
 
 
 networks:
