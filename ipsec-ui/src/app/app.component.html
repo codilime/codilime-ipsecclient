@@ -11,7 +11,6 @@
     <button type="button" class="btn btn-primary" (click)="addVRF()">Add a new VRF</button>
   </div>
   <div id=edit_vrf *ngIf="currentVRF !== null">
-    <img src="/assets/UI-topo.svg" id=ui_topo />
     <div id=edit_title
     [ngStyle]="{'background-color': currentVRF.active ? '#00800020' : '#ffffff'}">
       <h3>{{currentVRF.client_name}}</h3>
@@ -105,6 +104,12 @@
             <input type="text" class="form-control" [(ngModel)]="newEndpoint.PSK"/>
           </td>
           <td>
+            <input type="checkbox" [(ngModel)]="newEndpoint.NAT"/>
+          </td>
+          <td>
+            <input type="checkbox" [(ngModel)]="newEndpoint.BGP"/>
+          </td>
+          <td>
             <button type="button" class="btn btn-success" (click)="finishAddingEndpoint()"><i class="fas fa-check"></i></button>
           </td>
         </tr>
@@ -112,5 +117,6 @@
     </table>
     <button type="button" class="btn btn-primary" *ngIf="!addingNewEndpoint" (click)="startAddingEndpoint()"
       id=new_endpoint_btn>Add a new endpoint</button>
+    <img id=ui_topo src="/assets/UI-topo.svg" id=ui_topo />
   </div>
 </div>

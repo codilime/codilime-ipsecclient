@@ -87,7 +87,8 @@ export class AppComponent {
         catchError(this.handleError)
       )
       .subscribe((data) => {
-        let newVRF: VRF = data as VRF;
+        let newVRF: VRF = new VRF();
+        newVRF.id = (data as any).id;
         this.vrfs.push(newVRF);
       })
   }
