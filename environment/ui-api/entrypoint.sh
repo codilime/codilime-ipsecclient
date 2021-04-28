@@ -1,3 +1,7 @@
-nginx
-nginx -s reload
-/ipsec_backend
+#!/bin/sh
+
+service nginx start
+
+/ipsec_backend &
+
+sleep 3600

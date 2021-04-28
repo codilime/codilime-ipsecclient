@@ -54,7 +54,7 @@ services:
       - shared-super:/opt/super/
       - shared-bird:/opt/bird/
     restart: always
-    network_mode: service:ipsec-1
+    network_mode: host
 
   bird-1:
     container_name: bird1
