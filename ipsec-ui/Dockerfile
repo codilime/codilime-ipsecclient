@@ -5,7 +5,7 @@ COPY package.json package-lock.json ./
 RUN npm install
 COPY src /usr/src/app/src/
 COPY angular.json tsconfig.app.json tsconfig.json tsconfig.spec.json /usr/src/app/
-RUN npm run build
+RUN npm run dist
 
 ### STAGE 2: Run ###
 FROM nginx:1.17.1-alpine
