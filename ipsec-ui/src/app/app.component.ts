@@ -14,7 +14,7 @@ class Endpoint {
 };
 
 class VRF {
-  id: number = -1;
+  id: number | undefined = undefined;
   vlan: number = -1;
   active: boolean = false;
   client_name: string = "New VRF";
@@ -82,14 +82,12 @@ export class AppComponent {
 
   public addVRF() {
     this.addingNewEndpoint = false;
-    this.httpClient.post("/api/vrfs", {})
+    this.httpClient.post("/api/vrfs", new VRF())
       .pipe(
         catchError(this.handleError)
       )
       .subscribe((data) => {
-        let newVRF: VRF = new VRF();
-        newVRF.id = (data as any).id;
-        this.vrfs.push(newVRF);
+        this.vrfs.push(data as VRF);
       })
   }
 
