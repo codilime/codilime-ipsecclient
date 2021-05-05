@@ -19,11 +19,11 @@ _term() {
   ip link del $PHYS_IF.$VRF
   ip link del vrf-$ORG_VRF
   # remove iptable rules
-  iptables -t raw -X VRF${VRF}-raw
-  iptables -t raw -D PREROUTING -j VRF${VRF}-raw
+  iptables -w -t raw -X VRF${VRF}-raw
+  iptables -w -t raw -D PREROUTING -j VRF${VRF}-raw
 
-  iptables -t nat -X VRF${VRF}-nat
-  iptables -t nat -D POSTROUTING -j VRF${VRF}-nat
+  iptables -w -t nat -X VRF${VRF}-nat
+  iptables -w -t nat -D POSTROUTING -j VRF${VRF}-nat
 }
 
 # catch the SIGTERM
@@ -39,14 +39,14 @@ ip link set dev $PHYS_IF.$VRF master vrf-$ORG_VRF
 ip link set dev $PHYS_IF.$VRF up
 
 #create Zonetracks for iptables
-iptables -t raw -N VRF${VRF}-raw
-iptables -t raw -A PREROUTING -j VRF${VRF}-raw
+iptables -w -t raw -N VRF${VRF}-raw
+iptables -w -t raw -A PREROUTING -j VRF${VRF}-raw
 
-iptables -t raw -A VRF${VRF}-raw -i ipsec-${VRF}+ -j CT --zone ${VRF}
-iptables -t raw -A VRF${VRF}-raw -i $PHYS_IF.$VRF -j CT --zone ${VRF}
+iptables -w -t raw -A VRF${VRF}-raw -i ipsec-${VRF}+ -j CT --zone ${VRF}
+iptables -w -t raw -A VRF${VRF}-raw -i $PHYS_IF.$VRF -j CT --zone ${VRF}
 
-iptables -t nat -N VRF${VRF}-nat
-iptables -t nat -A POSTROUTING -j VRF${VRF}-nat
+iptables -w -t nat -N VRF${VRF}-nat
+iptables -w -t nat -A POSTROUTING -j VRF${VRF}-nat
 
 #Create IPSEC interface and add to VRF
 #ITER=$(( $VRF * 100 + 1 ))
@@ -63,7 +63,7 @@ for IP in $XFRM_IP; do
   ip addr add $LOCAL_IP peer $PEER_IP dev $INTERFACE
   
   if [ `echo $NAT|awk {'print $'$ITER}` == "Yes" ]; then
-    iptables -t nat -A VRF${VRF}-nat -o $INTERFACE -j MASQUERADE
+    iptables -w -t nat -A VRF${VRF}-nat -o $INTERFACE -j MASQUERADE
   fi
   
   ITER=$(( $ITER + 1 ))
