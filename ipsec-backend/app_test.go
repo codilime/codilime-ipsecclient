@@ -12,9 +12,17 @@ import (
 
 var a App
 
+type MockGenerator struct {
+}
+
+func (MockGenerator) GenerateTemplates(v Vrf) error {
+	return nil
+}
+
 func TestMain(m *testing.M) {
 	dbName := "file::memory:?cache=shared"
 	a.Initialize(dbName)
+	a.Generator = MockGenerator{}
 	code := m.Run()
 	os.Exit(code)
 }

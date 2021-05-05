@@ -16,9 +16,14 @@ const (
 	vrfsIDPath = vrfsPath + "/{id:[0-9]+}"
 )
 
+type Generator interface {
+	GenerateTemplates(v Vrf) error
+}
+
 type App struct {
 	Router *mux.Router
 	DB     *gorm.DB
+	Generator Generator
 }
 
 func (a *App) Initialize(dbName string) {
@@ -27,6 +32,8 @@ func (a *App) Initialize(dbName string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	a.Generator = FileGenerator{}
 
 	a.initializeRoutes()
 }
@@ -62,8 +69,8 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := Vrf{ID: id}
-	if err := p.getVrf(a.DB); err != nil {
+	vrf := Vrf{ID: id}
+	if err := vrf.getVrf(a.DB); err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			respondWithError(w, http.StatusNotFound, "Vrf not found")
@@ -73,13 +80,13 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, p)
+	respondWithJSON(w, http.StatusOK, vrf)
 }
 
 func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
-	var p Vrf
+	var vrf Vrf
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&p); err != nil {
+	if err := decoder.Decode(&vrf); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -89,12 +96,17 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	if err := p.createVrf(a.DB); err != nil {
+	if err := vrf.createVrf(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusCreated, p)
+	if err := a.Generator.GenerateTemplates(vrf); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusCreated, vrf)
 }
 
 func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
@@ -105,9 +117,9 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var p Vrf
+	var vrf Vrf
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&p); err != nil {
+	if err := decoder.Decode(&vrf); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -117,14 +129,19 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	p.ID = id
+	vrf.ID = id
 
-	if err := p.updateVrf(a.DB); err != nil {
+	if err := vrf.updateVrf(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, p)
+	if err := a.Generator.GenerateTemplates(vrf); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, vrf)
 }
 
 func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
@@ -135,8 +152,8 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := Vrf{ID: id}
-	if err := p.deleteVrf(a.DB); err != nil {
+	vrf := Vrf{ID: id}
+	if err := vrf.deleteVrf(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -146,6 +163,7 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	respondWithJSON(w, code, map[string]string{"result": "error", "error": message})
+	log.Errorf("Error occurred: %s", message)
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
