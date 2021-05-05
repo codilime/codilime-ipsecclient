@@ -97,11 +97,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	if err := vrf.createVrf(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	if err := a.Generator.GenerateTemplates(vrf); err != nil {
+		log.Infof("error %+v", err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
