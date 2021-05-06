@@ -142,7 +142,10 @@ services:
 
 networks:
   ipsec:
+    name: ipsec
     driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: ipsec_br
     ipam:
      config:
        - subnet: 10.5.0.0/16
