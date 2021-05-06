@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+
+  middleware:
+    container_name: ipsec-middleware
+    build:
+      context: ipsec-backend
+      dockerfile: Dockerfile
+    volumes:
+      - environment_shared-ipsec:/opt/ipsec/
+      - environment_shared-super:/opt/super/
+      - environment_shared-bird:/opt/bird/
+    restart: always
+    command: /ipsec_backend
+
+  frontend:
+    container_name: ipsec-frontend
+    build:
+      context: ipsec-ui
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "80:80"
+    command: nginx -g "daemon off;"
+
+volumes:
+  environment_shared-super:
+    external: true
+  environment_shared-ipsec:
+    external: true
+  environment_shared-bird:
+    external: true
