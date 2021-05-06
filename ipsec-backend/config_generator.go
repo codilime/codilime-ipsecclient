@@ -75,6 +75,10 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 		return err
 	}
 
+	if err = ReloadBird(); err != nil {
+		return err
+	}
+
 	return nil
 }
 

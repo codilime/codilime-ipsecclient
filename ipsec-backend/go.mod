@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/abrander/go-supervisord v0.0.0-20180808154311-364ce11d29d8
+	github.com/czerwonk/bird_socket v0.0.0-20190111125930-6c39d61f8853 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/kolo/xmlrpc v0.0.0-20201022064351-38db28db192b // indirect
 	github.com/mattn/go-sqlite3 v1.14.7
