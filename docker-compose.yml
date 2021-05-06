@@ -7,9 +7,9 @@ services:
       context: ipsec-backend
       dockerfile: Dockerfile
     volumes:
-      - shared-ipsec:/opt/ipsec/
-      - shared-super:/opt/super/
-      - shared-bird:/opt/bird/
+      - environment_shared-ipsec:/opt/ipsec/
+      - environment_shared-super:/opt/super/
+      - environment_shared-bird:/opt/bird/
     restart: always
     command: /ipsec_backend
 
@@ -24,6 +24,9 @@ services:
     command: nginx -g "daemon off;"
 
 volumes:
-   shared-super:
-   shared-ipsec:
-   shared-bird:
+  environment_shared-super:
+    external: true
+  environment_shared-ipsec:
+    external: true
+  environment_shared-bird:
+    external: true
