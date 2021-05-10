@@ -1,4 +1,6 @@
 aaa new-model 
+aaa authentication login default local
+aaa authorization exec default local 
 
 username admin privilege 15 password 0 cisco123
 hostname csr-ipsec

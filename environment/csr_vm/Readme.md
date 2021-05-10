@@ -33,5 +33,11 @@
 
 ## Access VM
 
-- `virsh console csr_vm`
+- `virsh console csr_vm` OR
 - `ssh admin@10.5.0.10` [ password is `cisco123` ]
+
+## Using API
+
+*After* you log into CSR you can start using API:
+
+`curl -H "Accept: application/yang-data+json" -k https://10.5.0.10/restconf/data/Cisco-IOS-XE-native:native/hostname -u "admin:cisco123"`
