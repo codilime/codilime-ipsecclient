@@ -62,7 +62,7 @@ for IP in $XFRM_IP; do
   ip link set dev $INTERFACE up
   ip addr add $LOCAL_IP peer $PEER_IP dev $INTERFACE
   
-  if [ `echo $NAT|awk {'print $'$ITER}` == "Yes" ]; then
+  if [ `echo $NAT|awk {'print $'$ITER}` == "YES" ]; then
     iptables -w -t nat -A VRF${VRF}-nat -o $INTERFACE -j MASQUERADE
   fi
   
