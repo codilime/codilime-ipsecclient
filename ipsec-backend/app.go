@@ -21,8 +21,8 @@ type Generator interface {
 }
 
 type App struct {
-	Router *mux.Router
-	DB     *gorm.DB
+	Router    *mux.Router
+	DB        *gorm.DB
 	Generator Generator
 }
 
@@ -49,6 +49,9 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(vrfsIDPath, a.getVrf).Methods(http.MethodGet)
 	a.Router.HandleFunc(vrfsIDPath, a.updateVrf).Methods(http.MethodPut)
 	a.Router.HandleFunc(vrfsIDPath, a.deleteVrf).Methods(http.MethodDelete)
+
+	// temp
+	a.Router.HandleFunc("/api/csr", testCSR).Methods(http.MethodGet)
 }
 
 func (a *App) getVrfs(w http.ResponseWriter, _ *http.Request) {
