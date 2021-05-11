@@ -4,12 +4,12 @@ import { throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 class Endpoint {
-  remoteIPSec: string = "";
-  localIP: string = "";
-  peerIP: string = "";
-  PSK: string = "";
-  NAT: boolean = false;
-  BGP: boolean = false;
+  remote_ip_sec: string = "";
+  local_ip: string = "";
+  peer_ip: string = "";
+  psk: string = "";
+  nat: boolean = false;
+  bgp: boolean = false;
   hover: boolean = false;
 };
 
@@ -21,7 +21,7 @@ class VRF {
   crypto_ph1: string = "aes128-sha256-x25519";
   crypto_ph2: string = "aes128gcm128-x25519";
   physical_interface: string = "eth0";
-  as: number = -1;
+  local_as: number = -1;
   endpoints: Endpoint[] = [];
 
   hover: boolean = false;

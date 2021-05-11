@@ -32,7 +32,7 @@
         </tr>
         <tr>
           <td>BGP Local AS</td>
-          <td><input type=number class="form-control" [(ngModel)]=currentVRF.as /></td>
+          <td><input type=number class="form-control" [(ngModel)]=currentVRF.local_as /></td>
         </tr>
         <tr>
           <td>Crypto phase 1</td>
@@ -79,12 +79,12 @@
       <tbody>
         <tr *ngFor="let endpoint of currentVRF.endpoints; index as i"
         (mouseover)="endpoint.hover=true" (mouseleave)="endpoint.hover=false">
-          <td>{{endpoint.remoteIPSec}}</td>
-          <td>{{endpoint.localIP}}</td>
-          <td>{{endpoint.peerIP}}</td>
-          <td>{{endpoint.PSK}}</td>
-          <td><input type="checkbox" [(ngModel)]="endpoint.NAT" /></td>
-          <td><input type="checkbox" [(ngModel)]="endpoint.BGP" /></td>
+          <td>{{endpoint.remote_ip_sec}}</td>
+          <td>{{endpoint.local_ip}}</td>
+          <td>{{endpoint.peer_ip}}</td>
+          <td>{{endpoint.psk}}</td>
+          <td><input type="checkbox" [(ngModel)]="endpoint.nat" /></td>
+          <td><input type="checkbox" [(ngModel)]="endpoint.bgp" /></td>
           <td class=trash_cell>
             <i *ngIf="endpoint.hover" class="fas fa-trash-alt"
               (click)="deleteEndpoint(i)"></i>
@@ -92,22 +92,22 @@
         </tr>
         <tr *ngIf="addingNewEndpoint">
           <td>
-            <input type="text" class="form-control" [(ngModel)]="newEndpoint.remoteIPSec"/>
+            <input type="text" class="form-control" [(ngModel)]="newEndpoint.remote_ip_sec"/>
           </td>
           <td>
-            <input type="text" class="form-control" [(ngModel)]="newEndpoint.localIP"/>
+            <input type="text" class="form-control" [(ngModel)]="newEndpoint.local_ip"/>
           </td>
           <td>
-            <input type="text" class="form-control" [(ngModel)]="newEndpoint.peerIP"/>
+            <input type="text" class="form-control" [(ngModel)]="newEndpoint.peer_ip"/>
           </td>
           <td>
-            <input type="text" class="form-control" [(ngModel)]="newEndpoint.PSK"/>
+            <input type="text" class="form-control" [(ngModel)]="newEndpoint.psk"/>
           </td>
           <td>
-            <input type="checkbox" [(ngModel)]="newEndpoint.NAT"/>
+            <input type="checkbox" [(ngModel)]="newEndpoint.nat"/>
           </td>
           <td>
-            <input type="checkbox" [(ngModel)]="newEndpoint.BGP"/>
+            <input type="checkbox" [(ngModel)]="newEndpoint.bgp"/>
           </td>
           <td>
             <button type="button" class="btn btn-success" (click)="finishAddingEndpoint()"><i class="fas fa-check"></i></button>

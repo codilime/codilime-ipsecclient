@@ -47,7 +47,7 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile(prefix+".conf", []byte(data), 0644); err != nil {
+	if err := os.WriteFile("/opt/ipsec/"+prefix+".conf", []byte(data), 0644); err != nil {
 		return err
 	}
 
@@ -55,7 +55,7 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile(prefix+".ini", []byte(data), 0644); err != nil {
+	if err := os.WriteFile("/opt/super/"+prefix+".ini", []byte(data), 0644); err != nil {
 		return err
 	}
 
@@ -63,7 +63,15 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile(prefix+"_bird.conf", []byte(data), 0644); err != nil {
+	if err := os.WriteFile("/opt/bird/"+prefix+"_bird.conf", []byte(data), 0644); err != nil {
+		return err
+	}
+
+	if err = ReloadSupervisor(); err != nil {
+		return err
+	}
+
+	if err = ReloadStrongSwan(vrf); err != nil {
 		return err
 	}
 
@@ -72,9 +80,11 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 
 func convertToVrfWithEndpoints(vrf Vrf) (*VrfWithEndpoints, error) {
 	var endpoints []Endpoint
-	val := vrf.Endpoints.String()
-	if err := json.Unmarshal([]byte(val), &endpoints); err != nil {
-		return nil, err
+	if vrf.Endpoints != nil {
+		val := vrf.Endpoints.String()
+		if err := json.Unmarshal([]byte(val), &endpoints); err != nil {
+			return nil, err
+		}
 	}
 	return &VrfWithEndpoints{vrf, endpoints}, nil
 }
@@ -148,9 +158,8 @@ func generateBirdTemplate(vrf *VrfWithEndpoints) (string, error) {
 	return builder.String(), nil
 }
 
-
 func inc(i int) int {
-	return i+1
+	return i + 1
 }
 
 func calculateIndex(vlan, index int) int {

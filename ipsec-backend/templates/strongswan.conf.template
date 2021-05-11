@@ -15,7 +15,7 @@ connections {
                 local_ts = 0.0.0.0/0
                 if_id_in = {{ calc $.Vlan $i }}
                 if_id_out = {{ calc $.Vlan $i }}
-                esp_proposals = {{ $.CryptoPh1 }}
+                esp_proposals = {{ $.CryptoPh2 }}
                 start_action = start
             }
         }
