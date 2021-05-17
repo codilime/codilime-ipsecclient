@@ -36,17 +36,31 @@
         </tr>
         <tr>
           <td>Crypto phase 1</td>
-          <td>
-            <select class="custom-select" [(ngModel)]=currentVRF.crypto_ph1>
-              <option>aes128-sha256-x25519</option>
+          <td class=crypto_td>
+            <select class="custom-select" [(ngModel)]=crypto_ph1_1>
+              <option>aes128</option>
+            </select>
+            <select class="custom-select" [(ngModel)]=crypto_ph1_2>
+              <option>gcm128</option>
+              <option>sha256</option>
+            </select>
+            <select class="custom-select" [(ngModel)]=crypto_ph1_3>
+              <option>x25519</option>
             </select>
           </td>
         </tr>
         <tr>
           <td>Crypto phase 2</td>
-          <td>
-            <select class="custom-select" [(ngModel)]=currentVRF.crypto_ph2>
-              <option>aes128gcm128-x25519</option>
+          <td class=crypto_td>
+            <select class="custom-select" [(ngModel)]=crypto_ph2_1>
+              <option>aes128</option>
+            </select>
+            <select class="custom-select" [(ngModel)]=crypto_ph2_2>
+              <option>gcm128</option>
+              <option>sha256</option>
+            </select>
+            <select class="custom-select" [(ngModel)]=crypto_ph2_3>
+              <option>x25519</option>
             </select>
           </td>
         </tr>
