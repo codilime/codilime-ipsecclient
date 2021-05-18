@@ -28,6 +28,12 @@ class VRF {
   hover: boolean = false;
 };
 
+class Metrics {
+  bird: Map<string, string> = new Map<string, string>();
+  strongswan: Map<string, string> = new Map<string, string>();
+  supervisor: Map<string, string> = new Map<string, string>();
+};
+
 
 @Component({
   selector: 'app-root',
@@ -40,6 +46,7 @@ export class AppComponent {
   httpClient: HttpClient;
 
   vrfs: VRF[] = [];
+  metrics: Metrics = new Metrics();
   currentVRF: VRF | null = null;
   addingNewEndpoint = false;
   crypto_ph1_list: string[] = ["aes128", "sha256", "x25519"];
@@ -68,6 +75,30 @@ export class AppComponent {
       'Something bad happened; please try again later.');
   }
 
+  private getMetric() {
+    this.metrics = new Metrics();
+    if (this.currentVRF == null) {
+      this.httpClient.get("/api/metrics")
+        .pipe(
+          catchError(this.handleError)
+        )
+        .subscribe((data) => {
+          this.metrics = data as Metrics;
+        });
+      return;
+    }
+    if (!this.currentVRF.active) {
+      return;
+    }
+    this.httpClient.get("/api/metrics/" + this.currentVRF.vlan + "-" + this.currentVRF.client_name)
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe((data) => {
+        this.metrics = data as Metrics;
+      });
+  }
+
   ngOnInit() {
     this.httpClient.get("/api/vrfs")
       .pipe(
@@ -76,6 +107,8 @@ export class AppComponent {
       .subscribe((data) => {
         this.vrfs = data as VRF[];
       });
+    this.getMetric();
+    setInterval(()=> { this.getMetric() }, 5000);
   }
 
   saveCryptos() {
@@ -101,6 +134,13 @@ export class AppComponent {
     this.currentVRF = this.vrfs[i];
     this.loadCryptos();
     this.addingNewEndpoint = false;
+    this.getMetric();
+  }
+
+  public unsetCurrentVRF() {
+    this.currentVRF = null;
+    this.addingNewEndpoint = false;
+    this.getMetric();
   }
 
   public addVRF() {
