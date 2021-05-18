@@ -19,7 +19,7 @@ class VRF {
   active: boolean = false;
   client_name: string = "New VRF";
   crypto_ph1: string = "aes128-sha256-x25519";
-  crypto_ph2: string = "aes128-gcm128-x25519";
+  crypto_ph2: string = "aes128gcm128-x25519";
   physical_interface: string = "eth0";
   local_as: number = -1;
   endpoints: Endpoint[] = [];
@@ -41,13 +41,8 @@ export class AppComponent {
   vrfs: VRF[] = [];
   currentVRF: VRF | null = null;
   addingNewEndpoint = false;
-  crypto_ph1_1: string = "aes128";
-  crypto_ph1_2: string = "sha256";
-  crypto_ph1_3: string = "x25519";
-
-  crypto_ph2_1: string = "aes128";
-  crypto_ph2_2: string = "gcm128";
-  crypto_ph2_3: string = "x25519";
+  crypto_ph1_list: string[] = ["aes128", "sha256", "x25519"];
+  crypto_ph2_list: string[] = ["aes128gcm128", "x25519"];
 
   newEndpoint: Endpoint = new Endpoint();
 
@@ -85,22 +80,20 @@ export class AppComponent {
   saveCryptos() {
     if (this.currentVRF === null)
       return;
-    this.currentVRF.crypto_ph1 = this.crypto_ph1_1 + "-" + this.crypto_ph1_2 + "-" + this.crypto_ph1_3;
-    this.currentVRF.crypto_ph2 = this.crypto_ph2_1 + "-" + this.crypto_ph2_2 + "-" + this.crypto_ph2_3;
+    this.currentVRF.crypto_ph1 = this.crypto_ph1_list.join("-");
+    this.currentVRF.crypto_ph2 = this.crypto_ph2_list.join("-");
+    this.currentVRF.crypto_ph2 = this.currentVRF.crypto_ph2.replace("--", "-");
   }
 
   loadCryptos() {
     if (this.currentVRF === null)
       return;
-    let cryptos_ph1 = this.currentVRF.crypto_ph1.split("-");
-    this.crypto_ph1_1 = cryptos_ph1[0];
-    this.crypto_ph1_2 = cryptos_ph1[1];
-    this.crypto_ph1_3 = cryptos_ph1[2];
-
-    let cryptos_ph2 = this.currentVRF.crypto_ph2.split("-");
-    this.crypto_ph2_1 = cryptos_ph2[0];
-    this.crypto_ph2_2 = cryptos_ph2[1];
-    this.crypto_ph2_3 = cryptos_ph2[2];
+    this.crypto_ph1_list = this.currentVRF.crypto_ph1.split("-");
+    this.crypto_ph2_list = this.currentVRF.crypto_ph2.split("-");
+    if (this.crypto_ph2_list.length < 3) {
+      this.crypto_ph2_list.push(this.crypto_ph2_list[1]);
+      this.crypto_ph2_list[1] = "";
+    }
   }
 
   public setCurrentVRF(i: number) {
@@ -149,7 +142,6 @@ export class AppComponent {
   }
 
   public saveAndApply() {
-    // console.log(JSON.stringify(this.vrfs));
     this.saveCryptos();
     this.httpClient.put("/api/vrfs/" + this.currentVRF?.id, this.currentVRF)
       .pipe(
