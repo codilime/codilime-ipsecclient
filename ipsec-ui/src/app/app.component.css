@@ -41,3 +41,8 @@
 .trash_cell {
         width: 50px;
 }
+
+.crypto_td {
+        display: flex;
+        flex-direction: row;
+}

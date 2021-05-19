@@ -41,6 +41,8 @@ export class AppComponent {
   vrfs: VRF[] = [];
   currentVRF: VRF | null = null;
   addingNewEndpoint = false;
+  crypto_ph1_list: string[] = ["aes128", "sha256", "x25519"];
+  crypto_ph2_list: string[] = ["aes128gcm128", "x25519"];
 
   newEndpoint: Endpoint = new Endpoint();
 
@@ -75,8 +77,28 @@ export class AppComponent {
       });
   }
 
+  saveCryptos() {
+    if (this.currentVRF === null)
+      return;
+    this.currentVRF.crypto_ph1 = this.crypto_ph1_list.join("-");
+    this.currentVRF.crypto_ph2 = this.crypto_ph2_list.join("-");
+    this.currentVRF.crypto_ph2 = this.currentVRF.crypto_ph2.replace("--", "-");
+  }
+
+  loadCryptos() {
+    if (this.currentVRF === null)
+      return;
+    this.crypto_ph1_list = this.currentVRF.crypto_ph1.split("-");
+    this.crypto_ph2_list = this.currentVRF.crypto_ph2.split("-");
+    if (this.crypto_ph2_list.length < 3) {
+      this.crypto_ph2_list.push(this.crypto_ph2_list[1]);
+      this.crypto_ph2_list[1] = "";
+    }
+  }
+
   public setCurrentVRF(i: number) {
     this.currentVRF = this.vrfs[i];
+    this.loadCryptos();
     this.addingNewEndpoint = false;
   }
 
@@ -120,7 +142,7 @@ export class AppComponent {
   }
 
   public saveAndApply() {
-    // console.log(JSON.stringify(this.vrfs));
+    this.saveCryptos();
     this.httpClient.put("/api/vrfs/" + this.currentVRF?.id, this.currentVRF)
       .pipe(
         catchError(this.handleError)
