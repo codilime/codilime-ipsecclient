@@ -8,6 +8,6 @@ COPY angular.json tsconfig.app.json tsconfig.json tsconfig.spec.json /usr/src/ap
 RUN npm run dist
 
 ### STAGE 2: Run ###
-FROM nginx:1.17.1-alpine
-COPY nginx.conf /etc/nginx/nginx.conf
+FROM nginx:1.19.10-alpine
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=frontend-build /usr/src/app/dist/ipsec-ui /usr/share/nginx/html
