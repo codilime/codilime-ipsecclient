@@ -8,7 +8,7 @@ import (
 )
 
 func ReloadBird() error {
-	ret, err := birdsocket.Query("/opt/bird/bird.ctl", "reload all")
+	ret, err := birdsocket.Query("/opt/bird/bird.ctl", "configure")
 	if err != nil {
 		return err
 	}
