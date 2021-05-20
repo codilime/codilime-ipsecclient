@@ -12,7 +12,7 @@ func ReloadBird() error {
 	if err != nil {
 		return err
 	}
-	if strings.Contains(string(ret), "failed") {
+	if strings.Contains(string(ret), "failed") || strings.Contains(string(ret), "error") {
 		return errors.New("reloading bird failed\n" + string(ret))
 	}
 	return nil
