@@ -22,6 +22,7 @@ class VRF {
   crypto_ph2: string = "aes128gcm128-x25519";
   physical_interface: string = "eth0";
   local_as: number = -1;
+  lan_ip: string = "";
   endpoints: Endpoint[] = [];
 
   hover: boolean = false;
