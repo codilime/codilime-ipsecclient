@@ -7,4 +7,5 @@ COPY content/supervisord.conf /etc/
 COPY content/$CONFIG/*.ini /etc/supervisor.d/
 COPY content/ipsec.sh /usr/local/sbin/
 
-CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
+#CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
+CMD /usr/bin/supervisord -n -c /etc/supervisord.conf

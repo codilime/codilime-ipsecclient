@@ -11,3 +11,5 @@ RUN npm run dist
 FROM nginx:1.17.1-alpine
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY --from=frontend-build /usr/src/app/dist/ipsec-ui /usr/share/nginx/html
+
+CMD /ipsec_backend

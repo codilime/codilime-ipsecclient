@@ -17,4 +17,5 @@ COPY content/no_route.conf /etc/strongswan.d/no_route.conf
 #RUN echo '%ipsec ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/ipsec
 #RUN chmod 0440 /etc/sudoers.d/ipsec
 
-ENTRYPOINT ["/entrypoint.sh"]
+#ENTRYPOINT ["/entrypoint.sh"]
+CMD /entrypoint.sh
