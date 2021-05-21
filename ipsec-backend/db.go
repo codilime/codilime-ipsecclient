@@ -13,7 +13,7 @@ type Vrf struct {
 	CryptoPh1         string         `json:"crypto_ph1"`
 	CryptoPh2         string         `json:"crypto_ph2"`
 	PhysicalInterface string         `json:"physical_interface"`
-	Active            bool           `json:"active"`
+	Active            *bool          `json:"active"` // pointer, otherwise it is impossible to set value to false
 	LocalAs           int            `json:"local_as"`
 	LanIP             string         `json:"lan_ip"`
 	Endpoints         datatypes.JSON `json:"endpoints"`
@@ -28,6 +28,10 @@ func initializeDB(dbName string) (*gorm.DB, error) {
 		return nil, err
 	}
 	return db, nil
+}
+
+func (Vrf) TableName() string {
+	return "vrfs"
 }
 
 func (v *Vrf) getVrf(db *gorm.DB) error {

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"strings"
 	"text/template"
@@ -36,18 +37,19 @@ type FileGenerator struct {
 }
 
 func (FileGenerator) GenerateTemplates(v Vrf) error {
+	log.Infof("generating templates for vrf %+v", v)
 	vrf, err := convertToVrfWithEndpoints(v)
 	if err != nil {
 		return err
 	}
 
-	prefix := calculatePrefix(vrf)
+	prefix := calculatePrefix(v)
 
 	data, err := generateStrongswanTemplate(vrf)
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile("/opt/ipsec/"+prefix+".conf", []byte(data), 0644); err != nil {
+	if err := os.WriteFile(getStrongswanFileName(prefix), []byte(data), 0644); err != nil {
 		return err
 	}
 
@@ -55,7 +57,7 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile("/opt/super/"+prefix+".ini", []byte(data), 0644); err != nil {
+	if err := os.WriteFile(getSupervisorFileName(prefix), []byte(data), 0644); err != nil {
 		return err
 	}
 
@@ -63,7 +65,7 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile("/opt/bird/"+prefix+"_bird.conf", []byte(data), 0644); err != nil {
+	if err := os.WriteFile(getBirdFileName(prefix), []byte(data), 0644); err != nil {
 		return err
 	}
 
@@ -82,6 +84,46 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 	return nil
 }
 
+func (FileGenerator) DeleteTemplates(v Vrf) error {
+	log.Infof("deleting templates for vrf %+v", v)
+	prefix := calculatePrefix(v)
+	vrf, err := convertToVrfWithEndpoints(v)
+	if err != nil {
+		return err
+	}
+	if err := os.RemoveAll(getBirdFileName(prefix)); err != nil {
+		return err
+	}
+	if err := os.RemoveAll(getSupervisorFileName(prefix)); err != nil {
+		return err
+	}
+	if err := os.RemoveAll(getStrongswanFileName(prefix)); err != nil {
+		return err
+	}
+	if err := ReloadBird(); err != nil {
+		return err
+	}
+	if err := UnloadStrongSwan(vrf); err != nil {
+		return err
+	}
+	if err := ReloadSupervisor(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func getStrongswanFileName(prefix string) string {
+	return "/opt/ipsec/" + prefix + ".conf"
+}
+
+func getSupervisorFileName(prefix string) string {
+	return "/opt/super/" + prefix + ".ini"
+}
+
+func getBirdFileName(prefix string) string {
+	return "/opt/bird/" + prefix + "_bird.conf"
+}
+
 func convertToVrfWithEndpoints(vrf Vrf) (*VrfWithEndpoints, error) {
 	var endpoints []Endpoint
 	if vrf.Endpoints != nil {
@@ -93,7 +135,7 @@ func convertToVrfWithEndpoints(vrf Vrf) (*VrfWithEndpoints, error) {
 	return &VrfWithEndpoints{vrf, endpoints}, nil
 }
 
-func calculatePrefix(vrf *VrfWithEndpoints) string {
+func calculatePrefix(vrf Vrf) string {
 	return fmt.Sprintf("%d_%s", vrf.Vlan, vrf.ClientName)
 }
 
