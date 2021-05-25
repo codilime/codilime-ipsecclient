@@ -18,11 +18,12 @@ const (
 
 type Generator interface {
 	GenerateTemplates(v Vrf) error
+	DeleteTemplates(v Vrf) error
 }
 
 type App struct {
-	Router *mux.Router
-	DB     *gorm.DB
+	Router    *mux.Router
+	DB        *gorm.DB
 	Generator Generator
 }
 
@@ -96,6 +97,9 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	if vrf.Active == nil {
+		vrf.Active = new(bool)
+	}
 	if err := vrf.createVrf(a.DB); err != nil {
 		log.Infof("error %+v", err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -113,7 +117,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var vrf Vrf
+	var vrf, oldVrf Vrf
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&vrf); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
@@ -126,15 +130,43 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	vrf.ID = id
+	oldVrf.ID = id
+
+	if err := oldVrf.getVrf(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	if err := vrf.updateVrf(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	if err := a.Generator.GenerateTemplates(vrf); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
+	if vrf.Active == nil {
+		vrf.Active = oldVrf.Active
+	}
+
+	if *oldVrf.Active != *vrf.Active {
+		if *vrf.Active {
+			if err := a.Generator.GenerateTemplates(vrf); err != nil {
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+		} else {
+			if err := a.Generator.DeleteTemplates(oldVrf); err != nil {
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+		}
+	} else if *vrf.Active {
+		if err := a.Generator.DeleteTemplates(oldVrf); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		if err := a.Generator.GenerateTemplates(vrf); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 	}
 
 	respondWithJSON(w, http.StatusOK, vrf)
@@ -149,6 +181,16 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vrf := Vrf{ID: id}
+	if err := vrf.getVrf(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if *vrf.Active {
+		if err := a.Generator.DeleteTemplates(vrf); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+	}
 	if err := vrf.deleteVrf(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return

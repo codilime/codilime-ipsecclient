@@ -70,6 +70,31 @@ func ReloadStrongSwan(vrf *VrfWithEndpoints) error {
 	return nil
 }
 
+func UnloadStrongSwan(vrf *VrfWithEndpoints) error {
+	options := vici.WithSocketPath("/opt/ipsec/charon.vici")
+	session, err := vici.NewSession(options)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err := session.Close(); err != nil {
+			log.Errorf("Error during closing strongswan connection %v", err)
+		}
+	}()
+
+	for i := range vrf.Endpoints {
+		name := fmt.Sprintf("%d_%s_%d", vrf.Vlan, vrf.ClientName, i+1)
+		if err := unloadSecret(session, name); err != nil {
+			return err
+		}
+		if err := unloadConnection(session, name); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func createConnection(vrf *VrfWithEndpoints, index int) connection {
 	name := fmt.Sprintf("%d_%s_%d", vrf.Vlan, vrf.ClientName, index+1)
 	return connection{
@@ -129,6 +154,28 @@ func loadSecret(s *vici.Session, sec secret) error {
 	}
 
 	_, err = s.CommandRequest("load-shared", m)
+
+	return err
+}
+
+func unloadConnection(s *vici.Session, name string) error {
+	m := vici.NewMessage()
+	if err := m.Set("name", name); err != nil {
+		return err
+	}
+
+	_, err := s.CommandRequest("unload-conn", m)
+
+	return err
+}
+
+func unloadSecret(s *vici.Session, name string) error {
+	m := vici.NewMessage()
+	if err := m.Set("id", "ike_"+name); err != nil {
+		return err
+	}
+
+	_, err := s.CommandRequest("unload-shared", m)
 
 	return err
 }

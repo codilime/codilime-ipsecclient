@@ -62,7 +62,7 @@ const expectedStrongswanConfig = `connections {
                 local_ts = 0.0.0.0/0
                 if_id_in = 104201
                 if_id_out = 104201
-                esp_proposals = aes128-sha256-x25519
+                esp_proposals = aes128gcm128-x25519
                 start_action = start
             }
         }
@@ -85,7 +85,7 @@ const expectedStrongswanConfig = `connections {
                 local_ts = 0.0.0.0/0
                 if_id_in = 104202
                 if_id_out = 104202
-                esp_proposals = aes128-sha256-x25519
+                esp_proposals = aes128gcm128-x25519
                 start_action = start
             }
         }

@@ -11,18 +11,33 @@ import (
 )
 
 var a App
+var mock MockGenerator
 
 type MockGenerator struct {
+	genCalled int
+	delCalled int
 }
 
-func (MockGenerator) GenerateTemplates(v Vrf) error {
+func (m *MockGenerator) GenerateTemplates(v Vrf) error {
+	m.genCalled++
 	return nil
+}
+
+func (m *MockGenerator) DeleteTemplates(v Vrf) error {
+	m.delCalled++
+	return nil
+}
+
+func (m *MockGenerator) reset() {
+	m.delCalled = 0
+	m.genCalled = 0
 }
 
 func TestMain(m *testing.M) {
 	dbName := "file::memory:?cache=shared"
 	a.Initialize(dbName)
-	a.Generator = MockGenerator{}
+	mock = MockGenerator{}
+	a.Generator = &mock
 	code := m.Run()
 	os.Exit(code)
 }
@@ -37,19 +52,6 @@ func TestEmptyTable(t *testing.T) {
 
 	if body := response.Body.String(); body != "[]" {
 		t.Fatalf("Expected an empty array. Got %s", body)
-	}
-}
-
-func executeRequest(req *http.Request) *httptest.ResponseRecorder {
-	rr := httptest.NewRecorder()
-	a.Router.ServeHTTP(rr, req)
-
-	return rr
-}
-
-func checkResponseCode(t *testing.T, expected, actual int) {
-	if expected != actual {
-		t.Fatalf("Expected response code %d. Got %d\n", expected, actual)
 	}
 }
 
@@ -158,6 +160,68 @@ func TestUpdateVrf(t *testing.T) {
 	}
 }
 
+func TestVrfActivation(t *testing.T) {
+	clearTable()
+	addVrf(t)
+
+	jsonStrActive := []byte(`{"active": true}`)
+	req, _ := http.NewRequest("PUT", vrfsPath+"/1", bytes.NewBuffer(jsonStrActive))
+	req.Header.Set("Content-Type", "application/json")
+
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	if mock.genCalled != 1 {
+		t.Fatalf("Expected generator to be called once, got %d", mock.genCalled)
+	}
+	if mock.delCalled != 0 {
+		t.Fatalf("Expected delete to not be called, got %d", mock.delCalled)
+	}
+
+	mock.reset()
+	jsonStrInactive := []byte(`{"active": false}`)
+	req, _ = http.NewRequest("PUT", vrfsPath+"/1", bytes.NewBuffer(jsonStrInactive))
+	req.Header.Set("Content-Type", "application/json")
+
+	response = executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	if mock.genCalled != 0 {
+		t.Fatalf("Expected generator not to be called, got %d", mock.genCalled)
+	}
+	if mock.delCalled != 1 {
+		t.Fatalf("Expected delete to be called once, got %d", mock.delCalled)
+	}
+
+	mock.reset()
+	req, _ = http.NewRequest("PUT", vrfsPath+"/1", bytes.NewBuffer(jsonStrActive))
+	req.Header.Set("Content-Type", "application/json")
+
+	response = executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	if mock.genCalled != 1 {
+		t.Fatalf("Expected generator to be called once, got %d", mock.genCalled)
+	}
+	if mock.delCalled != 0 {
+		t.Fatalf("Expected delete to not be called, got %d", mock.delCalled)
+	}
+
+	mock.reset()
+	req, _ = http.NewRequest("PUT", vrfsPath+"/1", bytes.NewBuffer(jsonStrActive))
+	req.Header.Set("Content-Type", "application/json")
+
+	response = executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	if mock.genCalled != 1 {
+		t.Fatalf("Expected generator to be called once, got %d", mock.genCalled)
+	}
+	if mock.delCalled != 1 {
+		t.Fatalf("Expected delete to be called once, got %d", mock.delCalled)
+	}
+}
+
 func TestDeleteVrf(t *testing.T) {
 	clearTable()
 	addVrf(t)
@@ -166,7 +230,7 @@ func TestDeleteVrf(t *testing.T) {
 	response := executeRequest(req)
 	checkResponseCode(t, http.StatusOK, response.Code)
 
-	req, _ = http.NewRequest("DELETE", vrfsPath+"/1", nil)
+	req, _ = http.NewRequest(http.MethodDelete, vrfsPath+"/1", nil)
 	response = executeRequest(req)
 
 	checkResponseCode(t, http.StatusOK, response.Code)
@@ -181,9 +245,23 @@ func clearTable() {
 }
 
 func addVrf(t *testing.T) {
-	vrf := Vrf{ClientName: "Vrf1", Vlan: 1000}
+	active := false
+	vrf := Vrf{ClientName: "Vrf1", Vlan: 1000, Active: &active}
 	res := a.DB.Create(&vrf)
 	if res.Error != nil {
 		t.Fatalf("Error whlie inserting: %v", res.Error)
+	}
+}
+
+func executeRequest(req *http.Request) *httptest.ResponseRecorder {
+	rr := httptest.NewRecorder()
+	a.Router.ServeHTTP(rr, req)
+
+	return rr
+}
+
+func checkResponseCode(t *testing.T, expected, actual int) {
+	if expected != actual {
+		t.Fatalf("Expected response code %d. Got %d\n", expected, actual)
 	}
 }
