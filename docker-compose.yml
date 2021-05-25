@@ -22,6 +22,9 @@ services:
     ports:
       - "80:80"
     command: nginx -g "daemon off;"
+    environment:
+      - MIDDLEWARE_HOSTNAME=ipsec-middleware
+      - MIDDLEWARE_PORT=8000
 
 volumes:
   environment_shared-super:
