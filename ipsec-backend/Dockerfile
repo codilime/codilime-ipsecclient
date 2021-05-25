@@ -1,8 +1,12 @@
 ### STAGE 1: Build ###
 FROM golang:1.16.3-alpine3.13 AS middleware-build
 WORKDIR /usr/src/app
+RUN apk add build-base
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
 COPY . .
-RUN apk add build-base && go build
+RUN go build
 
 ### STAGE 2: Run ###
 FROM alpine:3.13.5 AS middleware-run

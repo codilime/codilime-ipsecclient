@@ -9,6 +9,7 @@
         (click)="deleteVRF($event, i)"></i></li>
     </ul>
     <button type="button" class="btn btn-primary" (click)="addVRF()">Add a new VRF</button>
+    <button type="button" class="btn btn-primary" (click)="unsetCurrentVRF()">Show all metrics</button>
   </div>
   <div id=edit_vrf *ngIf="currentVRF !== null">
     <div id=edit_title
@@ -135,6 +136,122 @@
     </table>
     <button type="button" class="btn btn-primary" *ngIf="!addingNewEndpoint" (click)="startAddingEndpoint()"
       id=new_endpoint_btn>Add a new endpoint</button>
+    <h4>BGP status</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Status
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of metrics.bird | keyvalue">
+          <td>{{item.key}}</td>
+          <td>{{item.value}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <h4>Supervisor status</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Status
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of metrics.supervisor | keyvalue">
+          <td>{{item.key}}</td>
+          <td>{{item.value}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <h4>Strongswan status</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Status
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of metrics.strongswan | keyvalue">
+          <td>{{item.key}}</td>
+          <td>{{item.value}}</td>
+        </tr>
+      </tbody>
+    </table>
     <img id=ui_topo src="/assets/UI-topo.svg" id=ui_topo />
+  </div>
+  <div id=edit_vrf *ngIf="currentVRF == null">
+    <h4>BGP status</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Status
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of metrics.bird | keyvalue">
+          <td>{{item.key}}</td>
+          <td>{{item.value}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <h4>Supervisor status</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Status
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of metrics.supervisor | keyvalue">
+          <td>{{item.key}}</td>
+          <td>{{item.value}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <h4>Strongswan status</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Status
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of metrics.strongswan | keyvalue">
+          <td>{{item.key}}</td>
+          <td>{{item.value}}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
