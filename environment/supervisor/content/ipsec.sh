@@ -19,12 +19,12 @@ _term() {
   ip link del $PHYS_IF.$VRF
   ip link del vrf-$ORG_VRF
   # remove iptable rules
-  iptables -w -t raw -X VRF${VRF}-raw
   iptables -w -t raw -D PREROUTING -j VRF${VRF}-raw
-
-  iptables -w -t nat -X VRF${VRF}-nat
+  iptables -w -t raw -X VRF${VRF}-raw
+  
   iptables -w -t nat -D POSTROUTING -j VRF${VRF}-nat
-}
+  iptables -w -t nat -X VRF${VRF}-nat
+  }
 
 # catch the SIGTERM
 trap _term SIGTERM
