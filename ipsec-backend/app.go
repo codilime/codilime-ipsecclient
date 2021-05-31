@@ -149,24 +149,35 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		vrf.Active = oldVrf.Active
 	}
 
+	var createHandler func(Vrf) error
+	var deleteHandler func(Vrf) error
+
+	if *vrf.HardwareSupport {
+		createHandler = restconfCreate
+		deleteHandler = restconfDelete
+	} else {
+		createHandler = a.Generator.GenerateTemplates
+		deleteHandler = a.Generator.DeleteTemplates
+	}
+
 	if *oldVrf.Active != *vrf.Active {
 		if *vrf.Active {
-			if err := a.Generator.GenerateTemplates(vrf); err != nil {
+			if err := createHandler(vrf); err != nil {
 				respondWithError(w, http.StatusInternalServerError, err.Error())
 				return
 			}
 		} else {
-			if err := a.Generator.DeleteTemplates(oldVrf); err != nil {
+			if err := deleteHandler(oldVrf); err != nil {
 				respondWithError(w, http.StatusInternalServerError, err.Error())
 				return
 			}
 		}
 	} else if *vrf.Active {
-		if err := a.Generator.DeleteTemplates(oldVrf); err != nil {
+		if err := deleteHandler(vrf); err != nil {
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		if err := a.Generator.GenerateTemplates(vrf); err != nil {
+		if err := createHandler(oldVrf); err != nil {
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}

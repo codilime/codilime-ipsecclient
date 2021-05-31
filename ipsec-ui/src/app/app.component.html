@@ -28,6 +28,10 @@
           <td><input type="checkbox" class="form-control" [(ngModel)]=currentVRF.active/></td>
         </tr>
         <tr>
+          <td>Hardware support</td>
+          <td><input type="checkbox" class="form-control" [(ngModel)]=currentVRF.hardware_support/></td>
+        </tr>
+        <tr>
           <td>VLAN</td>
           <td><input type=number class="form-control" [(ngModel)]=currentVRF.vlan /></td>
         </tr>
@@ -43,13 +47,13 @@
           <td>Crypto phase 1</td>
           <td class=crypto_td>
             <select class="custom-select" [(ngModel)]=crypto_ph1_list[0]>
-              <option>aes128</option>
+              <option>aes-cbc-128</option>
             </select>
             <select class="custom-select" [(ngModel)]=crypto_ph1_list[1]>
               <option>sha256</option>
             </select>
             <select class="custom-select" [(ngModel)]=crypto_ph1_list[2]>
-              <option>x25519</option>
+              <option>modp_2048</option>
             </select>
           </td>
         </tr>
@@ -65,7 +69,7 @@
               <option></option>
             </select>
             <select class="custom-select" [(ngModel)]=crypto_ph2_list[2]>
-              <option>x25519</option>
+              <option>modp_2048</option>
             </select>
           </td>
         </tr>
