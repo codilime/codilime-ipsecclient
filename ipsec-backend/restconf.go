@@ -7,15 +7,17 @@ import (
 	"hash/fnv"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 )
 
 const (
-	switchBase     = "https://10.5.0.10/restconf/data/Cisco-IOS-XE-native:native/"
 	switchUsername = "admin"
 	switchPassword = "cisco123"
 )
+
+var switchBase = "https://" + os.Getenv("SWITCH_ADDRESS") + "/restconf/data/Cisco-IOS-XE-native:native/"
 
 func restconfDoPatch(path string, data string, client *http.Client) error {
 	req, err := http.NewRequest("PATCH", switchBase+path, strings.NewReader(data))
@@ -60,13 +62,18 @@ func restconfCreate(vrf Vrf) error {
 		},
 	}
 
-	cryptoPh1 := strings.Split(vrf.CryptoPh1, "#")
-	if len(cryptoPh1) < 3 {
-		return errors.New("malformed cryptoPh1: " + vrf.CryptoPh1)
+	cryptoPh1 := []string{}
+	if err := json.Unmarshal([]byte(vrf.CryptoPh1.String()), &cryptoPh1); err != nil {
+		return err
 	}
-	groupMapping, ok := groupMap[cryptoPh1[2]]
+
+	cryptoPh1Len := len(cryptoPh1)
+	if cryptoPh1Len < 2 {
+		return errors.New("malformed cryptoPh1: " + strings.Join(cryptoPh1, ", "))
+	}
+	groupMapping, ok := groupMap[cryptoPh1[cryptoPh1Len-1]]
 	if !ok {
-		return errors.New("could not find a group mapping for:" + cryptoPh1[2])
+		return errors.New("could not find a group mapping for:" + cryptoPh1[cryptoPh1Len-1])
 	}
 	proposalData := `{
 		"proposal": {
@@ -185,9 +192,9 @@ func restconfCreate(vrf Vrf) error {
 		return err
 	}
 
-	groupMapping, ok = ipsecGroupMap[cryptoPh1[2]]
+	groupMapping, ok = ipsecGroupMap[cryptoPh1[cryptoPh1Len-1]]
 	if !ok {
-		return errors.New("could not find an ipsec group mapping for:" + cryptoPh1[2])
+		return errors.New("could not find an ipsec group mapping for:" + cryptoPh1[cryptoPh1Len-1])
 	}
 	ipsecProfileData := `{
 		"profile": {
@@ -217,6 +224,7 @@ func restconfCreate(vrf Vrf) error {
 			"interface": {
 			  "Tunnel": {
 			    "name": ` + strconv.Itoa(tunName) + `,
+			    "description": "` + vrf.ClientName + strconv.Itoa(i) + `",
 			    "ip": {
 			      "address": {
 				"primary": {

@@ -173,11 +173,11 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	} else if *vrf.Active {
-		if err := deleteHandler(vrf); err != nil {
+		if err := deleteHandler(oldVrf); err != nil {
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		if err := createHandler(oldVrf); err != nil {
+		if err := createHandler(vrf); err != nil {
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}

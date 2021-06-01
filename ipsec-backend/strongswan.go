@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -59,7 +60,10 @@ func ReloadStrongSwan(vrf *VrfWithEndpoints) error {
 	}()
 
 	for i := range vrf.Endpoints {
-		conn := createConnection(vrf, i)
+		conn, err := createConnection(vrf, i)
+		if err != nil {
+			return err
+		}
 		if err := loadConnections(session, conn); err != nil {
 			return err
 		}
@@ -98,8 +102,12 @@ func UnloadStrongSwan(vrf *VrfWithEndpoints) error {
 	return nil
 }
 
-func createConnection(vrf *VrfWithEndpoints, index int) connection {
+func createConnection(vrf *VrfWithEndpoints, index int) (connection, error) {
 	name := fmt.Sprintf("%d_%s_%d", vrf.Vlan, vrf.ClientName, index+1)
+	cryptoPh1 := []string{}
+	if err := json.Unmarshal([]byte(vrf.CryptoPh1.String()), &cryptoPh1); err != nil {
+		return connection{}, err
+	}
 	return connection{
 		Name:          name,
 		RemoteAddress: []string{vrf.Endpoints[index].RemoteIPSec},
@@ -116,13 +124,13 @@ func createConnection(vrf *VrfWithEndpoints, index int) connection {
 				LocalTrafficSelectors:  []string{"0.0.0.0/0"},
 				IfIdIn:                 calculateIndex(vrf.Vlan, index+1),
 				IfIdOut:                calculateIndex(vrf.Vlan, index+1),
-				ESPProposals:           []string{vrf.CryptoPh2},
+				ESPProposals:           []string{},
 				StartAction:            "start",
 			},
 		},
 		Version:   2,
-		Proposals: []string{vrf.CryptoPh1},
-	}
+		Proposals: []string{strings.Join(cryptoPh1, "-")},
+	}, nil
 }
 
 func loadConnections(s *vici.Session, conn connection) error {

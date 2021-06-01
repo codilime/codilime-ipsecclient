@@ -249,7 +249,7 @@ func addVrf(t *testing.T) {
 	vrf := Vrf{ClientName: "Vrf1", Vlan: 1000, Active: &active}
 	res := a.DB.Create(&vrf)
 	if res.Error != nil {
-		t.Fatalf("Error whlie inserting: %v", res.Error)
+		t.Fatalf("Error while inserting: %v", res.Error)
 	}
 }
 

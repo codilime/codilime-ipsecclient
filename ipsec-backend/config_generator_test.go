@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"gorm.io/datatypes"
 	"testing"
+
+	"gorm.io/datatypes"
 )
 
 func TestGenerateStrongswanTemplate(t *testing.T) {
@@ -168,12 +169,20 @@ func generateExampleVrf() *VrfWithEndpoints {
 			NAT:         true,
 		},
 	}
+	cryptoPh1 := []string{
+		"aes128", "sha256", "x25519",
+	}
+	cryptoPh1Json, _ := json.Marshal(cryptoPh1)
+	cryptoPh2 := []string{
+		"aes128gcm128", "", "x25519",
+	}
+	cryptoPh2Json, _ := json.Marshal(cryptoPh2)
 	data, _ := json.Marshal(endpoints)
 	vrf := Vrf{
 		ClientName:        "google",
 		Vlan:              1042,
-		CryptoPh1:         "aes128-sha256-x25519",
-		CryptoPh2:         "aes128gcm128-x25519",
+		CryptoPh1:         cryptoPh1Json,
+		CryptoPh2:         cryptoPh2Json,
 		PhysicalInterface: "ens192",
 		LocalAs:           65001,
 		LanIP:             "10.10.10.10/30",

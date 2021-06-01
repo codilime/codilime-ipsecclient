@@ -48,12 +48,14 @@
           <td class=crypto_td>
             <select class="custom-select" [(ngModel)]=crypto_ph1_list[0]>
               <option>aes-cbc-128</option>
+              <option>aes128</option>
             </select>
             <select class="custom-select" [(ngModel)]=crypto_ph1_list[1]>
               <option>sha256</option>
             </select>
             <select class="custom-select" [(ngModel)]=crypto_ph1_list[2]>
               <option>modp_2048</option>
+              <option>x25519</option>
             </select>
           </td>
         </tr>
@@ -70,6 +72,7 @@
             </select>
             <select class="custom-select" [(ngModel)]=crypto_ph2_list[2]>
               <option>modp_2048</option>
+              <option>x25519</option>
             </select>
           </td>
         </tr>
