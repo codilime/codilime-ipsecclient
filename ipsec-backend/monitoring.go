@@ -44,11 +44,16 @@ func metricsName(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 	}
+	routes, err := GetBirdRoutes(name)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+	}
 
 	res := map[string]interface{}{
 		"strongswan": strongswan,
 		"supervisor": supervisor,
 		"bird":       bird,
+		"routes":     routes,
 	}
 	respondWithJSON(w, http.StatusOK, res)
 }

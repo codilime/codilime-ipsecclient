@@ -227,6 +227,31 @@
         </tr>
       </tbody>
     </table>
+    <h4>BGP routes</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            IP
+          </th>
+          <th>
+            Route
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <div *ngFor="let item of metrics.routes | keyvalue">
+          <tr *ngFor="let v of item.value; index as i">
+            <div *ngIf="i == 0; then thenBlock; else elseBlock"></div>
+            <ng-template #thenBlock>
+              <td>{{item.key}}</td>
+            </ng-template><ng-template #elseBlock>
+              <td></td>
+            </ng-template>
+              <td>{{v}}</td>
+        </div>
+      </tbody>
+    </table>
     <img id=ui_topo src="/assets/UI-topo.svg" id=ui_topo />
   </div>
   <div id=edit_vrf *ngIf="currentVRF == null">
