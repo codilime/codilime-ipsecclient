@@ -75,6 +75,39 @@ func restconfCreate(vrf Vrf) error {
 }
 
 func restconfDelete(vrf Vrf) error {
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	dbEndpoints := make([]endpoint, 0)
+	if err := json.Unmarshal([]byte(vrf.Endpoints.String()), &dbEndpoints); err != nil {
+		return err
+	}
+	for i := range dbEndpoints {
+		tunName := (hash(vrf.ClientName) + i) % 65536
+		if err := restconfDoDelete(fmt.Sprintf("interface/Tunnel=%d", tunName), "", client); err != nil {
+			return err
+		}
+	}
+	if err := restconfDoDelete(fmt.Sprintf("crypto/ipsec/profile=%s", vrf.ClientName), "", client); err != nil {
+		return err
+	}
+	if err := restconfDoDelete(fmt.Sprintf("crypto/ipsec/transform-set=%s", vrf.ClientName), "", client); err != nil {
+		return err
+	}
+	if err := restconfDoDelete(fmt.Sprintf("crypto/ikev2/profile=%s", vrf.ClientName), "", client); err != nil {
+		return err
+	}
+	if err := restconfDoDelete(fmt.Sprintf("crypto/ikev2/keyring=%s", vrf.ClientName), "", client); err != nil {
+		return err
+	}
+	if err := restconfDoDelete(fmt.Sprintf("crypto/ikev2/policy=%s", vrf.ClientName), "", client); err != nil {
+		return err
+	}
+	if err := restconfDoDelete(fmt.Sprintf("crypto/ikev2/proposal=%s", vrf.ClientName), "", client); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -287,8 +320,16 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 }
 
 func restconfDoPatch(path string, data string, client *http.Client) error {
+	return restconfDoRequest("PATCH", path, data, client)
+}
+
+func restconfDoDelete(path string, data string, client *http.Client) error {
+	return restconfDoRequest("DELETE", path, data, client)
+}
+
+func restconfDoRequest(method, path, data string, client *http.Client) error {
 	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + path
-	req, err := http.NewRequest("PATCH", fullPath, strings.NewReader(data))
+	req, err := http.NewRequest(method, fullPath, strings.NewReader(data))
 	if err != nil {
 		return err
 	}

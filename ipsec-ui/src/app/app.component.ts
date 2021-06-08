@@ -109,7 +109,7 @@ export class AppComponent {
         this.vrfs = data as VRF[];
       });
     this.getMetric();
-    setInterval(()=> { this.getMetric() }, 5000);
+    // setInterval(()=> { this.getMetric() }, 5000);
   }
 
   saveCryptos() {
