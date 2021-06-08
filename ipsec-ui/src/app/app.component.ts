@@ -55,11 +55,14 @@ export class AppComponent {
 
   newEndpoint: Endpoint = new Endpoint();
 
+  showLoading: boolean = false;
+
   constructor(private http: HttpClient) {
     this.httpClient = http;
   }
 
   private handleError(error: HttpErrorResponse) {
+    this.showLoading = false;
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('An error occurred:', error.error.message);
@@ -109,7 +112,7 @@ export class AppComponent {
         this.vrfs = data as VRF[];
       });
     this.getMetric();
-    // setInterval(()=> { this.getMetric() }, 5000);
+    setInterval(()=> { this.getMetric() }, 5000);
   }
 
   saveCryptos() {
@@ -157,11 +160,13 @@ export class AppComponent {
   public deleteVRF(event: MouseEvent, i: number) {
     event.stopPropagation();
     this.addingNewEndpoint = false;
+    this.showLoading = true;
     this.httpClient.delete("/api/vrfs/" + this.vrfs[i].id)
       .pipe(
         catchError(this.handleError)
       )
       .subscribe((data) => {
+        this.showLoading = false;
         let deletedVRF = this.vrfs.splice(i, 1);
         if (this.currentVRF?.id === deletedVRF[0].id) {
           this.currentVRF = null;
@@ -184,12 +189,14 @@ export class AppComponent {
 
   public saveAndApply() {
     this.saveCryptos();
+    this.showLoading = true;
     this.httpClient.put("/api/vrfs/" + this.currentVRF?.id, this.currentVRF)
       .pipe(
         catchError(this.handleError)
       )
       .subscribe((data) => {
         console.log("put:", data);
+        this.showLoading = false;
         alert("save & apply succeeded");
       });
   }

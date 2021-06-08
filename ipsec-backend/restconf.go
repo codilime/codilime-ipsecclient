@@ -84,30 +84,18 @@ func restconfDelete(vrf Vrf) error {
 	if err := json.Unmarshal([]byte(vrf.Endpoints.String()), &dbEndpoints); err != nil {
 		return err
 	}
+	// Ignore delete errors. Sometimes there is a leftover configuration left and some of the calls will return 404.
+	// We just want to make sure that nothing in the configuration will conflict with what we're inserting
 	for i := range dbEndpoints {
 		tunName := (hash(vrf.ClientName) + i) % 65536
-		if err := restconfDoDelete(fmt.Sprintf("interface/Tunnel=%d", tunName), "", client); err != nil {
-			return err
-		}
+		restconfDoDelete(fmt.Sprintf("interface/Tunnel=%d", tunName), "", client)
 	}
-	if err := restconfDoDelete(fmt.Sprintf("crypto/ipsec/profile=%s", vrf.ClientName), "", client); err != nil {
-		return err
-	}
-	if err := restconfDoDelete(fmt.Sprintf("crypto/ipsec/transform-set=%s", vrf.ClientName), "", client); err != nil {
-		return err
-	}
-	if err := restconfDoDelete(fmt.Sprintf("crypto/ikev2/profile=%s", vrf.ClientName), "", client); err != nil {
-		return err
-	}
-	if err := restconfDoDelete(fmt.Sprintf("crypto/ikev2/keyring=%s", vrf.ClientName), "", client); err != nil {
-		return err
-	}
-	if err := restconfDoDelete(fmt.Sprintf("crypto/ikev2/policy=%s", vrf.ClientName), "", client); err != nil {
-		return err
-	}
-	if err := restconfDoDelete(fmt.Sprintf("crypto/ikev2/proposal=%s", vrf.ClientName), "", client); err != nil {
-		return err
-	}
+	restconfDoDelete(fmt.Sprintf("crypto/ipsec/profile=%s", vrf.ClientName), "", client)
+	restconfDoDelete(fmt.Sprintf("crypto/ipsec/transform-set=%s", vrf.ClientName), "", client)
+	restconfDoDelete(fmt.Sprintf("crypto/ikev2/profile=%s", vrf.ClientName), "", client)
+	restconfDoDelete(fmt.Sprintf("crypto/ikev2/keyring=%s", vrf.ClientName), "", client)
+	restconfDoDelete(fmt.Sprintf("crypto/ikev2/policy=%s", vrf.ClientName), "", client)
+	restconfDoDelete(fmt.Sprintf("crypto/ikev2/proposal=%s", vrf.ClientName), "", client)
 	return nil
 }
 

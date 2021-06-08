@@ -1,4 +1,11 @@
 <div id=root>
+  <div *ngIf="showLoading" id=modal_container>
+    <div id=modal_content>
+      <div class="modal-main">
+        <i class="fa-5x fas fa-sync fa-spin"></i>
+      </div>
+    </div>
+  </div>
   <div id=list>
     <h3>VRFs</h3>
     <ul id=list_ul class="list-group" *ngFor="let vrf of vrfs; index as i">
