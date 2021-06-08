@@ -43,39 +43,66 @@
           <td>LAN IP / MASK</td>
           <td><input type=text class="form-control" [(ngModel)]=currentVRF.lan_ip /></td>
         </tr>
-        <tr>
-          <td>Crypto phase 1</td>
-          <td class=crypto_td>
-            <select class="custom-select" [(ngModel)]=crypto_ph1_list[0]>
-              <option>aes-cbc-128</option>
-              <option>aes128</option>
-            </select>
-            <select class="custom-select" [(ngModel)]=crypto_ph1_list[1]>
-              <option>sha256</option>
-            </select>
-            <select class="custom-select" [(ngModel)]=crypto_ph1_list[2]>
-              <option>modp_2048</option>
-              <option>x25519</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td>Crypto phase 2</td>
-          <td class=crypto_td>
-            <select class="custom-select" [(ngModel)]=crypto_ph2_list[0]>
-              <option>aes128gcm128</option>
-              <option>aes128</option>
-            </select>
-            <select class="custom-select" [(ngModel)]=crypto_ph2_list[1]>
-              <option>sha256</option>
-              <option></option>
-            </select>
-            <select class="custom-select" [(ngModel)]=crypto_ph2_list[2]>
-              <option>modp_2048</option>
-              <option>x25519</option>
-            </select>
-          </td>
-        </tr>
+        <div *ngIf="currentVRF.hardware_support; then thenBlock; else elseBlock"></div><ng-template #thenBlock>
+          <tr>
+            <td>Crypto phase 1</td>
+            <td class=crypto_td>
+              <select class="custom-select" [(ngModel)]=crypto_ph1_list[0]>
+                <option *ngFor="let encryption of hardware.encryption">{{encryption}}</option>
+              </select>
+              <select class="custom-select" [(ngModel)]=crypto_ph1_list[1]>
+                <option *ngFor="let integrity of hardware.integrity">{{integrity}}</option>
+              </select>
+              <select class="custom-select" [(ngModel)]=crypto_ph1_list[2]>
+                <option *ngFor="let key_exchange of hardware.key_exchange">{{key_exchange}}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Crypto phase 2</td>
+            <td class=crypto_td>
+              <select class="custom-select" [(ngModel)]=crypto_ph2_list[0]>
+                <option *ngFor="let encryption of hardware.encryption">{{encryption}}</option>
+              </select>
+              <select class="custom-select" [(ngModel)]=crypto_ph2_list[1]>
+                <option *ngFor="let integrity of hardware.integrity">{{integrity}}</option>
+              </select>
+              <select class="custom-select" [(ngModel)]=crypto_ph2_list[2]>
+                <option *ngFor="let key_exchange of hardware.key_exchange">{{key_exchange}}</option>
+              </select>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template #elseBlock>
+          <tr>
+            <td>Crypto phase 1</td>
+            <td class=crypto_td>
+              <select class="custom-select" [(ngModel)]=crypto_ph1_list[0]>
+                <option *ngFor="let encryption of software.encryption">{{encryption}}</option>
+              </select>
+              <select class="custom-select" [(ngModel)]=crypto_ph1_list[1]>
+                <option *ngFor="let integrity of software.integrity">{{integrity}}</option>
+              </select>
+              <select class="custom-select" [(ngModel)]=crypto_ph1_list[2]>
+                <option *ngFor="let key_exchange of software.key_exchange">{{key_exchange}}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Crypto phase 2</td>
+            <td class=crypto_td>
+              <select class="custom-select" [(ngModel)]=crypto_ph2_list[0]>
+                <option *ngFor="let encryption of software.encryption">{{encryption}}</option>
+              </select>
+              <select class="custom-select" [(ngModel)]=crypto_ph2_list[1]>
+                <option *ngFor="let integrity of software.integrity">{{integrity}}</option>
+              </select>
+              <select class="custom-select" [(ngModel)]=crypto_ph2_list[2]>
+                <option *ngFor="let key_exchange of software.key_exchange">{{key_exchange}}</option>
+              </select>
+            </td>
+          </tr>
+        </ng-template>
       </tbody>
     </table>
     <h4>Endpoints</h4>

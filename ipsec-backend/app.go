@@ -12,9 +12,11 @@ import (
 )
 
 const (
-	vrfsPath    = "/api/vrfs"
-	vrfsIDPath  = vrfsPath + "/{id:[0-9]+}"
-	metricsPath = "/api/metrics"
+	vrfsPath     = "/api/vrfs"
+	vrfsIDPath   = vrfsPath + "/{id:[0-9]+}"
+	metricsPath  = "/api/metrics"
+	softwarePath = "/api/software"
+	hardwarePath = "/api/hardware"
 )
 
 type Generator interface {
@@ -51,6 +53,8 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(vrfsIDPath, a.getVrf).Methods(http.MethodGet)
 	a.Router.HandleFunc(vrfsIDPath, a.updateVrf).Methods(http.MethodPut)
 	a.Router.HandleFunc(vrfsIDPath, a.deleteVrf).Methods(http.MethodDelete)
+	a.Router.HandleFunc(softwarePath, a.getSoftwareAlgorithms).Methods(http.MethodGet)
+	a.Router.HandleFunc(hardwarePath, a.getHardwareAlgorithms).Methods(http.MethodGet)
 	a.Router.HandleFunc(metricsPath, metrics).Methods(http.MethodGet)
 	a.Router.HandleFunc(metricsPath+"/{name:[a-zA-Z0-9-_]+}", metricsName).Methods(http.MethodGet)
 }
@@ -211,6 +215,34 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+}
+
+func (a *App) getSoftwareAlgorithms(w http.ResponseWriter, r *http.Request) {
+	enc := getSoftwareEncryptionAlgorithms()
+	integrity := getSoftwareIntegrityAlgorithms()
+	keyExchange := getSoftwareKeyExchangeAlgorithms()
+
+	res := map[string][]string{
+		"encryption":   enc,
+		"integrity":    integrity,
+		"key_exchange": keyExchange,
+	}
+
+	respondWithJSON(w, http.StatusOK, res)
+}
+
+func (a *App) getHardwareAlgorithms(w http.ResponseWriter, r *http.Request) {
+	enc := getHardwareEncryptionAlgorithms()
+	integrity := getHardwareIntegrityAlgorithms()
+	keyExchange := getHardwareKeyExchangeAlgorithms()
+
+	res := map[string][]string{
+		"encryption":   enc,
+		"integrity":    integrity,
+		"key_exchange": keyExchange,
+	}
+
+	respondWithJSON(w, http.StatusOK, res)
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
