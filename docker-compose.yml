@@ -12,6 +12,13 @@ services:
       - environment_shared-bird:/opt/bird/
     restart: always
     command: /ipsec_backend
+    environment:
+      - SWITCH_ADDRESS=10.5.0.10
+      - SWITCH_USERNAME=admin
+      - SWITCH_PASSWORD=cisco123
+    networks:
+      ipsec:
+        ipv4_address: 10.5.0.201
 
   frontend:
     container_name: ipsec-frontend
@@ -23,8 +30,22 @@ services:
       - "80:80"
     command: nginx -g "daemon off;"
     environment:
-      - MIDDLEWARE_HOSTNAME=ipsec-middleware
+      - MIDDLEWARE_HOSTNAME=10.5.0.201
       - MIDDLEWARE_PORT=8000
+    networks:
+      ipsec:
+        ipv4_address: 10.5.0.202
+
+
+networks:
+  ipsec:
+    name: ipsec
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: ipsec_br
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
 
 volumes:
   environment_shared-super:

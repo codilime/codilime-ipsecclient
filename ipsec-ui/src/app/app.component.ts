@@ -17,9 +17,10 @@ class VRF {
   id: number | undefined = undefined;
   vlan: number = -1;
   active: boolean = false;
+  hardware_support: boolean = false;
   client_name: string = "New VRF";
-  crypto_ph1: string = "aes128-sha256-x25519";
-  crypto_ph2: string = "aes128gcm128-x25519";
+  crypto_ph1: string[] = ["aes-cbc-128", "sha256", "modp_2048"];
+  crypto_ph2: string[] = ["aes128gcm128", "x25519"];
   physical_interface: string = "eth0";
   local_as: number = -1;
   lan_ip: string = "";
@@ -49,7 +50,7 @@ export class AppComponent {
   metrics: Metrics = new Metrics();
   currentVRF: VRF | null = null;
   addingNewEndpoint = false;
-  crypto_ph1_list: string[] = ["aes128", "sha256", "x25519"];
+  crypto_ph1_list: string[] = ["aes-cbc-128", "sha256", "modp_2048"];
   crypto_ph2_list: string[] = ["aes128gcm128", "x25519"];
 
   newEndpoint: Endpoint = new Endpoint();
@@ -114,16 +115,15 @@ export class AppComponent {
   saveCryptos() {
     if (this.currentVRF === null)
       return;
-    this.currentVRF.crypto_ph1 = this.crypto_ph1_list.join("-");
-    this.currentVRF.crypto_ph2 = this.crypto_ph2_list.join("-");
-    this.currentVRF.crypto_ph2 = this.currentVRF.crypto_ph2.replace("--", "-");
+    this.currentVRF.crypto_ph1 = this.crypto_ph1_list.slice();
+    this.currentVRF.crypto_ph2 = this.crypto_ph2_list.slice();
   }
 
   loadCryptos() {
     if (this.currentVRF === null)
       return;
-    this.crypto_ph1_list = this.currentVRF.crypto_ph1.split("-");
-    this.crypto_ph2_list = this.currentVRF.crypto_ph2.split("-");
+    this.crypto_ph1_list = this.currentVRF.crypto_ph1.slice();
+    this.crypto_ph2_list = this.currentVRF.crypto_ph2.slice();
     if (this.crypto_ph2_list.length < 3) {
       this.crypto_ph2_list.push(this.crypto_ph2_list[1]);
       this.crypto_ph2_list[1] = "";
