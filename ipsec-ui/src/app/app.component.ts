@@ -112,8 +112,8 @@ export class AppComponent {
       .subscribe((data) => {
         this.vrfs = data as VRF[];
       });
-    // this.getMetric();
-    // setInterval(()=> { this.getMetric() }, 5000);
+    this.getMetric();
+    setInterval(()=> { this.getMetric() }, 5000);
   }
 
   saveCryptos() {
