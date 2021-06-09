@@ -54,6 +54,7 @@ export class AppComponent {
   crypto_ph2_list: string[] = ["aes128gcm128", "x25519"];
 
   newEndpoint: Endpoint = new Endpoint();
+  oldMetrics: string = "";
 
   constructor(private http: HttpClient) {
     this.httpClient = http;
@@ -77,13 +78,15 @@ export class AppComponent {
   }
 
   private getMetric() {
-    this.metrics = new Metrics();
     if (this.currentVRF == null) {
       this.httpClient.get("/api/metrics")
         .pipe(
           catchError(this.handleError)
         )
         .subscribe((data) => {
+          if (JSON.stringify(data) === this.oldMetrics)
+            return;
+          this.oldMetrics = JSON.stringify(data);
           this.metrics = data as Metrics;
         });
       return;
@@ -96,8 +99,11 @@ export class AppComponent {
         catchError(this.handleError)
       )
       .subscribe((data) => {
-        this.metrics = data as Metrics;
-      });
+          if (JSON.stringify(data) === this.oldMetrics)
+            return;
+          this.oldMetrics = JSON.stringify(data);
+          this.metrics = data as Metrics;
+        });
   }
 
   ngOnInit() {
@@ -109,7 +115,7 @@ export class AppComponent {
         this.vrfs = data as VRF[];
       });
     this.getMetric();
-    setInterval(()=> { this.getMetric() }, 5000);
+    setInterval(()=> { this.getMetric() }, 3000);
   }
 
   saveCryptos() {
