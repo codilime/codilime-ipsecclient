@@ -35,6 +35,12 @@ class Metrics {
   supervisor: Map<string, string> = new Map<string, string>();
 };
 
+class Algorithms {
+  encryption: string[] = [];
+  integrity: string[] = [];
+  key_exchange: string[] = [];
+};
+
 
 @Component({
   selector: 'app-root',
@@ -50,6 +56,8 @@ export class AppComponent {
   metrics: Metrics = new Metrics();
   currentVRF: VRF | null = null;
   addingNewEndpoint = false;
+  software: Algorithms = new Algorithms();
+  hardware: Algorithms = new Algorithms();
   crypto_ph1_list: string[] = ["aes-cbc-128", "sha256", "modp_2048"];
   crypto_ph2_list: string[] = ["aes128gcm128", "x25519"];
 
@@ -113,6 +121,20 @@ export class AppComponent {
       )
       .subscribe((data) => {
         this.vrfs = data as VRF[];
+      });
+    this.httpClient.get("/api/software")
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe((data) => {
+        this.software = data as Algorithms;
+      });
+    this.httpClient.get("/api/hardware")
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe((data) => {
+        this.hardware = data as Algorithms;
       });
     this.getMetric();
     setInterval(()=> { this.getMetric() }, 3000);

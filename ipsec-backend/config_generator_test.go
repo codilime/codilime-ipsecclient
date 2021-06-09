@@ -52,7 +52,7 @@ const expectedStrongswanConfig = `connections {
         remote_addrs = 192.168.0.42
         local {
             auth = psk
-            id = ike_1042_google_1
+            id = 192.168.0.42
         }
         remote {
             auth = psk
@@ -75,7 +75,7 @@ const expectedStrongswanConfig = `connections {
         remote_addrs = 192.168.10.142
         local {
             auth = psk
-            id = ike_1042_google_2
+            id = 192.168.10.142
         }
         remote {
             auth = psk
@@ -98,12 +98,12 @@ const expectedStrongswanConfig = `connections {
 secrets {
 
     ike-1042_google_1 {
-        id = ike_1042_google_1
+        id = 192.168.0.42
         secret = Qy0oakYuYzI+4n7N3GhDZIvOf81dywVD
     }
 
     ike-1042_google_2 {
-        id = ike_1042_google_2
+        id = 192.168.10.142
         secret = Cty+3M9e82VV5NVgkIPu2PP3U7G8v5Ja
     }
 
