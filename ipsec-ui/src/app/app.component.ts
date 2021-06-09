@@ -10,6 +10,7 @@ class Endpoint {
   psk: string = "";
   nat: boolean = false;
   bgp: boolean = false;
+  remote_as: number = -1;
   hover: boolean = false;
 };
 
@@ -111,8 +112,8 @@ export class AppComponent {
       .subscribe((data) => {
         this.vrfs = data as VRF[];
       });
-    this.getMetric();
-    setInterval(()=> { this.getMetric() }, 5000);
+    // this.getMetric();
+    // setInterval(()=> { this.getMetric() }, 5000);
   }
 
   saveCryptos() {
