@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"strings"
 	"text/template"
+
+	log "github.com/sirupsen/logrus"
+	"gorm.io/datatypes"
 )
 
 const (
@@ -147,7 +149,23 @@ func generateStrongswanTemplate(vrf *VrfWithEndpoints) (string, error) {
 		return "", err
 	}
 	builder := strings.Builder{}
-	if err = t.Execute(&builder, vrf); err != nil {
+	crypto1, err := convertToString(vrf.CryptoPh1)
+	if err != nil {
+		return "", err
+	}
+	crypto2, err := convertToString(vrf.CryptoPh2)
+	if err != nil {
+		return "", err
+	}
+	if err = t.Execute(&builder, struct {
+		*VrfWithEndpoints
+		Crypto1 string
+		Crypto2 string
+	}{
+		vrf,
+		crypto1,
+		crypto2,
+	}); err != nil {
 		return "", err
 	}
 	return builder.String(), nil
@@ -210,4 +228,17 @@ func inc(i int) int {
 
 func calculateIndex(vlan, index int) int {
 	return vlan*100 + index
+}
+
+func convertToString(s datatypes.JSON) (string, error) {
+	m, err := s.MarshalJSON()
+	if err != nil {
+		return "", err
+	}
+	var arr []string
+	if err = json.Unmarshal(m, &arr); err != nil {
+		return "", err
+	}
+	res := strings.Join(arr, "-")
+	return strings.ReplaceAll(res, "--", "-"), nil
 }

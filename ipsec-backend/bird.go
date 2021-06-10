@@ -95,7 +95,6 @@ func parseRoutes(r string) map[string][]string {
 	data := strings.Split(r, "\n")
 	space := regexp.MustCompile(`\s+`)
 	for i, d := range data {
-		fmt.Printf("%d: %s\n", i, d)
 		if !strings.Contains(d, "/") {
 			continue
 		}
