@@ -33,7 +33,7 @@
         </tr>
         <tr>
           <td>VLAN</td>
-          <td><input type=number class="form-control" [(ngModel)]=currentVRF.vlan /></td>
+          <td><input type=number class="form-control" [(ngModel)]=currentVRF.vlan [disabled]="currentVRF.hardware_support"/></td>
         </tr>
         <tr>
           <td>BGP Local AS</td>
@@ -41,7 +41,7 @@
         </tr>
         <tr>
           <td>LAN IP / MASK</td>
-          <td><input type=text class="form-control" [(ngModel)]=currentVRF.lan_ip /></td>
+          <td><input type=text class="form-control" [(ngModel)]=currentVRF.lan_ip [disabled]="currentVRF.hardware_support" /></td>
         </tr>
         <div *ngIf="currentVRF.hardware_support; then thenBlock; else elseBlock"></div><ng-template #thenBlock>
           <tr>
