@@ -366,6 +366,9 @@ func restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []endpoint) error {
 	      }`
 	neighbors := []string{}
 	for _, endpoint := range dbEndpoints {
+		if !endpoint.BGP {
+			continue
+		}
 		neighbor := `{
 			"id": "%s",
 			"remote-as": %d
