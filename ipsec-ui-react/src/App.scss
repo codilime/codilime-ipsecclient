@@ -1,0 +1,30 @@
+
+
+
+.app {
+    text-align: center;
+}
+
+.app-container {
+    /*display: inline-flex;*/
+    /*flex-direction: column;*/
+}
+
+.top-bar {
+    width: 960px;
+    height: 60px;
+    border-bottom: solid black 1px;
+    margin: 20px;
+}
+
+.VRF-selection-panel {
+    width: 100px;
+    display: inline-flex;
+    border: solid black;
+}
+
+.VRF-settings-window {
+    width: 900px;
+    display: inline-flex;
+    border: solid black;
+}
