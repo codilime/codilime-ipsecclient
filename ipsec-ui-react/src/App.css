@@ -1,0 +1,10 @@
+.app {
+    text-align: center;
+}
+
+.app-container {
+    background: darksalmon;
+    display: inline-flex;
+    flex-direction: column;
+    padding: 10px;
+}
