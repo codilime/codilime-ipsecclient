@@ -14,12 +14,16 @@
 ul {
   list-style: none;
 
+  li {
+    display: flex;
+  }
+
   a {
     text-decoration: none;
   }
 }
-
-.vrf-settings {
-  display: flex;
-  justify-content: flex-end;
-}
+//
+//.vrf-settings {
+//  display: flex;
+//  justify-content: flex-end;
+//}
