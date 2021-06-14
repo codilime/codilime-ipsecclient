@@ -5,8 +5,8 @@ import './NavbarComponent.scss';
 export default function SideBarComponent(props) {
     return (
         <div className="navbar-container">
-            <img src={ciscoLogo} />
-            <p>
+            <img className="navbar-item" src={ciscoLogo} />
+            <p className="navbar-item">
                 Product name
             </p>
         </div>
