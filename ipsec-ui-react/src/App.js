@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import SideBarComponent from './SideBarComponent';
-import NavbarComponent from './NavbarComponent';
+import TopBarComponent from './TopBarComponent';
 
 
 export default function App(props) {
 
     return (
         <div className="app">
-            <NavbarComponent />
+            <TopBarComponent />
             <SideBarComponent />
         </div>
     )
