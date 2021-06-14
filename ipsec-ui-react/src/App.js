@@ -8,6 +8,7 @@ export default function App(props) {
     return (
         <div className="app">
             <NavbarComponent />
+            <SideBarComponent />
         </div>
     )
 }
