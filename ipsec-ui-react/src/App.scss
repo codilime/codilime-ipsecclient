@@ -1,29 +1,21 @@
 
 
 
-.app {
-    text-align: center;
-}
+//.app {
+//    text-align: center;
+//}
 
-.app-container {
+.VRF-settings-container {
     width: 100vw;
+    display: inline-flex;
+    align-items: center;
 }
 
-.top-bar {
+.top-bar-logo {
+    display: inline-flex;
+    justify-content: flex-start;
     width: 96vw;
-    height: 60px;
+    height: 40px;
     border-bottom: solid black 1px;
-    margin: 20px;
-}
-
-.VRF-selection-panel {
-    width: 20vw;
-    display: inline-flex;
-    border: solid black;
-}
-
-.VRF-settings-window {
-    width: 70vw;
-    display: inline-flex;
-    border: solid black;
+    margin: 20px 0 0 0;
 }

@@ -6,7 +6,7 @@ import './App.scss';
 
 ReactDOM.render(
     <App />,
-    document.getElementById('app')
+    document.getElementById('root')
 );
 
 module.hot.accept();
