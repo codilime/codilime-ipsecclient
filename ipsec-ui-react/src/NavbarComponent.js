@@ -10,6 +10,5 @@ export default function SideBarComponent(props) {
                 Product name
             </p>
         </div>
-
-)
+    )
 }

@@ -1,8 +1,10 @@
 .navbar-container {
+  width: 97vw;
   display: inline-flex;
   justify-content: flex-start;
   align-items: center;
   padding: 5px;
+  border-bottom: solid black 1px;
 }
 
 .navbar-item {
