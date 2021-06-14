@@ -1,6 +1,11 @@
 .navbar-container {
   display: inline-flex;
   justify-content: flex-start;
+  align-items: center;
+  padding: 5px;
+}
+
+.navbar-item {
   margin: 5px;
 }
 
