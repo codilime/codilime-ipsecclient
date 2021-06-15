@@ -69,6 +69,9 @@ func restconfCreate(vrf Vrf) error {
 	if err := restconfDoIpsecProfile(vrf, client, cryptoPh1[len(cryptoPh1)-1]); err != nil {
 		return err
 	}
+	if err := restconfDoVRF(vrf, client); err != nil {
+		return err
+	}
 	if err := restconfDoTunnels(vrf, client, dbEndpoints); err != nil {
 		return err
 	}
@@ -100,6 +103,9 @@ func restconfDelete(vrf Vrf) error {
 			fmt.Println("delete error occured:", err)
 		}
 	}
+	if err := tryRestconfDelete(fmt.Sprintf("ip/vrf=%s", vrf.ClientName), client); err != nil {
+		fmt.Println("delete error occured:", err)
+	}
 	if err := tryRestconfDelete(fmt.Sprintf("crypto/ipsec/profile=%s", vrf.ClientName), client); err != nil {
 		fmt.Println("delete error occured:", err)
 	}
@@ -122,25 +128,7 @@ func restconfDelete(vrf Vrf) error {
 }
 
 func tryRestconfDelete(path string, client *http.Client) error {
-	retries := 20
-	for i := 0; i < retries; i++ {
-		time.Sleep(time.Millisecond * 500)
-		fmt.Printf("deleting: %s (%d)\n", path, i)
-		err := restconfDoDelete(path, "", client)
-		if err == nil {
-			fmt.Println("delete successful")
-			return nil
-		} else {
-			if strings.Contains(err.Error(), "lock-denied") {
-				fmt.Println("lock denied")
-				continue
-			}
-			fmt.Println("other error encountered")
-			return err
-		}
-	}
-	fmt.Println("retry limit exceeded")
-	return fmt.Errorf("%s: retry limit %d exceeded", path, retries)
+	return tryRestconfRequest("DELETE", path, "", client)
 }
 
 func restconfDoProposal(vrf Vrf, client *http.Client, cryptoPh1 []string) error {
@@ -164,7 +152,7 @@ func restconfDoProposal(vrf Vrf, client *http.Client, cryptoPh1 []string) error 
 		}
 	}`
 	proposalData := fmt.Sprintf(proposal, vrf.ClientName, cryptoPh1[0], cryptoPh1[1], groupMapping)
-	if err := restconfDoPatch("crypto/ikev2/proposal", proposalData, client); err != nil {
+	if err := tryRestconfPatch("crypto/ikev2/proposal", proposalData, client); err != nil {
 		return err
 	}
 	return nil
@@ -180,7 +168,7 @@ func restconfDoPolicy(vrf Vrf, client *http.Client) error {
 		}
 	}`
 	policyData := fmt.Sprintf(policy, vrf.ClientName, vrf.ClientName)
-	if err := restconfDoPatch("crypto/ikev2/policy", policyData, client); err != nil {
+	if err := tryRestconfPatch("crypto/ikev2/policy", policyData, client); err != nil {
 		return err
 	}
 	return nil
@@ -213,7 +201,7 @@ func restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []endpoint) e
 		}
 	}`
 	keyringData := fmt.Sprintf(keyring, vrf.ClientName, "["+strings.Join(peers, ",")+"]")
-	if err := restconfDoPatch("crypto/ikev2/keyring", keyringData, client); err != nil {
+	if err := tryRestconfPatch("crypto/ikev2/keyring", keyringData, client); err != nil {
 		return err
 	}
 	return nil
@@ -248,7 +236,7 @@ func restconfDoProfile(vrf Vrf, client *http.Client) error {
 		}
 		}`
 	profileData := fmt.Sprintf(profile, vrf.ClientName, vrf.ClientName)
-	if err := restconfDoPatch("crypto/ikev2/profile", profileData, client); err != nil {
+	if err := tryRestconfPatch("crypto/ikev2/profile", profileData, client); err != nil {
 		return err
 	}
 	return nil
@@ -267,7 +255,7 @@ func restconfDoTransformSet(vrf Vrf, client *http.Client) error {
 		}
 		}`
 	transformSetData := fmt.Sprintf(transformSet, vrf.ClientName)
-	if err := restconfDoPatch("crypto/ipsec/transform-set", transformSetData, client); err != nil {
+	if err := tryRestconfPatch("crypto/ipsec/transform-set", transformSetData, client); err != nil {
 		return err
 	}
 	return nil
@@ -298,7 +286,7 @@ func restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) err
 		}
 		}`
 	ipsecProfileData := fmt.Sprintf(ipsecProfile, vrf.ClientName, vrf.ClientName, groupMapping, vrf.ClientName)
-	if err := restconfDoPatch("crypto/ipsec/profile", ipsecProfileData, client); err != nil {
+	if err := tryRestconfPatch("crypto/ipsec/profile", ipsecProfileData, client); err != nil {
 		return err
 	}
 	return nil
@@ -313,6 +301,11 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			    "name": %d,
 			    "description": "%s",
 			    "ip": {
+				"vrf": {
+					"forwarding": {
+						"word": "%s"
+					}
+				},
 			      "address": {
 				"primary": {
 				  "address": "%s",
@@ -341,9 +334,10 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			  }
 			}
 			}`
-		tunnelData := fmt.Sprintf(tunnel, tunName, vrf.ClientName+strconv.Itoa(i),
+		tunnelData := fmt.Sprintf(tunnel, tunName, vrf.ClientName+strconv.Itoa(i), vrf.ClientName,
 			endpoint.LocalIP, endpoint.RemoteIPSec, vrf.ClientName)
-		if err := restconfDoPatch("interface", tunnelData, client); err != nil {
+		fmt.Println(tunnelData)
+		if err := tryRestconfPatch("interface", tunnelData, client); err != nil {
 			return err
 		}
 	}
@@ -377,18 +371,52 @@ func restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []endpoint) error {
 	}
 	bgpData := fmt.Sprintf(bgp, vrf.LocalAs, strings.Join(neighbors, ","))
 	fmt.Println("bgp data", bgpData)
-	if err := restconfDoPatch("router/bgp", bgpData, client); err != nil {
+	if err := tryRestconfPatch("router/bgp", bgpData, client); err != nil {
 		return err
 	}
 	return nil
 }
 
-func restconfDoPatch(path string, data string, client *http.Client) error {
-	return restconfDoRequest("PATCH", path, data, client)
+func restconfDoVRF(vrf Vrf, client *http.Client) error {
+	vrfTemplate := `{
+		"vrf": [
+		  {
+		    "name": "%s",
+		    "description": "%s"
+		  }
+		]
+	      }`
+	vrfData := fmt.Sprintf(vrfTemplate, vrf.ClientName, vrf.ClientName)
+	if err := tryRestconfPatch("ip/vrf", vrfData, client); err != nil {
+		return err
+	}
+	return nil
 }
 
-func restconfDoDelete(path string, data string, client *http.Client) error {
-	return restconfDoRequest("DELETE", path, data, client)
+func tryRestconfPatch(path, data string, client *http.Client) error {
+	return tryRestconfRequest("PATCH", path, data, client)
+}
+
+func tryRestconfRequest(method, path, data string, client *http.Client) error {
+	retries := 20
+	for i := 0; i < retries; i++ {
+		time.Sleep(time.Millisecond * 500)
+		fmt.Printf("%s: %s (%d)\n", method, path, i)
+		err := restconfDoRequest(method, path, data, client)
+		if err == nil {
+			fmt.Println(method, "successful")
+			return nil
+		} else {
+			if strings.Contains(err.Error(), "lock-denied") {
+				fmt.Println("lock denied")
+				continue
+			}
+			fmt.Println("other error encountered")
+			return err
+		}
+	}
+	fmt.Println("retry limit exceeded")
+	return fmt.Errorf("%s: retry limit %d exceeded", path, retries)
 }
 
 func restconfDoRequest(method, path, data string, client *http.Client) error {
