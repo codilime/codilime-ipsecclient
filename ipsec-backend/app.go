@@ -112,13 +112,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusCreated, vrf)
 }
 
-func (a *App) getHandlers(vrf Vrf) (func(Vrf) error, func(Vrf) error) {
-	if *vrf.HardwareSupport {
-		return restconfCreate, restconfDelete
-	} else {
-		return a.Generator.GenerateTemplates, a.Generator.DeleteTemplates
-	}
-}
+type handler func(Vrf) error
 
 func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -183,6 +177,14 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusOK, vrf)
+}
+
+func (a *App) getHandlers(vrf Vrf) (handler, handler) {
+	if *vrf.HardwareSupport {
+		return restconfCreate, restconfDelete
+	} else {
+		return a.Generator.GenerateTemplates, a.Generator.DeleteTemplates
+	}
 }
 
 func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {

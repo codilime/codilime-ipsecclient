@@ -181,7 +181,7 @@ func restconfDoPolicy(vrf Vrf, client *http.Client) error {
 
 func restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []endpoint) error {
 
-	peers := []string{}
+	peers := make([]string, 0, len(dbEndpoints))
 	for i, endpoint := range dbEndpoints {
 		peer :=
 			`{
