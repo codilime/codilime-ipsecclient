@@ -128,8 +128,11 @@
           <th>
             PSK
           </th>
-          <th>
+          <th *ngIf="!currentVRF.hardware_support">
             NAT
+          </th>
+          <th *ngIf="currentVRF.hardware_support">
+            Remote AS
           </th>
           <th>
             BGP
@@ -143,7 +146,8 @@
           <td>{{endpoint.local_ip}}</td>
           <td>{{endpoint.peer_ip}}</td>
           <td>{{endpoint.psk}}</td>
-          <td><input type="checkbox" [(ngModel)]="endpoint.nat" /></td>
+          <td *ngIf="!currentVRF.hardware_support"><input type="checkbox" [(ngModel)]="endpoint.nat" /></td>
+          <td *ngIf="currentVRF.hardware_support" >{{endpoint.remote_as}}</td>
           <td><input type="checkbox" [(ngModel)]="endpoint.bgp" /></td>
           <td class=trash_cell>
             <i *ngIf="endpoint.hover" class="fas fa-trash-alt"
@@ -163,8 +167,11 @@
           <td>
             <input type="text" class="form-control" [(ngModel)]="newEndpoint.psk"/>
           </td>
-          <td>
+          <td *ngIf="!currentVRF.hardware_support">
             <input type="checkbox" [(ngModel)]="newEndpoint.nat"/>
+          </td>
+          <td *ngIf="currentVRF.hardware_support">
+            <input type="number" id=input_remote_as [(ngModel)]="newEndpoint.remote_as" />
           </td>
           <td>
             <input type="checkbox" [(ngModel)]="newEndpoint.bgp"/>

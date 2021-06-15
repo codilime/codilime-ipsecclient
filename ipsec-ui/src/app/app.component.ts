@@ -10,6 +10,7 @@ class Endpoint {
   psk: string = "";
   nat: boolean = false;
   bgp: boolean = false;
+  remote_as: number = -1;
   hover: boolean = false;
 };
 

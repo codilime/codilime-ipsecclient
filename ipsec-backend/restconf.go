@@ -21,6 +21,7 @@ type endpoint struct {
 	LocalIP     string `json:"local_ip"`
 	PeerIP      string `json:"peer_ip"`
 	PSK         string `json:"psk"`
+	RemoteAS    int    `json:"remote_as"`
 	NAT         bool   `json:"nat"`
 	BGP         bool   `json:"bgp"`
 }
@@ -71,6 +72,9 @@ func restconfCreate(vrf Vrf) error {
 	if err := restconfDoTunnels(vrf, client, dbEndpoints); err != nil {
 		return err
 	}
+	if err := restconfDoBGP(vrf, client, dbEndpoints); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -87,6 +91,9 @@ func restconfDelete(vrf Vrf) error {
 	}
 	// Ignore delete errors. Sometimes there is a leftover configuration left and some of the calls will return 404.
 	// We just want to make sure that nothing in the configuration will conflict with what we're inserting
+	if err := tryRestconfDelete(fmt.Sprintf("router/bgp=%d", vrf.LocalAs), client); err != nil {
+		fmt.Println("delete error occured:", err)
+	}
 	for i := range dbEndpoints {
 		tunName := (hash(vrf.ClientName) + i) % 65536
 		if err := tryRestconfDelete(fmt.Sprintf("interface/Tunnel=%d", tunName), client); err != nil {
@@ -339,6 +346,39 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 		if err := restconfDoPatch("interface", tunnelData, client); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []endpoint) error {
+	bgp := `{
+		"bgp": [
+		  {
+		    "id": %d,
+		    "bgp": {
+		      "log-neighbor-changes": true
+		    },
+		    "neighbor": [
+		      %s
+		    ]
+		  }
+		]
+	      }`
+	neighbors := []string{}
+	for _, endpoint := range dbEndpoints {
+		if !endpoint.BGP {
+			continue
+		}
+		neighbor := `{
+			"id": "%s",
+			"remote-as": %d
+		      }`
+		neighbors = append(neighbors, fmt.Sprintf(neighbor, endpoint.PeerIP, endpoint.RemoteAS))
+	}
+	bgpData := fmt.Sprintf(bgp, vrf.LocalAs, strings.Join(neighbors, ","))
+	fmt.Println("bgp data", bgpData)
+	if err := restconfDoPatch("router/bgp", bgpData, client); err != nil {
+		return err
 	}
 	return nil
 }
