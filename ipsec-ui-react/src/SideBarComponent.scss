@@ -1,10 +1,13 @@
+
+
 .sidebar-container {
   margin: 5px;
   border: solid black 1px;
-  width: 25vw;
+  background-color: #626469;
+  width: 15vw;
   height: 100vw;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
 }
 
 .app-wrapper {
@@ -15,7 +18,7 @@
   display: flex;
   margin: 5px;
   padding: 5px;
-  width: 70vw;
+  width: 81vw;
   border: solid black 1px;
 }
 
@@ -26,6 +29,7 @@ ul {
 
   li {
     display: flex;
+    margin: 15px;
   }
 
   a {

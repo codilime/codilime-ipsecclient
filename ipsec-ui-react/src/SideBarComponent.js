@@ -23,7 +23,7 @@ const routes = [
     }
 ];
 
-export default function SideBarComponent(props) {
+export default function SideBarComponent({routeProps}) {
     return (
         <div className="sidebar-container">
             <Router>
@@ -41,6 +41,9 @@ export default function SideBarComponent(props) {
                             </li>
                             <li>
                                 <Link to="/vrf/V104">V104:BranchOffice</Link>
+                            </li>
+                            <li>
+                                <Link to="/vrf/create">Create new VRF</Link>
                             </li>
                         </ul>
 
@@ -79,6 +82,16 @@ export default function SideBarComponent(props) {
                     </div>
                 </div>
             </Router>
+        </div>
+    );
+}
+
+function GetParamId() {
+    let { id } = useParams();
+
+    return (
+        <div>
+            {id}
         </div>
     );
 }
