@@ -33,6 +33,7 @@ class Metrics {
   bird: Map<string, string> = new Map<string, string>();
   strongswan: Map<string, string> = new Map<string, string>();
   supervisor: Map<string, string> = new Map<string, string>();
+  routes: Map<string, string[]> = new Map<string, string[]>();
 };
 
 class Algorithms {

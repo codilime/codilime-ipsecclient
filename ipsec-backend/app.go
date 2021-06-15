@@ -107,6 +107,9 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	if vrf.Active == nil {
 		vrf.Active = new(bool)
 	}
+	if vrf.HardwareSupport == nil {
+		vrf.HardwareSupport = new(bool)
+	}
 	if err := vrf.createVrf(a.DB); err != nil {
 		log.Infof("error %+v", err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -151,6 +154,9 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 
 	if vrf.Active == nil {
 		vrf.Active = oldVrf.Active
+	}
+	if vrf.HardwareSupport == nil {
+		vrf.HardwareSupport = oldVrf.HardwareSupport
 	}
 
 	var createHandler func(Vrf) error
