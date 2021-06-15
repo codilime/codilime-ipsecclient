@@ -31,13 +31,16 @@ export default function SideBarComponent(props) {
                     <div>
                         <ul>
                             <li>
-                                <Link to="/">Home</Link>
+                                <Link to="/vrf/V101">V101:U</Link>
                             </li>
                             <li>
-                                <Link to="/bubblegum">Bubblegum</Link>
+                                <Link to="/vrf/V102">V102:SoccerOnline</Link>
                             </li>
                             <li>
-                                <Link to="/shoelaces">Shoelaces</Link>
+                                <Link to="/vrf/V103">V103:BigBank</Link>
+                            </li>
+                            <li>
+                                <Link to="/vrf/V104">V104:BranchOffice</Link>
                             </li>
                         </ul>
 
