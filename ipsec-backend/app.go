@@ -119,6 +119,8 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusCreated, vrf)
 }
 
+type handler func(Vrf) error
+
 func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
@@ -159,16 +161,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		vrf.HardwareSupport = oldVrf.HardwareSupport
 	}
 
-	var createHandler func(Vrf) error
-	var deleteHandler func(Vrf) error
-
-	if *vrf.HardwareSupport {
-		createHandler = restconfCreate
-		deleteHandler = restconfDelete
-	} else {
-		createHandler = a.Generator.GenerateTemplates
-		deleteHandler = a.Generator.DeleteTemplates
-	}
+	createHandler, deleteHandler := a.getHandlers(vrf)
 
 	if *oldVrf.Active != *vrf.Active {
 		if *vrf.Active {
@@ -196,6 +189,14 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, vrf)
 }
 
+func (a *App) getHandlers(vrf Vrf) (handler, handler) {
+	if *vrf.HardwareSupport {
+		return restconfCreate, restconfDelete
+	} else {
+		return a.Generator.GenerateTemplates, a.Generator.DeleteTemplates
+	}
+}
+
 func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
@@ -209,8 +210,9 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	_, deleteHandler := a.getHandlers(vrf)
 	if *vrf.Active {
-		if err := a.Generator.DeleteTemplates(vrf); err != nil {
+		if err := deleteHandler(vrf); err != nil {
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}

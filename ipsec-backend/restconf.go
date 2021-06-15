@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const switchBase = "https://%s/restconf/data/Cisco-IOS-XE-native:native/"
@@ -75,7 +76,64 @@ func restconfCreate(vrf Vrf) error {
 }
 
 func restconfDelete(vrf Vrf) error {
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	dbEndpoints := make([]endpoint, 0)
+	if err := json.Unmarshal([]byte(vrf.Endpoints.String()), &dbEndpoints); err != nil {
+		return err
+	}
+	// Ignore delete errors. Sometimes there is a leftover configuration left and some of the calls will return 404.
+	// We just want to make sure that nothing in the configuration will conflict with what we're inserting
+	for i := range dbEndpoints {
+		tunName := (hash(vrf.ClientName) + i) % 65536
+		if err := tryRestconfDelete(fmt.Sprintf("interface/Tunnel=%d", tunName), client); err != nil {
+			fmt.Println("delete error occured:", err)
+		}
+	}
+	if err := tryRestconfDelete(fmt.Sprintf("crypto/ipsec/profile=%s", vrf.ClientName), client); err != nil {
+		fmt.Println("delete error occured:", err)
+	}
+	if err := tryRestconfDelete(fmt.Sprintf("crypto/ipsec/transform-set=%s", vrf.ClientName), client); err != nil {
+		fmt.Println("delete error occured:", err)
+	}
+	if err := tryRestconfDelete(fmt.Sprintf("crypto/ikev2/profile=%s", vrf.ClientName), client); err != nil {
+		fmt.Println("delete error occured:", err)
+	}
+	if err := tryRestconfDelete(fmt.Sprintf("crypto/ikev2/keyring=%s", vrf.ClientName), client); err != nil {
+		fmt.Println("delete error occured:", err)
+	}
+	if err := tryRestconfDelete(fmt.Sprintf("crypto/ikev2/policy=%s", vrf.ClientName), client); err != nil {
+		fmt.Println("delete error occured:", err)
+	}
+	if err := tryRestconfDelete(fmt.Sprintf("crypto/ikev2/proposal=%s", vrf.ClientName), client); err != nil {
+		fmt.Println("delete error occured:", err)
+	}
 	return nil
+}
+
+func tryRestconfDelete(path string, client *http.Client) error {
+	retries := 20
+	for i := 0; i < retries; i++ {
+		time.Sleep(time.Millisecond * 500)
+		fmt.Printf("deleting: %s (%d)\n", path, i)
+		err := restconfDoDelete(path, "", client)
+		if err == nil {
+			fmt.Println("delete successful")
+			return nil
+		} else {
+			if strings.Contains(err.Error(), "lock-denied") {
+				fmt.Println("lock denied")
+				continue
+			}
+			fmt.Println("other error encountered")
+			return err
+		}
+	}
+	fmt.Println("retry limit exceeded")
+	return fmt.Errorf("%s: retry limit %d exceeded", path, retries)
 }
 
 func restconfDoProposal(vrf Vrf, client *http.Client, cryptoPh1 []string) error {
@@ -123,7 +181,7 @@ func restconfDoPolicy(vrf Vrf, client *http.Client) error {
 
 func restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []endpoint) error {
 
-	peers := "["
+	peers := make([]string, 0, len(dbEndpoints))
 	for i, endpoint := range dbEndpoints {
 		peer :=
 			`{
@@ -138,9 +196,8 @@ func restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []endpoint) e
 			}
 			}`
 		peerData := fmt.Sprintf(peer, vrf.ClientName+strconv.Itoa(i), endpoint.RemoteIPSec, endpoint.PSK)
-		peers += peerData
+		peers = append(peers, peerData)
 	}
-	peers += "]"
 
 	keyring := `{
 		"keyring": {
@@ -148,7 +205,7 @@ func restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []endpoint) e
 		  "peer": %s
 		}
 	}`
-	keyringData := fmt.Sprintf(keyring, vrf.ClientName, peers)
+	keyringData := fmt.Sprintf(keyring, vrf.ClientName, "["+strings.Join(peers, ",")+"]")
 	if err := restconfDoPatch("crypto/ikev2/keyring", keyringData, client); err != nil {
 		return err
 	}
@@ -287,8 +344,16 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 }
 
 func restconfDoPatch(path string, data string, client *http.Client) error {
+	return restconfDoRequest("PATCH", path, data, client)
+}
+
+func restconfDoDelete(path string, data string, client *http.Client) error {
+	return restconfDoRequest("DELETE", path, data, client)
+}
+
+func restconfDoRequest(method, path, data string, client *http.Client) error {
 	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + path
-	req, err := http.NewRequest("PATCH", fullPath, strings.NewReader(data))
+	req, err := http.NewRequest(method, fullPath, strings.NewReader(data))
 	if err != nil {
 		return err
 	}
