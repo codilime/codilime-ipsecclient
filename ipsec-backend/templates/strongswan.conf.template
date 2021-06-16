@@ -8,6 +8,7 @@ connections {
         }
         remote {
             auth = psk
+            id = {{ $val.RemoteIPSec }}
         }
         children {
             site-cisco {
