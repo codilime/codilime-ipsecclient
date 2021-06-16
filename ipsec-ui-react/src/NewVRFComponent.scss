@@ -1,16 +1,26 @@
+// global section styles
 .vrf-connection-wrapper {
   display: flex;
   flex-direction: column;
 }
+.blue-button {
+  background-color: #3498db;
+  padding: 0 15px 0 15px;
+  color: #ffffff;
+  width: auto;
+}
+
+// tutaj style dla kazdego contenera z ekranu add a new vrf; jedyna roznica pomiedzy trzema to to, ze vrf
+// nie moze na ten moment miec bordera, bo sie dubluje; dlatego przestylowac vrf tak, zeby przy zunifikowanym
+// stylu nie dublowaly sie bordery i z 3 regul zrobic 1 w mysl ide DRY
+
+//vrf section styles
 .new-vrf-details {
   margin: 15px 15px 15px 0;
-  width: 81vw;
+  width: auto;
   height: auto;
 }
-.save-settings-btn {
-  background-color: #3498db;
-  color: #ffffff;
-}
+
 #new-vrf-details-table {
   margin: 0 0 10px 0;
   border: solid 1px #d4d4d4;
@@ -28,11 +38,14 @@
     padding: 20px 0 20px 15px;
   }
 }
+
+//endpoint section styles
 .endpoints-details {
   border: solid 1px #d4d4d4;
   margin: 15px 15px 15px 0;
   height: auto;
 }
+
 #endpoints-details-table {
   td {
     width: 20vw;
@@ -52,6 +65,8 @@
     background-color: #f2f2f2;
   }
 }
+
+//visualization section styles
 .visualization {
   margin: 15px 15px 15px 0;
   border: solid 1px #d4d4d4;
