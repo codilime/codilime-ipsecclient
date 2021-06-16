@@ -31,16 +31,16 @@ export default function SideBarComponent({routeProps}) {
                     <div>
                         <ul>
                             <li>
-                                <Link to="/vrf/v101">V101:U</Link>
+                                <Link to="/vrf/V101:U">V101:U</Link>
                             </li>
                             <li>
-                                <Link to="/vrf/v102">V102:SoccerOnline</Link>
+                                <Link to="/vrf/V102:SoccerOnline">V102:SoccerOnline</Link>
                             </li>
                             <li>
-                                <Link to="/vrf/v103">V103:BigBank</Link>
+                                <Link to="/vrf/V103:BigBank">V103:BigBank</Link>
                             </li>
                             <li>
-                                <Link to="/vrf/v104">V104:BranchOffice</Link>
+                                <Link to="/vrf/V104:BranchOffice">V104:BranchOffice</Link>
                             </li>
                             <li>
                                 <Link to="/vrf/create">

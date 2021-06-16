@@ -2,13 +2,12 @@ import React from 'react';
 import './NewVRFComponent.scss'
 
 export default function ({routeProps}) {
-    console.log({routeProps});
 
     function logClick1 () {
         console.log("save button for vrf goes brrrrrr");
     }
     function logClick2 () {
-        console.log("this is different button going brrrrrr");
+        console.log("this is endpoints button going brrrrrr");
     }
 
     return (
@@ -52,6 +51,15 @@ export default function ({routeProps}) {
                         <td>NAT</td>
                         <td>BGP</td>
                         <td>Action</td>
+                    </tr>
+                    <tr>
+                        <td>192.158.1.38</td>
+                        <td>192.158.1.38</td>
+                        <td>192.158.1.38</td>
+                        <td>**************</td>
+                        <td>Active</td>
+                        <td>Active</td>
+                        <td>...</td>
                     </tr>
                     <tr>
                         <td>192.158.1.38</td>
