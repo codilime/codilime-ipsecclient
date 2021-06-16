@@ -2,7 +2,7 @@ import React from 'react';
 import './NewVRFComponent.scss'
 
 export default function ({routeProps}) {
-
+    // the following are testing functions for currently unscripted buttons in vrf and endpoint sections
     function logClick1 () {
         console.log("save button for vrf goes brrrrrr");
     }
@@ -30,7 +30,7 @@ export default function ({routeProps}) {
                     </tr>
                     <tr>
                         <td colSpan="3" className="save-button-container">
-                            <button className="btn save-settings-btn" onClick={logClick1}>
+                            <button className="btn blue-button" onClick={logClick1}>
                                 Save changes
                             </button>
                         </td>
@@ -99,8 +99,8 @@ export default function ({routeProps}) {
                     </tr>
                     <tr>
                         <td colSpan="7" className="save-button-container">
-                            <button className="btn save-settings-btn" onClick={logClick2}>
-                                Save changes
+                            <button className="btn blue-button" onClick={logClick2}>
+                                Add a new endpoint
                             </button>
                         </td>
                     </tr>
