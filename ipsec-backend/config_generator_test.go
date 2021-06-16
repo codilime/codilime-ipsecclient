@@ -56,6 +56,7 @@ const expectedStrongswanConfig = `connections {
         }
         remote {
             auth = psk
+            id = 192.168.0.42
         }
         children {
             site-cisco {
@@ -79,6 +80,7 @@ const expectedStrongswanConfig = `connections {
         }
         remote {
             auth = psk
+            id = 192.168.10.142
         }
         children {
             site-cisco {
