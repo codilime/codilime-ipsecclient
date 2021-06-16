@@ -1,29 +1,46 @@
 .vrf-connection-wrapper {
-
+  display: flex;
+  flex-direction: column;
 }
 .new-vrf-details {
-  border: solid black 1px;
-  margin: 5px 5px 5px 0;
+  margin: 15px 15px 15px 0;
   width: 81vw;
-  height: 9vw;
+  height: auto;
+}
+.save-vrf-settings-btn {
+  background-color: #3498db;
+  color: #ffffff;
 }
 .endpoints-details {
-  border: solid black 1px;
-  margin: 5px 5px 5px 0;
+  border: solid 1px #d4d4d4;
+  margin: 15px 15px 15px 0;
   height: 12vw;
 }
 .visualization {
-  margin: 5px 5px 5px 0;
-  border: solid black 1px;
+  margin: 15px 15px 15px 0;
+  border: solid 1px #d4d4d4;
   height: auto;
 }
 #new-vrf-details-table {
-  margin: 10px 0 10px 0;
+  margin: 0 0 10px 0;
+  border: solid 1px #d4d4d4;
   td {
     width: 26.69vw;
     padding: 10px 0 10px 0;
   }
   tr {
     border: solid #000000 1px;
+    th {
+      height: 40px;
+      text-align: left;
+      background-color: #f2f2f2;
+    }
   }
+  .save-button-container {
+    border-top: solid 1px #d4d4d4;
+    padding: 20px 0 20px 15px;
+  }
+  //tr:nth-child(odd) {
+  //  background-color: #f2f2f2;
+  //}
 }
