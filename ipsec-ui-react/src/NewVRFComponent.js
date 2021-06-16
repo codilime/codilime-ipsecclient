@@ -4,8 +4,11 @@ import './NewVRFComponent.scss'
 export default function ({routeProps}) {
     console.log({routeProps});
 
-    function logClick () {
+    function logClick1 () {
         console.log("save button for vrf goes brrrrrr");
+    }
+    function logClick2 () {
+        console.log("this is different button going brrrrrr");
     }
 
     return (
@@ -14,35 +17,21 @@ export default function ({routeProps}) {
             <div className="new-vrf-details">
                 <table id="new-vrf-details-table">
                     <tr>
-                        <th colSpan="3">
-                            VRF details
-                        </th>
+                        <th colSpan="3">VRF details</th>
                     </tr>
                     <tr>
-                        <td>
-                            Name:
-                        </td>
-                        <td>
-                            VLAN:
-                        </td>
-                        <td>
-                            Crypto phase 1:
-                        </td>
+                        <td>Name:</td>
+                        <td>VLAN:</td>
+                        <td>Crypto phase 1:</td>
                     </tr>
                     <tr>
-                        <td>
-                            Active [x]
-                        </td>
-                        <td>
-                            BGP local as:
-                        </td>
-                        <td>
-                            Crypto phase 2:
-                        </td>
+                        <td>Active [x]</td>
+                        <td>BGP local as:</td>
+                        <td>Crypto phase 2:</td>
                     </tr>
                     <tr>
                         <td colSpan="3" className="save-button-container">
-                            <button className="btn save-vrf-settings-btn" onClick={logClick}>
+                            <button className="btn save-settings-btn" onClick={logClick1}>
                                 Save changes
                             </button>
                         </td>
@@ -51,7 +40,54 @@ export default function ({routeProps}) {
 
             </div>
             <div className="endpoints-details">
-                placeholder for table with endpoints
+                <table id="endpoints-details-table">
+                    <tr>
+                        <th colSpan="7">Endpoints</th>
+                    </tr>
+                    <tr>
+                        <td>Remote IP</td>
+                        <td>Local IP</td>
+                        <td>Peer IP</td>
+                        <td>PSK</td>
+                        <td>NAT</td>
+                        <td>BGP</td>
+                        <td>Action</td>
+                    </tr>
+                    <tr>
+                        <td>192.158.1.38</td>
+                        <td>192.158.1.38</td>
+                        <td>192.158.1.38</td>
+                        <td>**************</td>
+                        <td>Active</td>
+                        <td>Active</td>
+                        <td>...</td>
+                    </tr>
+                    <tr>
+                        <td>192.158.1.38</td>
+                        <td>192.158.1.38</td>
+                        <td>192.158.1.38</td>
+                        <td>**************</td>
+                        <td>Active</td>
+                        <td>Active</td>
+                        <td>...</td>
+                    </tr>
+                    <tr>
+                        <td>192.158.1.38</td>
+                        <td>192.158.1.38</td>
+                        <td>192.158.1.38</td>
+                        <td>**************</td>
+                        <td>Active</td>
+                        <td>Active</td>
+                        <td>...</td>
+                    </tr>
+                    <tr>
+                        <td colSpan="3" className="save-button-container">
+                            <button className="btn save-settings-btn" onClick={logClick2}>
+                                Save changes
+                            </button>
+                        </td>
+                    </tr>
+                </table>
             </div>
             <div className="visualization">
                 placeholder for connections visualization, generated from set up connections <br />
