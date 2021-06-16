@@ -59,7 +59,7 @@ const expectedStrongswanConfig = `connections {
             id = 192.168.0.42
         }
         children {
-            site-cisco {
+            site-cisco_1 {
                 remote_ts = 0.0.0.0/0
                 local_ts = 0.0.0.0/0
                 if_id_in = 104201
@@ -83,7 +83,7 @@ const expectedStrongswanConfig = `connections {
             id = 192.168.10.142
         }
         children {
-            site-cisco {
+            site-cisco_2 {
                 remote_ts = 0.0.0.0/0
                 local_ts = 0.0.0.0/0
                 if_id_in = 104202

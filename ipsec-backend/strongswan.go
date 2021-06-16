@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -119,7 +120,7 @@ func createConnection(vrf *VrfWithEndpoints, index int) (connection, error) {
 			Auth: "psk",
 		},
 		Children: map[string]*childSA{
-			"site-cisco": {
+			"site-cisco_"+strconv.Itoa(index+1): {
 				RemoteTrafficSelectors: []string{"0.0.0.0/0"},
 				LocalTrafficSelectors:  []string{"0.0.0.0/0"},
 				IfIdIn:                 calculateIndex(vrf.Vlan, index+1),
