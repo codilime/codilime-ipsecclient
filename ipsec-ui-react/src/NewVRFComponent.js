@@ -81,7 +81,16 @@ export default function ({routeProps}) {
                         <td>...</td>
                     </tr>
                     <tr>
-                        <td colSpan="3" className="save-button-container">
+                        <td>192.158.1.38</td>
+                        <td>192.158.1.38</td>
+                        <td>192.158.1.38</td>
+                        <td>**************</td>
+                        <td>Active</td>
+                        <td>Active</td>
+                        <td>...</td>
+                    </tr>
+                    <tr>
+                        <td colSpan="7" className="save-button-container">
                             <button className="btn save-settings-btn" onClick={logClick2}>
                                 Save changes
                             </button>
