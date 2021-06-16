@@ -31,16 +31,16 @@ export default function SideBarComponent({routeProps}) {
                     <div>
                         <ul>
                             <li>
-                                <Link to="/vrf/V101">V101:U</Link>
+                                <Link to="/vrf/v101">V101:U</Link>
                             </li>
                             <li>
-                                <Link to="/vrf/V102">V102:SoccerOnline</Link>
+                                <Link to="/vrf/v102">V102:SoccerOnline</Link>
                             </li>
                             <li>
-                                <Link to="/vrf/V103">V103:BigBank</Link>
+                                <Link to="/vrf/v103">V103:BigBank</Link>
                             </li>
                             <li>
-                                <Link to="/vrf/V104">V104:BranchOffice</Link>
+                                <Link to="/vrf/v104">V104:BranchOffice</Link>
                             </li>
                             <li>
                                 <Link to="/vrf/create">Create new VRF</Link>
@@ -82,16 +82,6 @@ export default function SideBarComponent({routeProps}) {
                     </div>
                 </div>
             </Router>
-        </div>
-    );
-}
-
-function GetParamId() {
-    let { id } = useParams();
-
-    return (
-        <div>
-            {id}
         </div>
     );
 }
