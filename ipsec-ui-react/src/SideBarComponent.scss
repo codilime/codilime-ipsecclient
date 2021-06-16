@@ -1,9 +1,9 @@
 .app-wrapper {
   display: flex;
+  font-size: 16px;
 }
 .sidebar-container {
   margin: 5px;
-  //border: solid black 1px;
   background-color: #626469;
   width: 15vw;
   height: 100vw;
@@ -15,21 +15,29 @@
   margin: 5px;
   padding: 5px;
   width: 81vw;
-  //border: solid black 1px;
 }
 ul {
   list-style: none;
   margin: 5px;
   padding: 0;
-
   li {
     display: flex;
     margin: 15px;
   }
-
   a {
     text-decoration: none;
     color: #ffffff;
   }
 }
+
+.btn {
+  height: 35px;
+  width: 150px;
+  border-radius: 20px;
+  font-size: 16px;
+  border: none;
+  text-align: center;
+  display: inline-block;
+}
+
 

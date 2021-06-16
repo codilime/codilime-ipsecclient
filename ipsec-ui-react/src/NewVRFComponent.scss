@@ -1,3 +1,29 @@
-.new-vrf-connection {
+.vrf-connection-wrapper {
 
+}
+.new-vrf-details {
+  border: solid black 1px;
+  margin: 5px 5px 5px 0;
+  width: 81vw;
+  height: 9vw;
+}
+.endpoints-details {
+  border: solid black 1px;
+  margin: 5px 5px 5px 0;
+  height: 12vw;
+}
+.visualization {
+  margin: 5px 5px 5px 0;
+  border: solid black 1px;
+  height: auto;
+}
+#new-vrf-details-table {
+  margin: 10px 0 10px 0;
+  td {
+    width: 26.69vw;
+    padding: 10px 0 10px 0;
+  }
+  tr {
+    border: solid #000000 1px;
+  }
 }
