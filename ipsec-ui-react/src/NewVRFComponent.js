@@ -107,7 +107,7 @@ export default function ({routeProps}) {
                 </table>
             </div>
             <div className="visualization">
-                placeholder for connections visualization, generated from set up connections <br />
+                placeholder for connections visualization, generated from setup connections <br />
                 bbb <br />
                 bbb <br />
                 bbb <br />
