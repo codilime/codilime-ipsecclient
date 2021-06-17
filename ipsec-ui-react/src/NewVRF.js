@@ -12,7 +12,7 @@ export default function NewVRF({routeProps}) {
 
     return (
         <div className="vrf-connection-wrapper">
-            {routeProps.location.pathname}
+            {routeProps.location.pathname}<div><button className="btn">Delete</button> </div>
             <div className="new-vrf-details">
                 <table id="new-vrf-details-table">
                     <tr>
