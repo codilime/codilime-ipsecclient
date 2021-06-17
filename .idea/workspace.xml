@@ -2,14 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a2417ce2-27b4-43bd-93b3-c1452665f192" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/NewVRFComponent.js" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/NewVRF.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/NewVRFComponent.scss" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/NewVRF.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/SideBarComponent.js" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/SideBar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/SideBarComponent.scss" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/SideBar.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/TopBarComponent.js" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/TopBar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/TopBarComponent.scss" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/TopBar.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/NewVRF.js" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/NewVRF.js" afterDir="false" />
     </list>
     <list id="f4d6b786-6417-4f52-b61a-b86809078b02" name="Changes by user" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -99,7 +92,7 @@
       <workItem from="1623702656432" duration="5316000" />
       <workItem from="1623745891633" duration="15976000" />
       <workItem from="1623828033226" duration="24018000" />
-      <workItem from="1623915212846" duration="7114000" />
+      <workItem from="1623915212846" duration="7350000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1623247435426</created>
@@ -381,7 +374,14 @@
       <option name="project" value="LOCAL" />
       <updated>1623931030873</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="manual refactor of component naming">
+      <created>1623931991375</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1623931991375</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -401,7 +401,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="correct implementation of css file import in index.js" />
     <MESSAGE value="add sass-loader to project; correct file naming" />
     <MESSAGE value="add minor adjustments to first layout" />
     <MESSAGE value="add navbar and sidebar components" />
@@ -426,6 +425,7 @@
     <MESSAGE value="applying DRY to button styling" />
     <MESSAGE value="language correction" />
     <MESSAGE value="test git commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="test git commit" />
+    <MESSAGE value="manual refactor of component naming" />
+    <option name="LAST_COMMIT_MESSAGE" value="manual refactor of component naming" />
   </component>
 </project>
