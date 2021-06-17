@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
-import SideBarComponent from './SideBarComponent';
-import TopBarComponent from './TopBarComponent';
+import SideBar from './SideBar';
+import TopBar from './TopBar';
 
 
 export default function App(props) {
 
     return (
         <div className="app">
-            <TopBarComponent />
-            <SideBarComponent />
+            <TopBar />
+            <SideBar />
         </div>
     )
 }

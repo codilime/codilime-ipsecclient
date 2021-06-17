@@ -1,7 +1,7 @@
 import React from 'react';
-import './NewVRFComponent.scss'
+import './NewVRF.scss'
 
-export default function ({routeProps}) {
+export default function NewVRF({routeProps}) {
     // the following are testing functions for currently unscripted buttons in vrf and endpoint sections
     function logClick1 () {
         console.log("save button for vrf goes brrrrrr");
