@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -30,6 +29,7 @@ type localOpts struct {
 
 type remoteOpts struct {
 	Auth string `vici:"auth"`
+	ID   string `vici:"id"`
 }
 
 type childSA struct {
@@ -61,16 +61,18 @@ func ReloadStrongSwan(vrf *VrfWithEndpoints) error {
 	}()
 
 	for i := range vrf.Endpoints {
+		sec := createSecret(vrf, i)
+		if err := loadSecret(session, sec); err != nil {
+			return err
+		}
+	}
+
+	for i := range vrf.Endpoints {
 		conn, err := createConnection(vrf, i)
 		if err != nil {
 			return err
 		}
 		if err := loadConnections(session, conn); err != nil {
-			return err
-		}
-
-		sec := createSecret(vrf, i)
-		if err := loadSecret(session, sec); err != nil {
 			return err
 		}
 	}
@@ -92,10 +94,13 @@ func UnloadStrongSwan(vrf *VrfWithEndpoints) error {
 	}()
 
 	for i := range vrf.Endpoints {
-		name := fmt.Sprintf("%d_%s_%d", vrf.Vlan, vrf.ClientName, i+1)
+		name := vrf.Endpoints[i].RemoteIPSec
 		if err := unloadSecret(session, name); err != nil {
 			return err
 		}
+	}
+	for i := range vrf.Endpoints {
+		name := fmt.Sprintf("%d_%s_%d", vrf.Vlan, vrf.ClientName, i+1)
 		if err := unloadConnection(session, name); err != nil {
 			return err
 		}
@@ -105,8 +110,12 @@ func UnloadStrongSwan(vrf *VrfWithEndpoints) error {
 
 func createConnection(vrf *VrfWithEndpoints, index int) (connection, error) {
 	name := fmt.Sprintf("%d_%s_%d", vrf.Vlan, vrf.ClientName, index+1)
-	cryptoPh1 := []string{}
-	if err := json.Unmarshal([]byte(vrf.CryptoPh1.String()), &cryptoPh1); err != nil {
+	cryptoPh1, err := convertToString(vrf.CryptoPh1)
+	if err != nil {
+		return connection{}, err
+	}
+	cryptoPh2, err := convertToString(vrf.CryptoPh2)
+	if err != nil {
 		return connection{}, err
 	}
 	return connection{
@@ -114,23 +123,24 @@ func createConnection(vrf *VrfWithEndpoints, index int) (connection, error) {
 		RemoteAddress: []string{vrf.Endpoints[index].RemoteIPSec},
 		Local: &localOpts{
 			Auth: "psk",
-			ID:   "ike_" + name,
+			ID:   vrf.Endpoints[index].RemoteIPSec,
 		},
 		Remote: &remoteOpts{
 			Auth: "psk",
+			ID:   vrf.Endpoints[index].RemoteIPSec,
 		},
 		Children: map[string]*childSA{
-			"site-cisco_"+strconv.Itoa(index+1): {
+			"site-cisco_" + strconv.Itoa(index+1): {
 				RemoteTrafficSelectors: []string{"0.0.0.0/0"},
 				LocalTrafficSelectors:  []string{"0.0.0.0/0"},
 				IfIdIn:                 calculateIndex(vrf.Vlan, index+1),
 				IfIdOut:                calculateIndex(vrf.Vlan, index+1),
-				ESPProposals:           []string{},
+				ESPProposals:           []string{cryptoPh2},
 				StartAction:            "start",
 			},
 		},
 		Version:   2,
-		Proposals: []string{strings.Join(cryptoPh1, "-")},
+		Proposals: []string{cryptoPh1},
 	}, nil
 }
 
@@ -151,9 +161,8 @@ func loadConnections(s *vici.Session, conn connection) error {
 }
 
 func createSecret(vrf *VrfWithEndpoints, index int) secret {
-	name := fmt.Sprintf("ike_%d_%s_%d", vrf.Vlan, vrf.ClientName, index+1)
 	return secret{
-		ID:   name,
+		ID:   vrf.Endpoints[index].RemoteIPSec,
 		Type: "ike",
 		Data: vrf.Endpoints[index].PSK,
 	}
@@ -183,7 +192,7 @@ func unloadConnection(s *vici.Session, name string) error {
 
 func unloadSecret(s *vici.Session, name string) error {
 	m := vici.NewMessage()
-	if err := m.Set("id", "ike_"+name); err != nil {
+	if err := m.Set("id", name); err != nil {
 		return err
 	}
 
