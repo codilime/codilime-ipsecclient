@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a2417ce2-27b4-43bd-93b3-c1452665f192" name="Default Changelist" comment="test git commit" />
+    <list id="f4d6b786-6417-4f52-b61a-b86809078b02" name="Changes by user" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" show_ignored="true" />
+  <component name="Git.Settings">
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="master" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="add_react_ui" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="ProjectId" id="1tiEhtnxN2gEotyjvW29psXClFM" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="codeWithMe.voiceChat.enabledByDefault" value="false" />
+    <property name="full.screen.before.presentation.mode" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/ipsec-ui-react/dist" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ipsec-ui-react/dist" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a2417ce2-27b4-43bd-93b3-c1452665f192" name="Default Changelist" comment="" />
+      <created>1623243632966</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1623243632966</updated>
+      <workItem from="1623243639015" duration="1607000" />
+      <workItem from="1623246214366" duration="59705000" />
+      <workItem from="1623702656432" duration="5316000" />
+      <workItem from="1623745891633" duration="15976000" />
+      <workItem from="1623828033226" duration="24018000" />
+      <workItem from="1623915212846" duration="6079000" />
+    </task>
+    <task id="LOCAL-00001" summary="initial commit">
+      <created>1623247435426</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1623247435426</updated>
+    </task>
+    <task id="LOCAL-00002" summary="add index.js, update package.json">
+      <created>1623248669258</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1623248669258</updated>
+    </task>
+    <task id="LOCAL-00003" summary="create base structure for app placement">
+      <created>1623249107316</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1623249107316</updated>
+    </task>
+    <task id="LOCAL-00004" summary="install webpack with dev-server and cli">
+      <created>1623249653523</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1623249653523</updated>
+    </task>
+    <task id="LOCAL-00005" summary="add missing files">
+      <created>1623249679628</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1623249679628</updated>
+    </task>
+    <task id="LOCAL-00006" summary="add base webpack configuration file">
+      <created>1623313887564</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1623313887564</updated>
+    </task>
+    <task id="LOCAL-00007" summary="correct webpack.config.js">
+      <created>1623318860874</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1623318860874</updated>
+    </task>
+    <task id="LOCAL-00008" summary="add git ignore">
+      <created>1623329888402</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1623329888402</updated>
+    </task>
+    <task id="LOCAL-00009" summary="cleanup">
+      <created>1623330201748</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1623330201748</updated>
+    </task>
+    <task id="LOCAL-00010" summary="setup babel to project and update config for webpack.config.js">
+      <created>1623332280257</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1623332280257</updated>
+    </task>
+    <task id="LOCAL-00011" summary="update config files for babel w/ react support">
+      <created>1623394862425</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1623394862425</updated>
+    </task>
+    <task id="LOCAL-00012" summary="build react component for application containment">
+      <created>1623395970276</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1623395970276</updated>
+    </task>
+    <task id="LOCAL-00013" summary="update structure for css loaders, needs troubleshooting">
+      <created>1623401539722</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1623401539722</updated>
+    </task>
+    <task id="LOCAL-00014" summary="push commit">
+      <created>1623404706855</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1623404706855</updated>
+    </task>
+    <task id="LOCAL-00015" summary="correct implementation of css file import in index.js">
+      <created>1623405127570</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1623405127570</updated>
+    </task>
+    <task id="LOCAL-00016" summary="add sass-loader to project; correct file naming">
+      <created>1623407621611</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1623407621611</updated>
+    </task>
+    <task id="LOCAL-00017" summary="add minor adjustments to first layout">
+      <created>1623409383419</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1623409383419</updated>
+    </task>
+    <task id="LOCAL-00018" summary="add navbar and sidebar components">
+      <created>1623663120415</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1623663120415</updated>
+    </task>
+    <task id="LOCAL-00019" summary="add basic styling for navbar component">
+      <created>1623663359836</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1623663359836</updated>
+    </task>
+    <task id="LOCAL-00020" summary="cleanup">
+      <created>1623664421074</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1623664421074</updated>
+    </task>
+    <task id="LOCAL-00021" summary="add react-router and react-router-dom to project">
+      <created>1623667401456</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1623667401456</updated>
+    </task>
+    <task id="LOCAL-00022" summary="some naming cleanup and css fix for SideBarComponent.scss">
+      <created>1623674619720</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1623674619720</updated>
+    </task>
+    <task id="LOCAL-00023" summary="implement testing solution from react router">
+      <created>1623681731263</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1623681731263</updated>
+    </task>
+    <task id="LOCAL-00024" summary="refactor example code for react router; add popup menu component for future use">
+      <created>1623706319568</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1623706319568</updated>
+    </task>
+    <task id="LOCAL-00025" summary="cleanup; add styling for the popupmenu component">
+      <created>1623745298250</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1623745298250</updated>
+    </task>
+    <task id="LOCAL-00026" summary="cleanup for better performance: less routes, :id implementation">
+      <created>1623752002575</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1623752002575</updated>
+    </task>
+    <task id="LOCAL-00027" summary="create new component for VRF adding, add breadcrumbs for VRFs -&gt; needs refactor accessing routeProps instead of useParams">
+      <created>1623769811439</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1623769811439</updated>
+    </task>
+    <task id="LOCAL-00028" summary="fix breadcrumbs id fetch according to set assumptions">
+      <created>1623831358887</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1623831358887</updated>
+    </task>
+    <task id="LOCAL-00029" summary="add guidelines-compliant favicon.png to project; adjust styles for SideBarComponent.scss">
+      <created>1623832413437</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1623832413437</updated>
+    </task>
+    <task id="LOCAL-00030" summary="create table structure for first part of new vrf connection">
+      <created>1623842065526</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1623842065526</updated>
+    </task>
+    <task id="LOCAL-00031" summary="finish mockup for vrf settings part of new vrf">
+      <created>1623849760924</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1623849760924</updated>
+    </task>
+    <task id="LOCAL-00032" summary="cleanup">
+      <created>1623849990841</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1623849990841</updated>
+    </task>
+    <task id="LOCAL-00033" summary="update mockup for endpoints placement">
+      <created>1623851515545</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1623851515545</updated>
+    </task>
+    <task id="LOCAL-00034" summary="fix for save button container not displaying borders properly">
+      <created>1623851712682</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1623851712682</updated>
+    </task>
+    <task id="LOCAL-00035" summary="minor fix to breadcrumbs display">
+      <created>1623853787009</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1623853787009</updated>
+    </task>
+    <task id="LOCAL-00036" summary="add README.md">
+      <created>1623853929177</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1623853929177</updated>
+    </task>
+    <task id="LOCAL-00037" summary="applying DRY to button styling">
+      <created>1623854752811</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1623854752811</updated>
+    </task>
+    <task id="LOCAL-00038" summary="language correction">
+      <created>1623855084630</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1623855084630</updated>
+    </task>
+    <task id="LOCAL-00039" summary="test git commit">
+      <created>1623920166455</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1623920166455</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="correct implementation of css file import in index.js" />
+    <MESSAGE value="add sass-loader to project; correct file naming" />
+    <MESSAGE value="add minor adjustments to first layout" />
+    <MESSAGE value="add navbar and sidebar components" />
+    <MESSAGE value="add basic styling for navbar component" />
+    <MESSAGE value="add react-router and react-router-dom to project" />
+    <MESSAGE value="some naming cleanup" />
+    <MESSAGE value="some naming cleanup and css fix for SideBarComponent.scss" />
+    <MESSAGE value="implement testing solution from react router" />
+    <MESSAGE value="refactor example code for react router; add popup menu component for future use" />
+    <MESSAGE value="cleanup; add styling for the popupmenu component" />
+    <MESSAGE value="cleanup for better performance: less routes, :id implementation" />
+    <MESSAGE value="create new component for VRF adding, add breadcrumbs for VRFs -&gt; needs refactor accessing routeProps instead of useParams" />
+    <MESSAGE value="fix breadcrumbs id fetch according to set assumptions" />
+    <MESSAGE value="add guidelines-compliant favicon.png to project; adjust styles for SideBarComponent.scss" />
+    <MESSAGE value="create table structure for first part of new vrf connection" />
+    <MESSAGE value="finish mockup for vrf settings part of new vrf" />
+    <MESSAGE value="cleanup" />
+    <MESSAGE value="update mockup for endpoints placement" />
+    <MESSAGE value="fix for save button container not displaying borders properly" />
+    <MESSAGE value="minor fix to breadcrumbs display" />
+    <MESSAGE value="add README.md" />
+    <MESSAGE value="applying DRY to button styling" />
+    <MESSAGE value="language correction" />
+    <MESSAGE value="test git commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="test git commit" />
+  </component>
+</project>
