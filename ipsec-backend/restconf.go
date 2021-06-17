@@ -28,10 +28,12 @@ type endpoint struct {
 
 var groupMap map[string]string = map[string]string{
 	"modp_2048": "fourteen",
+	"modp_1024": "two",
 }
 
 var ipsecGroupMap map[string]string = map[string]string{
 	"modp_2048": "group14",
+	"modp_1024": "group2",
 }
 
 func restconfCreate(vrf Vrf) error {
@@ -69,9 +71,6 @@ func restconfCreate(vrf Vrf) error {
 	if err := restconfDoIpsecProfile(vrf, client, cryptoPh1[len(cryptoPh1)-1]); err != nil {
 		return err
 	}
-	if err := restconfDoVRF(vrf, client); err != nil {
-		return err
-	}
 	if err := restconfDoTunnels(vrf, client, dbEndpoints); err != nil {
 		return err
 	}
@@ -102,9 +101,6 @@ func restconfDelete(vrf Vrf) error {
 		if err := tryRestconfDelete(fmt.Sprintf("interface/Tunnel=%d", tunName), client); err != nil {
 			fmt.Println("delete error occured:", err)
 		}
-	}
-	if err := tryRestconfDelete(fmt.Sprintf("ip/vrf=%s", vrf.ClientName), client); err != nil {
-		fmt.Println("delete error occured:", err)
 	}
 	if err := tryRestconfDelete(fmt.Sprintf("crypto/ipsec/profile=%s", vrf.ClientName), client); err != nil {
 		fmt.Println("delete error occured:", err)
@@ -301,11 +297,6 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			    "name": %d,
 			    "description": "%s",
 			    "ip": {
-				"vrf": {
-					"forwarding": {
-						"word": "%s"
-					}
-				},
 			      "address": {
 				"primary": {
 				  "address": "%s",
@@ -334,7 +325,7 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			  }
 			}
 			}`
-		tunnelData := fmt.Sprintf(tunnel, tunName, vrf.ClientName+strconv.Itoa(i), vrf.ClientName,
+		tunnelData := fmt.Sprintf(tunnel, tunName, vrf.ClientName+strconv.Itoa(i),
 			endpoint.LocalIP, endpoint.RemoteIPSec, vrf.ClientName)
 		fmt.Println(tunnelData)
 		if err := tryRestconfPatch("interface", tunnelData, client); err != nil {
@@ -372,22 +363,6 @@ func restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []endpoint) error {
 	bgpData := fmt.Sprintf(bgp, vrf.LocalAs, strings.Join(neighbors, ","))
 	fmt.Println("bgp data", bgpData)
 	if err := tryRestconfPatch("router/bgp", bgpData, client); err != nil {
-		return err
-	}
-	return nil
-}
-
-func restconfDoVRF(vrf Vrf, client *http.Client) error {
-	vrfTemplate := `{
-		"vrf": [
-		  {
-		    "name": "%s",
-		    "description": "%s"
-		  }
-		]
-	      }`
-	vrfData := fmt.Sprintf(vrfTemplate, vrf.ClientName, vrf.ClientName)
-	if err := tryRestconfPatch("ip/vrf", vrfData, client); err != nil {
 		return err
 	}
 	return nil
