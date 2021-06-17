@@ -43,6 +43,9 @@ export default function SideBarComponent({routeProps}) {
                                 <Link to="/vrf/V104:BranchOffice">V104:BranchOffice</Link>
                             </li>
                             <li>
+                                <Link to="/vrf/V105:test">V105:testtest</Link>
+                            </li>
+                            <li>
                                 <Link to="/VRF/CREATE">
                                     <button className="btn new-vrf-button">Add a new VRF</button>
                                 </Link>
