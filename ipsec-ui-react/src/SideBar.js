@@ -1,11 +1,11 @@
 import React from 'react';
 import './SideBar.scss';
 import NewVRF from './NewVRF.js';
-import {HashRouter as Router, Switch, Route, Link, useParams} from 'react-router-dom';
+import {HashRouter as Router, Switch, Route, Link} from 'react-router-dom';
 
-import ciscoLogo from './images/cisco_logo.png';
 
-export default function SideBar({routeProps}) {
+
+export default function SideBar() {
     return (
         <Router>
             <div className="app-wrapper">
@@ -25,7 +25,7 @@ export default function SideBar({routeProps}) {
                                 <Link to="/vrf/V104:BranchOffice">V104:BranchOffice</Link>
                             </li>
                             <li>
-                                <Link to="/vrf/V105:test">V105:testtest</Link>
+                                <Link to="/vrf/V105:test">V105:test</Link>
                             </li>
                             <li>
                                 <Link to="/VRF/CREATE">
