@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -30,6 +29,7 @@ type localOpts struct {
 
 type remoteOpts struct {
 	Auth string `vici:"auth"`
+	ID   string `vici:"id"`
 }
 
 type childSA struct {
@@ -105,8 +105,12 @@ func UnloadStrongSwan(vrf *VrfWithEndpoints) error {
 
 func createConnection(vrf *VrfWithEndpoints, index int) (connection, error) {
 	name := fmt.Sprintf("%d_%s_%d", vrf.Vlan, vrf.ClientName, index+1)
-	cryptoPh1 := []string{}
-	if err := json.Unmarshal([]byte(vrf.CryptoPh1.String()), &cryptoPh1); err != nil {
+	cryptoPh1, err := convertToString(vrf.CryptoPh1)
+	if err != nil {
+		return connection{}, err
+	}
+	cryptoPh2, err := convertToString(vrf.CryptoPh2)
+	if err != nil {
 		return connection{}, err
 	}
 	return connection{
@@ -114,23 +118,24 @@ func createConnection(vrf *VrfWithEndpoints, index int) (connection, error) {
 		RemoteAddress: []string{vrf.Endpoints[index].RemoteIPSec},
 		Local: &localOpts{
 			Auth: "psk",
-			ID:   "ike_" + name,
+			ID:   vrf.Endpoints[index].RemoteIPSec,
 		},
 		Remote: &remoteOpts{
 			Auth: "psk",
+			ID:   vrf.Endpoints[index].RemoteIPSec,
 		},
 		Children: map[string]*childSA{
-			"site-cisco_"+strconv.Itoa(index+1): {
+			"site-cisco_" + strconv.Itoa(index+1): {
 				RemoteTrafficSelectors: []string{"0.0.0.0/0"},
 				LocalTrafficSelectors:  []string{"0.0.0.0/0"},
 				IfIdIn:                 calculateIndex(vrf.Vlan, index+1),
 				IfIdOut:                calculateIndex(vrf.Vlan, index+1),
-				ESPProposals:           []string{},
+				ESPProposals:           []string{cryptoPh2},
 				StartAction:            "start",
 			},
 		},
 		Version:   2,
-		Proposals: []string{strings.Join(cryptoPh1, "-")},
+		Proposals: []string{cryptoPh1},
 	}, nil
 }
 
