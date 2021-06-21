@@ -15,7 +15,15 @@ export default function NewVRF({routeProps}) {
 
     return (
         <div className="vrf-connection-wrapper">
-            {routeProps.location.pathname}<div><button className="btn red-button" onClick={logClick3}>Delete</button> </div>
+            <div className="new-vrf-top-bar">
+                <div>
+                    {routeProps.location.pathname}
+                </div>
+                <div><button className="btn red-button" onClick={logClick3}>Delete</button></div>
+            </div>
+            <div>
+                new connection table
+            </div>
         </div>
     );
 }

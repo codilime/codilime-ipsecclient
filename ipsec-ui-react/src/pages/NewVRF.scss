@@ -1,5 +1,10 @@
 .vrf-connection-wrapper {
   display: flex;
+  width: 81vw;
   flex-direction: column;
+}
+.new-vrf-top-bar {
+  display: inline-flex;
+  justify-content: space-between;
 }
 
