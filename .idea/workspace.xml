@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a2417ce2-27b4-43bd-93b3-c1452665f192" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/NewVRF.js" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/NewVRF.js" afterDir="false" />
+    <list default="true" id="a2417ce2-27b4-43bd-93b3-c1452665f192" name="Default Changelist" comment="refactor of SideBar.scss">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/SideBar.scss" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/SideBar.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/app/SideBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/app/SideBar.js" afterDir="false" />
     </list>
-    <list id="f4d6b786-6417-4f52-b61a-b86809078b02" name="Changes by user" comment="" />
+    <list id="f4d6b786-6417-4f52-b61a-b86809078b02" name="Changes by user" comment="Changes by user" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -68,7 +70,9 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="codeWithMe.voiceChat.enabledByDefault" value="false" />
     <property name="full.screen.before.presentation.mode" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/ipsec-ui-react/dist" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/ipsec-ui-react/src/app" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="web-ide.project.structure" />
     <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
@@ -77,6 +81,11 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/ipsec-ui-react/dist" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ipsec-ui-react/src/app" />
+      <recent name="$PROJECT_DIR$/ipsec-ui-react/src/components" />
+      <recent name="$PROJECT_DIR$/ipsec-ui-react/src/pages" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -381,7 +390,28 @@
       <option name="project" value="LOCAL" />
       <updated>1623931991375</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="refactor">
+      <created>1624272579801</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1624272579801</updated>
+    </task>
+    <task id="LOCAL-00043" summary="cleanup of errors, add testing function for &lt;li&gt;s on sidebar for further refactor purposes">
+      <created>1624273308759</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1624273308759</updated>
+    </task>
+    <task id="LOCAL-00044" summary="refactor of app structure">
+      <created>1624279929737</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1624279929737</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -401,10 +431,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="add sass-loader to project; correct file naming" />
-    <MESSAGE value="add minor adjustments to first layout" />
-    <MESSAGE value="add navbar and sidebar components" />
-    <MESSAGE value="add basic styling for navbar component" />
     <MESSAGE value="add react-router and react-router-dom to project" />
     <MESSAGE value="some naming cleanup" />
     <MESSAGE value="some naming cleanup and css fix for SideBarComponent.scss" />
@@ -426,6 +452,10 @@
     <MESSAGE value="language correction" />
     <MESSAGE value="test git commit" />
     <MESSAGE value="manual refactor of component naming" />
-    <option name="LAST_COMMIT_MESSAGE" value="manual refactor of component naming" />
+    <MESSAGE value="refactor" />
+    <MESSAGE value="cleanup of errors, add testing function for &lt;li&gt;s on sidebar for further refactor purposes" />
+    <MESSAGE value="refactor of app structure" />
+    <MESSAGE value="refactor of SideBar.scss" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor of SideBar.scss" />
   </component>
 </project>
