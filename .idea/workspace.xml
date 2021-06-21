@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a2417ce2-27b4-43bd-93b3-c1452665f192" name="Default Changelist" comment="refactor of SideBar.scss">
+    <list default="true" id="a2417ce2-27b4-43bd-93b3-c1452665f192" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/SideBar.scss" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/SideBar.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/app/SideBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/app/SideBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/app/App.scss" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/app/App.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/app/SideBar.scss" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/app/SideBar.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/app/TopBar.scss" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/app/TopBar.scss" afterDir="false" />
     </list>
     <list id="f4d6b786-6417-4f52-b61a-b86809078b02" name="Changes by user" comment="Changes by user" />
     <option name="SHOW_DIALOG" value="false" />
@@ -411,7 +412,21 @@
       <option name="project" value="LOCAL" />
       <updated>1624279929737</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="refactor of SideBar.scss">
+      <created>1624280397184</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1624280397184</updated>
+    </task>
+    <task id="LOCAL-00046" summary="remove duplicate images folder, further refactor">
+      <created>1624280591042</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1624280591042</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -431,7 +446,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="add react-router and react-router-dom to project" />
     <MESSAGE value="some naming cleanup" />
     <MESSAGE value="some naming cleanup and css fix for SideBarComponent.scss" />
     <MESSAGE value="implement testing solution from react router" />
@@ -456,6 +470,7 @@
     <MESSAGE value="cleanup of errors, add testing function for &lt;li&gt;s on sidebar for further refactor purposes" />
     <MESSAGE value="refactor of app structure" />
     <MESSAGE value="refactor of SideBar.scss" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor of SideBar.scss" />
+    <MESSAGE value="remove duplicate images folder, further refactor" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove duplicate images folder, further refactor" />
   </component>
 </project>

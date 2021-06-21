@@ -1,10 +1,10 @@
+
 .sidebar-container {
-  display: flex;
-  font-size: 16px;
   margin: 5px;
   background-color: #626469;
   width: 15vw;
   height: 100vw;
+  display: flex;
   justify-content: center;
 }
 ul {
@@ -20,6 +20,7 @@ ul {
     color: #ffffff;
   }
 }
+
 .btn {
   height: 35px;
   width: 150px;

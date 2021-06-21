@@ -1,10 +1,10 @@
 import React from 'react';
-import './SideBar.scss';
+import './Sidebar.scss';
 import {HashRouter as Router, Switch, Route, Link} from 'react-router-dom';
 
 
 
-export default function SideBar() {
+export default function Sidebar() {
     function clickTester() {
         console.log("list links are working");
     }
