@@ -1,6 +1,6 @@
 import React from 'react';
 import './SideBar.scss';
-import NewVRF from './NewVRF.js';
+import NewVRF from '../pages/NewVRF.js';
 import {HashRouter as Router, Switch, Route, Link} from 'react-router-dom';
 
 

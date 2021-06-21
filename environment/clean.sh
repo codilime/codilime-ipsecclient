@@ -16,5 +16,5 @@ then
 fi
 
 docker-compose down
-docker images | awk {'print $3'}|xargs docker rmi
+docker assets | awk {'print $3'}|xargs docker rmi
 docker volume prune -f
