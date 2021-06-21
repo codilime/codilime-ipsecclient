@@ -26,16 +26,6 @@ type endpoint struct {
 	BGP         bool   `json:"bgp"`
 }
 
-var groupMap map[string]string = map[string]string{
-	"modp_2048": "fourteen",
-	"modp_1024": "two",
-}
-
-var ipsecGroupMap map[string]string = map[string]string{
-	"modp_2048": "group14",
-	"modp_1024": "group2",
-}
-
 func restconfCreate(vrf Vrf) error {
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -48,7 +38,12 @@ func restconfCreate(vrf Vrf) error {
 		return err
 	}
 
-	cryptoPh1, err := restconfGetCryptoPh1Strings(vrf)
+	cryptoPh1, err := restconfGetCryptoStrings(string(vrf.CryptoPh1))
+	if err != nil {
+		return err
+	}
+
+	cryptoPh2, err := restconfGetCryptoStrings(string(vrf.CryptoPh2))
 	if err != nil {
 		return err
 	}
@@ -65,10 +60,10 @@ func restconfCreate(vrf Vrf) error {
 	if err := restconfDoProfile(vrf, client); err != nil {
 		return err
 	}
-	if err := restconfDoTransformSet(vrf, client); err != nil {
+	if err := restconfDoTransformSet(vrf, cryptoPh2, client); err != nil {
 		return err
 	}
-	if err := restconfDoIpsecProfile(vrf, client, cryptoPh1[len(cryptoPh1)-1]); err != nil {
+	if err := restconfDoIpsecProfile(vrf, client, cryptoPh2[len(cryptoPh2)-1]); err != nil {
 		return err
 	}
 	if err := restconfDoTunnels(vrf, client, dbEndpoints); err != nil {
@@ -128,11 +123,6 @@ func tryRestconfDelete(path string, client *http.Client) error {
 }
 
 func restconfDoProposal(vrf Vrf, client *http.Client, cryptoPh1 []string) error {
-	lastIndex := len(cryptoPh1) - 1
-	groupMapping, ok := groupMap[cryptoPh1[lastIndex]]
-	if !ok {
-		return errors.New("could not find a group mapping for:" + cryptoPh1[lastIndex])
-	}
 	proposal := `{
 		"proposal": {
 		  "name": "%s",
@@ -147,7 +137,8 @@ func restconfDoProposal(vrf Vrf, client *http.Client, cryptoPh1 []string) error 
 		  }
 		}
 	}`
-	proposalData := fmt.Sprintf(proposal, vrf.ClientName, cryptoPh1[0], cryptoPh1[1], groupMapping)
+	proposalData := fmt.Sprintf(proposal, vrf.ClientName, cryptoPh1[0], cryptoPh1[1], cryptoPh1[2])
+	fmt.Println("proposalData", proposalData)
 	if err := tryRestconfPatch("crypto/ikev2/proposal", proposalData, client); err != nil {
 		return err
 	}
@@ -238,11 +229,33 @@ func restconfDoProfile(vrf Vrf, client *http.Client) error {
 	return nil
 }
 
-func restconfDoTransformSet(vrf Vrf, client *http.Client) error {
+func restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) error {
+	// esp: always present
+	// key-bit: when it's gcm or aes
+	keyBit := ""
+	// esp-hmac: when it's not gcm
+	espHmac := ""
+	esp := ""
+	if containsADigit(cryptoPh2[0]) {
+		// this is gcm or aes
+		encFunc := strings.Split(cryptoPh2[0], "-")
+		if len(encFunc) < 3 {
+			return fmt.Errorf("wrong encryption function format: %s", cryptoPh2[0])
+		}
+		keyBit = fmt.Sprintf(`"key-bit": "%s",`, encFunc[1])
+		esp = fmt.Sprintf("%s-%s", encFunc[0], encFunc[2])
+	} else {
+		esp = cryptoPh2[0]
+	}
+	if !strings.Contains(cryptoPh2[0], "gcm") {
+		espHmac = fmt.Sprintf(`"esp-hmac":"%s",`, cryptoPh2[1])
+	}
 	transformSet := `{
 		"transform-set": {
 		  "tag": "%s",
-		  "esp": "esp-gcm",
+		  "esp": "%s",
+		  %s
+		  %s
 		  "mode": {
 		    "tunnel": [
 		      null
@@ -250,18 +263,24 @@ func restconfDoTransformSet(vrf Vrf, client *http.Client) error {
 		  }
 		}
 		}`
-	transformSetData := fmt.Sprintf(transformSet, vrf.ClientName)
+	transformSetData := fmt.Sprintf(transformSet, vrf.ClientName, esp, keyBit, espHmac)
+	fmt.Println("transformSetData", transformSetData)
 	if err := tryRestconfPatch("crypto/ipsec/transform-set", transformSetData, client); err != nil {
 		return err
 	}
 	return nil
 }
 
-func restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) error {
-	groupMapping, ok := ipsecGroupMap[cryptoName]
-	if !ok {
-		return errors.New("could not find an ipsec group mapping for:" + cryptoName)
+func containsADigit(str string) bool {
+	for _, c := range str {
+		if _, err := strconv.Atoi(string(c)); err == nil {
+			return true
+		}
 	}
+	return false
+}
+
+func restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) error {
 	ipsecProfile := `{
 		"profile": {
 		  "name": "%s",
@@ -281,7 +300,8 @@ func restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) err
 		  }
 		}
 		}`
-	ipsecProfileData := fmt.Sprintf(ipsecProfile, vrf.ClientName, vrf.ClientName, groupMapping, vrf.ClientName)
+	ipsecProfileData := fmt.Sprintf(ipsecProfile, vrf.ClientName, vrf.ClientName, cryptoName, vrf.ClientName)
+	fmt.Println("ipsecProfileData", ipsecProfileData)
 	if err := tryRestconfPatch("crypto/ipsec/profile", ipsecProfileData, client); err != nil {
 		return err
 	}
@@ -417,17 +437,17 @@ func restconfDoRequest(method, path, data string, client *http.Client) error {
 	return nil
 }
 
-func restconfGetCryptoPh1Strings(vrf Vrf) ([]string, error) {
-	cryptoPh1 := []string{}
-	if err := json.Unmarshal([]byte(vrf.CryptoPh1.String()), &cryptoPh1); err != nil {
+func restconfGetCryptoStrings(cryptoString string) ([]string, error) {
+	crypto := []string{}
+	if err := json.Unmarshal([]byte(cryptoString), &crypto); err != nil {
 		return nil, err
 	}
 
-	cryptoPh1Len := len(cryptoPh1)
-	if cryptoPh1Len < 2 {
-		return nil, errors.New("malformed cryptoPh1: " + strings.Join(cryptoPh1, ", "))
+	cryptoLen := len(crypto)
+	if cryptoLen < 2 {
+		return nil, errors.New("malformed crypto: " + strings.Join(crypto, ", "))
 	}
-	return cryptoPh1, nil
+	return crypto, nil
 }
 
 func hash(s string) int {

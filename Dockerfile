@@ -58,4 +58,6 @@ COPY environment/supervisor/content/supervisord.conf /etc/
 COPY environment/supervisor/content/ipsec.sh /usr/local/sbin/
 RUN ln -s /etc/supervisor.d /opt/super
 
+EXPOSE 80
+
 CMD /usr/bin/supervisord -n -c /etc/supervisord.conf
