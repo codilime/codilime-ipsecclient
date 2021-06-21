@@ -1,6 +1,6 @@
 import React from 'react';
 import './Sidebar.scss';
-import {HashRouter as Router, Switch, Route, Link} from 'react-router-dom';
+import {HashRouter as Router, Switch, Link} from 'react-router-dom';
 
 
 
