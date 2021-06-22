@@ -7,7 +7,12 @@ curl -v -XPATCH -H "Accept: application/yang-data+json" -H "Content-Type: applic
 		  "encryption": {
 		    "aes-gcm-128": [null]
 		  },
-		  
+		  "integrity": {
+		    "sha256": [null]
+		  },
+		  "prf": {
+		    "sha256": [null]
+		  },
 		  "group": {
 		    "fourteen": [null]
 		  }

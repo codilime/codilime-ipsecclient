@@ -132,13 +132,15 @@ func restconfDoProposal(vrf Vrf, client *http.Client, cryptoPh1 []string) error 
 		  "integrity": {
 		    "%s": [null]
 		  },
+		  "prf": {
+		    "%s": [null]
+		  },
 		  "group": {
 		    "%s": [null]
 		  }
 		}
 	}`
-	proposalData := fmt.Sprintf(proposal, vrf.ClientName, cryptoPh1[0], cryptoPh1[1], cryptoPh1[2])
-	fmt.Println("proposalData", proposalData)
+	proposalData := fmt.Sprintf(proposal, vrf.ClientName, cryptoPh1[0], cryptoPh1[1], cryptoPh1[1], cryptoPh1[2])
 	if err := tryRestconfPatch("crypto/ikev2/proposal", proposalData, client); err != nil {
 		return err
 	}
@@ -264,7 +266,6 @@ func restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) er
 		}
 		}`
 	transformSetData := fmt.Sprintf(transformSet, vrf.ClientName, esp, keyBit, espHmac)
-	fmt.Println("transformSetData", transformSetData)
 	if err := tryRestconfPatch("crypto/ipsec/transform-set", transformSetData, client); err != nil {
 		return err
 	}
@@ -301,7 +302,6 @@ func restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) err
 		}
 		}`
 	ipsecProfileData := fmt.Sprintf(ipsecProfile, vrf.ClientName, vrf.ClientName, cryptoName, vrf.ClientName)
-	fmt.Println("ipsecProfileData", ipsecProfileData)
 	if err := tryRestconfPatch("crypto/ipsec/profile", ipsecProfileData, client); err != nil {
 		return err
 	}
@@ -347,7 +347,6 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			}`
 		tunnelData := fmt.Sprintf(tunnel, tunName, vrf.ClientName+strconv.Itoa(i),
 			endpoint.LocalIP, endpoint.RemoteIPSec, vrf.ClientName)
-		fmt.Println(tunnelData)
 		if err := tryRestconfPatch("interface", tunnelData, client); err != nil {
 			return err
 		}
@@ -381,7 +380,6 @@ func restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []endpoint) error {
 		neighbors = append(neighbors, fmt.Sprintf(neighbor, endpoint.PeerIP, endpoint.RemoteAS))
 	}
 	bgpData := fmt.Sprintf(bgp, vrf.LocalAs, strings.Join(neighbors, ","))
-	fmt.Println("bgp data", bgpData)
 	if err := tryRestconfPatch("router/bgp", bgpData, client); err != nil {
 		return err
 	}
