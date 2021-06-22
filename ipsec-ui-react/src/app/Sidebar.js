@@ -26,6 +26,9 @@ export default function Sidebar() {
                         <Link to="/vrf/V105:test">V105:test</Link>
                     </li>
                     <li onClick={clickTester}>
+                        <Link to="/vrf/V106:test2">V106:test2</Link>
+                    </li>
+                    <li onClick={clickTester}>
                         <Link to="/VRF/CREATE">
                             <button className="btn new-vrf-button">Add a new VRF</button>
                         </Link>

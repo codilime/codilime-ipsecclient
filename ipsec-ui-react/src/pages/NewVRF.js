@@ -13,6 +13,9 @@ export default function NewVRF({routeProps}) {
         console.log("this is delete button going brrrrrr");
     }
 
+    const mainVRFSettingsTableData = [];
+    const endpointsTableData = [];
+
     return (
         <div className="new-vrf-connection-wrapper">
             <div className="new-vrf-top-bar">

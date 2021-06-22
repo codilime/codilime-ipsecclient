@@ -1,16 +1,8 @@
 .app-container {
   display: flex;
   flex-wrap: wrap;
-}
-.btn {
-  height: 35px;
-  border-radius: 20px;
-  padding: 0 15px 0 15px;
-  font-size: 16px;
-  border: none;
-  text-align: center;
-  display: inline-block;
-  width: auto;
+  flex-direction: row;
+  height: calc(0px + 100vh);
 }
 .blue-button {
   background-color: #3498db;
@@ -20,3 +12,14 @@
   background-color: red;
   color: #ffffff;
 }
+
+html, body {
+  height: 100%;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+* { box-sizing: border-box; }
