@@ -1,4 +1,4 @@
-.vrf-connection-wrapper {
+.new-vrf-connection-wrapper {
   display: flex;
   width: 81vw;
   flex-direction: column;
@@ -7,4 +7,8 @@
   display: inline-flex;
   justify-content: space-between;
 }
-
+.new-vrf-data-container {
+  width: 100%;
+  border: solid 1px black;
+  margin: 5px 0;
+}

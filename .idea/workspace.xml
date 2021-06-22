@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a2417ce2-27b4-43bd-93b3-c1452665f192" name="Default Changelist" comment="remove duplicate images folder">
+    <list default="true" id="a2417ce2-27b4-43bd-93b3-c1452665f192" name="Default Changelist" comment="cleanup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/app/MainView.js" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/app/MainView.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/app/MainView.scss" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/app/MainView.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/app/Sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/app/Sidebar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/app/Sidebar.scss" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/app/Sidebar.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/pages/NewVRF.js" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/pages/NewVRF.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ipsec-ui-react/src/pages/NewVRF.scss" beforeDir="false" afterPath="$PROJECT_DIR$/ipsec-ui-react/src/pages/NewVRF.scss" afterDir="false" />
     </list>
     <list id="f4d6b786-6417-4f52-b61a-b86809078b02" name="Changes by user" comment="Changes by user" />
     <option name="SHOW_DIALOG" value="false" />
@@ -104,34 +102,8 @@
       <workItem from="1623745891633" duration="15976000" />
       <workItem from="1623828033226" duration="24018000" />
       <workItem from="1623915212846" duration="7350000" />
-    </task>
-    <task id="LOCAL-00001" summary="initial commit">
-      <created>1623247435426</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1623247435426</updated>
-    </task>
-    <task id="LOCAL-00002" summary="add index.js, update package.json">
-      <created>1623248669258</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1623248669258</updated>
-    </task>
-    <task id="LOCAL-00003" summary="create base structure for app placement">
-      <created>1623249107316</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1623249107316</updated>
-    </task>
-    <task id="LOCAL-00004" summary="install webpack with dev-server and cli">
-      <created>1623249653523</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1623249653523</updated>
+      <workItem from="1624283888883" duration="3267000" />
+      <workItem from="1624347006706" duration="1848000" />
     </task>
     <task id="LOCAL-00005" summary="add missing files">
       <created>1623249679628</created>
@@ -448,7 +420,35 @@
       <option name="project" value="LOCAL" />
       <updated>1624282005181</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="adjust styles for better responsiveness">
+      <created>1624282595675</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1624282595676</updated>
+    </task>
+    <task id="LOCAL-00051" summary="implement cross-component Router connection">
+      <created>1624282820764</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1624282820764</updated>
+    </task>
+    <task id="LOCAL-00052" summary="cleanup">
+      <created>1624283861720</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1624283861720</updated>
+    </task>
+    <task id="LOCAL-00053" summary="add minor changes to NewVRF.scss">
+      <created>1624286240100</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1624286240100</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -468,15 +468,11 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="refactor example code for react router; add popup menu component for future use" />
-    <MESSAGE value="cleanup; add styling for the popupmenu component" />
-    <MESSAGE value="cleanup for better performance: less routes, :id implementation" />
     <MESSAGE value="create new component for VRF adding, add breadcrumbs for VRFs -&gt; needs refactor accessing routeProps instead of useParams" />
     <MESSAGE value="fix breadcrumbs id fetch according to set assumptions" />
     <MESSAGE value="add guidelines-compliant favicon.png to project; adjust styles for SideBarComponent.scss" />
     <MESSAGE value="create table structure for first part of new vrf connection" />
     <MESSAGE value="finish mockup for vrf settings part of new vrf" />
-    <MESSAGE value="cleanup" />
     <MESSAGE value="update mockup for endpoints placement" />
     <MESSAGE value="fix for save button container not displaying borders properly" />
     <MESSAGE value="minor fix to breadcrumbs display" />
@@ -493,6 +489,10 @@
     <MESSAGE value="remove duplicate images folder" />
     <MESSAGE value="add MainView.js according to new architecture" />
     <MESSAGE value="add basic styles for mainview component" />
-    <option name="LAST_COMMIT_MESSAGE" value="add basic styles for mainview component" />
+    <MESSAGE value="adjust styles for better responsiveness" />
+    <MESSAGE value="implement cross-component Router connection" />
+    <MESSAGE value="cleanup" />
+    <MESSAGE value="add minor changes to NewVRF.scss" />
+    <option name="LAST_COMMIT_MESSAGE" value="add minor changes to NewVRF.scss" />
   </component>
 </project>
