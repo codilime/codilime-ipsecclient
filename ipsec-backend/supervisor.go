@@ -76,3 +76,26 @@ func GetSupervisorSingleState(name string) (map[string]string, error) {
 
 	return res, nil
 }
+
+func RestartSupervisorProcess(process string) error {
+	client, err := supervisord.NewUnixSocketClient(supervisorSocketPath)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err := client.Close(); err != nil {
+			log.Errorf("Error during closing supervisor connection %v", err)
+		}
+	}()
+
+	if err := client.StopProcess(process, true); err != nil {
+		return err
+	}
+
+	if err := client.StartProcess(process, true); err != nil {
+		return err
+	}
+
+	return nil
+}

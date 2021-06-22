@@ -75,7 +75,7 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 		return err
 	}
 
-	if err = ReloadStrongSwan(vrf); err != nil {
+	if err = ReloadStrongSwan(); err != nil {
 		return err
 	}
 
@@ -89,10 +89,6 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 func (FileGenerator) DeleteTemplates(v Vrf) error {
 	log.Infof("deleting templates for vrf %+v", v)
 	prefix := calculatePrefix(v)
-	vrf, err := convertToVrfWithEndpoints(v)
-	if err != nil {
-		return err
-	}
 	if err := os.RemoveAll(getBirdFileName(prefix)); err != nil {
 		return err
 	}
@@ -105,7 +101,7 @@ func (FileGenerator) DeleteTemplates(v Vrf) error {
 	if err := ReloadBird(); err != nil {
 		return err
 	}
-	if err := UnloadStrongSwan(vrf); err != nil {
+	if err := ReloadStrongSwan(); err != nil {
 		return err
 	}
 	if err := ReloadSupervisor(); err != nil {
