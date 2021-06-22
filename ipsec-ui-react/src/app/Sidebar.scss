@@ -1,17 +1,15 @@
 .sidebar-container {
   margin: 5px;
   background-color: #626469;
-  width: 15%;
+  width: 12%;
   height: calc(100% - 64px);
-  display: flex;
-  justify-content: center;
+  overflow: auto;
 }
 ul {
   list-style: none;
   margin: 5px;
   padding: 0;
   li {
-    display: flex;
     margin: 15px;
   }
   a {
