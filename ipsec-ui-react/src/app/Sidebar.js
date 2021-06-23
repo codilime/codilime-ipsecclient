@@ -8,6 +8,8 @@ export default function Sidebar(props) {
 
     const VRFList = props.VRFConnections
 
+    // dodac if statement, ktory sprawdza dlugosc tabeli; jezeli nie jest dodatnia, to wyswietlac sam create
+    // jezeli dlugosc jest > 0 wtedy wyswietlac dane z tablicy wraz z create
 
     return (
         <Router>

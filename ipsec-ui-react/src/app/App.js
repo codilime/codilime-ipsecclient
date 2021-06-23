@@ -27,7 +27,7 @@ export default function App() {
         <div className="app-container">
             <TopBar />
             <Sidebar VRFConnections={VRFConnections} />
-            <MainView VRFDetails={VRFConnections}/>
+            <MainView VRFConnections={VRFConnections}/>
         </div>
     )
 }
