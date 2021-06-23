@@ -6,11 +6,13 @@ import './App.scss';
 
 
 export default function App() {
+    const [VRFsConnectionsList, updateVRFsConnectionsList] = useState([]);
+
 
     return (
         <div className="app-container">
             <TopBar />
-            <Sidebar />
+            <Sidebar VRFsConnectionsList={VRFsConnectionsList} />
             <MainView />
         </div>
     )
