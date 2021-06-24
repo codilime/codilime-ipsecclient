@@ -6,7 +6,6 @@ import {HashRouter as Router, Switch, Route} from 'react-router-dom';
 export default function MainView () {
     // const VRFList = props.VRFConnections;
 
-
     return (
         <div className="main-view-container">
                 <Router>

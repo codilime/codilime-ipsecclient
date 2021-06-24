@@ -9,7 +9,7 @@ export default function App() {
     const [VRFConnections, updateVRFConnections] = useState([]);
 
     async function fetchVRFsData() {
-        const response = await axios.get('http://172.18.0.2/api/vrfs');
+        const response = await axios.get('http://172.18.0.3/api/vrfs');
 
         let data = response.data;
         updateVRFConnections(data);

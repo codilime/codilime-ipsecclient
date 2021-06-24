@@ -4,6 +4,9 @@
   width: 12%;
   height: calc(100% - 64px);
   overflow: auto;
+  p {
+    color: #ffffff;
+  }
 }
 ul {
   list-style: none;
