@@ -152,6 +152,11 @@ func restconfDoPolicy(vrf Vrf, client *http.Client) error {
 	policy := `{
 		"policy": {
 		  "name": "%s",
+		  "match": {
+			"fvrf": {
+			  "any": [null]
+			}
+		  },
 		  "proposal": {
 		    "proposals": "%s"
 		  }
