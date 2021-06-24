@@ -265,7 +265,7 @@ func restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) er
 		  %s
 		  %s
 		  "mode": {
-		    "tunnel": [
+		    "tunnel-choice": [
 		      null
 		    ]
 		  }
