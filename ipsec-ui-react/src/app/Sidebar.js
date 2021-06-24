@@ -18,13 +18,13 @@ export default function Sidebar(props) {
                     <ul>
                         {VRFList.map((item) => (
                             <li key={item.id}>
-                                <Link to={item.client_name}>
+                                <Link to={item.client_name} replace >
                                     {item.client_name}
                                 </Link>
                             </li>
                         ))}
                         <li>
-                            <Link to="/VRF/CREATE">
+                            <Link to="/VRF/CREATE" replace >
                                 <button className="btn new-vrf-button" onClick={onClick}>Add a new VRF</button>
                             </Link>
                         </li>
@@ -39,7 +39,7 @@ export default function Sidebar(props) {
                     <p>No actual VRF connections</p>
                     <ul>
                         <li>
-                            <Link to="/VRF/CREATE" replace>
+                            <Link to="/VRF/CREATE" replace >
                                 <button className="btn new-vrf-button">Add a new VRF</button>
                             </Link>
                         </li>
