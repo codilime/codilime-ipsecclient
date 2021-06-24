@@ -55,13 +55,13 @@
             <td>Crypto phase 1</td>
             <td class=crypto_td>
               <select class="custom-select" [(ngModel)]=crypto_ph1_list[0]>
-                <option *ngFor="let encryption of hardware.encryption">{{encryption}}</option>
+                <option *ngFor="let encryption of hardwarePh1.encryption">{{encryption}}</option>
               </select>
               <select class="custom-select" [(ngModel)]=crypto_ph1_list[1]>
-                <option *ngFor="let integrity of hardware.integrity">{{integrity}}</option>
+                <option *ngFor="let integrity of hardwarePh1.integrity">{{integrity}}</option>
               </select>
               <select class="custom-select" [(ngModel)]=crypto_ph1_list[2]>
-                <option *ngFor="let key_exchange of hardware.key_exchange">{{key_exchange}}</option>
+                <option *ngFor="let key_exchange of hardwarePh1.key_exchange">{{key_exchange}}</option>
               </select>
             </td>
           </tr>
@@ -69,13 +69,13 @@
             <td>Crypto phase 2</td>
             <td class=crypto_td>
               <select class="custom-select" [(ngModel)]=crypto_ph2_list[0]>
-                <option *ngFor="let encryption of hardware.encryption">{{encryption}}</option>
+                <option *ngFor="let encryption of hardwarePh2.encryption">{{encryption}}</option>
               </select>
               <select class="custom-select" [(ngModel)]=crypto_ph2_list[1]>
-                <option *ngFor="let integrity of hardware.integrity">{{integrity}}</option>
+                <option *ngFor="let integrity of hardwarePh2.integrity">{{integrity}}</option>
               </select>
               <select class="custom-select" [(ngModel)]=crypto_ph2_list[2]>
-                <option *ngFor="let key_exchange of hardware.key_exchange">{{key_exchange}}</option>
+                <option *ngFor="let key_exchange of hardwarePh2.key_exchange">{{key_exchange}}</option>
               </select>
             </td>
           </tr>
