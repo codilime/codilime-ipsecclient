@@ -128,21 +128,21 @@ export class AppComponent {
       .subscribe((data) => {
         this.vrfs = data as VRF[];
       });
-    this.httpClient.get("/api/software")
+    this.httpClient.get("/api/algorithms/software")
       .pipe(
         catchError(this.handleError)
       )
       .subscribe((data) => {
         this.software = data as Algorithms;
       });
-      this.httpClient.get("/api/hardware_ph1")
+      this.httpClient.get("/api/algorithms/hardware/ph1")
       .pipe(
         catchError(this.handleError)
       )
       .subscribe((data) => {
         this.hardwarePh1 = data as Algorithms;
       });
-      this.httpClient.get("/api/hardware_ph2")
+      this.httpClient.get("/api/algorithms/hardware/ph2")
       .pipe(
         catchError(this.handleError)
       )

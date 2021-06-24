@@ -15,9 +15,9 @@ const (
 	vrfsPath        = "/api/vrfs"
 	vrfsIDPath      = vrfsPath + "/{id:[0-9]+}"
 	metricsPath     = "/api/metrics"
-	softwarePath    = "/api/software"
-	hardwarePathPh1 = "/api/hardware_ph1"
-	hardwarePathPh2 = "/api/hardware_ph2"
+	softwarePath    = "/api/algorithms/software"
+	hardwarePathPh1 = "/api/algorithms/hardware/ph1"
+	hardwarePathPh2 = "/api/algorithms/hardware/ph2"
 )
 
 type Generator interface {

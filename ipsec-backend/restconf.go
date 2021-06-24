@@ -274,7 +274,7 @@ func restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) er
 
 func containsADigit(str string) bool {
 	for _, c := range str {
-		if _, err := strconv.Atoi(string(c)); err == nil {
+		if c >= '0' && c <= '9' {
 			return true
 		}
 	}
