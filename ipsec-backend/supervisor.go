@@ -99,3 +99,18 @@ func RestartSupervisorProcess(process string) error {
 
 	return nil
 }
+
+func GetProcessLog(name string, offset, length int) (string, error) {
+	client, err := supervisord.NewUnixSocketClient(supervisorSocketPath)
+	if err != nil {
+		return "", err
+	}
+
+	defer func() {
+		if err := client.Close(); err != nil {
+			log.Errorf("Error during closing supervisor connection %v", err)
+		}
+	}()
+
+	return client.ReadProcessStdoutLog(name, offset, length)
+}
