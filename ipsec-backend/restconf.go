@@ -17,13 +17,14 @@ import (
 const switchBase = "https://%s/restconf/data/Cisco-IOS-XE-native:native/"
 
 type endpoint struct {
-	RemoteIPSec string `json:"remote_ip_sec"`
-	LocalIP     string `json:"local_ip"`
-	PeerIP      string `json:"peer_ip"`
-	PSK         string `json:"psk"`
-	RemoteAS    int    `json:"remote_as"`
-	NAT         bool   `json:"nat"`
-	BGP         bool   `json:"bgp"`
+	RemoteIPSec     string `json:"remote_ip_sec"`
+	LocalIP         string `json:"local_ip"`
+	PeerIP          string `json:"peer_ip"`
+	PSK             string `json:"psk"`
+	RemoteAS        int    `json:"remote_as"`
+	NAT             bool   `json:"nat"`
+	BGP             bool   `json:"bgp"`
+	SourceInterface string `json:"source_interface"`
 }
 
 func restconfCreate(vrf Vrf) error {
@@ -325,7 +326,7 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			      }
 			    },
 			    "Cisco-IOS-XE-tunnel:tunnel": {
-			      "source": "GigabitEthernet1",
+			      "source": "%s",
 			      "destination-config": {
 				"ipv4": "%s"
 			      },
@@ -346,7 +347,7 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			}
 			}`
 		tunnelData := fmt.Sprintf(tunnel, tunName, vrf.ClientName+strconv.Itoa(i),
-			endpoint.LocalIP, endpoint.RemoteIPSec, vrf.ClientName)
+			endpoint.LocalIP, endpoint.SourceInterface, endpoint.RemoteIPSec, vrf.ClientName)
 		if err := tryRestconfPatch("interface", tunnelData, client); err != nil {
 			return err
 		}
