@@ -1,6 +1,6 @@
 import React from 'react';
 import './Sidebar.scss';
-import {HashRouter as Router, Link} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
 export default function Sidebar(props) {
     function onClick() {
@@ -13,39 +13,35 @@ export default function Sidebar(props) {
 
     if(VRFList.length > 0) {
         return (
-            <Router>
-                <div className="sidebar-container">
-                    <ul>
-                        {VRFList.map((item) => (
-                            <li key={item.id}>
-                                <Link to={item.client_name} replace >
-                                    {item.client_name}
-                                </Link>
-                            </li>
-                        ))}
-                        <li>
-                            <Link to="/VRF/CREATE" replace >
-                                <button className="btn new-vrf-button" onClick={onClick}>Add a new VRF</button>
+            <div className="sidebar-container">
+                <ul>
+                    {VRFList.map((item, index) => (
+                        <li key={item.id}>
+                            <Link to={"/vrf/" + index} replace >
+                                {item.client_name}
                             </Link>
                         </li>
-                    </ul>
-                </div>
-            </Router>
+                    ))}
+                    <li>
+                        <Link to="/VRF/CREATE" replace >
+                            <button className="btn new-vrf-button" onClick={onClick}>Add a new VRF</button>
+                        </Link>
+                    </li>
+                </ul>
+            </div>
         );
     } else {
         return (
-            <Router>
-                <div className="sidebar-container">
-                    <p>No actual VRF connections</p>
-                    <ul>
-                        <li>
-                            <Link to="/VRF/CREATE" replace >
-                                <button className="btn new-vrf-button">Add a new VRF</button>
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
-            </Router>
+            <div className="sidebar-container">
+                <p>No VRF connections</p>
+                <ul>
+                    <li>
+                        <Link to="/VRF/CREATE" replace >
+                            <button className="btn new-vrf-button" onClick={onClick}>Add a new VRF</button>
+                        </Link>
+                    </li>
+                </ul>
+            </div>
         )
     }
 }
