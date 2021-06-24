@@ -413,6 +413,7 @@ func tryRestconfRequest(method, path, data string, client *http.Client) error {
 }
 
 func restconfDoRequest(method, path, data string, client *http.Client) error {
+	fmt.Printf("%s: %s\n%s\n", method, path, data)
 	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + path
 	req, err := http.NewRequest(method, fullPath, strings.NewReader(data))
 	if err != nil {
