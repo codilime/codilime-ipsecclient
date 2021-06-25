@@ -22,10 +22,11 @@ RUN go build
 FROM alpine:3.13 AS monolith
 
 #Packages
-RUN apk add --no-cache strongswan nginx supervisor gettext jq
+RUN apk add --no-cache strongswan nginx supervisor gettext jq tcpdump sqlite
 RUN apk add --no-cache bird --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
 
 #API
+RUN mkdir -p /iox_data/appdata
 COPY ipsec-backend/templates /templates
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 COPY --from=middleware-build /usr/src/app/ipsec_backend /usr/local/sbin/ipsec_api

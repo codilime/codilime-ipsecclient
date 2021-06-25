@@ -39,6 +39,11 @@ func restconfCreate(vrf Vrf) error {
 		return err
 	}
 
+	// Remove NAT-T as 9300X does not support it yet
+	if err := tryRestconfDelete("crypto/ipsec/nat-transparency", client); err != nil {
+		fmt.Println("NAT-T config already removed, skipping", err)
+	}
+
 	cryptoPh1, err := restconfGetCryptoStrings(string(vrf.CryptoPh1))
 	if err != nil {
 		return err
@@ -265,7 +270,7 @@ func restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) er
 		  %s
 		  %s
 		  "mode": {
-		    "tunnel": [
+		    "tunnel-choice": [
 		      null
 		    ]
 		  }
