@@ -263,6 +263,10 @@ func restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) er
 	if !strings.Contains(cryptoPh2[0], "gcm") {
 		espHmac = fmt.Sprintf(`"esp-hmac":"%s",`, cryptoPh2[1])
 	}
+	tunnelOptionName := "tunnel"
+	if os.Getenv("CAF_SYSTEM_NAME") == "cat9300X" {
+		tunnelOptionName = "tunnel-choice"
+	}
 	transformSet := `{
 		"transform-set": {
 		  "tag": "%s",
@@ -270,13 +274,13 @@ func restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) er
 		  %s
 		  %s
 		  "mode": {
-		    "tunnel-choice": [
+		    "%s": [
 		      null
 		    ]
 		  }
 		}
 		}`
-	transformSetData := fmt.Sprintf(transformSet, vrf.ClientName, esp, keyBit, espHmac)
+	transformSetData := fmt.Sprintf(transformSet, vrf.ClientName, esp, keyBit, espHmac, tunnelOptionName)
 	if err := tryRestconfPatch("crypto/ipsec/transform-set", transformSetData, client); err != nil {
 		return err
 	}
