@@ -17,13 +17,14 @@ import (
 const switchBase = "https://%s/restconf/data/Cisco-IOS-XE-native:native/"
 
 type endpoint struct {
-	RemoteIPSec string `json:"remote_ip_sec"`
-	LocalIP     string `json:"local_ip"`
-	PeerIP      string `json:"peer_ip"`
-	PSK         string `json:"psk"`
-	RemoteAS    int    `json:"remote_as"`
-	NAT         bool   `json:"nat"`
-	BGP         bool   `json:"bgp"`
+	RemoteIPSec     string `json:"remote_ip_sec"`
+	LocalIP         string `json:"local_ip"`
+	PeerIP          string `json:"peer_ip"`
+	PSK             string `json:"psk"`
+	RemoteAS        int    `json:"remote_as"`
+	NAT             bool   `json:"nat"`
+	BGP             bool   `json:"bgp"`
+	SourceInterface string `json:"source_interface"`
 }
 
 func restconfCreate(vrf Vrf) error {
@@ -36,6 +37,11 @@ func restconfCreate(vrf Vrf) error {
 	dbEndpoints := make([]endpoint, 0)
 	if err := json.Unmarshal([]byte(vrf.Endpoints.String()), &dbEndpoints); err != nil {
 		return err
+	}
+
+	// Remove NAT-T as 9300X does not support it yet
+	if err := tryRestconfDelete("crypto/ipsec/nat-transparency", client); err != nil {
+		fmt.Println("NAT-T config already removed, skipping", err)
 	}
 
 	cryptoPh1, err := restconfGetCryptoStrings(string(vrf.CryptoPh1))
@@ -151,6 +157,11 @@ func restconfDoPolicy(vrf Vrf, client *http.Client) error {
 	policy := `{
 		"policy": {
 		  "name": "%s",
+		  "match": {
+			"fvrf": {
+			  "any": [null]
+			}
+		  },
 		  "proposal": {
 		    "proposals": "%s"
 		  }
@@ -259,7 +270,7 @@ func restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) er
 		  %s
 		  %s
 		  "mode": {
-		    "tunnel": [
+		    "tunnel-choice": [
 		      null
 		    ]
 		  }
@@ -325,7 +336,7 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			      }
 			    },
 			    "Cisco-IOS-XE-tunnel:tunnel": {
-			      "source": "GigabitEthernet1",
+			      "source": "%s",
 			      "destination-config": {
 				"ipv4": "%s"
 			      },
@@ -346,7 +357,7 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			}
 			}`
 		tunnelData := fmt.Sprintf(tunnel, tunName, vrf.ClientName+strconv.Itoa(i),
-			endpoint.LocalIP, endpoint.RemoteIPSec, vrf.ClientName)
+			endpoint.LocalIP, endpoint.SourceInterface, endpoint.RemoteIPSec, vrf.ClientName)
 		if err := tryRestconfPatch("interface", tunnelData, client); err != nil {
 			return err
 		}

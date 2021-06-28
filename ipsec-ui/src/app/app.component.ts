@@ -12,6 +12,7 @@ class Endpoint {
   bgp: boolean = false;
   remote_as: number = -1;
   hover: boolean = false;
+  source_interface: string = "";
 };
 
 class VRF {
