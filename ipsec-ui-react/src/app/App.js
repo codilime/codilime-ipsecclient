@@ -2,6 +2,7 @@ import React from 'react';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import DetailVRF from '../pages/DetailVRF';
+import NewVRF from "../pages/NewVRF";
 import './App.scss';
 
 
