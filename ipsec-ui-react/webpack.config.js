@@ -29,6 +29,12 @@ module.exports = {
     },
     plugins: [new webpack.HotModuleReplacementPlugin()],
     devServer: {
+        proxy: {
+          '/api': {
+              target: 'http://172.18.0.2/',
+              secure: false,
+          },
+        },
         contentBase: path.resolve(__dirname, './dist'),
         hot: true,
     },

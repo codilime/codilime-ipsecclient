@@ -23,7 +23,7 @@ export default function Sidebar(props) {
                         </li>
                     ))}
                     <li>
-                        <Link to="/VRF/CREATE" replace >
+                        <Link to="/vrf/create" replace >
                             <button className="btn new-vrf-button" onClick={onClick}>Add a new VRF</button>
                         </Link>
                     </li>
@@ -36,7 +36,7 @@ export default function Sidebar(props) {
                 <p>No VRF connections</p>
                 <ul>
                     <li>
-                        <Link to="/VRF/CREATE" replace >
+                        <Link to="/vrf/create" replace >
                             <button className="btn new-vrf-button" onClick={onClick}>Add a new VRF</button>
                         </Link>
                     </li>
