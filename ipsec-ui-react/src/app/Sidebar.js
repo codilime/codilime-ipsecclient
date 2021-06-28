@@ -3,11 +3,6 @@ import './Sidebar.scss';
 import {Link} from 'react-router-dom';
 
 export default function Sidebar(props) {
-    function onClick() {
-        console.log("I am click");
-    }
-    // console.log("tutaj typeof: ", typeof props.VRFConnections);
-    // console.log("tutaj length: ", props.VRFConnections.length);
 
     const VRFList = props.VRFConnections
 
@@ -24,7 +19,7 @@ export default function Sidebar(props) {
                     ))}
                     <li>
                         <Link to="/vrf/create" replace >
-                            <button className="btn new-vrf-button" onClick={onClick}>Add a new VRF</button>
+                            <button className="btn new-vrf-button">Add a new VRF</button>
                         </Link>
                     </li>
                 </ul>
@@ -37,7 +32,7 @@ export default function Sidebar(props) {
                 <ul>
                     <li>
                         <Link to="/vrf/create" replace >
-                            <button className="btn new-vrf-button" onClick={onClick}>Add a new VRF</button>
+                            <button className="btn new-vrf-button">Add a new VRF</button>
                         </Link>
                     </li>
                 </ul>
@@ -45,4 +40,3 @@ export default function Sidebar(props) {
         )
     }
 }
-

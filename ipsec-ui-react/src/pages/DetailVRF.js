@@ -17,18 +17,69 @@ export default function detailViewVrf(props) {
         <div className="vrf-detail-container">
             /vrf/{detailVRF.client_name}<br />
             <div className="vrf-detail-section-container">
-                main settings
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                VRF Details
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr className="vrf-main-settings-table">
+                            <td>Name:</td>
+                            <td className="break">{detailVRF.client_name}</td>
+                            <td>VLAN:</td>
+                            <td className="break">{detailVRF.vlan}</td>
+                            <td>Crypto phase 1:</td>
+                            <td>{detailVRF.crypto_ph1[0]}</td>
+                            <td>{detailVRF.crypto_ph1[1]}</td>
+                            <td>{detailVRF.crypto_ph1[2]}</td>
+                        </tr>
+                        <tr>
+                            <td className="checkbox-holder">
+                                <input type="checkbox" id="active_checkbox"/>
+                            </td>
+                            <td className="break"><p>Active</p></td>
+                            <td>BGP local as:</td>
+                            <td className="break">{detailVRF.local_as}</td>
+                            <td >Crypto phase 2:</td>
+                            <td>{detailVRF.crypto_ph2[0]}</td>
+                            <td>{detailVRF.crypto_ph2[1]}</td>
+                            <td>{detailVRF.crypto_ph2[2]}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <div className="vrf-detail-section-container">
-                endpoints
+                <table id="endpoints-table">
+                    <thead>
+                    <tr>
+                        <th>
+                            Endpoints
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <th>Remote IP</th>
+                        <th>Local IP</th>
+                        <th>Peer IP</th>
+                        <th>PSK</th>
+                        <th>NAT</th>
+                        <th>BGP</th>
+                        <th>Action</th>
+                        <tr>
+                            <td>a</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <div className="vrf-detail-section-container">
                 visu
             </div>
-            {detailVRF.vlan}<br />
-            {detailVRF.crypto_ph1}<br />
-            {detailVRF.crypto_ph2}<br />
-            <Dump value={detailVRF}/>
+
+            {/*<Dump value={detailVRF}/>*/}
+            <Dump value={detailVRF.endpoints}/>
         </div>
     )
 }

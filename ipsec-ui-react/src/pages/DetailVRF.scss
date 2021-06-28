@@ -2,6 +2,18 @@
   width: 100%;
 }
 .vrf-detail-section-container {
-  margin: 5px 0;
+  margin: 25px 0;
   border: solid black 1px;
+}
+
+td.break {
+  padding: 0 65px 0 0;
+}
+
+#endpoints-table > tbody > th {
+  width: 200px;
+  text-align: left;
+}
+#endpoints-table > thead > tr > th {
+  text-align: left;
 }
