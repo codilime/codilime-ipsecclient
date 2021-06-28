@@ -44,6 +44,8 @@ COPY monolith/ipsec.ini /etc/supervisor.d/
 COPY monolith/ipsec_reload.sh /usr/local/sbin/
 COPY monolith/ipsec_reload.ini /etc/supervisor.d/
 COPY environment/strongswan/content/no_route.conf /etc/strongswan.d/no_route.conf
+COPY monolith/ipsec_reload.ini /etc/supervisor.d/
+COPY monolith/ipsec_reload.sh /usr/local/sbin/
 
 RUN ln -s /etc/swanctl/conf.d /opt/ipsec
 RUN chown -R ipsec:ipsec /etc/swanctl
