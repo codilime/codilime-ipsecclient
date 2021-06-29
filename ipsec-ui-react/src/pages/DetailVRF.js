@@ -61,15 +61,18 @@ export default function detailViewVrf(props) {
                     </tr>
                     </thead>
                     <tbody>
-                        <th>Remote IP</th>
-                        <th>Local IP</th>
-                        <th>Peer IP</th>
-                        <th>PSK</th>
-                        <th>NAT</th>
-                        <th>BGP</th>
-                        <th>Action</th>
                         <tr>
-                            <td>a</td>
+                            <th>Remote IP</th>
+                            <th>Local IP</th>
+                            <th>Peer IP</th>
+                            <th>PSK</th>
+                            <th>NAT</th>
+                            <th>BGP</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr>
+                            <td>s</td>
+                            <td>s2</td>
                         </tr>
                     </tbody>
                 </table>
@@ -80,6 +83,9 @@ export default function detailViewVrf(props) {
 
             {/*<Dump value={detailVRF}/>*/}
             <Dump value={detailVRF.endpoints}/>
+
+            <Dump value={detailVRF.endpoints[0]}/>
+
         </div>
     )
 }
