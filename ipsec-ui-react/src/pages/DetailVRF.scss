@@ -5,11 +5,12 @@
   margin: 25px 0;
   border: solid black 1px;
 }
-
 td.break {
   padding: 0 65px 0 0;
 }
-
+#endpoints-table tr:nth-child(odd) {
+  background-color: rgba(167,167,167,0.74);
+}
 #endpoints-table > tbody > tr > th {
   width: 230px;
   text-align: left;

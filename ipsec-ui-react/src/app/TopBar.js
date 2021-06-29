@@ -7,7 +7,7 @@ export default function TopBar() {
         <div className="topbar-container">
             <img className="topbar-item" src={ciscoLogo} alt="cisco logo"/>
             <p className="topbar-item">
-                Product name
+                IPsec User Interface
             </p>
         </div>
     )
