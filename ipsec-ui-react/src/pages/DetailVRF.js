@@ -1,6 +1,7 @@
 import React from 'react';
 import Dump from "../components/Dump";
 import './DetailVRF.scss';
+import {v4 as uuidv4} from 'uuid';
 
 export default function detailViewVrf(props) {
     const detailVRF = props.VRFdata;
@@ -72,7 +73,7 @@ export default function detailViewVrf(props) {
                         </tr>
                             {detailVRF && detailVRF.endpoints && detailVRF.endpoints.map(function(endpoint) {
                                 return (
-                                    <tr key={detailVRF.id}>
+                                    <tr key={uuidv4()}>
                                         <td>{endpoint.remote_ip_sec}</td>
                                         <td>{endpoint.local_ip}</td>
                                         <td>{endpoint.peer_ip}</td>
