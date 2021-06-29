@@ -1,7 +1,6 @@
 import React from 'react';
 import './DetailVRF.scss';
 import {v4 as uuidv4} from 'uuid';
-import Dump from "../components/Dump";
 
 export default function detailViewVrf(props) {
     const detailVRF = props.VRFdata;
@@ -91,7 +90,6 @@ export default function detailViewVrf(props) {
             <div className="vrf-detail-section-container">
                 visu
             </div>
-            <Dump value={detailVRF.endpoints} />
         </div>
     )
 }

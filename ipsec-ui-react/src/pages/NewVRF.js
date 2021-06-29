@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './NewVRF.scss'
 
 export default function NewVRF({routeProps}) {
+    const [VRFName, updateVRFName] = useState("");
 
     return (
         <div className="new-vrf-connection-wrapper">
@@ -42,6 +43,7 @@ export default function NewVRF({routeProps}) {
                     </tr>
                     </tbody>
                 </table>
+                <button className="btn">Save</button>
             </div>
             <div className="new-vrf-data-container">
                 endpoints table
