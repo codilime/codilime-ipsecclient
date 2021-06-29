@@ -22,7 +22,6 @@ export default function App() {
         fetchVRFsData();
     }, []);
 
-
     return (
         <Router>
             <div className="app-container">

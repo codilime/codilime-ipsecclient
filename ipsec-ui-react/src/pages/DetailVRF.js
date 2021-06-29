@@ -1,9 +1,9 @@
 import React from 'react';
-import Dump from "../components/Dump";
 import './DetailVRF.scss';
 import {v4 as uuidv4} from 'uuid';
 
 export default function detailViewVrf(props) {
+
     const detailVRF = props.VRFdata;
 
     if(detailVRF == null){
@@ -80,7 +80,9 @@ export default function detailViewVrf(props) {
                                         <td>{endpoint.psk}</td>
                                         <td>{endpoint.nat}</td>
                                         <td>{endpoint.bgp}</td>
-                                        <td>EDIT button</td>
+                                        <td>
+                                            <button className="btn edit-btn">...</button>
+                                        </td>
                                      </tr>
                                 )
                             })}
@@ -90,11 +92,6 @@ export default function detailViewVrf(props) {
             <div className="vrf-detail-section-container">
                 visu
             </div>
-
-            {/*<Dump value={detailVRF}/>*/}
-            <Dump value={detailVRF.endpoints}/>
-            {/*<Dump value={detailVRF.endpoints[0]}/>*/}
-
         </div>
     )
 }
