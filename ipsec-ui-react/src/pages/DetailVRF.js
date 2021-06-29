@@ -70,10 +70,19 @@ export default function detailViewVrf(props) {
                             <th>BGP</th>
                             <th>Action</th>
                         </tr>
-                        <tr>
-                            <td>s</td>
-                            <td>s2</td>
-                        </tr>
+                            {detailVRF && detailVRF.endpoints && detailVRF.endpoints.map(function(endpoint) {
+                                return (
+                                    <tr key={detailVRF.id}>
+                                        <td>{endpoint.remote_ip_sec}</td>
+                                        <td>{endpoint.local_ip}</td>
+                                        <td>{endpoint.peer_ip}</td>
+                                        <td>{endpoint.psk}</td>
+                                        <td>{endpoint.nat}</td>
+                                        <td>{endpoint.bgp}</td>
+                                        <td>EDIT button</td>
+                                     </tr>
+                                )
+                            })}
                     </tbody>
                 </table>
             </div>
@@ -83,8 +92,7 @@ export default function detailViewVrf(props) {
 
             {/*<Dump value={detailVRF}/>*/}
             <Dump value={detailVRF.endpoints}/>
-
-            <Dump value={detailVRF.endpoints[0]}/>
+            {/*<Dump value={detailVRF.endpoints[0]}/>*/}
 
         </div>
     )
