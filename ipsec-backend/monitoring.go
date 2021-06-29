@@ -15,15 +15,27 @@ func metrics(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 	}
-	bird, err := GetBirdState()
+	birdBgp, err := GetBirdState()
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
+	}
+	hwBgp, err := GetHWBGP()
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+	}
+
+	sumBgp := map[string]string{}
+	for k, v := range birdBgp {
+		sumBgp[k] = v
+	}
+	for k, v := range hwBgp {
+		sumBgp[k] = v
 	}
 
 	res := map[string]interface{}{
 		"strongswan": strongswan,
 		"supervisor": supervisor,
-		"bird":       bird,
+		"bird":       sumBgp,
 	}
 	respondWithJSON(w, http.StatusOK, res)
 }
