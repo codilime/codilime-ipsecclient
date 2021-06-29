@@ -5,114 +5,43 @@ import (
 	"net/http"
 )
 
-var testRoutes string = `{
-	"Cisco-IOS-XE-bgp-oper:bgp-route-neighbors": {
-	  "bgp-route-neighbor": [
-	    {
-	      "nbr-id": "192.168.1.1",
-	      "bgp-neighbor-route-filters": {
-		"bgp-neighbor-route-filter": [
-		  {
-		    "nbr-fltr": "bgp-nrf-post-received",
-		    "bgp-neighbor-route-entries": {
-		      "bgp-neighbor-route-entry": [
-			{
-			  "prefix": "172.19.1.0/24",
-			  "version": 2,
-			  "available-paths": 1,
-			  "advertised-to": "",
-			  "bgp-neighbor-path-entries": {
-			    "bgp-neighbor-path-entry": [
-			      {
-				"nexthop": "192.168.1.1",
-				"metric": 0,
-				"local-pref": 100,
-				"weight": 0,
-				"as-path": "65001",
-				"origin": "origin-igp",
-				"path-status": {
-				  "valid": [null],
-				  "bestpath": [null]
-				},
-				"rpki-status": "rpki-not-enabled",
-				"community": "",
-				"mpls-in": "",
-				"mpls-out": "",
-				"sr-profile-name": "",
-				"sr-binding-sid": 0,
-				"sr-label-indx": 0,
-				"as4-path": "",
-				"atomic-aggregate": false,
-				"aggr-as-number": 0,
-				"aggr-as4-number": 0,
-				"aggr-address": "",
-				"originator-id": "",
-				"cluster-list": "",
-				"extended-community": "",
-				"ext-aigp-metric": "0",
-				"path-id": 0,
-				"path-origin": "external-path"
-			      }
-			    ]
-			  }
-			},
-			{
-			  "prefix": "192.168.1.2/32",
-			  "version": 3,
-			  "available-paths": 1,
-			  "advertised-to": "",
-			  "bgp-neighbor-path-entries": {
-			    "bgp-neighbor-path-entry": [
-			      {
-				"nexthop": "192.168.1.1",
-				"metric": 0,
-				"local-pref": 100,
-				"weight": 0,
-				"as-path": "65001",
-				"origin": "origin-igp",
-				"path-status": {
-				  "valid": [null],
-				  "bestpath": [null],
-				  "rib-fail": [null]
-				},
-				"rpki-status": "rpki-not-enabled",
-				"community": "",
-				"mpls-in": "",
-				"mpls-out": "",
-				"sr-profile-name": "",
-				"sr-binding-sid": 0,
-				"sr-label-indx": 0,
-				"as4-path": "",
-				"atomic-aggregate": false,
-				"aggr-as-number": 0,
-				"aggr-as4-number": 0,
-				"aggr-address": "",
-				"originator-id": "",
-				"cluster-list": "",
-				"extended-community": "",
-				"ext-aigp-metric": "0",
-				"path-id": 0,
-				"path-origin": "external-path"
-			      }
-			    ]
-			  }
-			}
-		      ]
-		    }
-		  }
-		]
-	      }
-	    }
-	  ]
+func GetHWRoutes() (map[string][]string, error) {
+	ret := map[string][]string{}
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
 	}
-      }`
+	routeNeighbors, err := restconfGetData("Cisco-IOS-XE-bgp-oper:bgp-state-data/bgp-route-vrfs/bgp-route-vrf=default/bgp-route-afs/bgp-route-af=ipv4-unicast/bgp-route-neighbors", client)
+	if err != nil {
+		return ret, err
+	}
+	innerRouteNeighbors := routeNeighbors["Cisco-IOS-XE-bgp-oper:bgp-route-neighbors"].(map[string]interface{})["bgp-route-neighbor"].([]interface{})
+	for _, n := range innerRouteNeighbors {
+		neighbor := n.(map[string]interface{})
+		routeFilters := neighbor["bgp-neighbor-route-filters"].(map[string]interface{})["bgp-neighbor-route-filter"].([]interface{})
+		for _, f := range routeFilters {
+			routeFilter := f.(map[string]interface{})
+			routeEntries, ok := routeFilter["bgp-neighbor-route-entries"].(map[string]interface{})
+			if !ok {
+				continue
+			}
+			routeEntries2 := routeEntries["bgp-neighbor-route-entry"].([]interface{})
+			for _, e := range routeEntries2 {
+				routeEntry := e.(map[string]interface{})
+				prefix := routeEntry["prefix"].(string)
+				pathEntries := routeEntry["bgp-neighbor-path-entries"].(map[string]interface{})["bgp-neighbor-path-entry"].([]interface{})
+				paths := []string{}
+				for _, p := range pathEntries {
+					pathEntry := p.(map[string]interface{})
+					paths = append(paths, pathEntry["nexthop"].(string))
+				}
+				ret[prefix] = paths
+			}
+		}
+	}
 
-func hwMetrics() {
-
-}
-
-func hwMetricsName(w http.ResponseWriter, r *http.Request) {
-
+	return ret, nil
 }
 
 func GetHWBGP() (map[string]string, error) {

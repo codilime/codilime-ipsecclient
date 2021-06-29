@@ -109,7 +109,7 @@ export class AppComponent {
     if (!this.currentVRF.active) {
       return;
     }
-    this.httpClient.get("/api/metrics/" + this.currentVRF.vlan + "-" + this.currentVRF.client_name)
+    this.httpClient.get("/api/metrics/" + this.currentVRF.id)
       .pipe(
         catchError(this.handleError)
       )
