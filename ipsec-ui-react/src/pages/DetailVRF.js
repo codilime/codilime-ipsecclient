@@ -8,7 +8,7 @@ export default function detailViewVrf(props) {
     if(detailVRF == null){
         return(
             <div>
-                error, no data
+                error, no active VRFs
             </div>
         )
     }

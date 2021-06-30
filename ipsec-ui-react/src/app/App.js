@@ -23,7 +23,7 @@ export default function App() {
         const response = await axios.get('api/software');
 
         let data = response.data;
-        if (Array.isArray(data)) {
+        if (data && Object.keys(data).length > 0) {
             updateCryptoPhaseEncryption(data);
         }
     }
