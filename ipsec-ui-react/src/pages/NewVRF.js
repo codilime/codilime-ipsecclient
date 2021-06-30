@@ -1,8 +1,12 @@
 import React, {useState} from 'react';
 import './NewVRF.scss'
+import Dump from "../components/Dump";
 
-export default function NewVRF({routeProps}) {
+export default function NewVRF({routeProps}, props) {
     const [VRFName, updateVRFName] = useState("");
+
+    const crypto = props.cryptoPhaseEncryption;
+
 
     return (
         <div className="new-vrf-connection-wrapper">
@@ -20,8 +24,12 @@ export default function NewVRF({routeProps}) {
                     </thead>
                     <tbody>
                     <tr className="vrf-main-settings-table">
-                        <td>Name:</td>
-                        <td className="break">input</td>
+                        <td>
+                            <label for="client_name">Name:</label>
+                        </td>
+                        <td className="break">
+                            <input type="text" id="client_name"/>
+                        </td>
                         <td>VLAN:</td>
                         <td className="break">select</td>
                         <td>Crypto phase 1:</td>
@@ -51,6 +59,7 @@ export default function NewVRF({routeProps}) {
             <div className="new-vrf-data-container">
                 visualization
             </div>
+            <Dump value={crypto} />
         </div>
     );
 }

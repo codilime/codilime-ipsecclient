@@ -5,7 +5,7 @@ import {v4 as uuidv4} from 'uuid';
 
 export default function Sidebar(props) {
 
-    const VRFList = props.VRFConnections
+    const VRFList = props.VRFConnections;
 
     if(VRFList.length > 0) {
         return (
