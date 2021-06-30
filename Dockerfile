@@ -62,3 +62,12 @@ COPY environment/supervisor/content/ipsec.sh /usr/local/sbin/
 RUN ln -s /etc/supervisor.d /opt/super
 
 CMD /usr/bin/supervisord -n -c /etc/supervisord.conf
+
+LABEL cisco.descriptor-schema-version="2.12" \
+           cisco.info.author-link="https://www.codilime.com" \
+           cisco.info.author-name="Codilime Sp. z.o.o" \
+           cisco.resources.profile=custom \
+           cisco.resources.cpu=54 \
+           cisco.resources.memory=256
+
+EXPOSE 80
