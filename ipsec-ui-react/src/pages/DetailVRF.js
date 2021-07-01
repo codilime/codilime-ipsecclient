@@ -1,5 +1,6 @@
 import React from 'react';
 import './DetailVRF.scss';
+import './NewVRF.scss';
 import {v4 as uuidv4} from 'uuid';
 import Dump from "../components/Dump";
 
@@ -17,39 +18,77 @@ export default function detailViewVrf(props) {
         <div className="vrf-detail-container">
             /vrf/{detailVRF.client_name}<br />
             <div className="vrf-detail-section-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>
-                                VRF Details
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="vrf-main-settings-table">
-                            <td>Name:</td>
-                            <td className="break">{detailVRF.client_name}</td>
-                            <td>VLAN:</td>
-                            <td className="break">{detailVRF.vlan}</td>
-                            <td>Crypto phase 1:</td>
-                            <td>{detailVRF.crypto_ph1[0]}</td>
-                            <td>{detailVRF.crypto_ph1[1]}</td>
-                            <td>{detailVRF.crypto_ph1[2]}</td>
-                        </tr>
-                        <tr>
-                            <td className="checkbox-holder">
-                                <input type="checkbox" id="active_checkbox"/>
-                            </td>
-                            <td className="break"><p>Active</p></td>
-                            <td>BGP local as:</td>
-                            <td className="break">{detailVRF.local_as}</td>
-                            <td >Crypto phase 2:</td>
-                            <td>{detailVRF.crypto_ph2[0]}</td>
-                            <td>{detailVRF.crypto_ph2[1]}</td>
-                            <td>{detailVRF.crypto_ph2[2]}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div className="vrf-details-bar">VRF Details</div>
+                <form>
+                    {/*inputs need to have onChange property responsible for updating its state, ie name change and so on*/}
+                    <div className="vrf-column-1">
+                        <div className="vrf-column-item">
+                            <label htmlFor="client_name">Name:</label>
+                            <input type="text" name="client_name" id="client_name" readOnly={detailVRF.client_name} value={detailVRF.client_name}/>
+                        </div>
+                        <div className="vrf-column-item">
+                            <input type="checkbox" name="active" id="active"/>
+                            <label htmlFor="Active">Active</label>
+                        </div>
+                    </div>
+                    <div className="vrf-column-2">
+                        <div className="vrf-column-item">
+                            <label htmlFor="vlan">VLAN</label>
+                            <input type="number" name="vlan" id="vlan" step="1" readOnly={detailVRF.vlan} value={detailVRF.vlan}/>
+                        </div>
+                        <div className="vrf-column-item">
+                            <label htmlFor="local_as">BGP local AS</label>
+                            <input type="number" name="local_as" id="local_as" step="1" readOnly={detailVRF.local_as} value={detailVRF.local_as}/>
+                        </div>
+                    </div>
+                    <div className="vrf-column-3">
+                        <div className="vrf-crypto-container">
+                            <label htmlFor="crypto_ph1">Crypto phase 1</label>
+                            <input type="text" id="crypto_ph1_1" name="crypto_ph1" readOnly={detailVRF.crypto_ph1[0]} value={detailVRF.crypto_ph1[0]} />
+                            <input type="text" id="crypto_ph1_2" name="crypto_ph1" readOnly={detailVRF.crypto_ph1[1]} value={detailVRF.crypto_ph1[1]} />
+                            <input type="text" id="crypto_ph1_3" name="crypto_ph1" readOnly={detailVRF.crypto_ph1[2]} value={detailVRF.crypto_ph1[2]} />
+                        </div>
+                        <div className="vrf-crypto-container">
+                            <label htmlFor="crypto_ph2">Crypto phase 2</label>
+                            <input type="text" id="crypto_ph2_1" name="crypto_ph2" readOnly={detailVRF.crypto_ph2[0]} value={detailVRF.crypto_ph2[0]} />
+                            <input type="text" id="crypto_ph2_2" name="crypto_ph2" readOnly={detailVRF.crypto_ph2[1]} value={detailVRF.crypto_ph2[1]} />
+                            <input type="text" id="crypto_ph2_3" name="crypto_ph2" readOnly={detailVRF.crypto_ph2[2]} value={detailVRF.crypto_ph2[2]} />
+                        </div>
+                    </div>
+                </form>
+                {/*<table>*/}
+                {/*    <thead>*/}
+                {/*        <tr>*/}
+                {/*            <th>*/}
+                {/*                VRF Details*/}
+                {/*            </th>*/}
+                {/*        </tr>*/}
+                {/*    </thead>*/}
+                {/*    <tbody>*/}
+                {/*        <tr className="vrf-main-settings-table">*/}
+                {/*            <td>Name:</td>*/}
+                {/*            <td className="break">{detailVRF.client_name}</td>*/}
+                {/*            <td>VLAN:</td>*/}
+                {/*            <td className="break">{detailVRF.vlan}</td>*/}
+                {/*            <td>Crypto phase 1:</td>*/}
+                {/*            <td>{detailVRF.crypto_ph1[0]}</td>*/}
+                {/*            <td>{detailVRF.crypto_ph1[1]}</td>*/}
+                {/*            <td>{detailVRF.crypto_ph1[2]}</td>*/}
+                {/*        </tr>*/}
+                {/*        <tr>*/}
+                {/*            <td className="checkbox-holder">*/}
+                {/*                <input type="checkbox" id="active_checkbox"/>*/}
+                {/*            </td>*/}
+                {/*            <td className="break"><p>Active</p></td>*/}
+                {/*            <td>BGP local as:</td>*/}
+                {/*            <td className="break">{detailVRF.local_as}</td>*/}
+                {/*            <td >Crypto phase 2:</td>*/}
+                {/*            <td>{detailVRF.crypto_ph2[0]}</td>*/}
+                {/*            <td>{detailVRF.crypto_ph2[1]}</td>*/}
+                {/*            <td>{detailVRF.crypto_ph2[2]}</td>*/}
+                {/*        </tr>*/}
+                {/*    </tbody>*/}
+                {/*</table>*/}
             </div>
             <div className="vrf-detail-section-container">
                 <table id="endpoints-table">
@@ -89,7 +128,8 @@ export default function detailViewVrf(props) {
                 </table>
             </div>
             <div className="vrf-detail-section-container">
-                visu
+
+
             </div>
             <Dump value={detailVRF} />
         </div>

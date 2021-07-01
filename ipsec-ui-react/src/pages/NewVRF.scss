@@ -11,8 +11,11 @@
   background-color: rgba(167,167,167,0.74);
   width: 100%
 }
+form {
+  display: flex;
+}
 .vrf-column-1 {
-  width: 17%;
+  width: 25%;
 }
 .vrf-column-2 {
   width: 25%;
@@ -24,18 +27,14 @@
   width: 100%;
   margin: 5px;
 }
-
 input, select {
   margin: 5px;
 }
 .vrf-crypto-container {
   width: 100%;
   margin: 5px;
+}
 
-}
-form {
-  display: flex;
-}
 
 
 
