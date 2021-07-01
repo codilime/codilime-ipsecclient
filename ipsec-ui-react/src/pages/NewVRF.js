@@ -1,18 +1,9 @@
 import React from 'react';
-import {Form, Field, Formik} from "formik";
 import './NewVRF.scss'
 import Dump from "../components/Dump";
-import * as Yup from 'yup';
+import {v4 as uuidv4} from "uuid";
 
 export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
-
-    const newVRFValidation = Yup.object(). shape({
-        client_name: Yup.string()
-            .min(2, "Too short")
-            .max(32, "Too long")
-            .required('Required')
-    });
-
 
     return (
         <div className="new-vrf-connection-wrapper">
@@ -20,28 +11,85 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
                 {routeProps.location.pathname}
             </div>
             <div className="new-vrf-data-container">
-                <Formik
-                    initialValues={{ client_name: ''}}
-                    validationSchema={newVRFValidation}
-                    onSubmit={(values, { setSubmitting }) => {
-                        setTimeout(() => {
-                            alert(JSON.stringify(values, null, 2));
-                            setSubmitting(false);
-                        }, 400);
-                    }}
-                >
-                    {({ errors, touched, isSubmitting}) => (
-                        <Form>
-                            <Field type="text" name="client_name" />
-                            {errors.client_name && touched.client_name ? (
-                                <div>{errors.client_name}</div>
-                            ) : null}
-                            <button type="submit" disabled={isSubmitting}>
-                                Submit
-                            </button>
-                        </Form>
-                    )}
-                </Formik>
+                <div className="vrf-details-bar">VRF Details</div>
+                <form>
+                    <div className="vrf-column">
+                        <div className="vrf-column-item">
+                            <label htmlFor="client_name">Name:</label>
+                            <input type="text" name="client_name" id="client_name"/>
+                        </div>
+                        <div className="vrf-column-item">
+                            <input type="checkbox" name="active" id="active"/>
+                            <label htmlFor="Active">Active</label>
+                        </div>
+                    </div>
+                    <div className="vrf-column">
+                        <div className="vrf-column-item">
+                            <label htmlFor="vlan">VLAN</label>
+                            <input type="number" name="vlan" id="vlan" step="1" value="0"/>
+                        </div>
+                        <div className="vrf-column-item">
+                            <label htmlFor="local_as">BGP local AS</label>
+                            <input type="number" name="local_as" id="local_as" step="1" value="0"/>
+                        </div>
+                    </div>
+                    <div className="vrf-column">
+                        <div className="vrf-crypto-container">
+                           <label htmlFor="crypto_ph1">Crypto phase 1</label>
+                            <select id="crypto_ph1" name="crypto_ph1">
+                                {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
+                                && cryptoPhaseEncryption.encryption.map(function(element) {
+                                    return (
+                                        <option value={element} key={uuidv4()}>{element}</option>
+                                    )
+                                })}
+                            </select>
+                            <select id="crypto_ph1" name="crypto_ph1">
+                                {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
+                                && cryptoPhaseEncryption.integrity.map(function(element) {
+                                    return (
+                                        <option value={element} key={uuidv4()}>{element}</option>
+                                    )
+                                })}
+                            </select>
+                            <select id="crypto_ph1" name="crypto_ph1">
+                                {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
+                                && cryptoPhaseEncryption.key_exchange.map(function(element) {
+                                    return (
+                                        <option value={element} key={uuidv4()}>{element}</option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+                        <div className="vrf-crypto-container">
+                            <label htmlFor="crypto_ph2">Crypto phase 2</label>
+                            <select id="crypto_ph2" name="crypto_ph2">
+                                {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
+                                && cryptoPhaseEncryption.encryption.map(function(element) {
+                                    return (
+                                        <option value={element} key={uuidv4()}>{element}</option>
+                                    )
+                                })}
+                            </select>
+                            <select id="crypto_ph1" name="crypto_ph1">
+                                {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
+                                && cryptoPhaseEncryption.integrity.map(function(element) {
+                                    return (
+                                        <option value={element} key={uuidv4()}>{element}</option>
+                                    )
+                                })}
+                            </select>
+                            <select id="crypto_ph1" name="crypto_ph1">
+                                {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
+                                && cryptoPhaseEncryption.key_exchange.map(function(element) {
+                                    return (
+                                        <option value={element} key={uuidv4()}>{element}</option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div className="new-vrf-data-container">
                 endpoints table
@@ -49,7 +97,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
             <div className="new-vrf-data-container">
                 visualization
             </div>
-            <Dump value={cryptoPhaseEncryption} />
+            <Dump value={cryptoPhaseEncryption.encryption} />
         </div>
     );
 }

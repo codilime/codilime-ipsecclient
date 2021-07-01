@@ -3,13 +3,30 @@
   width: 100%;
   flex-direction: column;
 }
-.new-vrf-top-bar {
-  display: inline-flex;
-  justify-content: space-between;
-}
 .new-vrf-data-container {
   width: 100%;
-  height: 200px;
-  border: solid 1px black;
   margin: 25px 0;
 }
+.vrf-details-bar {
+  background-color: rgba(167,167,167,0.74);
+  margin-bottom: 3px;
+  width: 100%
+}
+.vrf-column {
+  width: 30%;
+}
+.vrf-column-item {
+  width: 100%;
+}
+label {
+  margin: 5px;
+}
+input {
+  margin: 5px;
+}
+.vrf-crypto-container {
+  width: 48%;
+}
+
+
+
