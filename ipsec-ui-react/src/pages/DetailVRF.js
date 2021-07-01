@@ -20,7 +20,8 @@ export default function detailViewVrf(props) {
             <div className="vrf-detail-section-container">
                 <div className="vrf-details-bar">VRF Details</div>
                 <form>
-                    {/*inputs need to have onChange property responsible for updating its state, ie name change and so on*/}
+                    {/*inputs need to have onChange property responsible for updating its state, ie name change and so on
+                    additionally active checkbox needs a some kind of a handler to display proper value*/}
                     <div className="vrf-column-1">
                         <div className="vrf-column-item">
                             <label htmlFor="client_name">Name:</label>
@@ -121,15 +122,14 @@ export default function detailViewVrf(props) {
                                         <td>
                                             <button className="btn edit-btn">...</button>
                                         </td>
-                                     </tr>
+                                    </tr>
                                 )
                             })}
                     </tbody>
                 </table>
             </div>
             <div className="vrf-detail-section-container">
-
-
+                visu
             </div>
             <Dump value={detailVRF} />
         </div>
