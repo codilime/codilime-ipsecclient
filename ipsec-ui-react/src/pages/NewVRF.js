@@ -13,7 +13,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
             <div className="new-vrf-data-container">
                 <div className="vrf-details-bar">VRF Details</div>
                 <form>
-                    <div className="vrf-column">
+                    <div className="vrf-column-1">
                         <div className="vrf-column-item">
                             <label htmlFor="client_name">Name:</label>
                             <input type="text" name="client_name" id="client_name"/>
@@ -23,17 +23,17 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
                             <label htmlFor="Active">Active</label>
                         </div>
                     </div>
-                    <div className="vrf-column">
+                    <div className="vrf-column-2">
                         <div className="vrf-column-item">
                             <label htmlFor="vlan">VLAN</label>
-                            <input type="number" name="vlan" id="vlan" step="1" value="0"/>
+                            <input type="number" name="vlan" id="vlan" step="1"/>
                         </div>
                         <div className="vrf-column-item">
                             <label htmlFor="local_as">BGP local AS</label>
-                            <input type="number" name="local_as" id="local_as" step="1" value="0"/>
+                            <input type="number" name="local_as" id="local_as" step="1"/>
                         </div>
                     </div>
-                    <div className="vrf-column">
+                    <div className="vrf-column-3">
                         <div className="vrf-crypto-container">
                            <label htmlFor="crypto_ph1">Crypto phase 1</label>
                             <select id="crypto_ph1" name="crypto_ph1">

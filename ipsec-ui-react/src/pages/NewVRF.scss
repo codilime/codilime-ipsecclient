@@ -9,23 +9,32 @@
 }
 .vrf-details-bar {
   background-color: rgba(167,167,167,0.74);
-  margin-bottom: 3px;
   width: 100%
 }
-.vrf-column {
-  width: 30%;
+.vrf-column-1 {
+  width: 17%;
+}
+.vrf-column-2 {
+  width: 25%;
+}
+.vrf-column-3 {
+  width: 60%;
 }
 .vrf-column-item {
   width: 100%;
-}
-label {
   margin: 5px;
 }
-input {
+
+input, select {
   margin: 5px;
 }
 .vrf-crypto-container {
-  width: 48%;
+  width: 100%;
+  margin: 5px;
+
+}
+form {
+  display: flex;
 }
 
 
