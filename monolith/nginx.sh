@@ -2,35 +2,40 @@
 
 DIR="/etc/nginx/conf.d/"
 
-iptables -P INPUT ACCEPT
-iptables -F
-iptables -A INPUT -i lo -j ACCEPT
-iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-iptables -A INPUT -p udp --dport 500 -j ACCEPT
-iptables -A INPUT -p udp --dport 4500 -j ACCEPT
-iptables -A INPUT -p tcp --dport 179 -j ACCEPT
-iptables -A INPUT -p icmp -j ACCEPT
-iptables -A INPUT -i eth1 -j ACCEPT
-#iptables -A INPUT -i eth0 -j ACCEPT
-#iptables -A INPUT -i ipsec+ -j ACCEPT
-#iptables -A INPUT -i vrf+ -j ACCEPT
+#Run only when eth1 exists
 
-iptables -P INPUT DROP
-iptables -P FORWARD ACCEPT
-iptables -P OUTPUT ACCEPT
+if ip link show eth1 > /dev/null 2>&1; then 
 
-#MGT_IP=`ip -4 -json addr|jq -r '.[] | select(.ifname=="eth1") | .addr_info| .[].local'`
-MGT_GW=`ip -4 -json route |jq -r '.[] | select(.dev=="eth1" and .dst=="default") | .gateway'`
+    iptables -P INPUT ACCEPT
+    iptables -F
+    iptables -A INPUT -i lo -j ACCEPT
+    iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+    iptables -A INPUT -p udp --dport 500 -j ACCEPT
+    iptables -A INPUT -p udp --dport 4500 -j ACCEPT
+    iptables -A INPUT -p tcp --dport 179 -j ACCEPT
+    iptables -A INPUT -p icmp -j ACCEPT
+    iptables -A INPUT -i eth1 -j ACCEPT
+    #iptables -A INPUT -i eth0 -j ACCEPT
+    #iptables -A INPUT -i ipsec+ -j ACCEPT
+    #iptables -A INPUT -i vrf+ -j ACCEPT
 
-ping -c 5 $MGT_GW 2> /dev/null
+    iptables -P INPUT DROP
+    iptables -P FORWARD ACCEPT
+    iptables -P OUTPUT ACCEPT
 
-#ip route del 0.0.0.0/0 via $MGT_GW
-#ip route add 0.0.0.0/0 via $MGT_GW table 10000
+    #MGT_IP=`ip -4 -json addr|jq -r '.[] | select(.ifname=="eth1") | .addr_info| .[].local'`
+    MGT_GW=`ip -4 -json route |jq -r '.[] | select(.dev=="eth1" and .dst=="default") | .gateway'`
 
-#ip rule add to $MGT_IP/32 table 10000
-#ip rule add from $MGT_IP/32 table 10000
+    ping -c 5 $MGT_GW 2> /dev/null
 
-ip addr flush dev eth0
+    #ip route del 0.0.0.0/0 via $MGT_GW
+    #ip route add 0.0.0.0/0 via $MGT_GW table 10000
+
+    #ip rule add to $MGT_IP/32 table 10000
+    #ip rule add from $MGT_IP/32 table 10000
+
+    ip addr flush dev eth0
+fi
 
 for file in $DIR/*.template; do
     envsubst < $file > $DIR/`basename $file .template`
