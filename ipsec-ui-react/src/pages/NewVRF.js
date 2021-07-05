@@ -2,26 +2,31 @@ import React, {useState} from 'react';
 import './NewVRF.scss'
 import Dump from "../components/Dump";
 import {v4 as uuidv4} from "uuid";
+import axios from "axios";
+
 
 export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
     const [vrfName, updateVrfName] = useState("");
     const [vlanValue, updateVlanValue] = useState("-1");
     const [bgpValue, updateBgpValue] = useState("-1");
-    const [cryptoPh1, updateCryptoPh1] = useState([]);
-    const [cryptoPh2, updateCryptoPh2] = useState([])
-
-    const saveButton = document.getElementById("submit-vrf-button");
-    if(vrfName) {
-        saveButton.removeAttribute("disabled");
-    } else {
-        saveButton.setAttribute("disabled", "disabled");
-    }
+    const [cryptoPh1_1, updateCryptoPh1_1] = useState("");
+    const [cryptoPh1_2, updateCryptoPh1_2] = useState("");
+    const [cryptoPh1_3, updateCryptoPh1_3] = useState("");
+    const [cryptoPh2_1, updateCryptoPh2_1] = useState("");
+    const [cryptoPh2_2, updateCryptoPh2_2] = useState("");
+    const [cryptoPh2_3, updateCryptoPh2_3] = useState("");
 
     function saveCryptoData(event) {
-        // event.preventDefault();
-        console.log("updating");
-        // updateCryptoPh1();
-        // updateCryptoPh2();
+        event.preventDefault();
+        // console.log("updating");
+        // console.log([[cryptoPh1_1, cryptoPh1_2, cryptoPh1_3].join(",")]);
+        axios.post("/api/vrfs", {
+            client_name: vrfName,
+            vlan: vlanValue,
+            local_as: bgpValue,
+            crypto_ph1: [[cryptoPh1_1, cryptoPh1_2, cryptoPh1_3].join(",")],
+            crypto_ph2: [[cryptoPh1_1, cryptoPh1_2, cryptoPh1_3].join(",")],
+        })
     }
 
     return (
@@ -41,24 +46,24 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
                             <input type="checkbox" name="active" id="active"/>
                             <label htmlFor="Active">Active</label>
                         </div>
-                        <button className="btn" id="submit-vrf-button" onClick={saveCryptoData} disabled>Save changes</button>
+                        <button className="btn" id="submit-vrf-button" onClick={saveCryptoData}>Save changes</button>
                     </div>
                     <div className="vrf-column-2">
                         <div className="vrf-column-item-number">
                             <label htmlFor="vlan">VLAN</label>
-                            <input type="number" name="vlan" id="vlan" step="1" defaultValue={vlanValue}
+                            <input type="number" name="vlan" id="vlan" step="1" value={vlanValue}
                                    onChange={event => updateVlanValue(event.target.value)}/>
                         </div>
                         <div className="vrf-column-item-number">
                             <label htmlFor="local_as">BGP local AS</label>
-                            <input type="number" name="local_as" id="local_as" step="1" defaultValue={bgpValue}
+                            <input type="number" name="local_as" id="local_as" step="1" value={bgpValue}
                                    onChange={event => updateBgpValue(event.target.value)}/>
                         </div>
                     </div>
                     <div className="vrf-column-3">
                         <div className="vrf-crypto-container">
                             <label htmlFor="crypto_ph1">Crypto phase 1</label>
-                            <select id="crypto_ph1" name="crypto_ph1">
+                            <select id="crypto_ph1_1" name="crypto_ph1_1" onChange={event => updateCryptoPh1_1(event.target.value)} value={cryptoPh1_1}>
                                 {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
                                 && cryptoPhaseEncryption.encryption.map(function(element) {
                                     return (
@@ -66,7 +71,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
                                     )
                                 })}
                             </select>
-                            <select id="crypto_ph1" name="crypto_ph1">
+                            <select id="crypto_ph1_2" name="crypto_ph1_2" onChange={event => updateCryptoPh1_2(event.target.value)} value={cryptoPh1_2}>
                                 {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
                                 && cryptoPhaseEncryption.integrity.map(function(element) {
                                     return (
@@ -74,7 +79,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
                                     )
                                 })}
                             </select>
-                            <select id="crypto_ph1" name="crypto_ph1">
+                            <select id="crypto_ph1_3" name="crypto_ph1_3" onChange={event => updateCryptoPh1_3(event.target.value)} value={cryptoPh1_3}>
                                 {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
                                 && cryptoPhaseEncryption.key_exchange.map(function(element) {
                                     return (
@@ -85,7 +90,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
                         </div>
                         <div className="vrf-crypto-container">
                             <label htmlFor="crypto_ph2">Crypto phase 2</label>
-                            <select id="crypto_ph2" name="crypto_ph2">
+                            <select id="crypto_ph2_1" name="crypto_ph2_1" onChange={event => updateCryptoPh2_1(event.target.value)} value={cryptoPh2_1}>
                                 {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
                                 && cryptoPhaseEncryption.encryption.map(function(element) {
                                     return (
@@ -93,7 +98,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
                                     )
                                 })}
                             </select>
-                            <select id="crypto_ph1" name="crypto_ph1">
+                            <select id="crypto_ph2_2" name="crypto_ph2_2" onChange={event => updateCryptoPh2_2(event.target.value)} value={cryptoPh2_2}>
                                 {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
                                 && cryptoPhaseEncryption.integrity.map(function(element) {
                                     return (
@@ -101,7 +106,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
                                     )
                                 })}
                             </select>
-                            <select id="crypto_ph1" name="crypto_ph1">
+                            <select id="crypto_ph2_3" name="crypto_ph2_3" onChange={event => updateCryptoPh2_3(event.target.value)} value={cryptoPh2_3}>
                                 {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
                                 && cryptoPhaseEncryption.key_exchange.map(function(element) {
                                     return (
