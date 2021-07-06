@@ -18,14 +18,27 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
 
     function saveCryptoData(event) {
         event.preventDefault();
-        // console.log("updating");
-        // console.log([[cryptoPh1_1, cryptoPh1_2, cryptoPh1_3].join(",")]);
-        axios.post("/api/vrfs", {
+
+        const payload = {
+            id: 8,
             client_name: vrfName,
-            vlan: vlanValue,
-            local_as: bgpValue,
-            crypto_ph1: [[cryptoPh1_1, cryptoPh1_2, cryptoPh1_3].join(",")],
-            crypto_ph2: [[cryptoPh1_1, cryptoPh1_2, cryptoPh1_3].join(",")],
+            vlan: parseInt(vlanValue),
+            crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3].join(","),
+            crypto_ph2: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3].join(","),
+            physical_interface: "",
+            active: false,
+            hardware_support: false,
+            local_as: parseInt(bgpValue),
+            lan_ip: "",
+            endpoints: null
+        }
+        // console.log(payload);
+        // console.log(typeof parseInt(payload.vlan));
+
+        axios({
+            method: "post",
+            url: "api/vrfs",
+            data: payload
         })
     }
 
