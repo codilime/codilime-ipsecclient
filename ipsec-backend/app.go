@@ -95,7 +95,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	var vrf Vrf
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&vrf); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 	defer func() {
