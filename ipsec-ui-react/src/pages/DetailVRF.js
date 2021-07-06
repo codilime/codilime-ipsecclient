@@ -16,11 +16,11 @@ export default function detailViewVrf(props) {
     }
     return(
         <div className="vrf-detail-container">
-            /vrf/{detailVrf.client_name}<br />
+            /vrf/{detailVrf.client_name} <button className="btn red-btn">Delete</button> <br />
             <div className="vrf-detail-section-container">
                 <div className="vrf-details-bar">VRF Details</div>
                 <form>
-                    {/*inputs need to have onChange property responsible for updating its state, ie name change and so on
+                    {/*inputs need to have onChange property responsible for updating their state, ie name change and so on
                     additionally active checkbox needs a some kind of a handler to display proper value*/}
                     <div className="vrf-column-1">
                         <div className="vrf-column-item">

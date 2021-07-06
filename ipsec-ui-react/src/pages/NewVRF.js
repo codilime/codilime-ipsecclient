@@ -16,30 +16,36 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
     const [cryptoPh2_2, updateCryptoPh2_2] = useState("");
     const [cryptoPh2_3, updateCryptoPh2_3] = useState("");
 
-    function saveCryptoData(event) {
-        event.preventDefault();
+    const payload = {
+        id: 8,
+        client_name: vrfName,
+        vlan: parseInt(vlanValue),
+        crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
+        crypto_ph2: [cryptoPh2_1, cryptoPh2_2, cryptoPh2_3],
+        physical_interface: "",
+        active: false,
+        hardware_support: false,
+        local_as: parseInt(bgpValue),
+        lan_ip: "",
+        endpoints: null
+    }
 
-        const payload = {
-            id: 8,
-            client_name: vrfName,
-            vlan: parseInt(vlanValue),
-            crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3].join(","),
-            crypto_ph2: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3].join(","),
-            physical_interface: "",
-            active: false,
-            hardware_support: false,
-            local_as: parseInt(bgpValue),
-            lan_ip: "",
-            endpoints: null
-        }
-        // console.log(payload);
-        // console.log(typeof parseInt(payload.vlan));
+    console.log("this is payload", payload);
+
+    function pushNewVrfConnection(event) {
+        event.preventDefault();
 
         axios({
             method: "post",
             url: "api/vrfs",
             data: payload
         })
+        .then((response) => {
+            console.log(response);
+        }, (error) => {
+            console.log(error);
+            }
+        )
     }
 
     return (
@@ -59,7 +65,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
                             <input type="checkbox" name="active" id="active"/>
                             <label htmlFor="Active">Active</label>
                         </div>
-                        <button className="btn" id="submit-vrf-button" onClick={saveCryptoData}>Save changes</button>
+                        <button className="btn" id="submit-vrf-button" onClick={pushNewVrfConnection}>Save changes</button>
                     </div>
                     <div className="vrf-column-2">
                         <div className="vrf-column-item-number">
