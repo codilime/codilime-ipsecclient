@@ -10,13 +10,13 @@ export default function detailViewVrf(props) {
     if(detailVRF == null){
         return(
             <div>
-                error, no active VRFs
+                Please select VRF
             </div>
         )
     }
     return(
         <div className="vrf-detail-container">
-            /vrf/{detailVrf.client_name} <button className="btn red-btn">Delete</button> <br />
+            /vrf/{detailVrf.client_name} <button className="btn red-btn delete-btn">Delete VRF</button> <br />
             <div className="vrf-detail-section-container">
                 <div className="vrf-details-bar">VRF Details</div>
                 <form>
@@ -25,21 +25,31 @@ export default function detailViewVrf(props) {
                     <div className="vrf-column-1">
                         <div className="vrf-column-item">
                             <label htmlFor="client_name">Name:</label>
-                            <input type="text" name="client_name" id="client_name" readOnly={detailVrf.client_name} value={detailVrf.client_name}/>
+                            <input type="text"
+                                   name="client_name"
+                                   id="client_name" readOnly={detailVrf.client_name} value={detailVrf.client_name}/>
                         </div>
                         <div className="vrf-column-item">
                             <input type="checkbox" name="active" id="active"/>
                             <label htmlFor="Active">Active</label>
                         </div>
+                        <button className="btn" id="save-changes-to-vrf-button">Save changes</button>
                     </div>
                     <div className="vrf-column-2">
                         <div className="vrf-column-item-number">
                             <label htmlFor="vlan">VLAN</label>
-                            <input type="number" name="vlan" id="vlan" step="1" readOnly={detailVrf.vlan} value={detailVrf.vlan}/>
+                            <input type="number"
+                                   name="vlan"
+                                   id="vlan"
+                                   step="1"
+                                   readOnly={detailVrf.vlan}
+                                   value={detailVrf.vlan}/>
                         </div>
                         <div className="vrf-column-item-number">
                             <label htmlFor="local_as">BGP local AS</label>
-                            <input type="number" name="local_as" id="local_as" step="1"
+                            <input type="number"
+                                   name="local_as" id="local_as"
+                                   step="1"
                                    readOnly={detailVrf.local_as}
                                    value={detailVrf.local_as}/>
                         </div>

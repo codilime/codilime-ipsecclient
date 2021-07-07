@@ -4,7 +4,6 @@ import Dump from "../components/Dump";
 import {v4 as uuidv4} from "uuid";
 import axios from "axios";
 
-
 export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
     const [vrfName, updateVrfName] = useState("");
     const [vlanValue, updateVlanValue] = useState("-1");
@@ -17,7 +16,6 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
     const [cryptoPh2_3, updateCryptoPh2_3] = useState("");
 
     const payload = {
-        id: 8,
         client_name: vrfName,
         vlan: parseInt(vlanValue),
         crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
@@ -29,8 +27,6 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
         lan_ip: "",
         endpoints: null
     }
-
-    console.log("this is payload", payload);
 
     function pushNewVrfConnection(event) {
         event.preventDefault();
@@ -143,7 +139,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
             <div className="new-vrf-data-container">
                 visualization
             </div>
-            <Dump value={cryptoPhaseEncryption.encryption} />
+            <Dump value={cryptoPhaseEncryption} />
         </div>
     );
 }

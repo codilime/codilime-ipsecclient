@@ -3,7 +3,7 @@
 }
 .vrf-detail-section-container {
   margin: 25px 0;
-  //border: solid black 1px;
+  border: solid rgba(167,167,167,0.74) 1px;
 }
 td.break {
   padding: 0 65px 0 0;
@@ -24,4 +24,10 @@ td.break {
 .red-btn {
   background-color: red;
   color: #ffffff;
+}
+.delete-btn {
+  float: right;
+}
+#save-changes-to-vrf-button {
+  margin: 15px;
 }
