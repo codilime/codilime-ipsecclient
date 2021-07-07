@@ -1,19 +1,53 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './DetailVRF.scss';
 import './NewVRF.scss';
 import {v4 as uuidv4} from 'uuid';
 import Dump from "../components/Dump";
+import {useEffect} from "react";
 
-export default function detailViewVrf(props) {
+export default function DetailViewVrf(props) {
     const detailVrf = props.VRFdata;
 
-    if(detailVRF == null){
+
+    const [vrfName, updateVrfName] = useState("");
+
+    useEffect(() => {
+        updateVrfName("janek");
+    }, [detailVrf]);
+
+    // const [vlanValue, updateVlanValue] = useState("-1");
+    // const [bgpValue, updateBgpValue] = useState("-1");
+    // const [cryptoPh1_1, updateCryptoPh1_1] = useState("");
+    // const [cryptoPh1_2, updateCryptoPh1_2] = useState("");
+    // const [cryptoPh1_3, updateCryptoPh1_3] = useState("");
+    // const [cryptoPh2_1, updateCryptoPh2_1] = useState("");
+    // const [cryptoPh2_2, updateCryptoPh2_2] = useState("");
+    // const [cryptoPh2_3, updateCryptoPh2_3] = useState("");
+    //
+    // const payload = {
+    //     id: detailVrf.id,
+    //     client_name: vrfName,
+    //     vlan: parseInt(vlanValue),
+    //     crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
+    //     crypto_ph2: [cryptoPh2_1, cryptoPh2_2, cryptoPh2_3],
+    //     physical_interface: "",
+    //     active: false,
+    //     hardware_support: false,
+    //     local_as: parseInt(bgpValue),
+    //     lan_ip: "",
+    //     endpoints: null
+    // }
+    //
+    // console.log(payload);
+
+    if (detailVrf == null){
         return(
             <div>
-                Please select VRF
+                No data
             </div>
         )
     }
+
     return(
         <div className="vrf-detail-container">
             /vrf/{detailVrf.client_name} <button className="btn red-btn delete-btn">Delete VRF</button> <br />
@@ -21,13 +55,17 @@ export default function detailViewVrf(props) {
                 <div className="vrf-details-bar">VRF Details</div>
                 <form>
                     {/*inputs need to have onChange property responsible for updating their state, ie name change and so on
-                    additionally active checkbox needs a some kind of a handler to display proper value*/}
+                    additionally active checkbox needs some kind of a handler to display proper value*/}
                     <div className="vrf-column-1">
                         <div className="vrf-column-item">
                             <label htmlFor="client_name">Name:</label>
                             <input type="text"
                                    name="client_name"
-                                   id="client_name" readOnly={detailVrf.client_name} value={detailVrf.client_name}/>
+                                   id="client_name"
+                                   // defaultValue={detailVrf.client_name}
+                                   value={vrfName}
+                                   onChange={event => updateVrfName(event.target.value)}
+                            />
                         </div>
                         <div className="vrf-column-item">
                             <input type="checkbox" name="active" id="active"/>
@@ -43,7 +81,8 @@ export default function detailViewVrf(props) {
                                    id="vlan"
                                    step="1"
                                    readOnly={detailVrf.vlan}
-                                   value={detailVrf.vlan}/>
+                                   value={detailVrf.vlan}
+                            />
                         </div>
                         <div className="vrf-column-item-number">
                             <label htmlFor="local_as">BGP local AS</label>
@@ -51,7 +90,8 @@ export default function detailViewVrf(props) {
                                    name="local_as" id="local_as"
                                    step="1"
                                    readOnly={detailVrf.local_as}
-                                   value={detailVrf.local_as}/>
+                                   value={detailVrf.local_as}
+                            />
                         </div>
                     </div>
                     <div className="vrf-column-3">
