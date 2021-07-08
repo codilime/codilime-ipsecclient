@@ -43,7 +43,7 @@ export default function App() {
                         <Route path="/vrf/create" render={routeProps =>
                             <div><NewVRF routeProps={routeProps} cryptoPhaseEncryption={cryptoPhaseEncryption}/></div>} />
                         <Route path="/vrf/:index" render={routeProps => <div style={{ display: "flex" }}>
-                            <DetailVRF VRFdata={VRFConnections[routeProps.match.params.index]}/></div>} />
+                            <DetailVRF VRFdata={VRFConnections[routeProps.match.params.index]} routeProps={routeProps}/></div>} />
                         <Route path="*" render={() => 404} />
                     </Switch>
                 </div>

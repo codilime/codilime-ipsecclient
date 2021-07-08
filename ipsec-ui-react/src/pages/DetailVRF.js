@@ -15,31 +15,6 @@ export default function DetailViewVrf(props) {
         updateVrfName("janek");
     }, [detailVrf]);
 
-    // const [vlanValue, updateVlanValue] = useState("-1");
-    // const [bgpValue, updateBgpValue] = useState("-1");
-    // const [cryptoPh1_1, updateCryptoPh1_1] = useState("");
-    // const [cryptoPh1_2, updateCryptoPh1_2] = useState("");
-    // const [cryptoPh1_3, updateCryptoPh1_3] = useState("");
-    // const [cryptoPh2_1, updateCryptoPh2_1] = useState("");
-    // const [cryptoPh2_2, updateCryptoPh2_2] = useState("");
-    // const [cryptoPh2_3, updateCryptoPh2_3] = useState("");
-    //
-    // const payload = {
-    //     id: detailVrf.id,
-    //     client_name: vrfName,
-    //     vlan: parseInt(vlanValue),
-    //     crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
-    //     crypto_ph2: [cryptoPh2_1, cryptoPh2_2, cryptoPh2_3],
-    //     physical_interface: "",
-    //     active: false,
-    //     hardware_support: false,
-    //     local_as: parseInt(bgpValue),
-    //     lan_ip: "",
-    //     endpoints: null
-    // }
-    //
-    // console.log(payload);
-
     if (detailVrf == null){
         return(
             <div>
