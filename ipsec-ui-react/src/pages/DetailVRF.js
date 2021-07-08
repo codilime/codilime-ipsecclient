@@ -1,18 +1,18 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './DetailVRF.scss';
 import './NewVRF.scss';
 import {v4 as uuidv4} from 'uuid';
 import Dump from "../components/Dump";
 import axios from "axios";
-import {useEffect} from "react";
 import {useParams} from "react-router";
 
 
 export default function DetailViewVrf() {
-    const [thisVrfDetail, updateDetailVrf] = useState()
-    const {index, routeProps} = useParams();
-    console.log("detail", thisVrfDetail);
+    const [thisVrfDetail, updateDetailVrf] = useState();
+    const [loading, updateLoading] = useState(true);
 
+    const {index} = useParams();
+    console.log("detail", thisVrfDetail);
 
     async function fetchThisVrfDetails() {
         const response = await axios.get('/api/vrfs')
@@ -25,7 +25,7 @@ export default function DetailViewVrf() {
     }
 
     useEffect(() => {
-        fetchThisVrfDetails();
+        fetchThisVrfDetails().then(() => updateLoading(false));
     }, [index]);
 
     // const [vrfName, updateVrfName] = useState("");
@@ -42,13 +42,23 @@ export default function DetailViewVrf() {
     //     )
     // }
 
+    if (loading === true) {
+        return(
+            <div>fetching data, please wait</div>
+        )
+    }
+
     return(
         <div>
             {index}
-            
             <Dump value={thisVrfDetail} />
+            {thisVrfDetail.client_name} <br />
+            {thisVrfDetail.crypto_ph2[0]}<br />
+            {thisVrfDetail.crypto_ph2[1]}<br />
+            {thisVrfDetail.crypto_ph2[2]}<br />
         </div>
-
+    )
+}
 
         // <div className="vrf-detail-container">
         //     /vrf/{detailVrf.client_name} <button className="btn red-btn delete-btn">Delete VRF</button> <br />
@@ -153,5 +163,3 @@ export default function DetailViewVrf() {
         //     </div>
         //     <Dump value={detailVrf} />
         // </div>
-    )
-}
