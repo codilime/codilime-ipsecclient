@@ -8,15 +8,16 @@ import {useParams} from "react-router";
 
 
 export default function DetailViewVrf() {
+    const {index} = useParams();
+
     // states for app rendering
     const [detailVrf, updateDetailVrf] = useState();
     const [loading, updateLoading] = useState(true);
 
     //states for actual form data, first updated in fetchThisVrfDetails
     const [vrfName, updateVrfName] = useState(vrfName);
-
-    const {index} = useParams();
-    console.log("detail", detailVrf);
+    const [vlanValue, updateVlanValue] = useState(vlanValue);
+    const [bgpValue, updateBgpValue] = useState(bgpValue);
 
     async function fetchThisVrfDetails() {
         const response = await axios.get('/api/vrfs')
@@ -26,6 +27,8 @@ export default function DetailViewVrf() {
         if (data && Object.keys(data).length > 0) {
             updateDetailVrf(data);
             updateVrfName(data.client_name);
+            updateVlanValue(data.vlan);
+            updateBgpValue(data.local_as);
         }
     }
 
@@ -67,7 +70,6 @@ export default function DetailViewVrf() {
                                 <input type="text"
                                        name="client_name"
                                        id="client_name"
-                                    // defaultValue={detailVrf.client_name}
                                        value={vrfName}
                                        onChange={event => updateVrfName(event.target.value)}
                                 />
@@ -85,8 +87,8 @@ export default function DetailViewVrf() {
                                        name="vlan"
                                        id="vlan"
                                        step="1"
-                                       readOnly={detailVrf.vlan}
-                                       value={detailVrf.vlan}
+                                       value={vlanValue}
+                                       onChange={event => updateVlanValue(event.target.value)}
                                 />
                             </div>
                             <div className="vrf-column-item-number">
@@ -94,8 +96,8 @@ export default function DetailViewVrf() {
                                 <input type="number"
                                        name="local_as" id="local_as"
                                        step="1"
-                                       readOnly={detailVrf.local_as}
-                                       value={detailVrf.local_as}
+                                       value={bgpValue}
+                                       onChange={event => updateBgpValue(event.target.value)}
                                 />
                             </div>
                         </div>
