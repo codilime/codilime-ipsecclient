@@ -12,7 +12,6 @@ export default function App() {
 
     async function fetchVRFsData() {
         const response = await axios.get('/api/vrfs');
-
         let data = response.data;
         if (Array.isArray(data)) {
             updateVRFConnections(data);
@@ -21,7 +20,6 @@ export default function App() {
 
     async function fetchEncryptionData() {
         const response = await axios.get('api/software');
-
         let data = response.data;
         if (data && Object.keys(data).length > 0) {
             updateCryptoPhaseEncryption(data);
@@ -42,8 +40,8 @@ export default function App() {
                     <Switch>
                         <Route path="/vrf/create" render={routeProps =>
                             <div><NewVRF routeProps={routeProps} cryptoPhaseEncryption={cryptoPhaseEncryption}/></div>} />
-                        <Route path="/vrf/:index" render={routeProps => <div style={{ display: "flex" }}>
-                            <DetailVRF VRFdata={VRFConnections[routeProps.match.params.index]} routeProps={routeProps}/></div>} />
+                        <Route path="/vrf/:index" render={() => <div style={{ display: "flex" }}>
+                            <DetailVRF /></div>} />
                         <Route path="*" render={() => 404} />
                     </Switch>
                 </div>
