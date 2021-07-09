@@ -53,8 +53,8 @@ export default function DetailViewVrf({cryptoPhaseEncryption}) {
             <div>fetching data, please wait</div>
         )
     }
+
     const payload = {
-        id: detailVrf.id,
         client_name: vrfName,
         vlan: parseInt(vlanValue),
         crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
@@ -67,7 +67,22 @@ export default function DetailViewVrf({cryptoPhaseEncryption}) {
         endpoints: null
     }
 
+    function updateVrfConnection(event) {
+        event.preventDefault();
+        let detailApiAddress = "api/vrfs/" + detailVrf.id;
 
+        axios({
+            method: "put",
+            url: detailApiAddress,
+            data: payload
+        })
+            .then((response) => {
+                    console.log(response);
+                }, (error) => {
+                    console.log(error);
+                }
+            )
+    }
 
     return(
         <div>
@@ -91,7 +106,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption}) {
                                 <input type="checkbox" name="active" id="active"/>
                                 <label htmlFor="Active">Active</label>
                             </div>
-                            <button className="btn" id="save-changes-to-vrf-button">Save changes</button>
+                            <button className="btn" id="save-changes-to-vrf-button" onClick={updateVrfConnection}>Save changes</button>
                         </div>
                         <div className="vrf-column-2">
                             <div className="vrf-column-item-number">
