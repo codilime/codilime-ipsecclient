@@ -7,7 +7,7 @@ import axios from "axios";
 import {useParams} from "react-router";
 
 
-export default function DetailViewVrf() {
+export default function DetailViewVrf({cryptoPhaseEncryption}) {
     const {index} = useParams();
 
     // states for app rendering
@@ -18,6 +18,9 @@ export default function DetailViewVrf() {
     const [vrfName, updateVrfName] = useState(vrfName);
     const [vlanValue, updateVlanValue] = useState(vlanValue);
     const [bgpValue, updateBgpValue] = useState(bgpValue);
+    const [cryptoPh1_1, updateCryptoPh1_1] = useState(cryptoPh1_1);
+    const [cryptoPh1_2, updateCryptoPh1_2] = useState(cryptoPh1_2);
+    const [cryptoPh1_3, updateCryptoPh1_3] = useState(cryptoPh1_3);
 
     async function fetchThisVrfDetails() {
         const response = await axios.get('/api/vrfs')
@@ -29,6 +32,10 @@ export default function DetailViewVrf() {
             updateVrfName(data.client_name);
             updateVlanValue(data.vlan);
             updateBgpValue(data.local_as);
+            updateCryptoPh1_1(data.crypto_ph1[0]);
+            updateCryptoPh1_2(data.crypto_ph1[1]);
+            updateCryptoPh1_3(data.crypto_ph1[2]);
+
         }
     }
 
@@ -104,9 +111,30 @@ export default function DetailViewVrf() {
                         <div className="vrf-column-3">
                             <div className="vrf-crypto-container">
                                 <label htmlFor="crypto_ph1">Crypto phase 1</label>
-                                <input type="text" id="crypto_ph1_1" name="crypto_ph1" readOnly={detailVrf.crypto_ph1[0]} value={detailVrf.crypto_ph1[0]} />
-                                <input type="text" id="crypto_ph1_2" name="crypto_ph1" readOnly={detailVrf.crypto_ph1[1]} value={detailVrf.crypto_ph1[1]} />
-                                <input type="text" id="crypto_ph1_3" name="crypto_ph1" readOnly={detailVrf.crypto_ph1[2]} value={detailVrf.crypto_ph1[2]} />
+                                <select id="crypto_ph1_1" name="crypto_ph1_1" onChange={event => updateCryptoPh1_1(event.target.value)} value={cryptoPh1_1}>
+                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
+                                    && cryptoPhaseEncryption.encryption.map(function(element) {
+                                        return (
+                                            <option defaultValue={cryptoPh1_1} value={element} key={uuidv4()}>{element}</option>
+                                        )
+                                    })}
+                                </select>
+                                <select id="crypto_ph1_2" name="crypto_ph1_2" onChange={event => updateCryptoPh1_2(event.target.value)} value={cryptoPh1_2}>
+                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
+                                    && cryptoPhaseEncryption.integrity.map(function(element) {
+                                        return (
+                                            <option defaultValue={cryptoPh1_2} value={element} key={uuidv4()}>{element}</option>
+                                        )
+                                    })}
+                                </select>
+                                <select id="crypto_ph1_3" name="crypto_ph1_3" onChange={event => updateCryptoPh1_3(event.target.value)} value={cryptoPh1_3}>
+                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
+                                    && cryptoPhaseEncryption.key_exchange.map(function(element) {
+                                        return (
+                                            <option defaultValue={cryptoPh1_3} value={element} key={uuidv4()}>{element}</option>
+                                        )
+                                    })}
+                                </select>
                             </div>
                             <div className="vrf-crypto-container">
                                 <label htmlFor="crypto_ph2">Crypto phase 2</label>
@@ -157,7 +185,9 @@ export default function DetailViewVrf() {
                 <div className="vrf-detail-section-container">
                     visu
                 </div>
-                <Dump value={detailVrf} />
+                {/*<Dump value={detailVrf} />*/}
+                <Dump value={cryptoPhaseEncryption} />
+
             </div>
         </div>
     )
