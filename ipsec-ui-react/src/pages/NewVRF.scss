@@ -45,6 +45,9 @@ input, select {
   width: 100%;
   margin: 5px;
 }
+select {
+  width: 185px;
+}
 #submit-vrf-button:enabled {
   background-color: #3498db;
   color: #ffffff;
