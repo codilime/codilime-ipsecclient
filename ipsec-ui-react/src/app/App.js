@@ -39,9 +39,18 @@ export default function App() {
                 <div className="main-view-container">
                     <Switch>
                         <Route path="/vrf/create" render={routeProps =>
-                            <div><NewVRF routeProps={routeProps} cryptoPhaseEncryption={cryptoPhaseEncryption}/></div>} />
+                            <div><NewVRF
+                                routeProps={routeProps}
+                                cryptoPhaseEncryption={cryptoPhaseEncryption}
+                                updateSidebar={fetchVRFsData}
+                            /></div>}
+                        />
                         <Route path="/vrf/:index" render={() => <div style={{ display: "flex" }}>
-                            <DetailVRF cryptoPhaseEncryption={cryptoPhaseEncryption}/></div>} />
+                            <DetailVRF
+                                cryptoPhaseEncryption={cryptoPhaseEncryption}
+                                updateSidebar={fetchVRFsData}
+                            /></div>}
+                        />
                         <Route path="*" render={() => 404} />
                     </Switch>
                 </div>

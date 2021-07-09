@@ -7,7 +7,7 @@ import axios from "axios";
 import {useParams} from "react-router";
 
 
-export default function DetailViewVrf({cryptoPhaseEncryption}) {
+export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
     const {index} = useParams();
 
     // states for app rendering
@@ -78,6 +78,8 @@ export default function DetailViewVrf({cryptoPhaseEncryption}) {
         })
             .then((response) => {
                     console.log(response);
+                    updateSidebar();
+                    alert("update completed");
                 }, (error) => {
                     console.log(error);
                 }

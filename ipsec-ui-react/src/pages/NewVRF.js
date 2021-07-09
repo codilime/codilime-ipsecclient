@@ -4,7 +4,7 @@ import Dump from "../components/Dump";
 import {v4 as uuidv4} from "uuid";
 import axios from "axios";
 
-export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
+export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar}) {
     const [vrfName, updateVrfName] = useState("");
     const [vlanValue, updateVlanValue] = useState("-1");
     const [bgpValue, updateBgpValue] = useState("-1");
@@ -38,6 +38,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption}) {
         })
         .then((response) => {
             console.log(response);
+                updateSidebar();
         }, (error) => {
             console.log(error);
             }
