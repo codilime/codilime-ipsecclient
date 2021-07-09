@@ -21,6 +21,9 @@ export default function DetailViewVrf({cryptoPhaseEncryption}) {
     const [cryptoPh1_1, updateCryptoPh1_1] = useState(cryptoPh1_1);
     const [cryptoPh1_2, updateCryptoPh1_2] = useState(cryptoPh1_2);
     const [cryptoPh1_3, updateCryptoPh1_3] = useState(cryptoPh1_3);
+    const [cryptoPh2_1, updateCryptoPh2_1] = useState(cryptoPh2_1);
+    const [cryptoPh2_2, updateCryptoPh2_2] = useState(cryptoPh2_2);
+    const [cryptoPh2_3, updateCryptoPh2_3] = useState(cryptoPh2_3);
 
     async function fetchThisVrfDetails() {
         const response = await axios.get('/api/vrfs')
@@ -35,7 +38,9 @@ export default function DetailViewVrf({cryptoPhaseEncryption}) {
             updateCryptoPh1_1(data.crypto_ph1[0]);
             updateCryptoPh1_2(data.crypto_ph1[1]);
             updateCryptoPh1_3(data.crypto_ph1[2]);
-
+            updateCryptoPh2_1(data.crypto_ph2[0]);
+            updateCryptoPh2_2(data.crypto_ph2[1]);
+            updateCryptoPh2_3(data.crypto_ph2[2]);
         }
     }
 
@@ -43,24 +48,26 @@ export default function DetailViewVrf({cryptoPhaseEncryption}) {
         fetchThisVrfDetails().then(() => updateLoading(false));
     }, [index]);
 
-
-    // useEffect(() => {
-    //     updateVrfName("janek");
-    // }, [detailVrf]);
-    //
-    // if (detailVrf == null){
-    //     return(
-    //         <div>
-    //             No data
-    //         </div>
-    //     )
-    // }
-
     if (loading === true) {
         return(
             <div>fetching data, please wait</div>
         )
     }
+    const payload = {
+        id: detailVrf.id,
+        client_name: vrfName,
+        vlan: parseInt(vlanValue),
+        crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
+        crypto_ph2: [cryptoPh2_1, cryptoPh2_2, cryptoPh2_3],
+        physical_interface: "",
+        active: false,
+        hardware_support: false,
+        local_as: parseInt(bgpValue),
+        lan_ip: "",
+        endpoints: null
+    }
+
+
 
     return(
         <div>
@@ -69,8 +76,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption}) {
                 <div className="vrf-detail-section-container">
                     <div className="vrf-details-bar">VRF Details</div>
                     <form>
-                        {/*inputs need to have onChange property responsible for updating their state, ie name change and so on
-                    additionally active checkbox needs some kind of a handler to display proper value*/}
+                        {/*additionally active checkbox needs some kind of a handler to display proper value*/}
                         <div className="vrf-column-1">
                             <div className="vrf-column-item">
                                 <label htmlFor="client_name">Name:</label>
@@ -138,9 +144,30 @@ export default function DetailViewVrf({cryptoPhaseEncryption}) {
                             </div>
                             <div className="vrf-crypto-container">
                                 <label htmlFor="crypto_ph2">Crypto phase 2</label>
-                                <input type="text" id="crypto_ph2_1" name="crypto_ph2" readOnly={detailVrf.crypto_ph2[0]} value={detailVrf.crypto_ph2[0]} />
-                                <input type="text" id="crypto_ph2_2" name="crypto_ph2" readOnly={detailVrf.crypto_ph2[1]} value={detailVrf.crypto_ph2[1]} />
-                                <input type="text" id="crypto_ph2_3" name="crypto_ph2" readOnly={detailVrf.crypto_ph2[2]} value={detailVrf.crypto_ph2[2]} />
+                                <select id="crypto_ph2_1" name="crypto_ph2_1" onChange={event => updateCryptoPh2_1(event.target.value)} value={cryptoPh2_1}>
+                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
+                                    && cryptoPhaseEncryption.encryption.map(function(element) {
+                                        return (
+                                            <option defaultValue={cryptoPh2_1} value={element} key={uuidv4()}>{element}</option>
+                                        )
+                                    })}
+                                </select>
+                                <select id="crypto_ph2_2" name="crypto_ph2_2" onChange={event => updateCryptoPh2_2(event.target.value)} value={cryptoPh2_2}>
+                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
+                                    && cryptoPhaseEncryption.integrity.map(function(element) {
+                                        return (
+                                            <option defaultValue={cryptoPh2_2} value={element} key={uuidv4()}>{element}</option>
+                                        )
+                                    })}
+                                </select>
+                                <select id="crypto_ph2_3" name="crypto_ph2_3" onChange={event => updateCryptoPh2_3(event.target.value)} value={cryptoPh2_3}>
+                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
+                                    && cryptoPhaseEncryption.key_exchange.map(function(element) {
+                                        return (
+                                            <option defaultValue={cryptoPh2_3} value={element} key={uuidv4()}>{element}</option>
+                                        )
+                                    })}
+                                </select>
                             </div>
                         </div>
                     </form>
@@ -185,8 +212,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption}) {
                 <div className="vrf-detail-section-container">
                     visu
                 </div>
-                {/*<Dump value={detailVrf} />*/}
-                <Dump value={cryptoPhaseEncryption} />
+                <Dump value={detailVrf} />
 
             </div>
         </div>
