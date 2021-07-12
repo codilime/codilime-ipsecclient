@@ -79,56 +79,74 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
                     <div className="vrf-column-3">
                         <div className="vrf-crypto-container">
                             <label htmlFor="crypto_ph1">Crypto phase 1</label>
-                            <select id="crypto_ph1_1" name="crypto_ph1_1" onChange={event => updateCryptoPh1_1(event.target.value)} value={cryptoPh1_1}>
-                                {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
-                                && cryptoPhaseEncryption.encryption.map(function(element) {
-                                    return (
-                                        <option value={element} key={uuidv4()}>{element}</option>
-                                    )
-                                })}
+                            <select id="crypto_ph1_1"
+                                    name="crypto_ph1_1"
+                                    onChange={event => updateCryptoPh1_1(event.target.value)}
+                                    value={cryptoPh1_1}>
+                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
+                                    && cryptoPhaseEncryption.encryption.map(function(element) {
+                                        return (
+                                            <option value={element} key={uuidv4()}>{element}</option>
+                                        )
+                                    })}
                             </select>
-                            <select id="crypto_ph1_2" name="crypto_ph1_2" onChange={event => updateCryptoPh1_2(event.target.value)} value={cryptoPh1_2}>
-                                {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
-                                && cryptoPhaseEncryption.integrity.map(function(element) {
-                                    return (
-                                        <option value={element} key={uuidv4()}>{element}</option>
-                                    )
-                                })}
+                            <select id="crypto_ph1_2"
+                                    name="crypto_ph1_2"
+                                    onChange={event => updateCryptoPh1_2(event.target.value)}
+                                    value={cryptoPh1_2}>
+                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
+                                    && cryptoPhaseEncryption.integrity.map(function(element) {
+                                        return (
+                                            <option value={element} key={uuidv4()}>{element}</option>
+                                        )
+                                    })}
                             </select>
-                            <select id="crypto_ph1_3" name="crypto_ph1_3" onChange={event => updateCryptoPh1_3(event.target.value)} value={cryptoPh1_3}>
-                                {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
-                                && cryptoPhaseEncryption.key_exchange.map(function(element) {
-                                    return (
-                                        <option value={element} key={uuidv4()}>{element}</option>
-                                    )
-                                })}
+                            <select id="crypto_ph1_3"
+                                    name="crypto_ph1_3"
+                                    onChange={event => updateCryptoPh1_3(event.target.value)}
+                                    value={cryptoPh1_3}>
+                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
+                                    && cryptoPhaseEncryption.key_exchange.map(function(element) {
+                                        return (
+                                            <option value={element} key={uuidv4()}>{element}</option>
+                                        )
+                                    })}
                             </select>
                         </div>
                         <div className="vrf-crypto-container">
                             <label htmlFor="crypto_ph2">Crypto phase 2</label>
-                            <select id="crypto_ph2_1" name="crypto_ph2_1" onChange={event => updateCryptoPh2_1(event.target.value)} value={cryptoPh2_1}>
-                                {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
-                                && cryptoPhaseEncryption.encryption.map(function(element) {
-                                    return (
-                                        <option value={element} key={uuidv4()}>{element}</option>
-                                    )
-                                })}
+                            <select id="crypto_ph2_1"
+                                    name="crypto_ph2_1"
+                                    onChange={event => updateCryptoPh2_1(event.target.value)}
+                                    value={cryptoPh2_1}>
+                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
+                                    && cryptoPhaseEncryption.encryption.map(function(element) {
+                                        return (
+                                            <option value={element} key={uuidv4()}>{element}</option>
+                                        )
+                                    })}
                             </select>
-                            <select id="crypto_ph2_2" name="crypto_ph2_2" onChange={event => updateCryptoPh2_2(event.target.value)} value={cryptoPh2_2}>
-                                {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
-                                && cryptoPhaseEncryption.integrity.map(function(element) {
-                                    return (
-                                        <option value={element} key={uuidv4()}>{element}</option>
-                                    )
-                                })}
+                            <select id="crypto_ph2_2"
+                                    name="crypto_ph2_2"
+                                    onChange={event => updateCryptoPh2_2(event.target.value)}
+                                    value={cryptoPh2_2}>
+                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
+                                    && cryptoPhaseEncryption.integrity.map(function(element) {
+                                        return (
+                                            <option value={element} key={uuidv4()}>{element}</option>
+                                        )
+                                    })}
                             </select>
-                            <select id="crypto_ph2_3" name="crypto_ph2_3" onChange={event => updateCryptoPh2_3(event.target.value)} value={cryptoPh2_3}>
-                                {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
-                                && cryptoPhaseEncryption.key_exchange.map(function(element) {
-                                    return (
-                                        <option value={element} key={uuidv4()}>{element}</option>
-                                    )
-                                })}
+                            <select id="crypto_ph2_3"
+                                    name="crypto_ph2_3"
+                                    onChange={event => updateCryptoPh2_3(event.target.value)}
+                                    value={cryptoPh2_3}>
+                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
+                                    && cryptoPhaseEncryption.key_exchange.map(function(element) {
+                                        return (
+                                            <option value={element} key={uuidv4()}>{element}</option>
+                                        )
+                                    })}
                             </select>
                         </div>
                     </div>
