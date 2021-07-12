@@ -29,7 +29,10 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
         const response = await axios.get('/api/vrfs')
 
         let data = response.data[index];
+
         console.log("data", data);
+        console.log("data.id", data.id);
+
         if (data && Object.keys(data).length > 0) {
             updateDetailVrf(data);
             updateVrfName(data.client_name);
@@ -68,11 +71,10 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
     }
 
     // functions responsible for handling connections
-    let detailApiAddress = "api/vrfs/" + detailVrf.id;
+    const detailApiAddress = "api/vrfs/" + detailVrf.id;
 
     function updateVrfConnection(event) {
         event.preventDefault();
-
         axios({
             method: "put",
             url: detailApiAddress,
@@ -130,20 +132,23 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
                             <div className="vrf-column-item-number">
                                 <label htmlFor="vlan">VLAN</label>
                                 <input type="number"
-                                       name="vlan"
-                                       id="vlan"
+                                       min="1"
+                                       max="4094"
+                                       name="vlan" id="vlan"
                                        step="1"
                                        value={vlanValue}
-                                       onChange={event => updateVlanValue(event.target.value)}
+                                       onChange={event => updateVlanValue(forceNumberMinMax(event))}
                                 />
                             </div>
                             <div className="vrf-column-item-number">
                                 <label htmlFor="local_as">BGP local AS</label>
                                 <input type="number"
+                                       min="1"
+                                       max={Math.pow(2, 32)}
                                        name="local_as" id="local_as"
                                        step="1"
                                        value={bgpValue}
-                                       onChange={event => updateBgpValue(event.target.value)}
+                                       onChange={event => updateBgpValue(forceNumberMinMax(event))}
                                 />
                             </div>
                         </div>

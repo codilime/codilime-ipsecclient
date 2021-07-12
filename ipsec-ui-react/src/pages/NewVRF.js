@@ -6,14 +6,15 @@ import axios from "axios";
 
 export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar}) {
     const [vrfName, updateVrfName] = useState("");
-    const [vlanValue, updateVlanValue] = useState("-1");
-    const [bgpValue, updateBgpValue] = useState("-1");
+    const [vlanValue, updateVlanValue] = useState("1");
+    const [bgpValue, updateBgpValue] = useState("1");
     const [cryptoPh1_1, updateCryptoPh1_1] = useState("");
     const [cryptoPh1_2, updateCryptoPh1_2] = useState("");
     const [cryptoPh1_3, updateCryptoPh1_3] = useState("");
     const [cryptoPh2_1, updateCryptoPh2_1] = useState("");
     const [cryptoPh2_2, updateCryptoPh2_2] = useState("");
     const [cryptoPh2_3, updateCryptoPh2_3] = useState("");
+    const [saveButton, updateSaveButton] = useState(false);
 
     const payload = {
         client_name: vrfName,
@@ -30,7 +31,6 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
 
     function pushNewVrfConnection(event) {
         event.preventDefault();
-
         axios({
             method: "post",
             url: "api/vrfs",
@@ -45,6 +45,32 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
         )
     }
 
+    function forceNumberMinMax(event) {
+        console.log("start update");
+
+        let value = parseInt(event.target.value);
+        const min = parseInt(event.target.min);
+        const max = parseInt(event.target.max);
+
+        if (event.target.max && value > max) {
+            console.log("wartosc za wysoka, wyrownuje");
+            value = max;
+        }
+
+        if (event.target.min && value < min) {
+            console.log("wartosc za niska, wyrownuje");
+            value = min;
+        }
+
+        if (isNaN(value)) {
+            return "";
+        }
+
+        console.log("ustawiam poprawna wartosc na: ", value);
+        return value;
+    }
+
+
     return (
         <div className="new-vrf-connection-wrapper">
             <div className="new-vrf-top-bar">
@@ -56,7 +82,11 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
                     <div className="vrf-column-1">
                         <div className="vrf-column-item">
                             <label htmlFor="client_name">Name:</label>
-                            <input type="text" name="client_name" id="client_name" onChange={event => updateVrfName(event.target.value)}/>
+                            <input type="text"
+                                   placeholder="set VRF name"
+                                   name="client_name"
+                                   id="client_name"
+                                   onChange={event => updateVrfName(event.target.value)}/>
                         </div>
                         <div className="vrf-column-item">
                             <input type="checkbox" name="active" id="active"/>
@@ -67,13 +97,25 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
                     <div className="vrf-column-2">
                         <div className="vrf-column-item-number">
                             <label htmlFor="vlan">VLAN</label>
-                            <input type="number" name="vlan" id="vlan" step="1" value={vlanValue}
-                                   onChange={event => updateVlanValue(event.target.value)}/>
+                            <input type="number"
+                                   min="1"
+                                   max="4094"
+                                   name="vlan" id="vlan"
+                                   step="1"
+                                   value={vlanValue}
+                                   onChange={event => updateVlanValue(forceNumberMinMax(event))}
+                            />
                         </div>
                         <div className="vrf-column-item-number">
                             <label htmlFor="local_as">BGP local AS</label>
-                            <input type="number" name="local_as" id="local_as" step="1" value={bgpValue}
-                                   onChange={event => updateBgpValue(event.target.value)}/>
+                            <input type="number"
+                                   min="1"
+                                   max="4094"
+                                   name="local_as" id="local_as"
+                                   step="1"
+                                   value={bgpValue}
+                                   onChange={event => updateBgpValue(forceNumberMinMax(event))}
+                            />
                         </div>
                     </div>
                     <div className="vrf-column-3">
@@ -158,7 +200,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
             <div className="new-vrf-data-container">
                 visualization
             </div>
-            <Dump value={cryptoPhaseEncryption} />
+            {/*<Dump value={cryptoPhaseEncryption} />*/}
         </div>
     );
 }
