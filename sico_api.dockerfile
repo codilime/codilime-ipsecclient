@@ -17,20 +17,14 @@ RUN go mod download
 COPY ipsec-backend/ .
 RUN go build
 
-### STAGE 1c: Build go supervisor ###
-FROM golang:1.16.3-alpine3.13 AS supervisor-build
-WORKDIR /usr/src/app
-RUN apk add build-base && apk add git && git clone https://github.com/ochinchina/supervisord && cd supervisord && git checkout v0.7.3 && go build
-
-### Stage 2: create monolith ###
+### Stage 2: create the sico_api docker ###
 
 FROM alpine:3.13 AS sico_api
 
 #Packages
-RUN apk add --no-cache nginx gettext
+RUN apk add --no-cache nginx gettext supervisor curl
 
 #Supervisor
-COPY --from=supervisor-build /usr/src/app/supervisord/supervisord /supervisord
 COPY two_dockers/supervisord.conf /etc/supervisord.conf
 
 #API
@@ -44,7 +38,12 @@ COPY monolith/api.ini /etc/supervisor.d/
 RUN mkdir /run/nginx
 COPY ipsec-ui/nginx.conf /etc/nginx/conf.d/default.conf.template
 COPY --from=frontend-build /usr/src/app/dist/ipsec-ui /usr/share/nginx/html
+COPY sico_net.tar.gz /usr/share/nginx/html
 COPY monolith/front.ini /etc/supervisor.d/
 COPY monolith/nginx.sh /usr/local/sbin/
 
-CMD /supervisord
+#Supervisor
+COPY environment/supervisor/content/supervisord.conf /etc/
+RUN ln -s /etc/supervisor.d /opt/super
+
+CMD /usr/bin/supervisord -n -c /etc/supervisord.conf
