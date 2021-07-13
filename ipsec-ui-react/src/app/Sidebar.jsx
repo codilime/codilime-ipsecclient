@@ -7,7 +7,7 @@ export default function Sidebar(props) {
 
     const VRFList = props.VRFConnections;
 
-    if(VRFList.length > 0) {
+    if (VRFList && VRFList.length > 0) {
         return (
             <div className="sidebar-container">
                 <ul>

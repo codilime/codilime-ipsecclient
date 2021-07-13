@@ -3,8 +3,11 @@ import './NewVRF.scss'
 import Dump from "../components/Dump";
 import {v4 as uuidv4} from "uuid";
 import axios from "axios";
+import {useHistory} from "react-router";
 
 export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar}) {
+    let history = useHistory();
+
     const [vrfName, updateVrfName] = useState("");
     const [lanIpMask, updateLanIpMask] = useState("")
     const [active, updateActive] = useState(false);
@@ -38,8 +41,9 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
             data: payload
         })
         .then((response) => {
-            console.log(response);
-                updateSidebar();
+            console.log(response.data.id);
+            updateSidebar();
+            history.push('/vrf/' + response.data.id);
         }, (error) => {
             console.log(error);
             }

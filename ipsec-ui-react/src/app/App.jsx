@@ -1,10 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import {useState} from "react";
+import {HashRouter as Router, Route, Switch} from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import DetailVRF from '../pages/DetailVRF';
 import NewVRF from "../pages/NewVRF";
 import './App.scss';
-
+import axios from "axios";
 
 export default function App() {
     const [VRFConnections, updateVRFConnections] = useState([]);
@@ -45,7 +47,7 @@ export default function App() {
                                 updateSidebar={fetchVRFsData}
                             /></div>}
                         />
-                        <Route path="/vrf/:index" render={() => <div style={{ display: "flex" }}>
+                        <Route path="/vrf/:id" render={() => <div style={{ display: "flex" }}>
                             <DetailVRF
                                 cryptoPhaseEncryption={cryptoPhaseEncryption}
                                 updateSidebar={fetchVRFsData}
