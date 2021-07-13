@@ -4,12 +4,13 @@ import './NewVRF.scss';
 import {v4 as uuidv4} from 'uuid';
 import Dump from "../components/Dump";
 import axios from "axios";
-import {useParams} from "react-router";
+import {useHistory, useParams} from "react-router";
 import {isEmptyObject} from "../util";
 
 
 export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
     const {id} = useParams();
+    let history = useHistory();
     const detailApiAddress = "/api/vrfs/" + id;
 
     // states for app rendering
@@ -61,8 +62,6 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
             <div>fetching data, please wait</div>
         )
     }
-    console.log("here: ", detailVrf.id);
-
 
     const payload = {
         client_name: vrfName,
@@ -105,6 +104,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
             .then((response) => {
                 console.log(response);
                 updateSidebar();
+                history.push('/vrf/create');
             }, (error) => {
                 console.log(error);
             }
