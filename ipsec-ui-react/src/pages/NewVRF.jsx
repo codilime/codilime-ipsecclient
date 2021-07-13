@@ -6,6 +6,7 @@ import axios from "axios";
 
 export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar}) {
     const [vrfName, updateVrfName] = useState("");
+    const [active, updateActive] = useState(false);
     const [vlanValue, updateVlanValue] = useState("1");
     const [bgpValue, updateBgpValue] = useState("1");
     const [cryptoPh1_1, updateCryptoPh1_1] = useState("");
@@ -17,11 +18,11 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
 
     const payload = {
         client_name: vrfName,
+        active: active,
         vlan: parseInt(vlanValue),
         crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
         crypto_ph2: [cryptoPh2_1, cryptoPh2_2, cryptoPh2_3],
         physical_interface: "",
-        active: false,
         hardware_support: false,
         local_as: parseInt(bgpValue),
         lan_ip: "",
@@ -43,6 +44,11 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
             }
         )
     }
+
+    const activeCheckboxHandler = () => {
+        updateActive(!active);
+    }
+
 
     function forceNumberMinMax(event) {
         console.log("start update");
@@ -88,8 +94,8 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
                                    onChange={event => updateVrfName(event.target.value)}/>
                         </div>
                         <div className="vrf-column-item">
-                            <input type="checkbox" name="active" id="active"/>
-                            <label htmlFor="Active">Active</label>
+                            <input type="checkbox" name="active" id="active" checked={active} onChange={activeCheckboxHandler}/>
+                            <label htmlFor="active">Active</label>
                         </div>
                         <button className="btn" id="submit-vrf-button" onClick={pushNewVrfConnection}>Save changes</button>
                     </div>
@@ -199,7 +205,6 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
             <div className="new-vrf-data-container">
                 visualization
             </div>
-            {/*<Dump value={cryptoPhaseEncryption} />*/}
         </div>
     );
 }

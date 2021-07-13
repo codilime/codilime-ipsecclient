@@ -18,6 +18,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
 
     //states for actual form data, first updated in fetchThisVrfDetails
     const [vrfName, updateVrfName] = useState(vrfName);
+    const [active, updateActive] = useState(active);
     const [vlanValue, updateVlanValue] = useState(vlanValue);
     const [bgpValue, updateBgpValue] = useState(bgpValue);
     const [cryptoPh1_1, updateCryptoPh1_1] = useState(cryptoPh1_1);
@@ -37,6 +38,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
         if (data && !isEmptyObject(data)) {
             updateDetailVrf(data);
             updateVrfName(data.client_name);
+            updateActive(data.active);
             updateVlanValue(data.vlan);
             updateBgpValue(data.local_as);
             updateCryptoPh1_1(data.crypto_ph1[0]);
@@ -62,11 +64,11 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
 
     const payload = {
         client_name: vrfName,
+        active: active,
         vlan: parseInt(vlanValue),
         crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
         crypto_ph2: [cryptoPh2_1, cryptoPh2_2, cryptoPh2_3],
         physical_interface: "",
-        active: false,
         hardware_support: false,
         local_as: parseInt(bgpValue),
         lan_ip: "",
@@ -105,6 +107,10 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
                 console.log(error);
             }
         )
+    }
+
+    const activeCheckboxHandler = () => {
+        updateActive(!active);
     }
 
     function forceNumberMinMax(event) {
@@ -148,8 +154,8 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
                                 />
                             </div>
                             <div className="vrf-column-item">
-                                <input type="checkbox" name="active" id="active"/>
-                                <label htmlFor="Active">Active</label>
+                                <input type="checkbox" name="active" id="active" checked={active} onChange={activeCheckboxHandler}/>
+                                <label htmlFor="active">Active</label>
                             </div>
                             <button className="btn" id="save-changes-to-vrf-button" onClick={updateVrfConnection}>Save changes</button>
                         </div>
