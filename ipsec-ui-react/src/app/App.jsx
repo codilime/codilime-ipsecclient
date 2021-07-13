@@ -53,7 +53,7 @@ export default function App() {
                                 updateSidebar={fetchVRFsData}
                             /></div>}
                         />
-                        <Route path="*" render={() => 404} />
+                        <Route path="*" render={() => <div>No available data to display</div>} />
                     </Switch>
                 </div>
             </div>
