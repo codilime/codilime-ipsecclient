@@ -19,7 +19,7 @@ export default function App() {
     }
 
     async function fetchEncryptionData() {
-        const response = await axios.get('api/software');
+        const response = await axios.get('/api/software');
         let data = response.data;
         if (data && Object.keys(data).length > 0) {
             updateCryptoPhaseEncryption(data);

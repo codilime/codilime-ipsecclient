@@ -5,10 +5,12 @@ import {v4 as uuidv4} from 'uuid';
 import Dump from "../components/Dump";
 import axios from "axios";
 import {useParams} from "react-router";
+import {isEmptyObject} from "../util";
 
 
 export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
-    const {index} = useParams();
+    const {id} = useParams();
+    const detailApiAddress = "/api/vrfs/" + id;
 
     // states for app rendering
     const [detailVrf, updateDetailVrf] = useState();
@@ -26,14 +28,13 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
     const [cryptoPh2_3, updateCryptoPh2_3] = useState(cryptoPh2_3);
 
     async function fetchThisVrfDetails() {
-        const response = await axios.get('/api/vrfs')
+        const response = await axios.get(detailApiAddress);
 
-        let data = response.data[index];
+        let data = response.data;
 
         console.log("data", data);
-        console.log("data.id", data.id);
 
-        if (data && Object.keys(data).length > 0) {
+        if (data && !isEmptyObject(data)) {
             updateDetailVrf(data);
             updateVrfName(data.client_name);
             updateVlanValue(data.vlan);
@@ -49,13 +50,15 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
 
     useEffect(() => {
         fetchThisVrfDetails().then(() => updateLoading(false));
-    }, [index]);
+    }, [id]);
 
     if (loading === true) {
         return(
             <div>fetching data, please wait</div>
         )
     }
+    console.log("here: ", detailVrf.id);
+
 
     const payload = {
         client_name: vrfName,
@@ -71,7 +74,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
     }
 
     // functions responsible for handling connections
-    const detailApiAddress = "api/vrfs/" + detailVrf.id;
+
 
     function updateVrfConnection(event) {
         event.preventDefault();
@@ -102,6 +105,28 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
                 console.log(error);
             }
         )
+    }
+
+    function forceNumberMinMax(event) {
+        console.log("start update");
+
+        let value = parseInt(event.target.value);
+        const min = parseInt(event.target.min);
+        const max = parseInt(event.target.max);
+
+        if (event.target.max && value > max) {
+            console.log("wartosc za wysoka, wyrownuje");
+            value = max;
+        }
+        if (event.target.min && value < min) {
+            console.log("wartosc za niska, wyrownuje");
+            value = min;
+        }
+        if (isNaN(value)) {
+            return "";
+        }
+        console.log("ustawiam poprawna wartosc na: ", value);
+        return value;
     }
 
     return(

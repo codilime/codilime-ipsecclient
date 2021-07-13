@@ -2,7 +2,6 @@ import React from 'react';
 import './Sidebar.scss';
 import {Link} from 'react-router-dom';
 import {v4 as uuidv4} from 'uuid';
-import Dump from "../components/Dump";
 
 export default function Sidebar(props) {
 
@@ -12,9 +11,9 @@ export default function Sidebar(props) {
         return (
             <div className="sidebar-container">
                 <ul>
-                    {VRFList.map((item, index) => (
+                    {VRFList.map((item) => (
                         <li key={uuidv4()}>
-                            <Link to={"/vrf/" + index} replace >
+                            <Link to={"/vrf/" + item.id} replace >
                                 {item.client_name}
                             </Link>
                         </li>

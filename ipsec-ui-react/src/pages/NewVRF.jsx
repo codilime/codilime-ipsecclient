@@ -14,7 +14,6 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
     const [cryptoPh2_1, updateCryptoPh2_1] = useState("");
     const [cryptoPh2_2, updateCryptoPh2_2] = useState("");
     const [cryptoPh2_3, updateCryptoPh2_3] = useState("");
-    const [saveButton, updateSaveButton] = useState(false);
 
     const payload = {
         client_name: vrfName,
@@ -110,7 +109,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
                             <label htmlFor="local_as">BGP local AS</label>
                             <input type="number"
                                    min="1"
-                                   max="4094"
+                                   max={Math.pow(2, 32)}
                                    name="local_as" id="local_as"
                                    step="1"
                                    value={bgpValue}
