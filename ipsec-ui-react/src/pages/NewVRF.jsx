@@ -6,6 +6,7 @@ import axios from "axios";
 
 export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar}) {
     const [vrfName, updateVrfName] = useState("");
+    const [lanIpMask, updateLanIpMask] = useState("")
     const [active, updateActive] = useState(false);
     const [vlanValue, updateVlanValue] = useState("1");
     const [bgpValue, updateBgpValue] = useState("1");
@@ -18,6 +19,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
 
     const payload = {
         client_name: vrfName,
+        lan_ip: lanIpMask,
         active: active,
         vlan: parseInt(vlanValue),
         crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
@@ -25,7 +27,6 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
         physical_interface: "",
         hardware_support: false,
         local_as: parseInt(bgpValue),
-        lan_ip: "",
         endpoints: null
     }
 
@@ -85,13 +86,21 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
                 <div className="vrf-details-bar">VRF Details</div>
                 <form>
                     <div className="vrf-column-1">
-                        <div className="vrf-column-item">
+                        <div className="vrf-column-1-item">
                             <label htmlFor="client_name">Name:</label>
                             <input type="text"
                                    placeholder="set VRF name"
                                    name="client_name"
                                    id="client_name"
-                                   onChange={event => updateVrfName(event.target.value)}/>
+                                   onChange={event => updateVrfName(event.target.value)}
+                            /> <br />
+                            <label htmlFor="lan_ip">LAN IP/MASK:</label>
+                            <input type="text"
+                                   placeholder="lan ip placeholder"
+                                   name="lan_ip"
+                                   id="lan_ip"
+                                   onChange={event => updateLanIpMask(event.target.value)}
+                            />
                         </div>
                         <div className="vrf-column-item">
                             <input type="checkbox" name="active" id="active" checked={active} onChange={activeCheckboxHandler}/>

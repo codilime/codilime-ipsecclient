@@ -18,6 +18,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
 
     //states for actual form data, first updated in fetchThisVrfDetails
     const [vrfName, updateVrfName] = useState(vrfName);
+    const [lanIpMask, updateLanIpMask] = useState(lanIpMask)
     const [active, updateActive] = useState(active);
     const [vlanValue, updateVlanValue] = useState(vlanValue);
     const [bgpValue, updateBgpValue] = useState(bgpValue);
@@ -38,6 +39,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
         if (data && !isEmptyObject(data)) {
             updateDetailVrf(data);
             updateVrfName(data.client_name);
+            updateLanIpMask(data.lan_ip);
             updateActive(data.active);
             updateVlanValue(data.vlan);
             updateBgpValue(data.local_as);
@@ -64,6 +66,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
 
     const payload = {
         client_name: vrfName,
+        lan_ip: lanIpMask,
         active: active,
         vlan: parseInt(vlanValue),
         crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
@@ -71,7 +74,6 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
         physical_interface: "",
         hardware_support: false,
         local_as: parseInt(bgpValue),
-        lan_ip: "",
         endpoints: null
     }
 
@@ -144,13 +146,20 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
                     <form>
                         {/*additionally active checkbox needs some kind of a handler to display proper value*/}
                         <div className="vrf-column-1">
-                            <div className="vrf-column-item">
+                            <div className="vrf-column-1-item">
                                 <label htmlFor="client_name">Name:</label>
                                 <input type="text"
                                        name="client_name"
                                        id="client_name"
                                        value={vrfName}
                                        onChange={event => updateVrfName(event.target.value)}
+                                /> <br />
+                                <label htmlFor="lan_ip">LAN IP/MASK:</label>
+                                <input type="text"
+                                       name="lan_ip"
+                                       id="lan_ip"
+                                       value={lanIpMask}
+                                       onChange={event => updateLanIpMask(event.target.value)}
                                 />
                             </div>
                             <div className="vrf-column-item">
