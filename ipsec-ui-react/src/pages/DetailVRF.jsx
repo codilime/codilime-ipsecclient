@@ -74,7 +74,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
         vlan: parseInt(vlanValue),
         crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
         crypto_ph2: [cryptoPh2_1, cryptoPh2_2, cryptoPh2_3],
-        physical_interface: "",
+        physical_interface: physicalInterface,
         hardware_support: hardwareSupport,
         local_as: parseInt(bgpValue),
         endpoints: null
