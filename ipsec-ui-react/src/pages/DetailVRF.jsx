@@ -20,7 +20,9 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
     //states for actual form data, first updated in fetchThisVrfDetails
     const [vrfName, updateVrfName] = useState(vrfName);
     const [lanIpMask, updateLanIpMask] = useState(lanIpMask)
+    const [physicalInterface, updatePhysicalInterface] = useState(physicalInterface);
     const [active, updateActive] = useState(active);
+    const [hardwareSupport, updateHardwareSupport] = useState(hardwareSupport);
     const [vlanValue, updateVlanValue] = useState(vlanValue);
     const [bgpValue, updateBgpValue] = useState(bgpValue);
     const [cryptoPh1_1, updateCryptoPh1_1] = useState(cryptoPh1_1);
@@ -41,7 +43,9 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
             updateDetailVrf(data);
             updateVrfName(data.client_name);
             updateLanIpMask(data.lan_ip);
+            updatePhysicalInterface(data.physical_interface);
             updateActive(data.active);
+            updateHardwareSupport(data.hardware_support);
             updateVlanValue(data.vlan);
             updateBgpValue(data.local_as);
             updateCryptoPh1_1(data.crypto_ph1[0]);
@@ -71,14 +75,12 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
         crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
         crypto_ph2: [cryptoPh2_1, cryptoPh2_2, cryptoPh2_3],
         physical_interface: "",
-        hardware_support: false,
+        hardware_support: hardwareSupport,
         local_as: parseInt(bgpValue),
         endpoints: null
     }
 
     // functions responsible for handling connections
-
-
     function updateVrfConnection(event) {
         event.preventDefault();
         axios({
@@ -113,6 +115,9 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
 
     const activeCheckboxHandler = () => {
         updateActive(!active);
+    }
+    const hardwareSupportCheckboxHandler = () => {
+        updateHardwareSupport(!hardwareSupport);
     }
 
     function forceNumberMinMax(event) {
@@ -160,26 +165,25 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
                                        id="lan_ip"
                                        value={lanIpMask}
                                        onChange={event => updateLanIpMask(event.target.value)}
+                                /> <br />
+                                <label htmlFor="physical_interface">Physical interface:</label>
+                                <input type="text"
+                                       placeholder="eth0"
+                                       name="physical_interface"
+                                       id="physical_interface"
+                                       value={physicalInterface}
+                                       onChange={event => updatePhysicalInterface(event.target.value)}
                                 />
                             </div>
-                            <div className="vrf-column-item">
+                            <div className="vrf-column-checkbox-item">
                                 <input type="checkbox" name="active" id="active" checked={active} onChange={activeCheckboxHandler}/>
                                 <label htmlFor="active">Active</label>
+                                <input type="checkbox" name="hardware_support" id="hardware_support" checked={hardwareSupport} onChange={hardwareSupportCheckboxHandler}/>
+                                <label id="checkbox-label" htmlFor="hardware_support">Hardware support</label>
                             </div>
                             <button className="btn" id="save-changes-to-vrf-button" onClick={updateVrfConnection}>Save changes</button>
                         </div>
                         <div className="vrf-column-2">
-                            <div className="vrf-column-item-number">
-                                <label htmlFor="vlan">VLAN</label>
-                                <input type="number"
-                                       min="1"
-                                       max="4094"
-                                       name="vlan" id="vlan"
-                                       step="1"
-                                       value={vlanValue}
-                                       onChange={event => updateVlanValue(forceNumberMinMax(event))}
-                                />
-                            </div>
                             <div className="vrf-column-item-number">
                                 <label htmlFor="local_as">BGP local AS</label>
                                 <input type="number"
@@ -190,6 +194,18 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
                                        value={bgpValue}
                                        onChange={event => updateBgpValue(forceNumberMinMax(event))}
                                 />
+                            </div>
+                            <div className="vrf-column-item-number">
+                                <label htmlFor="vlan">VLAN</label>
+                                <input type="number"
+                                       min="1"
+                                       max="4094"
+                                       name="vlan" id="vlan"
+                                       step="1"
+                                       value={vlanValue}
+                                       onChange={event => updateVlanValue(forceNumberMinMax(event))}
+                                />
+
                             </div>
                         </div>
                         <div className="vrf-column-3">

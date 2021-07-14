@@ -11,6 +11,8 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
     const [vrfName, updateVrfName] = useState("");
     const [lanIpMask, updateLanIpMask] = useState("")
     const [active, updateActive] = useState(false);
+    const [hardwareSupport, updateHardwareSupport] = useState(false);
+    const [physicalInterface, updatePhysicalInterface] = useState("");
     const [vlanValue, updateVlanValue] = useState("1");
     const [bgpValue, updateBgpValue] = useState("1");
     const [cryptoPh1_1, updateCryptoPh1_1] = useState("");
@@ -23,12 +25,12 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
     const payload = {
         client_name: vrfName,
         lan_ip: lanIpMask,
+        physical_interface: physicalInterface,
+        hardware_support: hardwareSupport,
         active: active,
         vlan: parseInt(vlanValue),
         crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
         crypto_ph2: [cryptoPh2_1, cryptoPh2_2, cryptoPh2_3],
-        physical_interface: "",
-        hardware_support: false,
         local_as: parseInt(bgpValue),
         endpoints: null
     }
@@ -52,6 +54,9 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
 
     const activeCheckboxHandler = () => {
         updateActive(!active);
+    }
+    const hardwareSupportCheckboxHandler = () => {
+        updateHardwareSupport(!hardwareSupport);
     }
 
 
@@ -98,32 +103,30 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
                                    id="client_name"
                                    onChange={event => updateVrfName(event.target.value)}
                             /> <br />
-                            <label htmlFor="lan_ip">LAN IP/MASK:</label>
+                            <label htmlFor="lan_ip">LAN IP/Mask:</label>
                             <input type="text"
                                    placeholder="lan ip placeholder"
                                    name="lan_ip"
                                    id="lan_ip"
                                    onChange={event => updateLanIpMask(event.target.value)}
+                            /> <br />
+                            <label htmlFor="physical_interface">Physical interface:</label>
+                            <input type="text"
+                                   placeholder="eth0"
+                                   name="physical_interface"
+                                   id="physical_interface"
+                                   onChange={event => updatePhysicalInterface(event.target.value)}
                             />
                         </div>
-                        <div className="vrf-column-item">
+                        <div className="vrf-column-checkbox-item">
                             <input type="checkbox" name="active" id="active" checked={active} onChange={activeCheckboxHandler}/>
-                            <label htmlFor="active">Active</label>
+                            <label id="checkbox-label" htmlFor="active">Active</label>
+                            <input type="checkbox" name="hardware_support" id="hardware_support" checked={hardwareSupport} onChange={hardwareSupportCheckboxHandler}/>
+                            <label id="checkbox-label" htmlFor="hardware_support">Hardware support</label>
                         </div>
                         <button className="btn" id="submit-vrf-button" onClick={pushNewVrfConnection}>Save changes</button>
                     </div>
                     <div className="vrf-column-2">
-                        <div className="vrf-column-item-number">
-                            <label htmlFor="vlan">VLAN</label>
-                            <input type="number"
-                                   min="1"
-                                   max="4094"
-                                   name="vlan" id="vlan"
-                                   step="1"
-                                   value={vlanValue}
-                                   onChange={event => updateVlanValue(forceNumberMinMax(event))}
-                            />
-                        </div>
                         <div className="vrf-column-item-number">
                             <label htmlFor="local_as">BGP local AS</label>
                             <input type="number"
@@ -133,6 +136,17 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
                                    step="1"
                                    value={bgpValue}
                                    onChange={event => updateBgpValue(forceNumberMinMax(event))}
+                            />
+                        </div>
+                        <div className="vrf-column-item-number">
+                            <label htmlFor="vlan">VLAN</label>
+                            <input type="number"
+                                   min="1"
+                                   max="4094"
+                                   name="vlan" id="vlan"
+                                   step="1"
+                                   value={vlanValue}
+                                   onChange={event => updateVlanValue(forceNumberMinMax(event))}
                             />
                         </div>
                     </div>
