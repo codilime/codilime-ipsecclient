@@ -22,10 +22,11 @@ RUN go build
 FROM alpine:3.13 AS monolith
 
 #Packages
-RUN apk add --no-cache strongswan nginx supervisor gettext jq
+RUN apk add --no-cache strongswan nginx supervisor gettext jq tcpdump sqlite
 RUN apk add --no-cache bird --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
 
 #API
+RUN mkdir -p /iox_data/appdata
 COPY ipsec-backend/templates /templates
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 COPY --from=middleware-build /usr/src/app/ipsec_backend /usr/local/sbin/ipsec_api
@@ -40,7 +41,11 @@ COPY monolith/nginx.sh /usr/local/sbin/
 
 #Strongswan
 COPY monolith/ipsec.ini /etc/supervisor.d/
+COPY monolith/ipsec_reload.sh /usr/local/sbin/
+COPY monolith/ipsec_reload.ini /etc/supervisor.d/
 COPY environment/strongswan/content/no_route.conf /etc/strongswan.d/no_route.conf
+COPY monolith/ipsec_reload.ini /etc/supervisor.d/
+COPY monolith/ipsec_reload.sh /usr/local/sbin/
 
 RUN ln -s /etc/swanctl/conf.d /opt/ipsec
 RUN chown -R ipsec:ipsec /etc/swanctl
@@ -57,3 +62,12 @@ COPY environment/supervisor/content/ipsec.sh /usr/local/sbin/
 RUN ln -s /etc/supervisor.d /opt/super
 
 CMD /usr/bin/supervisord -n -c /etc/supervisord.conf
+
+LABEL cisco.descriptor-schema-version="2.12" \
+           cisco.info.author-link="https://www.codilime.com" \
+           cisco.info.author-name="Codilime Sp. z.o.o" \
+           cisco.resources.profile=custom \
+           cisco.resources.cpu=54 \
+           cisco.resources.memory=256
+
+EXPOSE 80

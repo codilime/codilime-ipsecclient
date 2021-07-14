@@ -12,6 +12,7 @@ class Endpoint {
   bgp: boolean = false;
   remote_as: number = -1;
   hover: boolean = false;
+  source_interface: string = "";
 };
 
 class VRF {
@@ -21,7 +22,7 @@ class VRF {
   hardware_support: boolean = false;
   client_name: string = "New VRF";
   crypto_ph1: string[] = ["aes-cbc-128", "sha256", "modp_2048"];
-  crypto_ph2: string[] = ["aes128gcm128", "x25519"];
+  crypto_ph2: string[] = ["esp-gcm", "fourteen"];
   physical_interface: string = "eth0";
   local_as: number = -1;
   lan_ip: string = "";
@@ -59,9 +60,10 @@ export class AppComponent {
   currentVRF: VRF | null = null;
   addingNewEndpoint = false;
   software: Algorithms = new Algorithms();
-  hardware: Algorithms = new Algorithms();
-  crypto_ph1_list: string[] = ["aes-cbc-128", "sha256", "modp_2048"];
-  crypto_ph2_list: string[] = ["aes128gcm128", "x25519"];
+  hardwarePh1: Algorithms = new Algorithms();
+  hardwarePh2: Algorithms = new Algorithms();
+  crypto_ph1_list: string[] = ["aes-cbc-128", "sha256", "fourteen"];
+  crypto_ph2_list: string[] = ["esp-gcm", "group14"];
 
   newEndpoint: Endpoint = new Endpoint();
   oldMetrics: string = "";
@@ -127,19 +129,26 @@ export class AppComponent {
       .subscribe((data) => {
         this.vrfs = data as VRF[];
       });
-    this.httpClient.get("/api/software")
+    this.httpClient.get("/api/algorithms/software")
       .pipe(
         catchError(this.handleError)
       )
       .subscribe((data) => {
         this.software = data as Algorithms;
       });
-    this.httpClient.get("/api/hardware")
+      this.httpClient.get("/api/algorithms/hardware/ph1")
       .pipe(
         catchError(this.handleError)
       )
       .subscribe((data) => {
-        this.hardware = data as Algorithms;
+        this.hardwarePh1 = data as Algorithms;
+      });
+      this.httpClient.get("/api/algorithms/hardware/ph2")
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe((data) => {
+        this.hardwarePh2 = data as Algorithms;
       });
     this.getMetric();
     setInterval(()=> { this.getMetric() }, 3000);

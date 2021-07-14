@@ -17,21 +17,14 @@ import (
 const switchBase = "https://%s/restconf/data/Cisco-IOS-XE-native:native/"
 
 type endpoint struct {
-	RemoteIPSec string `json:"remote_ip_sec"`
-	LocalIP     string `json:"local_ip"`
-	PeerIP      string `json:"peer_ip"`
-	PSK         string `json:"psk"`
-	RemoteAS    int    `json:"remote_as"`
-	NAT         bool   `json:"nat"`
-	BGP         bool   `json:"bgp"`
-}
-
-var groupMap map[string]string = map[string]string{
-	"modp_2048": "fourteen",
-}
-
-var ipsecGroupMap map[string]string = map[string]string{
-	"modp_2048": "group14",
+	RemoteIPSec     string `json:"remote_ip_sec"`
+	LocalIP         string `json:"local_ip"`
+	PeerIP          string `json:"peer_ip"`
+	PSK             string `json:"psk"`
+	RemoteAS        int    `json:"remote_as"`
+	NAT             bool   `json:"nat"`
+	BGP             bool   `json:"bgp"`
+	SourceInterface string `json:"source_interface"`
 }
 
 func restconfCreate(vrf Vrf) error {
@@ -46,7 +39,17 @@ func restconfCreate(vrf Vrf) error {
 		return err
 	}
 
-	cryptoPh1, err := restconfGetCryptoPh1Strings(vrf)
+	// Remove NAT-T as 9300X does not support it yet
+	if err := tryRestconfDelete("crypto/ipsec/nat-transparency", client); err != nil {
+		fmt.Println("NAT-T config already removed, skipping", err)
+	}
+
+	cryptoPh1, err := restconfGetCryptoStrings(string(vrf.CryptoPh1))
+	if err != nil {
+		return err
+	}
+
+	cryptoPh2, err := restconfGetCryptoStrings(string(vrf.CryptoPh2))
 	if err != nil {
 		return err
 	}
@@ -63,13 +66,10 @@ func restconfCreate(vrf Vrf) error {
 	if err := restconfDoProfile(vrf, client); err != nil {
 		return err
 	}
-	if err := restconfDoTransformSet(vrf, client); err != nil {
+	if err := restconfDoTransformSet(vrf, cryptoPh2, client); err != nil {
 		return err
 	}
-	if err := restconfDoIpsecProfile(vrf, client, cryptoPh1[len(cryptoPh1)-1]); err != nil {
-		return err
-	}
-	if err := restconfDoVRF(vrf, client); err != nil {
+	if err := restconfDoIpsecProfile(vrf, client, cryptoPh2[len(cryptoPh2)-1]); err != nil {
 		return err
 	}
 	if err := restconfDoTunnels(vrf, client, dbEndpoints); err != nil {
@@ -103,9 +103,6 @@ func restconfDelete(vrf Vrf) error {
 			fmt.Println("delete error occured:", err)
 		}
 	}
-	if err := tryRestconfDelete(fmt.Sprintf("ip/vrf=%s", vrf.ClientName), client); err != nil {
-		fmt.Println("delete error occured:", err)
-	}
 	if err := tryRestconfDelete(fmt.Sprintf("crypto/ipsec/profile=%s", vrf.ClientName), client); err != nil {
 		fmt.Println("delete error occured:", err)
 	}
@@ -132,11 +129,6 @@ func tryRestconfDelete(path string, client *http.Client) error {
 }
 
 func restconfDoProposal(vrf Vrf, client *http.Client, cryptoPh1 []string) error {
-	lastIndex := len(cryptoPh1) - 1
-	groupMapping, ok := groupMap[cryptoPh1[lastIndex]]
-	if !ok {
-		return errors.New("could not find a group mapping for:" + cryptoPh1[lastIndex])
-	}
 	proposal := `{
 		"proposal": {
 		  "name": "%s",
@@ -146,12 +138,15 @@ func restconfDoProposal(vrf Vrf, client *http.Client, cryptoPh1 []string) error 
 		  "integrity": {
 		    "%s": [null]
 		  },
+		  "prf": {
+		    "%s": [null]
+		  },
 		  "group": {
 		    "%s": [null]
 		  }
 		}
 	}`
-	proposalData := fmt.Sprintf(proposal, vrf.ClientName, cryptoPh1[0], cryptoPh1[1], groupMapping)
+	proposalData := fmt.Sprintf(proposal, vrf.ClientName, cryptoPh1[0], cryptoPh1[1], cryptoPh1[1], cryptoPh1[2])
 	if err := tryRestconfPatch("crypto/ikev2/proposal", proposalData, client); err != nil {
 		return err
 	}
@@ -162,6 +157,11 @@ func restconfDoPolicy(vrf Vrf, client *http.Client) error {
 	policy := `{
 		"policy": {
 		  "name": "%s",
+		  "match": {
+			"fvrf": {
+			  "any": [null]
+			}
+		  },
 		  "proposal": {
 		    "proposals": "%s"
 		  }
@@ -242,30 +242,61 @@ func restconfDoProfile(vrf Vrf, client *http.Client) error {
 	return nil
 }
 
-func restconfDoTransformSet(vrf Vrf, client *http.Client) error {
+func restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) error {
+	// esp: always present
+	// key-bit: when it's gcm or aes
+	keyBit := ""
+	// esp-hmac: when it's not gcm
+	espHmac := ""
+	esp := ""
+	if containsADigit(cryptoPh2[0]) {
+		// this is gcm or aes
+		encFunc := strings.Split(cryptoPh2[0], "-")
+		if len(encFunc) < 3 {
+			return fmt.Errorf("wrong encryption function format: %s", cryptoPh2[0])
+		}
+		keyBit = fmt.Sprintf(`"key-bit": "%s",`, encFunc[1])
+		esp = fmt.Sprintf("%s-%s", encFunc[0], encFunc[2])
+	} else {
+		esp = cryptoPh2[0]
+	}
+	if !strings.Contains(cryptoPh2[0], "gcm") {
+		espHmac = fmt.Sprintf(`"esp-hmac":"%s",`, cryptoPh2[1])
+	}
+	tunnelOptionName := "tunnel"
+	if os.Getenv("CAF_SYSTEM_NAME") == "cat9300X" {
+		tunnelOptionName = "tunnel-choice"
+	}
 	transformSet := `{
 		"transform-set": {
 		  "tag": "%s",
-		  "esp": "esp-gcm",
+		  "esp": "%s",
+		  %s
+		  %s
 		  "mode": {
-		    "tunnel": [
+		    "%s": [
 		      null
 		    ]
 		  }
 		}
 		}`
-	transformSetData := fmt.Sprintf(transformSet, vrf.ClientName)
+	transformSetData := fmt.Sprintf(transformSet, vrf.ClientName, esp, keyBit, espHmac, tunnelOptionName)
 	if err := tryRestconfPatch("crypto/ipsec/transform-set", transformSetData, client); err != nil {
 		return err
 	}
 	return nil
 }
 
-func restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) error {
-	groupMapping, ok := ipsecGroupMap[cryptoName]
-	if !ok {
-		return errors.New("could not find an ipsec group mapping for:" + cryptoName)
+func containsADigit(str string) bool {
+	for _, c := range str {
+		if c >= '0' && c <= '9' {
+			return true
+		}
 	}
+	return false
+}
+
+func restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) error {
 	ipsecProfile := `{
 		"profile": {
 		  "name": "%s",
@@ -285,7 +316,7 @@ func restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) err
 		  }
 		}
 		}`
-	ipsecProfileData := fmt.Sprintf(ipsecProfile, vrf.ClientName, vrf.ClientName, groupMapping, vrf.ClientName)
+	ipsecProfileData := fmt.Sprintf(ipsecProfile, vrf.ClientName, vrf.ClientName, cryptoName, vrf.ClientName)
 	if err := tryRestconfPatch("crypto/ipsec/profile", ipsecProfileData, client); err != nil {
 		return err
 	}
@@ -301,11 +332,6 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			    "name": %d,
 			    "description": "%s",
 			    "ip": {
-				"vrf": {
-					"forwarding": {
-						"word": "%s"
-					}
-				},
 			      "address": {
 				"primary": {
 				  "address": "%s",
@@ -314,7 +340,7 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			      }
 			    },
 			    "Cisco-IOS-XE-tunnel:tunnel": {
-			      "source": "GigabitEthernet1",
+			      "source": "%s",
 			      "destination-config": {
 				"ipv4": "%s"
 			      },
@@ -334,9 +360,8 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			  }
 			}
 			}`
-		tunnelData := fmt.Sprintf(tunnel, tunName, vrf.ClientName+strconv.Itoa(i), vrf.ClientName,
-			endpoint.LocalIP, endpoint.RemoteIPSec, vrf.ClientName)
-		fmt.Println(tunnelData)
+		tunnelData := fmt.Sprintf(tunnel, tunName, vrf.ClientName+strconv.Itoa(i),
+			endpoint.LocalIP, endpoint.SourceInterface, endpoint.RemoteIPSec, vrf.ClientName)
 		if err := tryRestconfPatch("interface", tunnelData, client); err != nil {
 			return err
 		}
@@ -370,24 +395,7 @@ func restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []endpoint) error {
 		neighbors = append(neighbors, fmt.Sprintf(neighbor, endpoint.PeerIP, endpoint.RemoteAS))
 	}
 	bgpData := fmt.Sprintf(bgp, vrf.LocalAs, strings.Join(neighbors, ","))
-	fmt.Println("bgp data", bgpData)
 	if err := tryRestconfPatch("router/bgp", bgpData, client); err != nil {
-		return err
-	}
-	return nil
-}
-
-func restconfDoVRF(vrf Vrf, client *http.Client) error {
-	vrfTemplate := `{
-		"vrf": [
-		  {
-		    "name": "%s",
-		    "description": "%s"
-		  }
-		]
-	      }`
-	vrfData := fmt.Sprintf(vrfTemplate, vrf.ClientName, vrf.ClientName)
-	if err := tryRestconfPatch("ip/vrf", vrfData, client); err != nil {
 		return err
 	}
 	return nil
@@ -420,6 +428,7 @@ func tryRestconfRequest(method, path, data string, client *http.Client) error {
 }
 
 func restconfDoRequest(method, path, data string, client *http.Client) error {
+	fmt.Printf("%s: %s\n%s\n", method, path, data)
 	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + path
 	req, err := http.NewRequest(method, fullPath, strings.NewReader(data))
 	if err != nil {
@@ -442,17 +451,17 @@ func restconfDoRequest(method, path, data string, client *http.Client) error {
 	return nil
 }
 
-func restconfGetCryptoPh1Strings(vrf Vrf) ([]string, error) {
-	cryptoPh1 := []string{}
-	if err := json.Unmarshal([]byte(vrf.CryptoPh1.String()), &cryptoPh1); err != nil {
+func restconfGetCryptoStrings(cryptoString string) ([]string, error) {
+	crypto := []string{}
+	if err := json.Unmarshal([]byte(cryptoString), &crypto); err != nil {
 		return nil, err
 	}
 
-	cryptoPh1Len := len(cryptoPh1)
-	if cryptoPh1Len < 2 {
-		return nil, errors.New("malformed cryptoPh1: " + strings.Join(cryptoPh1, ", "))
+	cryptoLen := len(crypto)
+	if cryptoLen < 2 {
+		return nil, errors.New("malformed crypto: " + strings.Join(crypto, ", "))
 	}
-	return cryptoPh1, nil
+	return crypto, nil
 }
 
 func hash(s string) int {

@@ -12,11 +12,13 @@ import (
 )
 
 const (
-	vrfsPath     = "/api/vrfs"
-	vrfsIDPath   = vrfsPath + "/{id:[0-9]+}"
-	metricsPath  = "/api/metrics"
-	softwarePath = "/api/software"
-	hardwarePath = "/api/hardware"
+	vrfsPath        = "/api/vrfs"
+	vrfsIDPath      = vrfsPath + "/{id:[0-9]+}"
+	metricsPath     = "/api/metrics"
+	softwarePath    = "/api/algorithms/software"
+	hardwarePathPh1 = "/api/algorithms/hardware/ph1"
+	hardwarePathPh2 = "/api/algorithms/hardware/ph2"
+	logsPath        = "/api/logs/{name:[a-zA-Z0-9-_]+}"
 )
 
 type Generator interface {
@@ -54,7 +56,9 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(vrfsIDPath, a.updateVrf).Methods(http.MethodPut)
 	a.Router.HandleFunc(vrfsIDPath, a.deleteVrf).Methods(http.MethodDelete)
 	a.Router.HandleFunc(softwarePath, a.getSoftwareAlgorithms).Methods(http.MethodGet)
-	a.Router.HandleFunc(hardwarePath, a.getHardwareAlgorithms).Methods(http.MethodGet)
+	a.Router.HandleFunc(hardwarePathPh1, a.getHardwareAlgorithmsPh1).Methods(http.MethodGet)
+	a.Router.HandleFunc(hardwarePathPh2, a.getHardwareAlgorithmsPh2).Methods(http.MethodGet)
+	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet).Queries("offset", "{offset:[-0-9]+}", "length", "{length:[-0-9]+}")
 	a.Router.HandleFunc(metricsPath, metrics).Methods(http.MethodGet)
 	a.Router.HandleFunc(metricsPath+"/{name:[a-zA-Z0-9-_]+}", metricsName).Methods(http.MethodGet)
 }
@@ -239,10 +243,10 @@ func (a *App) getSoftwareAlgorithms(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, res)
 }
 
-func (a *App) getHardwareAlgorithms(w http.ResponseWriter, r *http.Request) {
-	enc := getHardwareEncryptionAlgorithms()
-	integrity := getHardwareIntegrityAlgorithms()
-	keyExchange := getHardwareKeyExchangeAlgorithms()
+func (a *App) getHardwareAlgorithmsPh1(w http.ResponseWriter, r *http.Request) {
+	enc := getHardwareEncryptionAlgorithmsPh1()
+	integrity := getHardwareIntegrityAlgorithmsPh1()
+	keyExchange := getHardwareKeyExchangeAlgorithmsPh1()
 
 	res := map[string][]string{
 		"encryption":   enc,
@@ -250,6 +254,41 @@ func (a *App) getHardwareAlgorithms(w http.ResponseWriter, r *http.Request) {
 		"key_exchange": keyExchange,
 	}
 
+	respondWithJSON(w, http.StatusOK, res)
+}
+
+func (a *App) getHardwareAlgorithmsPh2(w http.ResponseWriter, r *http.Request) {
+	enc := getHardwareEncryptionAlgorithmsPh2()
+	integrity := getHardwareIntegrityAlgorithmsPh2()
+	keyExchange := getHardwareKeyExchangeAlgorithmsPh2()
+
+	res := map[string][]string{
+		"encryption":   enc,
+		"integrity":    integrity,
+		"key_exchange": keyExchange,
+	}
+
+	respondWithJSON(w, http.StatusOK, res)
+}
+
+func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	offset, err := strconv.Atoi(vars["offset"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid offset")
+		return
+	}
+	length, err := strconv.Atoi(vars["length"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid length")
+		return
+	}
+	name := vars["name"]
+	res, err := GetProcessLog(name, offset, length)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 	respondWithJSON(w, http.StatusOK, res)
 }
 

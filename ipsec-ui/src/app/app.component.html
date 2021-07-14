@@ -55,13 +55,13 @@
             <td>Crypto phase 1</td>
             <td class=crypto_td>
               <select class="custom-select" [(ngModel)]=crypto_ph1_list[0]>
-                <option *ngFor="let encryption of hardware.encryption">{{encryption}}</option>
+                <option *ngFor="let encryption of hardwarePh1.encryption">{{encryption}}</option>
               </select>
               <select class="custom-select" [(ngModel)]=crypto_ph1_list[1]>
-                <option *ngFor="let integrity of hardware.integrity">{{integrity}}</option>
+                <option *ngFor="let integrity of hardwarePh1.integrity">{{integrity}}</option>
               </select>
               <select class="custom-select" [(ngModel)]=crypto_ph1_list[2]>
-                <option *ngFor="let key_exchange of hardware.key_exchange">{{key_exchange}}</option>
+                <option *ngFor="let key_exchange of hardwarePh1.key_exchange">{{key_exchange}}</option>
               </select>
             </td>
           </tr>
@@ -69,13 +69,13 @@
             <td>Crypto phase 2</td>
             <td class=crypto_td>
               <select class="custom-select" [(ngModel)]=crypto_ph2_list[0]>
-                <option *ngFor="let encryption of hardware.encryption">{{encryption}}</option>
+                <option *ngFor="let encryption of hardwarePh2.encryption">{{encryption}}</option>
               </select>
               <select class="custom-select" [(ngModel)]=crypto_ph2_list[1]>
-                <option *ngFor="let integrity of hardware.integrity">{{integrity}}</option>
+                <option *ngFor="let integrity of hardwarePh2.integrity">{{integrity}}</option>
               </select>
               <select class="custom-select" [(ngModel)]=crypto_ph2_list[2]>
-                <option *ngFor="let key_exchange of hardware.key_exchange">{{key_exchange}}</option>
+                <option *ngFor="let key_exchange of hardwarePh2.key_exchange">{{key_exchange}}</option>
               </select>
             </td>
           </tr>
@@ -134,6 +134,9 @@
           <th *ngIf="currentVRF.hardware_support">
             Remote AS
           </th>
+          <th *ngIf="currentVRF.hardware_support">
+            Source Interface
+          </th>
           <th>
             BGP
           </th>
@@ -148,6 +151,7 @@
           <td>{{endpoint.psk}}</td>
           <td *ngIf="!currentVRF.hardware_support"><input type="checkbox" [(ngModel)]="endpoint.nat" /></td>
           <td *ngIf="currentVRF.hardware_support" >{{endpoint.remote_as}}</td>
+          <td *ngIf="currentVRF.hardware_support" >{{endpoint.source_interface}}</td>
           <td><input type="checkbox" [(ngModel)]="endpoint.bgp" /></td>
           <td class=trash_cell>
             <i *ngIf="endpoint.hover" class="fas fa-trash-alt"
@@ -171,7 +175,10 @@
             <input type="checkbox" [(ngModel)]="newEndpoint.nat"/>
           </td>
           <td *ngIf="currentVRF.hardware_support">
-            <input type="number" id=input_remote_as [(ngModel)]="newEndpoint.remote_as" />
+            <input type="number" class="form-control" id=input_remote_as [(ngModel)]="newEndpoint.remote_as" />
+          </td>
+          <td *ngIf="currentVRF.hardware_support">
+            <input type="text" class="form-control" id=input_source_interface [(ngModel)]="newEndpoint.source_interface" />
           </td>
           <td>
             <input type="checkbox" [(ngModel)]="newEndpoint.bgp"/>

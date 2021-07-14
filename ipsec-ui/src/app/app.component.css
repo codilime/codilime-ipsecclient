@@ -80,3 +80,7 @@
 #input_remote_as {
         width: 80px;
 }
+
+#input_source_interface {
+        width: 80px;
+}
