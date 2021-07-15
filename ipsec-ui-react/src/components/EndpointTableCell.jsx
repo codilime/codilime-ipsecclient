@@ -25,9 +25,6 @@ export default function EndpointTableCell(thisEndpoint) {
             <td>
                 <div>bgp value</div>
             </td>
-            <td>
-                <div>button</div>
-            </td>
         </>
 
     )
