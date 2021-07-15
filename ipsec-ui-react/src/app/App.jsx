@@ -20,17 +20,18 @@ export default function App() {
         }
     }
 
-    async function fetchEncryptionData() {
-        const response = await axios.get('/api/software');
+    async function fetchSoftwareEncryptionData() {
+        const response = await axios.get('/api/algorithms/software');
         let data = response.data;
         if (data && Object.keys(data).length > 0) {
             updateCryptoPhaseEncryption(data);
         }
     }
 
+
     useEffect(() => {
         fetchVRFsData();
-        fetchEncryptionData()
+        fetchSoftwareEncryptionData()
     }, []);
 
     return (

@@ -10,19 +10,20 @@
 }
 .vrf-details-bar {
   background-color: rgba(167,167,167,0.74);
-  width: 100%
+  width: 100%;
+  font-weight: bold;
 }
 form {
   display: flex;
 }
 .vrf-column-1 {
-  width: 20%;
+  width: 24%;
 }
 .vrf-column-2 {
-  width: 20%;
+  width: 16%;
 }
 .vrf-column-3 {
-  width: 60%;
+  width: 58%;
   margin-left: 15px;
 }
 .vrf-column-item {
@@ -49,11 +50,14 @@ input {
 .vrf-column-checkbox-item {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
 }
 input, select {
   margin: 5px;
 }
-
+#hardware_support {
+  margin-left: 35px;
+}
 .vrf-crypto-container {
   width: 100%;
   margin: 5px;

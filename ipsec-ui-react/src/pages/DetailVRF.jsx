@@ -3,6 +3,7 @@ import './DetailVRF.scss';
 import './NewVRF.scss';
 import {v4 as uuidv4} from 'uuid';
 import Dump from "../components/Dump";
+import EndpointTableRow from "../components/EndpointTableRow"
 import axios from "axios";
 import {useHistory, useParams} from "react-router";
 import {isEmptyObject} from "../util";
@@ -77,7 +78,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
         physical_interface: physicalInterface,
         hardware_support: hardwareSupport,
         local_as: parseInt(bgpValue),
-        endpoints: null
+        endpoints: detailVrf.endpoints,
     }
 
     // functions responsible for handling connections
@@ -262,7 +263,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
                                         name="crypto_ph2_2"
                                         onChange={event => updateCryptoPh2_2(event.target.value)}
                                         value={cryptoPh2_2}>
-                                        {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
+                                        {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity // tutaj warunek if sprawdzający hardware_support; if false, mapa po software; if true, mapa po hardware
                                         && cryptoPhaseEncryption.integrity.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh2_2} value={element} key={uuidv4()}>{element}</option>
@@ -294,38 +295,27 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <th>Remote IP</th>
-                            <th>Local IP</th>
-                            <th>Peer IP</th>
-                            <th>PSK</th>
-                            <th>NAT</th>
-                            <th>BGP</th>
-                            <th>Action</th>
-                        </tr>
-                        {detailVrf && detailVrf.endpoints && detailVrf.endpoints.map(function(endpoint) {
-                            return (
-                                <tr key={uuidv4()}>
-                                    <td>{endpoint.remote_ip_sec}</td>
-                                    <td>{endpoint.local_ip}</td>
-                                    <td>{endpoint.peer_ip}</td>
-                                    <td>{endpoint.psk}</td>
-                                    <td>{endpoint.nat}</td>
-                                    <td>{endpoint.bgp}</td>
-                                    <td>
-                                        <button className="btn edit-btn">...</button>
-                                    </td>
-                                </tr>
-                            )
-                        })}
+                            <tr>
+                                <th>Remote IP</th>
+                                <th>Local IP</th>
+                                <th>Peer IP</th>
+                                <th>PSK</th>
+                                <th>NAT</th>
+                                <th>BGP</th>
+                                <th>Action</th>
+                            </tr>
+                            {detailVrf && detailVrf.endpoints && detailVrf.endpoints.map(function(endpoint) {
+                                return (
+                                    <EndpointTableRow
+                                        endpoints={endpoint}
+                                        key={uuidv4()}
+                                    />
+                                )
+                            })}
                         </tbody>
                     </table>
                 </div>
-                <div className="vrf-detail-section-container">
-                    visu
-                </div>
                 <Dump value={detailVrf} />
-
             </div>
         </div>
     )
