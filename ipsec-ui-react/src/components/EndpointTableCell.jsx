@@ -1,10 +1,11 @@
 import React from "react";
 
-export default function EndpointTableCell(endpointTableValue) {
+export default function EndpointTableCell(props) {
+    const cellValue = props.endpointTableValue;
 
     return (
         <td>
-            {endpointTableValue}
+            {cellValue}
         </td>
     )
 }

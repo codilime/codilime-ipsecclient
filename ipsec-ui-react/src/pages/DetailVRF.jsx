@@ -305,7 +305,7 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
                                 <th>Action</th>
                             </tr>
                             {detailVrf && detailVrf.endpoints && detailVrf.endpoints.map(function(endpoint) {
-                                console.log("this is my endpoint: ", endpoint)
+                                // console.log("this is my endpoint: ", endpoint)
                                 return (
                                     <EndpointTableRow
                                         endpoint={endpoint}

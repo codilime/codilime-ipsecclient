@@ -1,18 +1,19 @@
 import React  from "react";
 import EndpointTableCell from "./EndpointTableCell";
+import {v4 as uuidv4} from "uuid";
 
-export default function EndpointTableRow(endpoint) {
-    const endpointInRowComponent = endpoint.endpoint;
-
-    console.log("dump value in TableRow: ", endpointInRowComponent)
+export default function EndpointTableRow(props) {
+    const endpointInRowComponent = props.endpoint;
 
     if(endpointInRowComponent) {
         return (
             <tr>
-                {Object.entries(endpointInRowComponent).map(([key, value]) => {
+                {Object.entries(endpointInRowComponent).map(([value]) => {
                     return (
-                        <td key={key}>{value}</td>
-                        // <EndpointTableCell endpointTableValue={value} />
+                        <EndpointTableCell
+                            key={uuidv4()}
+                            endpointTableValue={value}
+                        />
                     )
                 })}
                 <td>
