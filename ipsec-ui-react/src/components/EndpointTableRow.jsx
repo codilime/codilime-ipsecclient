@@ -2,17 +2,23 @@ import React  from "react";
 import {v4 as uuidv4} from "uuid";
 import EndpointTableCell from "./EndpointTableCell";
 
-export default function EndpointTableRow(endpoints) {
-    const endpointData = endpoints.endpoints;
+export default function EndpointTableRow(endpoint) {
+    const endpointInRowComponent = endpoint.endpoint;
 
-    console.log("dump value in TableRow: ", endpointData)
+    console.log("dump value in TableRow: ", endpointInRowComponent)
 
-    return (
-        <tr>
-            <EndpointTableCell thisEndpoint={endpointData}/>
-            <td>
-                <button className="btn edit-btn">...</button>
-            </td>
-        </tr>
-    )
+    if(endpointInRowComponent) {
+        return (
+            <tr>
+                {Object.entries(endpointInRowComponent).map(([key, value]) => {
+                    return (
+                        <td key={key}>{value}</td>
+                    )
+                })}
+                <td>
+                    <button className="btn edit-btn">...</button>
+                </td>
+            </tr>
+        )
+    }
 }

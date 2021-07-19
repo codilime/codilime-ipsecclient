@@ -1,31 +1,19 @@
-import React, {useEffect} from "react";
-import Dump from "./Dump";
-import {renderToString} from "react-dom/server";
+import React from "react";
+import {v4 as uuidv4} from "uuid";
 
 export default function EndpointTableCell(thisEndpoint) {
-    const data = thisEndpoint.thisEndpoint;
+    const data = thisEndpoint;
+    console.log("dump in table cell: ", data);
 
-    return (
-        <>
-            <td>
-                <div>{data.remote_ip_sec}</div>
-            </td>
-            <td>
-                <div>{data.local_ip}</div>
-            </td>
-            <td>
-                <div>{data.peer_ip}</div>
-            </td>
-            <td>
-                <div>{data.psk}</div>
-            </td>
-            <td>
-                <div>nat value</div>
-            </td>
-            <td>
-                <div>bgp value</div>
-            </td>
-        </>
+    if(data) {
+        return (
+            <>
+                <td>
+                    <div>{data}</div>
+                </td>
+            </>
+        )
+    }
 
-    )
+
 }
