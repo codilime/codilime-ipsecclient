@@ -8,10 +8,13 @@ export default function EndpointTableRow(props) {
     if(endpointInRowComponent) {
         return (
             <tr>
-                {Object.entries(endpointInRowComponent).map(([value]) => {
+                {Object.entries(endpointInRowComponent).map(([key,value]) => {
+                    console.log("value", value);
+                    let uniqueKey = key + uuidv4();
+
                     return (
                         <EndpointTableCell
-                            key={uuidv4()}
+                            key={uniqueKey}
                             endpointTableValue={value}
                         />
                     )

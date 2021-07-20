@@ -10,9 +10,9 @@ import axios from "axios";
 
 export default function App() {
     const [VRFConnections, updateVRFConnections] = useState([]);
-    const [softwareCryptoEncryption, updateSoftwareCryptoEncryption] = useState([]);
-    const [hardwareCryptoPh1Encryption, updateHardwareCryptoPh1Encryption] = useState([]);
-    const [hardwareCryptoPh2Encryption, updateHardwareCryptoPh2Encryption] = useState([]);
+    const [softwareEncryption, updateSoftwareEncryption] = useState([]);
+    const [hardwarePh1Encryption, updateHardwarePh1Encryption] = useState([]);
+    const [hardwarePh2Encryption, updateHardwarePh2Encryption] = useState([]);
 
 
     async function fetchVRFsData() {
@@ -27,7 +27,7 @@ export default function App() {
         const response = await axios.get('/api/algorithms/software');
         let data = response.data;
         if (data && Object.keys(data).length > 0) {
-            updateSoftwareCryptoEncryption(data);
+            updateSoftwareEncryption(data);
         }
     }
 
@@ -35,7 +35,7 @@ export default function App() {
         const response = await axios.get('api/algorithms/hardware/ph1');
         let data = response.data;
         if (data && Object.keys(data).length > 0) {
-            updateHardwareCryptoPh1Encryption(data);
+            updateHardwarePh1Encryption(data);
         }
     }
 
@@ -43,10 +43,9 @@ export default function App() {
         const response = await axios.get('api/algorithms/hardware/ph2');
         let data = response.data;
         if (data && Object.keys(data).length > 0) {
-            updateHardwareCryptoPh2Encryption(data);
+            updateHardwarePh2Encryption(data);
         }
     }
-
 
     useEffect(() => {
         fetchVRFsData();
@@ -65,17 +64,19 @@ export default function App() {
                         <Route path="/vrf/create" render={routeProps =>
                             <div><NewVRF
                                 routeProps={routeProps}
-                                cryptoPhaseEncryption={softwareCryptoEncryption}
+                                softwareEncryption={softwareEncryption}
+                                hardwarePh1Encryption={hardwarePh1Encryption}
+                                hardwarePh2Encryption={hardwarePh2Encryption}
                                 updateSidebar={fetchVRFsData}
                             /></div>}
                         />
                         <Route path="/vrf/:id" render={() => <div style={{ display: "flex" }}>
                             <DetailVRF
-                                cryptoPhaseEncryption={softwareCryptoEncryption}
+                                softwareEncryption={softwareEncryption}
                                 updateSidebar={fetchVRFsData}
                             /></div>}
                         />
-                        <Route path="*" render={() => <div>No available data to display</div>} />
+                        <Route path="*" render={() => <div>Please select VRF to view details</div>} />
                     </Switch>
                 </div>
             </div>

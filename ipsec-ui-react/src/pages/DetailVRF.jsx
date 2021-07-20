@@ -14,15 +14,12 @@ export default function DetailViewVrf(props) {
     let history = useHistory();
 
     const detailApiAddress = "/api/vrfs/" + id;
-    const cryptoPhaseEncryption = props.cryptoPhaseEncryption;
+    const softwareEncryption = props.softwareEncryption;
     const updateSidebar = props.updateSidebar;
 
-
-    // states for app rendering
     const [detailVrf, updateDetailVrf] = useState();
     const [loading, updateLoading] = useState(true);
 
-    //states for actual form data, first updated in fetchThisVrfDetails
     const [vrfName, updateVrfName] = useState(vrfName);
     const [lanIpMask, updateLanIpMask] = useState(lanIpMask)
     const [physicalInterface, updatePhysicalInterface] = useState(physicalInterface);
@@ -154,7 +151,6 @@ export default function DetailViewVrf(props) {
                 <div className="vrf-detail-section-container">
                     <div className="vrf-details-bar">VRF Details</div>
                     <form>
-                        {/*additionally active checkbox needs some kind of a handler to display proper value*/}
                         <div className="vrf-column-1">
                             <div className="vrf-column-1-item">
                                 <label htmlFor="client_name">Name:</label>
@@ -220,8 +216,8 @@ export default function DetailViewVrf(props) {
                                         name="crypto_ph1_1"
                                         onChange={event => updateCryptoPh1_1(event.target.value)}
                                         value={cryptoPh1_1}>
-                                        {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
-                                        && cryptoPhaseEncryption.encryption.map(function(element) {
+                                        {softwareEncryption && softwareEncryption.encryption
+                                        && softwareEncryption.encryption.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh1_1} value={element} key={uuidv4()}>{element}</option>
                                             )
@@ -231,8 +227,8 @@ export default function DetailViewVrf(props) {
                                         name="crypto_ph1_2"
                                         onChange={event => updateCryptoPh1_2(event.target.value)}
                                         value={cryptoPh1_2}>
-                                        {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
-                                        && cryptoPhaseEncryption.integrity.map(function(element) {
+                                        {softwareEncryption && softwareEncryption.integrity
+                                        && softwareEncryption.integrity.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh1_2} value={element} key={uuidv4()}>{element}</option>
                                             )
@@ -242,8 +238,8 @@ export default function DetailViewVrf(props) {
                                         name="crypto_ph1_3"
                                         onChange={event => updateCryptoPh1_3(event.target.value)}
                                         value={cryptoPh1_3}>
-                                        {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
-                                        && cryptoPhaseEncryption.key_exchange.map(function(element) {
+                                        {softwareEncryption && softwareEncryption.key_exchange
+                                        && softwareEncryption.key_exchange.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh1_3} value={element} key={uuidv4()}>{element}</option>
                                             )
@@ -256,8 +252,8 @@ export default function DetailViewVrf(props) {
                                         name="crypto_ph2_1"
                                         onChange={event => updateCryptoPh2_1(event.target.value)}
                                         value={cryptoPh2_1}>
-                                        {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
-                                        && cryptoPhaseEncryption.encryption.map(function(element) {
+                                        {softwareEncryption && softwareEncryption.encryption
+                                        && softwareEncryption.encryption.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh2_1} value={element} key={uuidv4()}>{element}</option>
                                             )
@@ -267,8 +263,8 @@ export default function DetailViewVrf(props) {
                                         name="crypto_ph2_2"
                                         onChange={event => updateCryptoPh2_2(event.target.value)}
                                         value={cryptoPh2_2}>
-                                        {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity // tutaj warunek if sprawdzający hardware_support; if false, mapa po software; if true, mapa po hardware
-                                        && cryptoPhaseEncryption.integrity.map(function(element) {
+                                        {softwareEncryption && softwareEncryption.integrity // tutaj warunek if sprawdzający hardware_support; if false, mapa po software; if true, mapa po hardware
+                                        && softwareEncryption.integrity.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh2_2} value={element} key={uuidv4()}>{element}</option>
                                             )
@@ -278,8 +274,8 @@ export default function DetailViewVrf(props) {
                                         name="crypto_ph2_3"
                                         onChange={event => updateCryptoPh2_3(event.target.value)}
                                         value={cryptoPh2_3}>
-                                        {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
-                                        && cryptoPhaseEncryption.key_exchange.map(function(element) {
+                                        {softwareEncryption && softwareEncryption.key_exchange
+                                        && softwareEncryption.key_exchange.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh2_3} value={element} key={uuidv4()}>{element}</option>
                                             )

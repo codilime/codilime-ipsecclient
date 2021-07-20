@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './NewVRF.scss'
 import Dump from "../components/Dump";
 import {v4 as uuidv4} from "uuid";
@@ -9,8 +9,11 @@ export default function NewVRF(props) {
     let history = useHistory();
 
     const routeProps = props.routeProps;
-    const cryptoPhaseEncryption = props.cryptoPhaseEncryption;
+    const softwareEncryption = props.softwareEncryption;
+    const hardwarePh1Encryption = props.hardwarePh1Encryption;
+    const hardwarePh2Encryption = props.hardwarePh2Encryption;
     const updateSidebar = props.updateSidebar;
+
 
     const [vrfName, updateVrfName] = useState("");
     const [lanIpMask, updateLanIpMask] = useState("")
@@ -25,6 +28,12 @@ export default function NewVRF(props) {
     const [cryptoPh2_1, updateCryptoPh2_1] = useState("");
     const [cryptoPh2_2, updateCryptoPh2_2] = useState("");
     const [cryptoPh2_3, updateCryptoPh2_3] = useState("");
+
+    const [arrayForCryptoPh1, updateArrayForCryptoPh1] = useState(softwareEncryption);
+
+    useEffect(() => {
+        updateArrayForCryptoPh1(softwareEncryption)
+    }, []);
 
     const payload = {
         client_name: vrfName,
@@ -59,10 +68,11 @@ export default function NewVRF(props) {
     const activeCheckboxHandler = () => {
         updateActive(!active);
     }
+
+
     const hardwareSupportCheckboxHandler = () => {
         updateHardwareSupport(!hardwareSupport);
     }
-
 
     function forceNumberMinMax(event) {
 
@@ -84,7 +94,6 @@ export default function NewVRF(props) {
 
         return value;
     }
-
 
     return (
         <div className="new-vrf-connection-wrapper">
@@ -157,8 +166,8 @@ export default function NewVRF(props) {
                                     name="crypto_ph1_1"
                                     onChange={event => updateCryptoPh1_1(event.target.value)}
                                     value={cryptoPh1_1}>
-                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
-                                    && cryptoPhaseEncryption.encryption.map(function(element) {
+                                    {arrayForCryptoPh1 && arrayForCryptoPh1.encryption
+                                    && arrayForCryptoPh1.encryption.map(function(element) {
                                         return (
                                             <option value={element} key={uuidv4()}>{element}</option>
                                         )
@@ -168,8 +177,8 @@ export default function NewVRF(props) {
                                     name="crypto_ph1_2"
                                     onChange={event => updateCryptoPh1_2(event.target.value)}
                                     value={cryptoPh1_2}>
-                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
-                                    && cryptoPhaseEncryption.integrity.map(function(element) {
+                                    {softwareEncryption && softwareEncryption.integrity
+                                    && softwareEncryption.integrity.map(function(element) {
                                         return (
                                             <option value={element} key={uuidv4()}>{element}</option>
                                         )
@@ -179,8 +188,8 @@ export default function NewVRF(props) {
                                     name="crypto_ph1_3"
                                     onChange={event => updateCryptoPh1_3(event.target.value)}
                                     value={cryptoPh1_3}>
-                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
-                                    && cryptoPhaseEncryption.key_exchange.map(function(element) {
+                                    {softwareEncryption && softwareEncryption.key_exchange
+                                    && softwareEncryption.key_exchange.map(function(element) {
                                         return (
                                             <option value={element} key={uuidv4()}>{element}</option>
                                         )
@@ -193,8 +202,8 @@ export default function NewVRF(props) {
                                     name="crypto_ph2_1"
                                     onChange={event => updateCryptoPh2_1(event.target.value)}
                                     value={cryptoPh2_1}>
-                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.encryption
-                                    && cryptoPhaseEncryption.encryption.map(function(element) {
+                                    {softwareEncryption && softwareEncryption.encryption
+                                    && softwareEncryption.encryption.map(function(element) {
                                         return (
                                             <option value={element} key={uuidv4()}>{element}</option>
                                         )
@@ -204,8 +213,8 @@ export default function NewVRF(props) {
                                     name="crypto_ph2_2"
                                     onChange={event => updateCryptoPh2_2(event.target.value)}
                                     value={cryptoPh2_2}>
-                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.integrity
-                                    && cryptoPhaseEncryption.integrity.map(function(element) {
+                                    {softwareEncryption && softwareEncryption.integrity
+                                    && softwareEncryption.integrity.map(function(element) {
                                         return (
                                             <option value={element} key={uuidv4()}>{element}</option>
                                         )
@@ -215,8 +224,8 @@ export default function NewVRF(props) {
                                     name="crypto_ph2_3"
                                     onChange={event => updateCryptoPh2_3(event.target.value)}
                                     value={cryptoPh2_3}>
-                                    {cryptoPhaseEncryption && cryptoPhaseEncryption.key_exchange
-                                    && cryptoPhaseEncryption.key_exchange.map(function(element) {
+                                    {softwareEncryption && softwareEncryption.key_exchange
+                                    && softwareEncryption.key_exchange.map(function(element) {
                                         return (
                                             <option value={element} key={uuidv4()}>{element}</option>
                                         )
@@ -227,11 +236,10 @@ export default function NewVRF(props) {
                 </form>
             </div>
             <div className="new-vrf-data-container">
-                endpoints table
-            </div>
-            <div className="new-vrf-data-container">
-                visualization
+                <Dump value={hardwarePh1Encryption} />
+                <Dump value={hardwarePh2Encryption} />
             </div>
         </div>
     );
 }
+
