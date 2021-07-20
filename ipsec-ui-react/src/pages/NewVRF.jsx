@@ -5,8 +5,12 @@ import {v4 as uuidv4} from "uuid";
 import axios from "axios";
 import {useHistory} from "react-router";
 
-export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar}) {
+export default function NewVRF(props) {
     let history = useHistory();
+
+    const routeProps = props.routeProps;
+    const cryptoPhaseEncryption = props.cryptoPhaseEncryption;
+    const updateSidebar = props.updateSidebar;
 
     const [vrfName, updateVrfName] = useState("");
     const [lanIpMask, updateLanIpMask] = useState("")
@@ -61,19 +65,16 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
 
 
     function forceNumberMinMax(event) {
-        console.log("start update");
 
         let value = parseInt(event.target.value);
         const min = parseInt(event.target.min);
         const max = parseInt(event.target.max);
 
         if (event.target.max && value > max) {
-            console.log("wartosc za wysoka, wyrownuje");
             value = max;
         }
 
         if (event.target.min && value < min) {
-            console.log("wartosc za niska, wyrownuje");
             value = min;
         }
 
@@ -81,7 +82,6 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
             return "";
         }
 
-        console.log("ustawiam poprawna wartosc na: ", value);
         return value;
     }
 
@@ -105,7 +105,7 @@ export default function NewVRF({routeProps, cryptoPhaseEncryption, updateSidebar
                             /> <br />
                             <label htmlFor="lan_ip">LAN IP/Mask:</label>
                             <input type="text"
-                                   placeholder="lan ip placeholder"
+                                   placeholder="set LAN mask"
                                    name="lan_ip"
                                    id="lan_ip"
                                    onChange={event => updateLanIpMask(event.target.value)}

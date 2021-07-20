@@ -9,10 +9,14 @@ import {useHistory, useParams} from "react-router";
 import {isEmptyObject} from "../util";
 
 
-export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
+export default function DetailViewVrf(props) {
     const {id} = useParams();
     let history = useHistory();
+
     const detailApiAddress = "/api/vrfs/" + id;
+    const cryptoPhaseEncryption = props.cryptoPhaseEncryption;
+    const updateSidebar = props.updateSidebar;
+
 
     // states for app rendering
     const [detailVrf, updateDetailVrf] = useState();
@@ -305,7 +309,6 @@ export default function DetailViewVrf({cryptoPhaseEncryption, updateSidebar}) {
                                 <th>Action</th>
                             </tr>
                             {detailVrf && detailVrf.endpoints && detailVrf.endpoints.map(function(endpoint) {
-                                // console.log("this is my endpoint: ", endpoint)
                                 return (
                                     <EndpointTableRow
                                         endpoint={endpoint}
