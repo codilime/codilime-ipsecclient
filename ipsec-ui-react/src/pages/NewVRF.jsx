@@ -14,6 +14,13 @@ export default function NewVRF(props) {
     const hardwarePh2Encryption = props.hardwarePh2Encryption;
     const updateSidebar = props.updateSidebar;
 
+    function updateThePhEncryptionArray() {
+        updateArrayForCryptoPh1(softwareEncryption)
+    };
+
+    useEffect(() => {
+        updateThePhEncryptionArray();
+    }, [softwareEncryption]);
 
     const [vrfName, updateVrfName] = useState("");
     const [lanIpMask, updateLanIpMask] = useState("")
@@ -30,10 +37,6 @@ export default function NewVRF(props) {
     const [cryptoPh2_3, updateCryptoPh2_3] = useState("");
 
     const [arrayForCryptoPh1, updateArrayForCryptoPh1] = useState(softwareEncryption);
-
-    useEffect(() => {
-        updateArrayForCryptoPh1(softwareEncryption)
-    }, []);
 
     const payload = {
         client_name: vrfName,
@@ -69,9 +72,18 @@ export default function NewVRF(props) {
         updateActive(!active);
     }
 
+    const hardwareSupportCheckboxHandler = (event) => {
+        // const checkedCheckbox = event.target.checked;
 
-    const hardwareSupportCheckboxHandler = () => {
         updateHardwareSupport(!hardwareSupport);
+
+        if(hardwareSupport === true) {
+            updateArrayForCryptoPh1(softwareEncryption);
+        }
+
+        if(hardwareSupport === false) {
+            updateArrayForCryptoPh1(hardwarePh1Encryption);
+        }
     }
 
     function forceNumberMinMax(event) {

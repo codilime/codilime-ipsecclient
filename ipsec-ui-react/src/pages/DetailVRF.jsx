@@ -286,15 +286,10 @@ export default function DetailViewVrf(props) {
                     </form>
                 </div>
                 <div className="vrf-detail-section-container">
+                    <div>endpointy ze stylami jak wyżej vrf details</div>
                     <table id="endpoints-table">
                         <thead>
-                        <tr>
-                            <th colSpan="7">
-                                Endpoints
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                            {/*tutaj muszę mieć różne nagłówki w zależności od tego, co jest w hardware Support*/}
                             <tr>
                                 <th>Remote IP</th>
                                 <th>Local IP</th>
@@ -304,7 +299,14 @@ export default function DetailViewVrf(props) {
                                 <th>BGP</th>
                                 <th>Action</th>
                             </tr>
+                        </thead>
+                        <tbody>
                             {detailVrf && detailVrf.endpoints && detailVrf.endpoints.map(function(endpoint) {
+                                // if(hardwareSupport === true) {
+                                //     return (
+                                //         tutaj endpointtableRow z tabelą odpowiednią z wyżej,
+                                //     )
+                                // }
                                 return (
                                     <EndpointTableRow
                                         endpoint={endpoint}

@@ -4,11 +4,14 @@ import {v4 as uuidv4} from "uuid";
 
 export default function EndpointTableRow(props) {
     const endpointInRowComponent = props.endpoint;
+    // const tableColumns = props.table ['nat', 'remote_ip']
+
 
     if(endpointInRowComponent) {
         return (
             <tr>
-                {Object.entries(endpointInRowComponent).map(([key,value]) => {
+                {Object.entries(endpointInRowComponent).map(([key,value]) => {  // przefiltrować endpointInRowComponent względem tableColumns
+
                     console.log("value", value);
                     let uniqueKey = key + uuidv4();
 
