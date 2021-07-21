@@ -15,6 +15,8 @@ export default function DetailViewVrf(props) {
 
     const detailApiAddress = "/api/vrfs/" + id;
     const softwareEncryption = props.softwareEncryption;
+    const hardwarePh1Encryption = props.hardwarePh1Encryption;
+    const hardwarePh2Encryption = props.hardwarePh2Encryption;
     const updateSidebar = props.updateSidebar;
 
     const [detailVrf, updateDetailVrf] = useState();
@@ -34,12 +36,39 @@ export default function DetailViewVrf(props) {
     const [cryptoPh2_2, updateCryptoPh2_2] = useState(cryptoPh2_2);
     const [cryptoPh2_3, updateCryptoPh2_3] = useState(cryptoPh2_3);
 
+    // kod odpowiedzialny za przygotowanie defaultowych danych do enkrypcji: arraye, update oraz useEffect; NIE DZIAŁA
+    const [arrayForCryptoPh1, updateArrayForCryptoPh1] = useState(updateDefaultPh1EncryptionData);
+    const [arrayForCryptoPh2, updateArrayForCryptoPh2] = useState(updateDefaultPh2EncryptionData);
+
+    function updateDefaultPh1EncryptionData()  {
+        if(hardwareSupport === true) {
+            return hardwarePh1Encryption
+        }
+        if(hardwareSupport === false) {
+            return softwareEncryption
+        }
+    }
+
+    function updateDefaultPh2EncryptionData() {
+        if(hardwareSupport === true) {
+            return hardwarePh1Encryption
+        }
+        if(hardwareSupport === false) {
+            return softwareEncryption
+        }
+    }
+
+    useEffect(() => {
+        updateDefaultPh1EncryptionData();
+        updateDefaultPh2EncryptionData();
+    }, []);
+
+
+
     async function fetchThisVrfDetails() {
         const response = await axios.get(detailApiAddress);
 
         let data = response.data;
-
-        console.log("data", data);
 
         if (data && !isEmptyObject(data)) {
             updateDetailVrf(data);
@@ -120,6 +149,17 @@ export default function DetailViewVrf(props) {
     }
     const hardwareSupportCheckboxHandler = () => {
         updateHardwareSupport(!hardwareSupport);
+
+        if(hardwareSupport === true) {
+            updateArrayForCryptoPh1(softwareEncryption);
+            updateArrayForCryptoPh2(softwareEncryption);
+        }
+
+        if(hardwareSupport === false) {
+            updateArrayForCryptoPh1(hardwarePh1Encryption);
+            updateArrayForCryptoPh2(hardwarePh2Encryption);
+
+        }
     }
 
     function forceNumberMinMax(event) {
@@ -130,17 +170,14 @@ export default function DetailViewVrf(props) {
         const max = parseInt(event.target.max);
 
         if (event.target.max && value > max) {
-            console.log("wartosc za wysoka, wyrownuje");
             value = max;
         }
         if (event.target.min && value < min) {
-            console.log("wartosc za niska, wyrownuje");
             value = min;
         }
         if (isNaN(value)) {
             return "";
         }
-        console.log("ustawiam poprawna wartosc na: ", value);
         return value;
     }
 
@@ -149,7 +186,7 @@ export default function DetailViewVrf(props) {
             <div className="vrf-detail-container">
                 /vrf/{detailVrf.client_name} <button className="btn red-btn delete-btn" onClick={removeVrfConnection}>Delete VRF</button> <br />
                 <div className="vrf-detail-section-container">
-                    <div className="vrf-details-bar">VRF Details</div>
+                    <div className="vrf-section-header">VRF Details</div>
                     <form>
                         <div className="vrf-column-1">
                             <div className="vrf-column-1-item">
@@ -216,8 +253,8 @@ export default function DetailViewVrf(props) {
                                         name="crypto_ph1_1"
                                         onChange={event => updateCryptoPh1_1(event.target.value)}
                                         value={cryptoPh1_1}>
-                                        {softwareEncryption && softwareEncryption.encryption
-                                        && softwareEncryption.encryption.map(function(element) {
+                                        {arrayForCryptoPh1 && arrayForCryptoPh1.encryption
+                                        && arrayForCryptoPh1.encryption.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh1_1} value={element} key={uuidv4()}>{element}</option>
                                             )
@@ -227,8 +264,8 @@ export default function DetailViewVrf(props) {
                                         name="crypto_ph1_2"
                                         onChange={event => updateCryptoPh1_2(event.target.value)}
                                         value={cryptoPh1_2}>
-                                        {softwareEncryption && softwareEncryption.integrity
-                                        && softwareEncryption.integrity.map(function(element) {
+                                        {arrayForCryptoPh1 && arrayForCryptoPh1.integrity
+                                        && arrayForCryptoPh1.integrity.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh1_2} value={element} key={uuidv4()}>{element}</option>
                                             )
@@ -238,8 +275,8 @@ export default function DetailViewVrf(props) {
                                         name="crypto_ph1_3"
                                         onChange={event => updateCryptoPh1_3(event.target.value)}
                                         value={cryptoPh1_3}>
-                                        {softwareEncryption && softwareEncryption.key_exchange
-                                        && softwareEncryption.key_exchange.map(function(element) {
+                                        {arrayForCryptoPh1 && arrayForCryptoPh1.key_exchange
+                                        && arrayForCryptoPh1.key_exchange.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh1_3} value={element} key={uuidv4()}>{element}</option>
                                             )
@@ -252,8 +289,8 @@ export default function DetailViewVrf(props) {
                                         name="crypto_ph2_1"
                                         onChange={event => updateCryptoPh2_1(event.target.value)}
                                         value={cryptoPh2_1}>
-                                        {softwareEncryption && softwareEncryption.encryption
-                                        && softwareEncryption.encryption.map(function(element) {
+                                        {arrayForCryptoPh2 && arrayForCryptoPh2.encryption
+                                        && arrayForCryptoPh2.encryption.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh2_1} value={element} key={uuidv4()}>{element}</option>
                                             )
@@ -263,8 +300,8 @@ export default function DetailViewVrf(props) {
                                         name="crypto_ph2_2"
                                         onChange={event => updateCryptoPh2_2(event.target.value)}
                                         value={cryptoPh2_2}>
-                                        {softwareEncryption && softwareEncryption.integrity // tutaj warunek if sprawdzający hardware_support; if false, mapa po software; if true, mapa po hardware
-                                        && softwareEncryption.integrity.map(function(element) {
+                                        {arrayForCryptoPh2 && arrayForCryptoPh2.integrity
+                                        && arrayForCryptoPh2.integrity.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh2_2} value={element} key={uuidv4()}>{element}</option>
                                             )
@@ -286,10 +323,11 @@ export default function DetailViewVrf(props) {
                     </form>
                 </div>
                 <div className="vrf-detail-section-container">
-                    <div>endpointy ze stylami jak wyżej vrf details</div>
+                    <div className="vrf-section-header">Endpoints</div>
                     <table id="endpoints-table">
                         <thead>
                             {/*tutaj muszę mieć różne nagłówki w zależności od tego, co jest w hardware Support*/}
+
                             <tr>
                                 <th>Remote IP</th>
                                 <th>Local IP</th>

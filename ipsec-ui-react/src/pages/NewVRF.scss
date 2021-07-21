@@ -1,5 +1,5 @@
 .new-vrf-connection-wrapper {
-  display: flex;
+  //display: flex;
   width: 100%;
   flex-direction: column;
 }
@@ -8,10 +8,11 @@
   margin: 25px 0;
   border: solid 1px rgba(167,167,167,0.74);
 }
-.vrf-details-bar {
+.vrf-section-header {
   background-color: rgba(167,167,167,0.74);
   width: 100%;
   font-weight: bold;
+  padding-left: 3px;
 }
 form {
   display: flex;
