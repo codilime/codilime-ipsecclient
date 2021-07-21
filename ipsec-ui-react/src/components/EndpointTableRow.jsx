@@ -10,7 +10,7 @@ export default function EndpointTableRow(props) {
     if(endpointInRowComponent) {
         return (
             <tr>
-                {Object.entries(endpointInRowComponent).map(([key,value]) => {  // przefiltrować endpointInRowComponent względem tableColumns
+                {Object.entries(endpointInRowComponent).map(([key,value]) => {  // przefiltrować endpointInRowComponent względem tableColumns i wyświetlić tylko te, które będą matched
 
                     console.log("value", value);
                     let uniqueKey = key + uuidv4();

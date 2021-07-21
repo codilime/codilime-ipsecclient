@@ -42,26 +42,26 @@ export default function DetailViewVrf(props) {
 
     function updateDefaultPh1EncryptionData()  {
         if(hardwareSupport === true) {
-            return hardwarePh1Encryption
+            updateArrayForCryptoPh1(hardwarePh1Encryption)
         }
         if(hardwareSupport === false) {
-            return softwareEncryption
+            updateArrayForCryptoPh1(softwareEncryption)
         }
     }
 
     function updateDefaultPh2EncryptionData() {
         if(hardwareSupport === true) {
-            return hardwarePh1Encryption
+            updateArrayForCryptoPh2(hardwarePh2Encryption)
         }
         if(hardwareSupport === false) {
-            return softwareEncryption
+            updateArrayForCryptoPh2(softwareEncryption)
         }
     }
 
     useEffect(() => {
         updateDefaultPh1EncryptionData();
         updateDefaultPh2EncryptionData();
-    }, []);
+    }, [softwareEncryption]);
 
 
 
@@ -111,7 +111,6 @@ export default function DetailViewVrf(props) {
         endpoints: detailVrf.endpoints,
     }
 
-    // functions responsible for handling connections
     function updateVrfConnection(event) {
         event.preventDefault();
         axios({
@@ -147,6 +146,7 @@ export default function DetailViewVrf(props) {
     const activeCheckboxHandler = () => {
         updateActive(!active);
     }
+
     const hardwareSupportCheckboxHandler = () => {
         updateHardwareSupport(!hardwareSupport);
 
@@ -158,7 +158,6 @@ export default function DetailViewVrf(props) {
         if(hardwareSupport === false) {
             updateArrayForCryptoPh1(hardwarePh1Encryption);
             updateArrayForCryptoPh2(hardwarePh2Encryption);
-
         }
     }
 
@@ -311,8 +310,8 @@ export default function DetailViewVrf(props) {
                                         name="crypto_ph2_3"
                                         onChange={event => updateCryptoPh2_3(event.target.value)}
                                         value={cryptoPh2_3}>
-                                        {softwareEncryption && softwareEncryption.key_exchange
-                                        && softwareEncryption.key_exchange.map(function(element) {
+                                        {arrayForCryptoPh2 && arrayForCryptoPh2.key_exchange
+                                        && arrayForCryptoPh2.key_exchange.map(function(element) {
                                             return (
                                                 <option defaultValue={cryptoPh2_3} value={element} key={uuidv4()}>{element}</option>
                                             )
