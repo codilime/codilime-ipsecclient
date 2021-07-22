@@ -58,10 +58,15 @@ export default function DetailViewVrf(props) {
         }
     }
 
+    // if(hardwarePh2Encryption.length > 0 && hardwarePh1Encryption.length > 0) {
+    //     updateDefaultPh1EncryptionData();
+    //     updateDefaultPh2EncryptionData();
+    // }
+
     useEffect(() => {
         updateDefaultPh1EncryptionData();
         updateDefaultPh2EncryptionData();
-    }, [softwareEncryption]);
+    }, [hardwarePh1Encryption, hardwarePh2Encryption, softwareEncryption, hardwareSupport]);
 
 
 
