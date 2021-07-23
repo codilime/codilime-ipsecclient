@@ -62,21 +62,21 @@ export default function App() {
                 <div className="main-view-container">
                     <Switch>
                         <Route path="/vrf/create" render={routeProps =>
-                            <div><NewVRF
+                            <NewVRF
                                 routeProps={routeProps}
                                 softwareEncryption={softwareEncryption}
                                 hardwarePh1Encryption={hardwarePh1Encryption}
                                 hardwarePh2Encryption={hardwarePh2Encryption}
                                 updateSidebar={fetchVRFsData}
-                            /></div>}
+                            />}
                         />
-                        <Route path="/vrf/:id" render={() => <div>
+                        <Route path="/vrf/:id" render={() =>
                             <DetailVRF
                                 softwareEncryption={softwareEncryption}
                                 hardwarePh1Encryption={hardwarePh1Encryption}
                                 hardwarePh2Encryption={hardwarePh2Encryption}
                                 updateSidebar={fetchVRFsData}
-                            /></div>}
+                            />}
                         />
                         <Route path="*" render={() => <div>Please select VRF to view details</div>} />
                     </Switch>

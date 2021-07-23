@@ -372,6 +372,7 @@ export default function DetailViewVrf(props) {
                                     <EndpointTableRow
                                         endpoint={endpoint}
                                         key={uuidv4()}
+                                        hardwareSupport={hardwareSupport}
                                     />
                                 )
                             })}

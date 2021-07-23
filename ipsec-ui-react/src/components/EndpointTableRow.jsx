@@ -4,25 +4,27 @@ import {v4 as uuidv4} from "uuid";
 
 export default function EndpointTableRow(props) {
     const endpointInRowComponent = props.endpoint;
-    // const tableColumns = props.table ['nat', 'remote_ip']
-    const tableColumnsWithSoftware = ['remote_ip', 'local_ip', 'peer_ip', 'psk', 'nat', 'bgp'];
-    const tableColumnsWithHardware = ['remote_ip', 'local_ip', 'peer_ip', 'psk', 'remote_as', 'source_interface', 'bgp'];
+    const hardwareSupport = props.hardwareSupport;
 
+    const tableColumnsWithSoftware = ['remote_ip_sec', 'local_ip', 'peer_ip', 'psk', 'nat', 'bgp'];
+    const tableColumnsWithHardware = ['remote_ip_sec', 'local_ip', 'peer_ip', 'psk', 'remote_as', 'source_interface', 'bgp'];
 
-    if(endpointInRowComponent) {
+    if (endpointInRowComponent) {
         return (
             <tr>
-                {Object.entries(endpointInRowComponent).map(([key,value]) => {  // przefiltrować endpointInRowComponent względem tableColumns i wyświetlić tylko te, które będą matched
-
-                    console.log("value", value);
-                    let uniqueKey = key + uuidv4();
-
-                    return (
-                        <EndpointTableCell
-                            key={uniqueKey}
-                            endpointTableValue={value}
-                        />
-                    )
+                {Object.keys(endpointInRowComponent).map((key) => {
+                    if (
+                        hardwareSupport === true && tableColumnsWithHardware.includes(key) ||
+                        hardwareSupport === false && tableColumnsWithSoftware.includes(key)
+                    ) {
+                        return (
+                            <EndpointTableCell
+                                key={uuidv4()}
+                                endpointTableValue={endpointInRowComponent[key]}
+                            />
+                        )
+                    }
+                    return null;
                 })}
                 <td>
                     <button className="btn edit-btn">...</button>
