@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import './NewVRF.scss'
-import Dump from "../components/Dump";
 import {v4 as uuidv4} from "uuid";
 import axios from "axios";
 import {useHistory} from "react-router";
-import EndpointTableRow from "../components/EndpointTableRow";
+import NewEndpointRow from "../components/NewEndpointRow";
 
 export default function NewVRF(props) {
     let history = useHistory();
@@ -18,7 +17,7 @@ export default function NewVRF(props) {
     function updateThePhEncryptionArrays() {
         updateArrayForCryptoPh1(softwareEncryption)
         updateArrayForCryptoPh2(softwareEncryption)
-    };
+    }
 
     useEffect(() => {
         updateThePhEncryptionArrays();
@@ -75,7 +74,7 @@ export default function NewVRF(props) {
         updateActive(!active);
     }
 
-    const hardwareSupportCheckboxHandler = (event) => {
+    const hardwareSupportCheckboxHandler = () => {
         updateHardwareSupport(!hardwareSupport);
 
         if(hardwareSupport === true) {
@@ -125,16 +124,17 @@ export default function NewVRF(props) {
         if (event.target.max && value > max) {
             value = max;
         }
-
         if (event.target.min && value < min) {
             value = min;
         }
-
         if (isNaN(value)) {
             return "";
         }
-
         return value;
+    }
+
+    function addEndpointsToPayload() {
+        console.log("ararara");
     }
 
     return (
@@ -281,19 +281,13 @@ export default function NewVRF(props) {
                 <div className="vrf-section-header">Endpoints</div>
                 <table id="endpoints-table">
                     <thead>
-                    {hardwareSupport ? tableHeadersForHardwareSupport() : tableHeadersForSoftwareSupport()}
+                        {hardwareSupport ? tableHeadersForHardwareSupport() : tableHeadersForSoftwareSupport()}
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>
-                                a
-                            </td>
-                        </tr>
+                        <NewEndpointRow hardwareSupport={hardwareSupport} />
                     </tbody>
+                    <button className="btn endpoint-btn" onClick={addEndpointsToPayload}>Add new endpoint</button>
                 </table>
-            </div>
-            <div className="new-vrf-data-container">
-
             </div>
         </div>
     );
