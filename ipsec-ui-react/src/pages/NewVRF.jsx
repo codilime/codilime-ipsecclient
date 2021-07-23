@@ -4,6 +4,7 @@ import Dump from "../components/Dump";
 import {v4 as uuidv4} from "uuid";
 import axios from "axios";
 import {useHistory} from "react-router";
+import EndpointTableRow from "../components/EndpointTableRow";
 
 export default function NewVRF(props) {
     let history = useHistory();
@@ -86,6 +87,34 @@ export default function NewVRF(props) {
             updateArrayForCryptoPh1(hardwarePh1Encryption);
             updateArrayForCryptoPh2(hardwarePh2Encryption);
         }
+    }
+    const tableHeadersForHardwareSupport = () => {
+        return (
+            <tr>
+                <th>Remote IP</th>
+                <th>Local IP</th>
+                <th>Peer IP</th>
+                <th>PSK</th>
+                <th>Remote AS</th>
+                <th>Source interface</th>
+                <th>BGP</th>
+                <th>Action</th>
+            </tr>
+        )
+    }
+
+    const tableHeadersForSoftwareSupport = () => {
+        return (
+            <tr>
+                <th>Remote IP</th>
+                <th>Local IP</th>
+                <th>Peer IP</th>
+                <th>PSK</th>
+                <th>NAT</th>
+                <th>BGP</th>
+                <th>Action</th>
+            </tr>
+        )
     }
 
     function forceNumberMinMax(event) {
@@ -248,9 +277,23 @@ export default function NewVRF(props) {
                     </div>
                 </form>
             </div>
+            <div className="vrf-detail-section-container">
+                <div className="vrf-section-header">Endpoints</div>
+                <table id="endpoints-table">
+                    <thead>
+                    {hardwareSupport ? tableHeadersForHardwareSupport() : tableHeadersForSoftwareSupport()}
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                a
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div className="new-vrf-data-container">
-                {/*<Dump value={hardwarePh1Encryption} />*/}
-                {/*<Dump value={hardwarePh2Encryption} />*/}
+
             </div>
         </div>
     );

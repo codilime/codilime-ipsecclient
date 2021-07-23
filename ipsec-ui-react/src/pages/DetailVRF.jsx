@@ -166,6 +166,35 @@ export default function DetailViewVrf(props) {
         }
     }
 
+    const tableHeadersForHardwareSupport = () => {
+        return (
+            <tr>
+                <th>Remote IP</th>
+                <th>Local IP</th>
+                <th>Peer IP</th>
+                <th>PSK</th>
+                <th>Remote AS</th>
+                <th>Source interface</th>
+                <th>BGP</th>
+                <th>Action</th>
+            </tr>
+        )
+    }
+
+    const tableHeadersForSoftwareSupport = () => {
+        return (
+            <tr>
+                <th>Remote IP</th>
+                <th>Local IP</th>
+                <th>Peer IP</th>
+                <th>PSK</th>
+                <th>NAT</th>
+                <th>BGP</th>
+                <th>Action</th>
+            </tr>
+        )
+    }
+
     function forceNumberMinMax(event) {
         console.log("start update");
 
@@ -330,17 +359,7 @@ export default function DetailViewVrf(props) {
                     <div className="vrf-section-header">Endpoints</div>
                     <table id="endpoints-table">
                         <thead>
-                            {/*tutaj muszę mieć różne nagłówki w zależności od tego, co jest w hardware Support*/}
-
-                            <tr>
-                                <th>Remote IP</th>
-                                <th>Local IP</th>
-                                <th>Peer IP</th>
-                                <th>PSK</th>
-                                <th>NAT</th>
-                                <th>BGP</th>
-                                <th>Action</th>
-                            </tr>
+                            {hardwareSupport ? tableHeadersForHardwareSupport() : tableHeadersForSoftwareSupport()}
                         </thead>
                         <tbody>
                             {detailVrf && detailVrf.endpoints && detailVrf.endpoints.map(function(endpoint) {
