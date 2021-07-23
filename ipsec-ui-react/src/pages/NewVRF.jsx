@@ -98,7 +98,7 @@ export default function NewVRF(props) {
                 <th>Remote AS</th>
                 <th>Source interface</th>
                 <th>BGP</th>
-                <th>Action</th>
+                {/*<th>Action</th>*/}
             </tr>
         )
     }
@@ -112,7 +112,7 @@ export default function NewVRF(props) {
                 <th>PSK</th>
                 <th>NAT</th>
                 <th>BGP</th>
-                <th>Action</th>
+                {/*<th>Action</th>*/}
             </tr>
         )
     }

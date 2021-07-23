@@ -8,16 +8,21 @@
 td.break {
   padding: 0 65px 0 0;
 }
-#endpoints-table tr:nth-child(odd) {
-  background-color: rgba(167,167,167,0.74);
-}
-#endpoints-table > tbody > tr > th {
-  width: 230px;
+#endpoints-table  {
+  width: 100%;
+  table-layout: fixed;
+  margin: 0 0 5px;
   text-align: left;
+  thead{
+  }
+  tr:nth-child(odd) {
+    background-color: rgba(167,167,167,0.74);
+  }
 }
-#endpoints-table > thead > tr > th {
-  text-align: left;
+.endpoint-btn {
+  margin: 0 0 5px 5px;
 }
+
 .edit-btn {
   height: auto;
 }

@@ -58,11 +58,6 @@ export default function DetailViewVrf(props) {
         }
     }
 
-    // if(hardwarePh2Encryption.length > 0 && hardwarePh1Encryption.length > 0) {
-    //     updateDefaultPh1EncryptionData();
-    //     updateDefaultPh2EncryptionData();
-    // }
-
     useEffect(() => {
         updateDefaultPh1EncryptionData();
         updateDefaultPh2EncryptionData();
@@ -363,11 +358,6 @@ export default function DetailViewVrf(props) {
                         </thead>
                         <tbody>
                             {detailVrf && detailVrf.endpoints && detailVrf.endpoints.map(function(endpoint) {
-                                // if(hardwareSupport === true) {
-                                //     return (
-                                //         tutaj endpointtableRow z tabelą odpowiednią z wyżej,
-                                //     )
-                                // }
                                 return (
                                     <EndpointTableRow
                                         endpoint={endpoint}
@@ -378,6 +368,7 @@ export default function DetailViewVrf(props) {
                             })}
                         </tbody>
                     </table>
+                    <button className="btn endpoint-btn">Add new endpoint</button>
                 </div>
                 <Dump value={detailVrf} />
             </div>
