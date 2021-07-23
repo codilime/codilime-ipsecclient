@@ -70,7 +70,7 @@ export default function App() {
                                 updateSidebar={fetchVRFsData}
                             /></div>}
                         />
-                        <Route path="/vrf/:id" render={() => <div style={{ display: "flex" }}>
+                        <Route path="/vrf/:id" render={() => <div>
                             <DetailVRF
                                 softwareEncryption={softwareEncryption}
                                 hardwarePh1Encryption={hardwarePh1Encryption}

@@ -5,6 +5,8 @@ import {v4 as uuidv4} from "uuid";
 export default function EndpointTableRow(props) {
     const endpointInRowComponent = props.endpoint;
     // const tableColumns = props.table ['nat', 'remote_ip']
+    const tableColumnsWithSoftware = ['remote_ip', 'local_ip', 'peer_ip', 'psk', 'nat', 'bgp'];
+    const tableColumnsWithHardware = ['remote_ip', 'local_ip', 'peer_ip', 'psk', 'remote_as', 'source_interface', 'bgp'];
 
 
     if(endpointInRowComponent) {
