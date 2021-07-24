@@ -108,6 +108,5 @@ export default function NewEndpointRow(props) {
             </tr>
         )
     }
-
     return (hardwareSupport) ? renderTableRowForHardwareSupport() : renderTableRowForSoftwareSupport();
 }

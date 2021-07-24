@@ -161,7 +161,7 @@ export default function DetailViewVrf(props) {
         }
     }
 
-    const tableHeadersForHardwareSupport = () => {
+    const renderTableHeadersForHardwareSupport = () => {
         return (
             <tr>
                 <th>Remote IP</th>
@@ -176,7 +176,7 @@ export default function DetailViewVrf(props) {
         )
     }
 
-    const tableHeadersForSoftwareSupport = () => {
+    const renderTableHeadersForSoftwareSupport = () => {
         return (
             <tr>
                 <th>Remote IP</th>
@@ -354,7 +354,7 @@ export default function DetailViewVrf(props) {
                     <div className="vrf-section-header">Endpoints</div>
                     <table id="endpoints-table">
                         <thead>
-                            {hardwareSupport ? tableHeadersForHardwareSupport() : tableHeadersForSoftwareSupport()}
+                            {hardwareSupport ? renderTableHeadersForHardwareSupport() : renderTableHeadersForSoftwareSupport()}
                         </thead>
                         <tbody>
                             {detailVrf && detailVrf.endpoints && detailVrf.endpoints.map(function(endpoint) {
