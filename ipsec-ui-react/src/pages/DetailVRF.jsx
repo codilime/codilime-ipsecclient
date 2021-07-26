@@ -367,7 +367,10 @@ export default function DetailViewVrf(props) {
                                     />
                                 )
                             })}
-                            <NewEndpointRow hardwareSupport={hardwareSupport} />
+                            <NewEndpointRow
+                                hardwareSupport={hardwareSupport}
+                                forceNumberMinMax={forceNumberMinMax}
+                            />
                         </tbody>
                     </table>
 

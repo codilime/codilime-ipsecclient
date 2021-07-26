@@ -4,13 +4,27 @@ import './NewEndpointRow.scss';
 
 export default function NewEndpointRow(props) {
     const hardwareSupport = props.hardwareSupport;
+    const forceNumberMinMax = props.forceNumberMinMax;
+
 
     const [remoteIpSec, updateRemoteIpSec] = useState("");
     const [localIp, updateLocalIp] = useState("");
     const [peer_ip, updatePeer_ip] = useState("");
+    const [psk, updatePsk] = useState("");
+    const [remote_as, updateRemote_as] = useState("1");
+    const [nat, updateNat] = useState(false);
+    const [bgp, updateBgp] = useState(false);
 
 
 
+
+    function natCheckboxHandler() {
+        updateNat(!nat);
+    }
+
+    function bgpCheckboxHandler() {
+        updateNat(!nat);
+    }
 
     function renderTableRowForSoftwareSupport() {
         return (
@@ -45,18 +59,23 @@ export default function NewEndpointRow(props) {
                            placeholder="password"
                            name="psk"
                            id="psk"
+                           onChange={event => updatePsk(event.target.value)}
                     />
                 </td>
                 <td>
                     <input type="checkbox"
                            name="nat"
                            id="nat"
+                           checked={nat}
+                           onChange={natCheckboxHandler}
                     />
                 </td>
                 <td>
                     <input type="checkbox"
                            name="bgp"
                            id="bgp"
+                           checked={bgp}
+                           onChange={bgpCheckboxHandler}
                     />
                 </td>
                 <td>
@@ -103,14 +122,17 @@ export default function NewEndpointRow(props) {
                            placeholder="password"
                            name="psk"
                            id="psk"
+                           onChange={event => updatePsk(event.target.value)}
                     />
                 </td>
                 <td>
                     <input type="number"
                            min="1"
                            max="4094"
-                           name="local_as" id="local_as"
+                           name="remote_as" id="remote_as"
                            step="1"
+                           value={remote_as}
+                           onChange={event => updateRemote_as(forceNumberMinMax(event))}
                     />
                 </td>
                 <td>
@@ -124,6 +146,8 @@ export default function NewEndpointRow(props) {
                     <input type="checkbox"
                            name="bgp"
                            id="bgp"
+                           checked={bgp}
+                           onChange={bgpCheckboxHandler}
                     />
                 </td>
                 <td>

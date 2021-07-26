@@ -284,7 +284,10 @@ export default function NewVRF(props) {
                         {hardwareSupport ? tableHeadersForHardwareSupport() : tableHeadersForSoftwareSupport()}
                     </thead>
                     <tbody>
-                        <NewEndpointRow hardwareSupport={hardwareSupport} />
+                        <NewEndpointRow
+                            hardwareSupport={hardwareSupport}
+                            forceNumberMinMax={forceNumberMinMax}
+                        />
                     </tbody>
                 </table>
                 <button className="btn endpoint-btn" onClick={addEndpointsToPayload}>Add new endpoint</button>
