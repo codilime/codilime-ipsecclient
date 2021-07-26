@@ -60,7 +60,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(hardwarePathPh2, a.getHardwareAlgorithmsPh2).Methods(http.MethodGet)
 	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet).Queries("offset", "{offset:[-0-9]+}", "length", "{length:[-0-9]+}")
 	a.Router.HandleFunc(metricsPath, metrics).Methods(http.MethodGet)
-	a.Router.HandleFunc(metricsPath+"/{name:[a-zA-Z0-9-_]+}", metricsName).Methods(http.MethodGet)
+	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metricsName).Methods(http.MethodGet)
 }
 
 func (a *App) getVrfs(w http.ResponseWriter, _ *http.Request) {
