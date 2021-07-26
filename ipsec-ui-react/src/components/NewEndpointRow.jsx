@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import './NewEndpointRow.scss';
 
 
 export default function NewEndpointRow(props) {
@@ -16,7 +17,7 @@ export default function NewEndpointRow(props) {
             <tr>
                 <td>
                     <input type="text"
-                           placeholder="i.e. 127.000.8.123"
+                           placeholder="i.e. 192.158.1.38"
                            name="remote_ip_sec"
                            id="remote_ip_sec"
                            onChange={event => updateRemoteIpSec(event.target.value)}
@@ -24,7 +25,7 @@ export default function NewEndpointRow(props) {
                 </td>
                 <td>
                     <input type="text"
-                           placeholder="i.e. 127.000.8.123"
+                           placeholder="i.e. 192.158.1.38"
                            name="local_ip"
                            id="local_ip"
                            onChange={event => updateLocalIp(event.target.value)}
@@ -32,7 +33,7 @@ export default function NewEndpointRow(props) {
                 </td>
                 <td>
                     <input type="text"
-                           placeholder="i.e. 127.000.8.123"
+                           placeholder="i.e. 192.158.1.38"
                            name="peer_ip"
                            id="peer_ip"
                            onChange={event => updatePeer_ip(event.target.value)}
@@ -61,7 +62,7 @@ export default function NewEndpointRow(props) {
                 <td>
                     <input type="button"
                            name="add"
-                           id="add"
+                           id="add_endpoint"
                            value="Add"
                     />
                 </td>
@@ -74,7 +75,7 @@ export default function NewEndpointRow(props) {
             <tr>
                 <td>
                     <input type="text"
-                           placeholder="i.e. 127.000.8.123"
+                           placeholder="i.e. 192.158.1.38"
                            name="remote_ip_sec"
                            id="remote_ip_sec"
                            onChange={event => updateRemoteIpSec(event.target.value)}
@@ -82,7 +83,7 @@ export default function NewEndpointRow(props) {
                 </td>
                 <td>
                     <input type="text"
-                           placeholder="i.e. 127.000.8.123"
+                           placeholder="i.e. 192.158.1.38"
                            name="local_ip"
                            id="local_ip"
                            onChange={event => updateLocalIp(event.target.value)}
@@ -90,7 +91,7 @@ export default function NewEndpointRow(props) {
                 </td>
                 <td>
                     <input type="text"
-                           placeholder="i.e. 127.000.8.123"
+                           placeholder="i.e. 192.158.1.38"
                            name="peer_ip"
                            id="peer_ip"
                            onChange={event => updatePeer_ip(event.target.value)}
@@ -128,7 +129,7 @@ export default function NewEndpointRow(props) {
                 <td>
                     <input type="button"
                            name="add"
-                           id="add"
+                           id="add_endpoint"
                            value="Add"
                     />
                 </td>
