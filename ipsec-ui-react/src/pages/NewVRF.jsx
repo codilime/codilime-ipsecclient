@@ -97,7 +97,7 @@ export default function NewVRF(props) {
                 <th>Remote AS</th>
                 <th>Source interface</th>
                 <th>BGP</th>
-                {/*<th>Action</th>*/}
+                <th>Action</th>
             </tr>
         )
     }
@@ -111,7 +111,7 @@ export default function NewVRF(props) {
                 <th>PSK</th>
                 <th>NAT</th>
                 <th>BGP</th>
-                {/*<th>Action</th>*/}
+                <th>Action</th>
             </tr>
         )
     }
@@ -134,7 +134,7 @@ export default function NewVRF(props) {
     }
 
     function addEndpointsToPayload() {
-        console.log("ararara");
+        console.log("I'm adding this endpoint to the payload");
     }
 
     return (
@@ -286,8 +286,9 @@ export default function NewVRF(props) {
                     <tbody>
                         <NewEndpointRow hardwareSupport={hardwareSupport} />
                     </tbody>
-                    <button className="btn endpoint-btn" onClick={addEndpointsToPayload}>Add new endpoint</button>
                 </table>
+                <button className="btn endpoint-btn" onClick={addEndpointsToPayload}>Add new endpoint</button>
+
             </div>
         </div>
     );

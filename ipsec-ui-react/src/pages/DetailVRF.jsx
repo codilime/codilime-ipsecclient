@@ -7,6 +7,7 @@ import EndpointTableRow from "../components/EndpointTableRow"
 import axios from "axios";
 import {useHistory, useParams} from "react-router";
 import {isEmptyObject} from "../util";
+import NewEndpointRow from "../components/NewEndpointRow";
 
 
 export default function DetailViewVrf(props) {
@@ -366,11 +367,13 @@ export default function DetailViewVrf(props) {
                                     />
                                 )
                             })}
+                            <NewEndpointRow hardwareSupport={hardwareSupport} />
                         </tbody>
                     </table>
-                    <button className="btn endpoint-btn">Add new endpoint</button>
+
+                    {/*<button className="btn endpoint-btn">Add new endpoint</button>*/}
                 </div>
-                <Dump value={detailVrf} />
+                <Dump {...detailVrf} />
             </div>
         </div>
     )
