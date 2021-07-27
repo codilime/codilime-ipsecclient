@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
