@@ -1,27 +1,38 @@
 .app-container {
-  display: flex;
-  flex-wrap: wrap;
-  height: 100vh;
+    display: flex;
+    flex-wrap: wrap;
+    height: 100vh;
+}
+
+.sidebar-container {
+    background-color: #626469;
+    width: 12%;
+    height: calc(100% - 64px);
+    overflow: auto;
+    p {
+        color: #ffffff;
+        text-align: center;
+    }
 }
 
 html,
 body {
-  height: 100%;
-  font-family: "Helvetica", monospace;
-  font-size: 16px;
+    height: 100%;
+    font-family: "Helvetica", monospace;
+    font-size: 16px;
 }
 
 body {
-  padding: 0;
-  margin: 0;
+    padding: 0;
+    margin: 0;
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .main-view-container {
-  margin: 0;
-  padding: 8px;
-  width: 87%;
+    margin: 0;
+    padding: 8px;
+    width: 87%;
 }
