@@ -3,20 +3,20 @@
 }
 .vrf-detail-section-container {
   margin: 25px 0;
-  border: solid rgba(167,167,167,0.74) 1px;
+  border: solid rgba(167, 167, 167, 0.74) 1px;
 }
 td.break {
   padding: 0 65px 0 0;
 }
-#endpoints-table  {
+#endpoints-table {
   width: 100%;
   table-layout: fixed;
   //margin: 0 0 5px;
   text-align: left;
-  thead{
+  thead {
   }
   tr:nth-child(odd) {
-    background-color: rgba(167,167,167,0.74);
+    background-color: rgba(167, 167, 167, 0.74);
   }
 }
 .endpoint-btn {

@@ -5,8 +5,8 @@
   height: calc(0px + 100vh);
 }
 
-
-html, body {
+html,
+body {
   height: 100%;
   font-family: "Helvetica", monospace;
   font-size: 16px;
@@ -17,7 +17,9 @@ body {
   margin: 0;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 .main-view-container {
   margin: 0;

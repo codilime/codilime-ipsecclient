@@ -6,10 +6,10 @@
 .new-vrf-data-container {
   width: 100%;
   margin: 25px 0;
-  border: solid 1px rgba(167,167,167,0.74);
+  border: solid 1px rgba(167, 167, 167, 0.74);
 }
 .vrf-section-header {
-  background-color: rgba(167,167,167,0.74);
+  background-color: rgba(167, 167, 167, 0.74);
   width: 100%;
   font-weight: bold;
   padding-left: 3px;
@@ -31,7 +31,7 @@ form {
   width: 100%;
   margin: 5px;
 }
-.vrf-column-1-item{
+.vrf-column-1-item {
   width: 100%;
   margin: 5px;
   text-align: right;
@@ -42,7 +42,7 @@ form {
   text-align: right;
   padding-right: 15px;
 }
-input[type='number'] {
+input[type="number"] {
   width: 100px;
 }
 input {
@@ -53,7 +53,8 @@ input {
   align-items: center;
   justify-content: flex-end;
 }
-input, select {
+input,
+select {
   margin: 5px;
 }
 #hardware_support {
@@ -74,6 +75,3 @@ select {
 .endpoint-btn {
   margin: 5px 5px 5px 5px;
 }
-
-
-
