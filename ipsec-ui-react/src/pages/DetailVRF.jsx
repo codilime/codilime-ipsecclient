@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 
-import { v4 as uuidv4 } from "uuid";
 import { useHistory, useParams } from "react-router";
+
+import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 
 import "./DetailVRF.scss";
