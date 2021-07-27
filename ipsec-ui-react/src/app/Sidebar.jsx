@@ -12,7 +12,7 @@ export default function Sidebar(props) {
     return (
         <div className="sidebar-container">
             {(!VRFList || VRFList.length === 0) && <p>no connections</p>}
-            <ul>
+            <ul className="sidebar-list">
                 {VRFList && VRFList.map((item) => (
                     <li key={uuidv4()}>
                         <Link to={"/vrf/" + item.id} replace>
