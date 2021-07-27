@@ -7,8 +7,8 @@ export default function NewEndpointRow(props) {
     const forceNumberMinMax = props.forceNumberMinMax;
 
 
-    const [remoteIpSec, updateRemoteIpSec] = useState("");
-    const [localIp, updateLocalIp] = useState("");
+    const [remote_ip_sec, updateRemote_ip_sec] = useState("");
+    const [local_ip, updateLocal_ip] = useState("");
     const [peer_ip, updatePeer_ip] = useState("");
     const [psk, updatePsk] = useState("");
     const [remote_as, updateRemote_as] = useState("1");
@@ -23,7 +23,7 @@ export default function NewEndpointRow(props) {
     }
 
     function bgpCheckboxHandler() {
-        updateNat(!nat);
+        updateBgp(!bgp);
     }
 
     function renderTableRowForSoftwareSupport() {
@@ -34,7 +34,7 @@ export default function NewEndpointRow(props) {
                            placeholder="i.e. 192.158.1.38"
                            name="remote_ip_sec"
                            id="remote_ip_sec"
-                           onChange={event => updateRemoteIpSec(event.target.value)}
+                           onChange={event => updateRemote_ip_sec(event.target.value)}
                     />
                 </td>
                 <td>
@@ -42,7 +42,7 @@ export default function NewEndpointRow(props) {
                            placeholder="i.e. 192.158.1.38"
                            name="local_ip"
                            id="local_ip"
-                           onChange={event => updateLocalIp(event.target.value)}
+                           onChange={event => updateLocal_ip(event.target.value)}
                     />
                 </td>
                 <td>
@@ -97,7 +97,7 @@ export default function NewEndpointRow(props) {
                            placeholder="i.e. 192.158.1.38"
                            name="remote_ip_sec"
                            id="remote_ip_sec"
-                           onChange={event => updateRemoteIpSec(event.target.value)}
+                           onChange={event => updateRemote_ip_sec(event.target.value)}
                     />
                 </td>
                 <td>
@@ -105,7 +105,7 @@ export default function NewEndpointRow(props) {
                            placeholder="i.e. 192.158.1.38"
                            name="local_ip"
                            id="local_ip"
-                           onChange={event => updateLocalIp(event.target.value)}
+                           onChange={event => updateLocal_ip(event.target.value)}
                     />
                 </td>
                 <td>
