@@ -25,7 +25,8 @@ export default function DetailViewVrf(props) {
         hardwarePh2Encryption,
         updateSidebar,
         renderTableHeadersForHardwareSupport,
-        renderTableHeadersForSoftwareSupport
+        renderTableHeadersForSoftwareSupport,
+        maxValueForLocal_as
     } = props;
 
     const [detailVrf, updateDetailVrf] = useState();
@@ -287,7 +288,7 @@ export default function DetailViewVrf(props) {
                                 <input
                                     type="number"
                                     min="1"
-                                    max={Math.pow(2, 32)}
+                                    max={maxValueForLocal_as}
                                     name="local_as"
                                     id="local_as"
                                     step="1"

@@ -19,7 +19,8 @@ export default function NewVRF(props) {
         hardwarePh2Encryption,
         updateSidebar,
         renderTableHeadersForHardwareSupport,
-        renderTableHeadersForSoftwareSupport
+        renderTableHeadersForSoftwareSupport,
+        maxValueForLocal_as
     } = props;
 
     function updateThePhEncryptionArrays() {
@@ -204,7 +205,7 @@ export default function NewVRF(props) {
                             <input
                                 type="number"
                                 min="1"
-                                max={Math.pow(2, 32)}
+                                max={maxValueForLocal_as}
                                 name="local_as"
                                 id="local_as"
                                 step="1"

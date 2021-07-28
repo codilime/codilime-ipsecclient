@@ -84,6 +84,8 @@ export default function App() {
         );
     };
 
+    const maxValueForLocal_as = Math.pow(2, 32);
+
     return (
         <Router>
             <div className="app-container">
@@ -97,6 +99,7 @@ export default function App() {
                                 <NewVRF
                                     renderTableHeadersForHardwareSupport={renderTableHeadersForHardwareSupport}
                                     renderTableHeadersForSoftwareSupport={renderTableHeadersForSoftwareSupport}
+                                    maxValueForLocal_as={maxValueForLocal_as}
                                     routeProps={routeProps}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={
@@ -115,6 +118,7 @@ export default function App() {
                                 <DetailVRF
                                     renderTableHeadersForHardwareSupport={renderTableHeadersForHardwareSupport}
                                     renderTableHeadersForSoftwareSupport={renderTableHeadersForSoftwareSupport}
+                                    maxValueForLocal_as={maxValueForLocal_as}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={
                                         hardwarePh1Encryption
