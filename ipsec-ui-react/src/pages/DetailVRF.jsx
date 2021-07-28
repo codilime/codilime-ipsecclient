@@ -488,7 +488,7 @@ export default function DetailViewVrf(props) {
                 </div>
                 <div className="vrf-detail-section-container">
                     <div className="vrf-section-header">Endpoints</div>
-                    <table id="endpoints-table">
+                    <table className="endpoints-table">
                         <thead>
                             {hardwareSupport
                                 ? renderTableHeadersForHardwareSupport()
