@@ -10,19 +10,21 @@ import "./NewVRF.scss";
 
 import EndpointTableRow from "../components/EndpointTableRow";
 import NewEndpointRow from "../components/NewEndpointRow";
-import Dump from "../components/Dump";
 
+import Dump from "../components/Dump";
 import { isEmptyObject } from "../util";
 
 export default function DetailViewVrf(props) {
     const { id } = useParams();
-    let history = useHistory();
+    const history = useHistory();
 
     const detailApiAddress = "/api/vrfs/" + id;
-    const softwareEncryption = props.softwareEncryption;
-    const hardwarePh1Encryption = props.hardwarePh1Encryption;
-    const hardwarePh2Encryption = props.hardwarePh2Encryption;
-    const updateSidebar = props.updateSidebar;
+    const {
+        softwareEncryption,
+        hardwarePh1Encryption,
+        hardwarePh2Encryption,
+        updateSidebar
+    } = props;
 
     const [detailVrf, updateDetailVrf] = useState();
     const [loading, updateLoading] = useState(true);
