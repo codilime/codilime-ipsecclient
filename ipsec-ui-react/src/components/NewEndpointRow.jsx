@@ -3,8 +3,13 @@ import React, { useState } from "react";
 import "./NewEndpointRow.scss";
 
 export default function NewEndpointRow(props) {
-    const hardwareSupport = props.hardwareSupport;
-    const forceNumberMinMax = props.forceNumberMinMax;
+    // const hardwareSupport = props.hardwareSupport;
+    // const forceNumberMinMax = props.forceNumberMinMax;
+
+    const {
+        hardwareSupport,
+        forceNumberMinMax
+    } = props;
 
     const [remote_ip_sec, updateRemote_ip_sec] = useState("");
     const [local_ip, updateLocal_ip] = useState("");

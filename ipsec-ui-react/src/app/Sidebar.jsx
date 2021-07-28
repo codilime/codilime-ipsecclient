@@ -10,6 +10,10 @@ import "./Sidebar.scss";
 export default function Sidebar(props) {
     const VRFList = props.VRFConnections;
 
+    // const {
+    //     VRFList
+    // } = props;
+
     return (
         <div className="sidebar-container">
             {(!VRFList || VRFList.length === 0) && <p className="sidebar-text">no connections</p>}

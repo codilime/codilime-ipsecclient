@@ -1,15 +1,14 @@
 import React from "react";
 
 export default function EndpointTableCell(props) {
-    const cellValue = props.endpointTableValue;
-    console.log(cellValue);
+    const value = props.endpointTableValue;
 
     function checkboxTemporaryHandler() {
         console.log("changing");
     }
 
-    if (typeof cellValue === "boolean") {
-        if (cellValue === true) {
+    if (typeof value === "boolean") {
+        if (value === true) {
             return (
                 <td>
                     <input
@@ -27,5 +26,5 @@ export default function EndpointTableCell(props) {
         );
     }
 
-    return <td>{cellValue}</td>;
+    return <td>{value}</td>;
 }
