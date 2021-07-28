@@ -22,6 +22,11 @@ export default function NewEndpointRow(props) {
         updateBgp(!bgp);
     }
 
+    function changeHandler(event) {
+        event.preventDefault();
+        console.log("button is clicked");
+    }
+
     function renderTableRowForSoftwareSupport() {
         return (
             <tr>
@@ -42,8 +47,7 @@ export default function NewEndpointRow(props) {
                         placeholder="i.e. 192.158.1.38"
                         name="local_ip"
                         id="local_ip"
-                        onChange={(event) =>
-                            updateLocal_ip(event.target.value)}
+                        onChange={(event) => updateLocal_ip(event.target.value)}
                     />
                 </td>
                 <td>
@@ -52,8 +56,7 @@ export default function NewEndpointRow(props) {
                         placeholder="i.e. 192.158.1.38"
                         name="peer_ip"
                         id="peer_ip"
-                        onChange={(event) =>
-                            updatePeer_ip(event.target.value)}
+                        onChange={(event) => updatePeer_ip(event.target.value)}
                     />
                 </td>
 
@@ -63,8 +66,7 @@ export default function NewEndpointRow(props) {
                         placeholder="password"
                         name="psk"
                         id="psk"
-                        onChange={(event) =>
-                            updatePsk(event.target.value)}
+                        onChange={(event) => updatePsk(event.target.value)}
                     />
                 </td>
                 <td>
@@ -86,7 +88,12 @@ export default function NewEndpointRow(props) {
                     />
                 </td>
                 <td>
-                    <Button name="add" className="btn" textValue="Add" />
+                    <Button
+                        name="add"
+                        className="btn"
+                        textValue="Add"
+                        changeHandler={changeHandler}
+                    />
                 </td>
             </tr>
         );
@@ -112,8 +119,7 @@ export default function NewEndpointRow(props) {
                         placeholder="i.e. 192.158.1.38"
                         name="local_ip"
                         id="local_ip"
-                        onChange={(event) =>
-                            updateLocal_ip(event.target.value)}
+                        onChange={(event) => updateLocal_ip(event.target.value)}
                     />
                 </td>
                 <td>
@@ -122,8 +128,7 @@ export default function NewEndpointRow(props) {
                         placeholder="i.e. 192.158.1.38"
                         name="peer_ip"
                         id="peer_ip"
-                        onChange={(event) =>
-                            updatePeer_ip(event.target.value)}
+                        onChange={(event) => updatePeer_ip(event.target.value)}
                     />
                 </td>
 
@@ -133,8 +138,7 @@ export default function NewEndpointRow(props) {
                         placeholder="password"
                         name="psk"
                         id="psk"
-                        onChange={(event) =>
-                            updatePsk(event.target.value)}
+                        onChange={(event) => updatePsk(event.target.value)}
                     />
                 </td>
                 <td>
@@ -169,7 +173,12 @@ export default function NewEndpointRow(props) {
                     />
                 </td>
                 <td>
-                    <Button name="add" className="btn" textValue="Add" />
+                    <Button
+                        name="add"
+                        className="btn"
+                        textValue="Add"
+                        changeHandler={changeHandler}
+                    />
                 </td>
             </tr>
         );
