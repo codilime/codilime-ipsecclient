@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import { v4 as uuidv4 } from "uuid";
 
+import Button from "../components/Button";
 import "./Sidebar.scss";
 
 export default function Sidebar(props) {
@@ -22,9 +23,10 @@ export default function Sidebar(props) {
                 ))}
                 <li>
                     <Link to="/vrf/create" replace>
-                        <button className="btn new-vrf-button">
-                            Add a new VRF
-                        </button>
+                        <Button
+                            className="btn new-vrf-button"
+                            textValue="Add a new VRF"
+                        />
                     </Link>
                 </li>
             </ul>
