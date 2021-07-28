@@ -12,11 +12,15 @@ import NewEndpointRow from "../components/NewEndpointRow";
 export default function NewVRF(props) {
     let history = useHistory();
 
-    const routeProps = props.routeProps;
-    const softwareEncryption = props.softwareEncryption;
-    const hardwarePh1Encryption = props.hardwarePh1Encryption;
-    const hardwarePh2Encryption = props.hardwarePh2Encryption;
-    const updateSidebar = props.updateSidebar;
+    const {
+        routeProps,
+        softwareEncryption,
+        hardwarePh1Encryption,
+        hardwarePh2Encryption,
+        updateSidebar,
+        renderTableHeadersForHardwareSupport,
+        renderTableHeadersForSoftwareSupport
+    } = props;
 
     function updateThePhEncryptionArrays() {
         updateArrayForCryptoPh1(softwareEncryption);
@@ -52,10 +56,10 @@ export default function NewVRF(props) {
         physical_interface: physicalInterface,
         hardware_support: hardwareSupport,
         active: active,
-        vlan: parseInt(vlanValue),
+        vlan: parseInt(vlanValue, 10),
         crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
         crypto_ph2: [cryptoPh2_1, cryptoPh2_2, cryptoPh2_3],
-        local_as: parseInt(bgpValue),
+        local_as: parseInt(bgpValue, 10),
         endpoints: null,
     };
 
@@ -93,34 +97,6 @@ export default function NewVRF(props) {
             updateArrayForCryptoPh1(hardwarePh1Encryption);
             updateArrayForCryptoPh2(hardwarePh2Encryption);
         }
-    };
-    const tableHeadersForHardwareSupport = () => {
-        return (
-            <tr>
-                <th>Remote IP</th>
-                <th>Local IP</th>
-                <th>Peer IP</th>
-                <th>PSK</th>
-                <th>Remote AS</th>
-                <th>Source interface</th>
-                <th>BGP</th>
-                <th>Action</th>
-            </tr>
-        );
-    };
-
-    const tableHeadersForSoftwareSupport = () => {
-        return (
-            <tr>
-                <th>Remote IP</th>
-                <th>Local IP</th>
-                <th>Peer IP</th>
-                <th>PSK</th>
-                <th>NAT</th>
-                <th>BGP</th>
-                <th>Action</th>
-            </tr>
-        );
     };
 
     function forceNumberMinMax(event) {
@@ -407,8 +383,8 @@ export default function NewVRF(props) {
                 <table id="endpoints-table">
                     <thead>
                         {hardwareSupport
-                            ? tableHeadersForHardwareSupport()
-                            : tableHeadersForSoftwareSupport()}
+                            ? renderTableHeadersForHardwareSupport()
+                            : renderTableHeadersForSoftwareSupport()}
                     </thead>
                     <tbody>
                         <NewEndpointRow

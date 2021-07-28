@@ -55,6 +55,35 @@ export default function App() {
         fetchHardwareEncryptionPh2Data();
     }, []);
 
+    const renderTableHeadersForHardwareSupport = () => {
+        return (
+            <tr>
+                <th>Remote IP</th>
+                <th>Local IP</th>
+                <th>Peer IP</th>
+                <th>PSK</th>
+                <th>Remote AS</th>
+                <th>Source interface</th>
+                <th>BGP</th>
+                <th>Action</th>
+            </tr>
+        );
+    };
+
+    const renderTableHeadersForSoftwareSupport = () => {
+        return (
+            <tr>
+                <th>Remote IP</th>
+                <th>Local IP</th>
+                <th>Peer IP</th>
+                <th>PSK</th>
+                <th>NAT</th>
+                <th>BGP</th>
+                <th>Action</th>
+            </tr>
+        );
+    };
+
     return (
         <Router>
             <div className="app-container">
@@ -66,6 +95,8 @@ export default function App() {
                             path="/vrf/create"
                             render={(routeProps) => (
                                 <NewVRF
+                                    renderTableHeadersForHardwareSupport={renderTableHeadersForHardwareSupport}
+                                    renderTableHeadersForSoftwareSupport={renderTableHeadersForSoftwareSupport}
                                     routeProps={routeProps}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={
@@ -82,6 +113,8 @@ export default function App() {
                             path="/vrf/:id"
                             render={() => (
                                 <DetailVRF
+                                    renderTableHeadersForHardwareSupport={renderTableHeadersForHardwareSupport}
+                                    renderTableHeadersForSoftwareSupport={renderTableHeadersForSoftwareSupport}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={
                                         hardwarePh1Encryption

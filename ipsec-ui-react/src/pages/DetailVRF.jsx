@@ -23,7 +23,9 @@ export default function DetailViewVrf(props) {
         softwareEncryption,
         hardwarePh1Encryption,
         hardwarePh2Encryption,
-        updateSidebar
+        updateSidebar,
+        renderTableHeadersForHardwareSupport,
+        renderTableHeadersForSoftwareSupport
     } = props;
 
     const [detailVrf, updateDetailVrf] = useState();
@@ -173,35 +175,6 @@ export default function DetailViewVrf(props) {
             updateArrayForCryptoPh1(hardwarePh1Encryption);
             updateArrayForCryptoPh2(hardwarePh2Encryption);
         }
-    };
-
-    const renderTableHeadersForHardwareSupport = () => {
-        return (
-            <tr>
-                <th>Remote IP</th>
-                <th>Local IP</th>
-                <th>Peer IP</th>
-                <th>PSK</th>
-                <th>Remote AS</th>
-                <th>Source interface</th>
-                <th>BGP</th>
-                <th>Action</th>
-            </tr>
-        );
-    };
-
-    const renderTableHeadersForSoftwareSupport = () => {
-        return (
-            <tr>
-                <th>Remote IP</th>
-                <th>Local IP</th>
-                <th>Peer IP</th>
-                <th>PSK</th>
-                <th>NAT</th>
-                <th>BGP</th>
-                <th>Action</th>
-            </tr>
-        );
     };
 
     function forceNumberMinMax(event) {
