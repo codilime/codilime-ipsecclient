@@ -97,8 +97,12 @@ export default function App() {
                             path="/vrf/create"
                             render={(routeProps) => (
                                 <NewVRF
-                                    renderTableHeadersForHardwareSupport={renderTableHeadersForHardwareSupport}
-                                    renderTableHeadersForSoftwareSupport={renderTableHeadersForSoftwareSupport}
+                                    renderTableHeadersForHardwareSupport={
+                                        renderTableHeadersForHardwareSupport
+                                    }
+                                    renderTableHeadersForSoftwareSupport={
+                                        renderTableHeadersForSoftwareSupport
+                                    }
                                     maxValueForLocal_as={maxValueForLocal_as}
                                     routeProps={routeProps}
                                     softwareEncryption={softwareEncryption}
@@ -116,8 +120,12 @@ export default function App() {
                             path="/vrf/:id"
                             render={() => (
                                 <DetailVRF
-                                    renderTableHeadersForHardwareSupport={renderTableHeadersForHardwareSupport}
-                                    renderTableHeadersForSoftwareSupport={renderTableHeadersForSoftwareSupport}
+                                    renderTableHeadersForHardwareSupport={
+                                        renderTableHeadersForHardwareSupport
+                                    }
+                                    renderTableHeadersForSoftwareSupport={
+                                        renderTableHeadersForSoftwareSupport
+                                    }
                                     maxValueForLocal_as={maxValueForLocal_as}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={

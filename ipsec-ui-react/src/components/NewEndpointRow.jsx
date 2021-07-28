@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from "react";
+import React, { useState } from "react";
 
 import Button from "./Button";
 import "./NewEndpointRow.scss";
@@ -27,7 +27,7 @@ export default function NewEndpointRow(props) {
         console.log("button is clicked");
     }
 
-    if(hardwareSupport) {
+    if (hardwareSupport) {
         return (
             <tr>
                 <td>

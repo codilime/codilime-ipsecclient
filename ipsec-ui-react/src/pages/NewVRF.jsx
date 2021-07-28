@@ -20,7 +20,7 @@ export default function NewVRF(props) {
         updateSidebar,
         renderTableHeadersForHardwareSupport,
         renderTableHeadersForSoftwareSupport,
-        maxValueForLocal_as
+        maxValueForLocal_as,
     } = props;
 
     function updateThePhEncryptionArrays() {
@@ -381,7 +381,7 @@ export default function NewVRF(props) {
             </div>
             <div className="vrf-detail-section-container">
                 <div className="vrf-section-header">Endpoints</div>
-                <table id="endpoints-table">
+                <table className="endpoints-table">
                     <thead>
                         {hardwareSupport
                             ? renderTableHeadersForHardwareSupport()

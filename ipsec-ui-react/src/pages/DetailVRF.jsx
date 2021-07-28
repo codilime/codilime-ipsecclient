@@ -27,7 +27,7 @@ export default function DetailViewVrf(props) {
         updateSidebar,
         renderTableHeadersForHardwareSupport,
         renderTableHeadersForSoftwareSupport,
-        maxValueForLocal_as
+        maxValueForLocal_as,
     } = props;
 
     const [detailVrf, updateDetailVrf] = useState();
@@ -202,7 +202,11 @@ export default function DetailViewVrf(props) {
         <div>
             <div className="vrf-detail-container">
                 /vrf/{detailVrf.client_name}
-                <Button className="btn red-btn delete-btn" changeHandler={removeVrfConnection} textValue="Delete VRF"/>
+                <Button
+                    className="btn red-btn delete-btn"
+                    changeHandler={removeVrfConnection}
+                    textValue="Delete VRF"
+                />
                 <br />
                 <div className="vrf-detail-section-container">
                     <div className="vrf-section-header">VRF Details</div>
