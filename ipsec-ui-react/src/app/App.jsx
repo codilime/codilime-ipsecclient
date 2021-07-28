@@ -5,7 +5,7 @@ import { HashRouter as Router, Route, Switch } from "react-router-dom";
 import axios from "axios";
 
 import Sidebar from "./Sidebar";
-import TopBar from "./TopBar";
+import Topbar from "./Topbar";
 import DetailVRF from "../pages/DetailVRF";
 import NewVRF from "../pages/NewVRF";
 import "./App.scss";
@@ -58,7 +58,7 @@ export default function App() {
     return (
         <Router>
             <div className="app-container">
-                <TopBar />
+                <Topbar />
                 <Sidebar VRFConnections={VRFConnections} />
                 <div className="main-view-container">
                     <Switch>

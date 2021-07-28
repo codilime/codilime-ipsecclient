@@ -1,9 +1,9 @@
 import React from "react";
 
-import "./TopBar.scss";
+import "./Topbar.scss";
 import ciscoLogo from "../assets/cisco_logo.png";
 
-export default function TopBar() {
+export default function Topbar() {
     return (
         <div className="topbar-container">
             <img className="topbar-item" src={ciscoLogo} alt="cisco logo" />
