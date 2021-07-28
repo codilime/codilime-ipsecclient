@@ -11,7 +11,7 @@ export default function Sidebar(props) {
 
     return (
         <div className="sidebar-container">
-            {(!VRFList || VRFList.length === 0) && <p>no connections</p>}
+            {(!VRFList || VRFList.length === 0) && <p className="sidebar-text">no connections</p>}
             <ul className="sidebar-list">
                 {VRFList && VRFList.map((item) => (
                     <li key={uuidv4()}>
