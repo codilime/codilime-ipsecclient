@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useCallback, useState} from "react";
 
 import Button from "./Button";
 import "./NewEndpointRow.scss";
@@ -27,79 +27,7 @@ export default function NewEndpointRow(props) {
         console.log("button is clicked");
     }
 
-    function renderTableRowForSoftwareSupport() {
-        return (
-            <tr>
-                <td>
-                    <input
-                        type="text"
-                        placeholder="i.e. 192.158.1.38"
-                        name="remote_ip_sec"
-                        id="remote_ip_sec"
-                        onChange={(event) =>
-                            updateRemote_ip_sec(event.target.value)
-                        }
-                    />
-                </td>
-                <td>
-                    <input
-                        type="text"
-                        placeholder="i.e. 192.158.1.38"
-                        name="local_ip"
-                        id="local_ip"
-                        onChange={(event) => updateLocal_ip(event.target.value)}
-                    />
-                </td>
-                <td>
-                    <input
-                        type="text"
-                        placeholder="i.e. 192.158.1.38"
-                        name="peer_ip"
-                        id="peer_ip"
-                        onChange={(event) => updatePeer_ip(event.target.value)}
-                    />
-                </td>
-
-                <td>
-                    <input
-                        type="password"
-                        placeholder="password"
-                        name="psk"
-                        id="psk"
-                        onChange={(event) => updatePsk(event.target.value)}
-                    />
-                </td>
-                <td>
-                    <input
-                        type="checkbox"
-                        name="nat"
-                        id="nat"
-                        checked={nat}
-                        onChange={natCheckboxHandler}
-                    />
-                </td>
-                <td>
-                    <input
-                        type="checkbox"
-                        name="bgp"
-                        id="bgp"
-                        checked={bgp}
-                        onChange={bgpCheckboxHandler}
-                    />
-                </td>
-                <td>
-                    <Button
-                        name="add"
-                        className="btn"
-                        textValue="Add"
-                        changeHandler={changeHandler}
-                    />
-                </td>
-            </tr>
-        );
-    }
-
-    function renderTableRowForHardwareSupport() {
+    if(hardwareSupport) {
         return (
             <tr>
                 <td>
@@ -182,9 +110,75 @@ export default function NewEndpointRow(props) {
                 </td>
             </tr>
         );
-    }
+    } else {
+        return (
+            <tr>
+                <td>
+                    <input
+                        type="text"
+                        placeholder="i.e. 192.158.1.38"
+                        name="remote_ip_sec"
+                        id="remote_ip_sec"
+                        onChange={(event) =>
+                            updateRemote_ip_sec(event.target.value)
+                        }
+                    />
+                </td>
+                <td>
+                    <input
+                        type="text"
+                        placeholder="i.e. 192.158.1.38"
+                        name="local_ip"
+                        id="local_ip"
+                        onChange={(event) => updateLocal_ip(event.target.value)}
+                    />
+                </td>
+                <td>
+                    <input
+                        type="text"
+                        placeholder="i.e. 192.158.1.38"
+                        name="peer_ip"
+                        id="peer_ip"
+                        onChange={(event) => updatePeer_ip(event.target.value)}
+                    />
+                </td>
 
-    return hardwareSupport
-        ? renderTableRowForHardwareSupport()
-        : renderTableRowForSoftwareSupport();
+                <td>
+                    <input
+                        type="password"
+                        placeholder="password"
+                        name="psk"
+                        id="psk"
+                        onChange={(event) => updatePsk(event.target.value)}
+                    />
+                </td>
+                <td>
+                    <input
+                        type="checkbox"
+                        name="nat"
+                        id="nat"
+                        checked={nat}
+                        onChange={natCheckboxHandler}
+                    />
+                </td>
+                <td>
+                    <input
+                        type="checkbox"
+                        name="bgp"
+                        id="bgp"
+                        checked={bgp}
+                        onChange={bgpCheckboxHandler}
+                    />
+                </td>
+                <td>
+                    <Button
+                        name="add"
+                        className="btn"
+                        textValue="Add"
+                        changeHandler={changeHandler}
+                    />
+                </td>
+            </tr>
+        );
+    }
 }
