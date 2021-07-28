@@ -10,6 +10,7 @@ import "./NewVRF.scss";
 
 import EndpointTableRow from "../components/EndpointTableRow";
 import NewEndpointRow from "../components/NewEndpointRow";
+import Button from "../components/Button";
 
 import Dump from "../components/Dump";
 import { isEmptyObject } from "../util";
@@ -200,13 +201,8 @@ export default function DetailViewVrf(props) {
     return (
         <div>
             <div className="vrf-detail-container">
-                /vrf/{detailVrf.client_name}{" "}
-                <button
-                    className="btn red-btn delete-btn"
-                    onClick={removeVrfConnection}
-                >
-                    Delete VRF
-                </button>{" "}
+                /vrf/{detailVrf.client_name}
+                <Button className="btn red-btn delete-btn" changeHandler={removeVrfConnection} textValue="Delete VRF"/>
                 <br />
                 <div className="vrf-detail-section-container">
                     <div className="vrf-section-header">VRF Details</div>
@@ -274,13 +270,11 @@ export default function DetailViewVrf(props) {
                                     Hardware support
                                 </label>
                             </div>
-                            <button
-                                className="btn"
-                                id="save-changes-to-vrf-button"
-                                onClick={updateVrfConnection}
-                            >
-                                Save changes
-                            </button>
+                            <Button
+                                className="btn save-changes-to-vrf-button"
+                                changeHandler={updateVrfConnection}
+                                textValue="Save changes"
+                            />
                         </div>
                         <div className="vrf-column-2">
                             <div className="vrf-column-item-number">
