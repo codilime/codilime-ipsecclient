@@ -44,7 +44,6 @@ export default function DetailViewVrf(props) {
     const [cryptoPh2_2, updateCryptoPh2_2] = useState(cryptoPh2_2);
     const [cryptoPh2_3, updateCryptoPh2_3] = useState(cryptoPh2_3);
 
-    // kod odpowiedzialny za przygotowanie defaultowych danych do enkrypcji: arraye, update oraz useEffect; NIE DZIAŁA
     const [arrayForCryptoPh1, updateArrayForCryptoPh1] = useState([]);
     const [arrayForCryptoPh2, updateArrayForCryptoPh2] = useState([]);
 
@@ -57,8 +56,7 @@ export default function DetailViewVrf(props) {
         );
         if (hardwareSupport === true) {
             updateArrayForCryptoPh1(hardwarePh1Encryption);
-        }
-        if (hardwareSupport === false) {
+        } else {
             updateArrayForCryptoPh1(softwareEncryption);
         }
     }
@@ -66,8 +64,7 @@ export default function DetailViewVrf(props) {
     function updateDefaultPh2EncryptionData() {
         if (hardwareSupport === true) {
             updateArrayForCryptoPh2(hardwarePh2Encryption);
-        }
-        if (hardwareSupport === false) {
+        } else {
             updateArrayForCryptoPh2(softwareEncryption);
         }
     }
@@ -102,6 +99,8 @@ export default function DetailViewVrf(props) {
             updateCryptoPh2_1(data.crypto_ph2[0]);
             updateCryptoPh2_2(data.crypto_ph2[1]);
             updateCryptoPh2_3(data.crypto_ph2[2]);
+        } else {
+            alert("no data available");
         }
     }
 
@@ -117,12 +116,12 @@ export default function DetailViewVrf(props) {
         client_name: vrfName,
         lan_ip: lanIpMask,
         active: active,
-        vlan: parseInt(vlanValue),
+        vlan: parseInt(vlanValue, 10),
         crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
         crypto_ph2: [cryptoPh2_1, cryptoPh2_2, cryptoPh2_3],
         physical_interface: physicalInterface,
         hardware_support: hardwareSupport,
-        local_as: parseInt(bgpValue),
+        local_as: parseInt(bgpValue, 10),
         endpoints: detailVrf.endpoints,
     };
 
@@ -170,9 +169,7 @@ export default function DetailViewVrf(props) {
         if (hardwareSupport === true) {
             updateArrayForCryptoPh1(softwareEncryption);
             updateArrayForCryptoPh2(softwareEncryption);
-        }
-
-        if (hardwareSupport === false) {
+        } else {
             updateArrayForCryptoPh1(hardwarePh1Encryption);
             updateArrayForCryptoPh2(hardwarePh2Encryption);
         }
