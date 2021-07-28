@@ -1,14 +1,9 @@
 import React from "react";
 
-import './Button.scss'
+import "./Button.scss";
 
-export default function Button (props) {
-    const className = props.className;
-    const textValue = props.textValue;
+export default function Button(props) {
+    const { className, textValue } = props;
 
-    return (
-        <button className={className}>
-            {textValue}
-        </button>
-    )
+    return <button className={className}>{textValue}</button>;
 }

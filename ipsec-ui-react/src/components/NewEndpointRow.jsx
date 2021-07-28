@@ -1,15 +1,10 @@
 import React, { useState } from "react";
 
+import Button from "./Button";
 import "./NewEndpointRow.scss";
 
 export default function NewEndpointRow(props) {
-    // const hardwareSupport = props.hardwareSupport;
-    // const forceNumberMinMax = props.forceNumberMinMax;
-
-    const {
-        hardwareSupport,
-        forceNumberMinMax
-    } = props;
+    const { hardwareSupport, forceNumberMinMax } = props;
 
     const [remote_ip_sec, updateRemote_ip_sec] = useState("");
     const [local_ip, updateLocal_ip] = useState("");
@@ -47,7 +42,8 @@ export default function NewEndpointRow(props) {
                         placeholder="i.e. 192.158.1.38"
                         name="local_ip"
                         id="local_ip"
-                        onChange={(event) => updateLocal_ip(event.target.value)}
+                        onChange={(event) =>
+                            updateLocal_ip(event.target.value)}
                     />
                 </td>
                 <td>
@@ -56,7 +52,8 @@ export default function NewEndpointRow(props) {
                         placeholder="i.e. 192.158.1.38"
                         name="peer_ip"
                         id="peer_ip"
-                        onChange={(event) => updatePeer_ip(event.target.value)}
+                        onChange={(event) =>
+                            updatePeer_ip(event.target.value)}
                     />
                 </td>
 
@@ -66,7 +63,8 @@ export default function NewEndpointRow(props) {
                         placeholder="password"
                         name="psk"
                         id="psk"
-                        onChange={(event) => updatePsk(event.target.value)}
+                        onChange={(event) =>
+                            updatePsk(event.target.value)}
                     />
                 </td>
                 <td>
@@ -88,12 +86,7 @@ export default function NewEndpointRow(props) {
                     />
                 </td>
                 <td>
-                    <input
-                        type="button"
-                        name="add"
-                        id="add_endpoint"
-                        value="Add"
-                    />
+                    <Button name="add" className="btn" textValue="Add" />
                 </td>
             </tr>
         );
@@ -119,7 +112,8 @@ export default function NewEndpointRow(props) {
                         placeholder="i.e. 192.158.1.38"
                         name="local_ip"
                         id="local_ip"
-                        onChange={(event) => updateLocal_ip(event.target.value)}
+                        onChange={(event) =>
+                            updateLocal_ip(event.target.value)}
                     />
                 </td>
                 <td>
@@ -128,7 +122,8 @@ export default function NewEndpointRow(props) {
                         placeholder="i.e. 192.158.1.38"
                         name="peer_ip"
                         id="peer_ip"
-                        onChange={(event) => updatePeer_ip(event.target.value)}
+                        onChange={(event) =>
+                            updatePeer_ip(event.target.value)}
                     />
                 </td>
 
@@ -138,7 +133,8 @@ export default function NewEndpointRow(props) {
                         placeholder="password"
                         name="psk"
                         id="psk"
-                        onChange={(event) => updatePsk(event.target.value)}
+                        onChange={(event) =>
+                            updatePsk(event.target.value)}
                     />
                 </td>
                 <td>
@@ -173,16 +169,12 @@ export default function NewEndpointRow(props) {
                     />
                 </td>
                 <td>
-                    <input
-                        type="button"
-                        name="add"
-                        id="add_endpoint"
-                        value="Add"
-                    />
+                    <Button name="add" className="btn" textValue="Add" />
                 </td>
             </tr>
         );
     }
+
     return hardwareSupport
         ? renderTableRowForHardwareSupport()
         : renderTableRowForSoftwareSupport();

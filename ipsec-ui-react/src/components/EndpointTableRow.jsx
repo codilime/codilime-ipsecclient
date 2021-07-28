@@ -5,11 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import EndpointTableCell from "./EndpointTableCell";
 
 export default function EndpointTableRow(props) {
-
-    const {
-        endpoint,
-        hardwareSupport
-    } = props;
+    const { endpoint, hardwareSupport } = props;
 
     const tableColumnsWithSoftware = [
         "remote_ip_sec",
@@ -39,9 +35,7 @@ export default function EndpointTableRow(props) {
                     return (
                         <EndpointTableCell
                             key={uuidv4()}
-                            endpointTableValue={
-                                endpoint[fieldName]
-                            }
+                            endpointTableValue={endpoint[fieldName]}
                         />
                     );
                 })}
