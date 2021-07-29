@@ -244,9 +244,7 @@ export default function NewVRF(props) {
                             >
                                 {arrayForCryptoPh1 &&
                                     arrayForCryptoPh1.encryption &&
-                                    arrayForCryptoPh1.encryption.map(function (
-                                        element
-                                    ) {
+                                    arrayForCryptoPh1.encryption.map((element) => {
                                         return (
                                             <option
                                                 value={element}
@@ -267,9 +265,7 @@ export default function NewVRF(props) {
                             >
                                 {arrayForCryptoPh1 &&
                                     arrayForCryptoPh1.integrity &&
-                                    arrayForCryptoPh1.integrity.map(function (
-                                        element
-                                    ) {
+                                    arrayForCryptoPh1.integrity.map((element) => {
                                         return (
                                             <option
                                                 value={element}
@@ -291,7 +287,7 @@ export default function NewVRF(props) {
                                 {arrayForCryptoPh1 &&
                                     arrayForCryptoPh1.key_exchange &&
                                     arrayForCryptoPh1.key_exchange.map(
-                                        function (element) {
+                                        (element) =>  {
                                             return (
                                                 <option
                                                     value={element}
@@ -316,9 +312,7 @@ export default function NewVRF(props) {
                             >
                                 {arrayForCryptoPh2 &&
                                     arrayForCryptoPh2.encryption &&
-                                    arrayForCryptoPh2.encryption.map(function (
-                                        element
-                                    ) {
+                                    arrayForCryptoPh2.encryption.map((element) =>  {
                                         return (
                                             <option
                                                 value={element}
@@ -339,9 +333,7 @@ export default function NewVRF(props) {
                             >
                                 {arrayForCryptoPh2 &&
                                     arrayForCryptoPh2.integrity &&
-                                    arrayForCryptoPh2.integrity.map(function (
-                                        element
-                                    ) {
+                                    arrayForCryptoPh2.integrity.map((element) => {
                                         return (
                                             <option
                                                 value={element}
@@ -363,7 +355,7 @@ export default function NewVRF(props) {
                                 {arrayForCryptoPh2 &&
                                     arrayForCryptoPh2.key_exchange &&
                                     arrayForCryptoPh2.key_exchange.map(
-                                        function (element) {
+                                        (element) => {
                                             return (
                                                 <option
                                                     value={element}

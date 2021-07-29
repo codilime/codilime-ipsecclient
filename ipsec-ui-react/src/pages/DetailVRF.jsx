@@ -35,8 +35,7 @@ export default function DetailViewVrf(props) {
 
     const [vrfName, updateVrfName] = useState(vrfName);
     const [lanIpMask, updateLanIpMask] = useState(lanIpMask);
-    const [physicalInterface, updatePhysicalInterface] =
-        useState(physicalInterface);
+    const [physicalInterface, updatePhysicalInterface] = useState(physicalInterface);
     const [active, updateActive] = useState(active);
     const [hardwareSupport, updateHardwareSupport] = useState(hardwareSupport);
     const [vlanValue, updateVlanValue] = useState(vlanValue);
@@ -330,7 +329,7 @@ export default function DetailViewVrf(props) {
                                     {arrayForCryptoPh1 &&
                                         arrayForCryptoPh1.encryption &&
                                         arrayForCryptoPh1.encryption.map(
-                                            function (element) {
+                                            (element) => {
                                                 return (
                                                     <option
                                                         defaultValue={
@@ -356,7 +355,7 @@ export default function DetailViewVrf(props) {
                                     {arrayForCryptoPh1 &&
                                         arrayForCryptoPh1.integrity &&
                                         arrayForCryptoPh1.integrity.map(
-                                            function (element) {
+                                            (element) => {
                                                 return (
                                                     <option
                                                         defaultValue={
@@ -382,7 +381,7 @@ export default function DetailViewVrf(props) {
                                     {arrayForCryptoPh1 &&
                                         arrayForCryptoPh1.key_exchange &&
                                         arrayForCryptoPh1.key_exchange.map(
-                                            function (element) {
+                                            (element) => {
                                                 return (
                                                     <option
                                                         defaultValue={
@@ -413,7 +412,7 @@ export default function DetailViewVrf(props) {
                                     {arrayForCryptoPh2 &&
                                         arrayForCryptoPh2.encryption &&
                                         arrayForCryptoPh2.encryption.map(
-                                            function (element) {
+                                            (element) => {
                                                 return (
                                                     <option
                                                         defaultValue={
@@ -439,7 +438,7 @@ export default function DetailViewVrf(props) {
                                     {arrayForCryptoPh2 &&
                                         arrayForCryptoPh2.integrity &&
                                         arrayForCryptoPh2.integrity.map(
-                                            function (element) {
+                                             (element) => {
                                                 return (
                                                     <option
                                                         defaultValue={
@@ -465,7 +464,7 @@ export default function DetailViewVrf(props) {
                                     {arrayForCryptoPh2 &&
                                         arrayForCryptoPh2.key_exchange &&
                                         arrayForCryptoPh2.key_exchange.map(
-                                            function (element) {
+                                            (element) => {
                                                 return (
                                                     <option
                                                         defaultValue={
@@ -495,7 +494,7 @@ export default function DetailViewVrf(props) {
                         <tbody>
                             {detailVrf &&
                                 detailVrf.endpoints &&
-                                detailVrf.endpoints.map(function (endpoint) {
+                                detailVrf.endpoints.map((endpoint) => {
                                     return (
                                         <EndpointTableRow
                                             endpoint={endpoint}
