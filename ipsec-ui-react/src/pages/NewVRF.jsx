@@ -12,7 +12,7 @@ import Breadcrumb from "../components/Breadcrumb";
 import Dump from "../components/Dump";
 
 export default function NewVRF(props) {
-    let history = useHistory();
+    const history = useHistory();
 
     const {
         routeProps,
@@ -25,13 +25,9 @@ export default function NewVRF(props) {
         maxValueForLocal_as,
     } = props;
 
-    function updateThePhEncryptionArrays() {
+    useEffect(() => {
         updateArrayForCryptoPh1(softwareEncryption);
         updateArrayForCryptoPh2(softwareEncryption);
-    }
-
-    useEffect(() => {
-        updateThePhEncryptionArrays();
     }, [softwareEncryption]);
 
     const [vrfName, updateVrfName] = useState("");
