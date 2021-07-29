@@ -11,6 +11,7 @@ import "./NewVRF.scss";
 import EndpointTableRow from "../components/EndpointTableRow";
 import NewEndpointRow from "../components/NewEndpointRow";
 import Button from "../components/Button";
+import Breadcrumb from "../components/Breadcrumb";
 
 import Dump from "../components/Dump";
 import { isEmptyObject } from "../util";
@@ -154,7 +155,7 @@ export default function DetailViewVrf(props) {
             (response) => {
                 console.log(response);
                 updateSidebar();
-                history.push("/vrf/create");
+                history.push("create");
             },
             (error) => {
                 console.log(error);
@@ -200,7 +201,7 @@ export default function DetailViewVrf(props) {
     return (
         <div>
             <div className="vrf-detail-container">
-                /vrf/{detailVrf.client_name}
+                <Breadcrumb vrfAddress={detailVrf.client_name} />
                 <Button
                     className="btn red-btn delete-btn"
                     changeHandler={removeVrfConnection}

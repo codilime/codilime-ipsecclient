@@ -8,6 +8,8 @@ import axios from "axios";
 import "./NewVRF.scss";
 
 import NewEndpointRow from "../components/NewEndpointRow";
+import Breadcrumb from "../components/Breadcrumb";
+import Dump from "../components/Dump";
 
 export default function NewVRF(props) {
     let history = useHistory();
@@ -124,7 +126,7 @@ export default function NewVRF(props) {
     return (
         <div className="new-vrf-connection-wrapper">
             <div className="new-vrf-top-bar">
-                {routeProps.location.pathname}
+                <Breadcrumb vrfAddress={(routeProps.location.pathname).slice(5)} />
             </div>
             <div className="new-vrf-data-container">
                 <div className="vrf-section-header">VRF Details</div>
@@ -393,6 +395,7 @@ export default function NewVRF(props) {
                     Add new endpoint
                 </button>
             </div>
+            <Dump value={routeProps.location} />
         </div>
     );
 }
