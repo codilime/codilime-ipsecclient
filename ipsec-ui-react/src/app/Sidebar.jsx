@@ -8,20 +8,19 @@ import Button from "../components/Button";
 import "./Sidebar.scss";
 
 export default function Sidebar(props) {
-    const VRFList = props.VRFConnections;
 
-    // const {
-    //     VRFList
-    // } = props;
+    const {
+        VRFConnections
+    } = props;
 
     return (
         <div className="sidebar-container">
-            {(!VRFList || VRFList.length === 0) && (
+            {(!VRFConnections || VRFConnections.length === 0) && (
                 <p className="sidebar-text">no connections</p>
             )}
             <ul className="sidebar-list">
-                {VRFList &&
-                    VRFList.map((item) => (
+                {VRFConnections &&
+                VRFConnections.map((item) => (
                         <li key={uuidv4()}>
                             <Link to={"/vrf/" + item.id} replace>
                                 {item.client_name}

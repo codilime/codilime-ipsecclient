@@ -15,6 +15,7 @@ import Breadcrumb from "../components/Breadcrumb";
 
 import Dump from "../components/Dump";
 import { isEmptyObject } from "../util";
+import Loader from "../components/Loader";
 
 export default function DetailViewVrf(props) {
     const { id } = useParams();
@@ -52,12 +53,6 @@ export default function DetailViewVrf(props) {
     const [arrayForCryptoPh2, updateArrayForCryptoPh2] = useState([]);
 
     function updateDefaultPh1EncryptionData() {
-        console.log(
-            "update",
-            hardwareSupport,
-            hardwarePh1Encryption,
-            softwareEncryption
-        );
         if (hardwareSupport === true) {
             updateArrayForCryptoPh1(hardwarePh1Encryption);
         } else {
@@ -84,6 +79,7 @@ export default function DetailViewVrf(props) {
     ]);
 
     async function fetchThisVrfDetails() {
+
         const response = await axios.get(detailApiAddress);
 
         let data = response.data;
@@ -104,7 +100,7 @@ export default function DetailViewVrf(props) {
             updateCryptoPh2_2(data.crypto_ph2[1]);
             updateCryptoPh2_3(data.crypto_ph2[2]);
         } else {
-            alert("no data available");
+            console.log("No data to display, contact support for further support");
         }
     }
 
@@ -113,7 +109,7 @@ export default function DetailViewVrf(props) {
     }, [id]);
 
     if (loading === true) {
-        return <div>fetching data, please wait</div>;
+        return <Loader />;
     }
 
     const payload = {
