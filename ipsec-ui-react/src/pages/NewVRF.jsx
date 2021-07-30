@@ -22,8 +22,6 @@ export default function NewVRF(props) {
         hardwarePh1Encryption,
         hardwarePh2Encryption,
         updateSidebar,
-        renderTableHeadersForHardwareSupport,
-        renderTableHeadersForSoftwareSupport,
         maxValueForLocal_as,
     } = props;
 
