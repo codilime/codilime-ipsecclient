@@ -4,7 +4,7 @@ export function objectClone(input) {
 
 export function isEmptyObject(obj = {}) {
     if (obj === null) {
-        return null;
+        return false;
     }
     return Object.keys(obj).length === 0 && obj.constructor === Object;
 }
@@ -15,7 +15,7 @@ export function findIndexOfObjectWithPropertyValueInArray(
     property = "id"
 ) {
     if (Array.isArray(array)) {
-        return array.findIndex(function (item) {
+        return array.findIndex((item) => {
             return item[property] == value;
         });
     }
