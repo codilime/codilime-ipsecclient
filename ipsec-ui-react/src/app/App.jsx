@@ -9,6 +9,7 @@ import Topbar from "./Topbar";
 import DetailVRF from "../pages/DetailVRF";
 import NewVRF from "../pages/NewVRF";
 import "./App.scss";
+import {isEmptyObject} from "../util";
 
 export default function App() {
     const [VRFConnections, updateVRFConnections] = useState([]);
@@ -17,55 +18,71 @@ export default function App() {
     const [hardwarePh2Encryption, updateHardwarePh2Encryption] = useState([]);
 
     async function fetchVRFsData() {
-        const response = await axios.get("/api/vrfs");
-        const { data } = response;
-
-        if (Array.isArray(data)) {
-            updateVRFConnections(data);
-        } else {
-            console.log(
-                "Something went wrong, please contact support for further assistance"
-            );
-        }
+        await axios({
+            method: "get",
+            url: "/api/vrfs",
+        }).then(
+            (response) => {
+                const data = response.data;
+                if (Array.isArray(data)) {
+                    updateVRFConnections(data);
+                }
+            },
+            (error) => {
+                console.log(error);
+            }
+        );
     }
 
     async function fetchSoftwareEncryptionData() {
-        const response = await axios.get("/api/algorithms/software");
-        const { data } = response;
-
-        if (data && Object.keys(data).length > 0) {
-            updateSoftwareEncryption(data);
-        } else {
-            console.log(
-                "Something went wrong, please contact support for further assistance"
-            );
-        }
+        await axios({
+            method: "get",
+            url: "/api/algorithms/software",
+        }).then(
+            (response) => {
+                const data = response.data;
+                if (data && Object.keys(data).length > 0)  {
+                    updateSoftwareEncryption(data);
+                }
+            },
+            (error) => {
+                console.log(error);
+            }
+        );
     }
 
     async function fetchHardwareEncryptionPh1Data() {
-        const response = await axios.get("api/algorithms/hardware/ph1");
-        const { data } = response;
-
-        if (data && Object.keys(data).length > 0) {
-            updateHardwarePh1Encryption(data);
-        } else {
-            console.log(
-                "Something went wrong, please contact support for further assistance"
-            );
-        }
+        await axios({
+            method: "get",
+            url: "api/algorithms/hardware/ph1",
+        }).then(
+            (response) => {
+                const data = response.data;
+                if (data && Object.keys(data).length > 0)  {
+                    updateHardwarePh1Encryption(data);
+                }
+            },
+            (error) => {
+                console.log(error);
+            }
+        );
     }
 
     async function fetchHardwareEncryptionPh2Data() {
-        const response = await axios.get("api/algorithms/hardware/ph2");
-        const { data } = response;
-
-        if (data && Object.keys(data).length > 0) {
-            updateHardwarePh2Encryption(data);
-        } else {
-            console.log(
-                "Something went wrong, please contact support for further assistance"
-            );
-        }
+        await axios({
+            method: "get",
+            url: "api/algorithms/hardware/ph2",
+        }).then(
+            (response) => {
+                const data = response.data;
+                if (data && Object.keys(data).length > 0)  {
+                    updateHardwarePh2Encryption(data);
+                }
+            },
+            (error) => {
+                console.log(error);
+            }
+        );
     }
 
     useEffect(() => {
@@ -74,35 +91,6 @@ export default function App() {
         fetchHardwareEncryptionPh1Data();
         fetchHardwareEncryptionPh2Data();
     }, []);
-
-    const renderTableHeadersForHardwareSupport = () => {
-        return (
-            <tr>
-                <th>Remote IP</th>
-                <th>Local IP</th>
-                <th>Peer IP</th>
-                <th>PSK</th>
-                <th>Remote AS</th>
-                <th>Source interface</th>
-                <th>BGP</th>
-                <th>Action</th>
-            </tr>
-        );
-    };
-
-    const renderTableHeadersForSoftwareSupport = () => {
-        return (
-            <tr>
-                <th>Remote IP</th>
-                <th>Local IP</th>
-                <th>Peer IP</th>
-                <th>PSK</th>
-                <th>NAT</th>
-                <th>BGP</th>
-                <th>Action</th>
-            </tr>
-        );
-    };
 
     const maxValueForLocal_as = Math.pow(2, 32);
 
@@ -117,12 +105,6 @@ export default function App() {
                             path="/vrf/create"
                             render={(routeProps) => (
                                 <NewVRF
-                                    renderTableHeadersForHardwareSupport={
-                                        renderTableHeadersForHardwareSupport
-                                    }
-                                    renderTableHeadersForSoftwareSupport={
-                                        renderTableHeadersForSoftwareSupport
-                                    }
                                     maxValueForLocal_as={maxValueForLocal_as}
                                     routeProps={routeProps}
                                     softwareEncryption={softwareEncryption}
@@ -140,12 +122,6 @@ export default function App() {
                             path="/vrf/:id"
                             render={() => (
                                 <DetailVRF
-                                    renderTableHeadersForHardwareSupport={
-                                        renderTableHeadersForHardwareSupport
-                                    }
-                                    renderTableHeadersForSoftwareSupport={
-                                        renderTableHeadersForSoftwareSupport
-                                    }
                                     maxValueForLocal_as={maxValueForLocal_as}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={

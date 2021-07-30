@@ -80,45 +80,35 @@ export default function DetailViewVrf(props) {
     ]);
 
     async function fetchThisVrfDetails() {
-        const response = await axios.get(detailApiAddress);
 
-        // axios({
-        //     method: "get",
-        //     url: "detailApiAddress",
-        //     data: payload,
-        // }).then(
-        //     (response) => {
-        //         console.log(response.data.id);
-        //         updateSidebar();
-        //         history.push("/vrf/" + response.data.id);
-        //     },
-        //     (error) => {
-        //         console.log(error);
-        //     }
-        // );
+        await axios({
+            method: "get",
+            url: detailApiAddress,
+        }).then(
+            (response) => {
+                let data = response.data;
 
-        let data = response.data;
-
-        if (data && !isEmptyObject(data)) {
-            updateDetailVrf(data);
-            updateVrfName(data.client_name);
-            updateLanIpMask(data.lan_ip);
-            updatePhysicalInterface(data.physical_interface);
-            updateActive(data.active);
-            updateHardwareSupport(data.hardware_support);
-            updateVlanValue(data.vlan);
-            updateBgpValue(data.local_as);
-            updateCryptoPh1_1(data.crypto_ph1[0]);
-            updateCryptoPh1_2(data.crypto_ph1[1]);
-            updateCryptoPh1_3(data.crypto_ph1[2]);
-            updateCryptoPh2_1(data.crypto_ph2[0]);
-            updateCryptoPh2_2(data.crypto_ph2[1]);
-            updateCryptoPh2_3(data.crypto_ph2[2]);
-        } else {
-            console.log(
-                "No data to display, contact support for further support"
-            );
-        }
+                if(data && !isEmptyObject(data)) {
+                    updateDetailVrf(data);
+                    updateVrfName(data.client_name);
+                    updateLanIpMask(data.lan_ip);
+                    updatePhysicalInterface(data.physical_interface);
+                    updateActive(data.active);
+                    updateHardwareSupport(data.hardware_support);
+                    updateVlanValue(data.vlan);
+                    updateBgpValue(data.local_as);
+                    updateCryptoPh1_1(data.crypto_ph1[0]);
+                    updateCryptoPh1_2(data.crypto_ph1[1]);
+                    updateCryptoPh1_3(data.crypto_ph1[2]);
+                    updateCryptoPh2_1(data.crypto_ph2[0]);
+                    updateCryptoPh2_2(data.crypto_ph2[1]);
+                    updateCryptoPh2_3(data.crypto_ph2[2]);
+                }
+            },
+            (error) => {
+                console.log(error);
+            }
+        );
     }
 
     useEffect(() => {
