@@ -6,10 +6,10 @@ import axios from "axios";
 
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import DetailVRF from "../pages/DetailVRF";
-import NewVRF from "../pages/NewVRF";
+import DetailVRF from "../pages/DetailVRF/DetailVRF";
+import NewVRF from "../pages/NewVRF/NewVRF";
+import DefaultView from "../pages/DefaultView/DefaultView";
 import "./App.scss";
-import {isEmptyObject} from "../util";
 
 export default function App() {
     const [VRFConnections, updateVRFConnections] = useState([]);
@@ -137,7 +137,7 @@ export default function App() {
                         <Route
                             path="*"
                             render={() => (
-                                <div>Please select VRF to view details</div>
+                                <DefaultView />
                             )}
                         />
                     </Switch>

@@ -2,7 +2,7 @@ import React from "react";
 
 import { v4 as uuidv4 } from "uuid";
 
-import EndpointTableCell from "./EndpointTableCell";
+import EndpointTableCell from "../EndpointTableCell/EndpointTableCell";
 
 export default function EndpointTableRow(props) {
     const { endpoint, hardwareSupport } = props;

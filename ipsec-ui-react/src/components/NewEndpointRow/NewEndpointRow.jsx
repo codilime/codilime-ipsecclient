@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import Button from "./Button";
+import Button from "../Button/Button";
 import "./NewEndpointRow.scss";
 
 export default function NewEndpointRow(props) {

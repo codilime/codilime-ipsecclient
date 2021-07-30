@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import { v4 as uuidv4 } from "uuid";
 
-import Button from "../components/Button";
+import Button from "../components/Button/Button";
 import "./Sidebar.scss";
 
 export default function Sidebar(props) {

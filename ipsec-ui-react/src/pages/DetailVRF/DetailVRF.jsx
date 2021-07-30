@@ -6,18 +6,18 @@ import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 
 import "./DetailVRF.scss";
-import "./NewVRF.scss";
+import "../NewVRF/NewVRF.scss";
 
-import EndpointTableRow from "../components/EndpointTableRow";
-import NewEndpointRow from "../components/NewEndpointRow";
-import EndpointTableHeader from "../components/EndpointTableHeader";
-import Button from "../components/Button";
-import Breadcrumb from "../components/Breadcrumb";
+import EndpointTableRow from "../../components/EndpointTableRow/EndpointTableRow";
+import NewEndpointRow from "../../components/NewEndpointRow/NewEndpointRow";
+import EndpointTableHeader from "../../components/EndpointTableHeader/EndpointTableHeader";
+import Button from "../../components/Button/Button";
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 
-import Dump from "../components/Dump";
-import { isEmptyObject } from "../util";
-import Loader from "../components/Loader";
-import { forceNumberMinMax } from "../utils/formatters";
+import Dump from "../../utils/Dump";
+import { isEmptyObject } from "../../utils/util";
+import Loader from "../../components/Loader/Loader";
+import { forceNumberMinMax } from "../../utils/formatters";
 
 export default function DetailViewVrf(props) {
     const { id } = useParams();

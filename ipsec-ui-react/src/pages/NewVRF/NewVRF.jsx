@@ -7,11 +7,11 @@ import axios from "axios";
 
 import "./NewVRF.scss";
 
-import NewEndpointRow from "../components/NewEndpointRow";
-import EndpointTableHeader from "../components/EndpointTableHeader";
-import Breadcrumb from "../components/Breadcrumb";
-import Dump from "../components/Dump";
-import { forceNumberMinMax } from "../utils/formatters";
+import NewEndpointRow from "../../components/NewEndpointRow/NewEndpointRow";
+import EndpointTableHeader from "../../components/EndpointTableHeader/EndpointTableHeader";
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
+import Dump from "../../utils/Dump";
+import { forceNumberMinMax } from "../../utils/formatters";
 
 export default function NewVRF(props) {
     const history = useHistory();
