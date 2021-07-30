@@ -35,7 +35,7 @@ export default function EndpointTableRow(props) {
                     return (
                         <EndpointTableCell
                             key={uuidv4()}
-                            endpointTableValue={endpoint[fieldName]}
+                            value={endpoint[fieldName]}
                         />
                     );
                 })}

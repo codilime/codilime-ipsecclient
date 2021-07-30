@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function EndpointTableCell(props) {
-    const value = props.endpointTableValue;
+    const value = props.value;
 
     function checkboxTemporaryHandler() {
         console.log("changing");

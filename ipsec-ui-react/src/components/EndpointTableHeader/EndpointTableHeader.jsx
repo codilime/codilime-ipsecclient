@@ -1,12 +1,11 @@
 import React from "react";
 
-import './EndpointTableHeader.scss';
+import "./EndpointTableHeader.scss";
 
 export default function EndpointTableHeader(props) {
-    const {hardwareSupport
-    } = props;
+    const { hardwareSupport } = props;
 
-    if(hardwareSupport) {
+    if (hardwareSupport) {
         return (
             <tr>
                 <th>Remote IP</th>

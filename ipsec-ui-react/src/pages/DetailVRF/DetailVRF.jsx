@@ -80,7 +80,6 @@ export default function DetailViewVrf(props) {
     ]);
 
     async function fetchThisVrfDetails() {
-
         await axios({
             method: "get",
             url: detailApiAddress,
@@ -88,7 +87,7 @@ export default function DetailViewVrf(props) {
             (response) => {
                 let data = response.data;
 
-                if(data && !isEmptyObject(data)) {
+                if (data && !isEmptyObject(data)) {
                     updateDetailVrf(data);
                     updateVrfName(data.client_name);
                     updateLanIpMask(data.lan_ip);
@@ -472,7 +471,9 @@ export default function DetailViewVrf(props) {
                     <div className="vrf-section-header">Endpoints</div>
                     <table className="endpoints-table">
                         <thead>
-                            <EndpointTableHeader hardwareSupport={hardwareSupport} />
+                            <EndpointTableHeader
+                                hardwareSupport={hardwareSupport}
+                            />
                         </thead>
                         <tbody>
                             {detailVrf &&

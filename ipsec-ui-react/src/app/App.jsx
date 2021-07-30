@@ -41,7 +41,7 @@ export default function App() {
         }).then(
             (response) => {
                 const data = response.data;
-                if (data && Object.keys(data).length > 0)  {
+                if (data && Object.keys(data).length > 0) {
                     updateSoftwareEncryption(data);
                 }
             },
@@ -58,7 +58,7 @@ export default function App() {
         }).then(
             (response) => {
                 const data = response.data;
-                if (data && Object.keys(data).length > 0)  {
+                if (data && Object.keys(data).length > 0) {
                     updateHardwarePh1Encryption(data);
                 }
             },
@@ -75,7 +75,7 @@ export default function App() {
         }).then(
             (response) => {
                 const data = response.data;
-                if (data && Object.keys(data).length > 0)  {
+                if (data && Object.keys(data).length > 0) {
                     updateHardwarePh2Encryption(data);
                 }
             },
@@ -134,12 +134,7 @@ export default function App() {
                                 />
                             )}
                         />
-                        <Route
-                            path="*"
-                            render={() => (
-                                <DefaultView />
-                            )}
-                        />
+                        <Route path="*" render={() => <DefaultView />} />
                     </Switch>
                 </div>
             </div>

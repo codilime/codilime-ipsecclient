@@ -20,7 +20,7 @@ export function findIndexOfObjectWithPropertyValueInArray(
         });
     }
 
-    return null;
+    return -1;
 }
 
 export function findIndexOfObjectWithPropertyValueInAssocArray(array, value) {
