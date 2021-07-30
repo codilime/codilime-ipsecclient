@@ -8,10 +8,7 @@ import Button from "../components/Button";
 import "./Sidebar.scss";
 
 export default function Sidebar(props) {
-
-    const {
-        VRFConnections
-    } = props;
+    const { VRFConnections } = props;
 
     return (
         <div className="sidebar-container">
@@ -20,7 +17,7 @@ export default function Sidebar(props) {
             )}
             <ul className="sidebar-list">
                 {VRFConnections &&
-                VRFConnections.map((item) => (
+                    VRFConnections.map((item) => (
                         <li key={uuidv4()}>
                             <Link to={"/vrf/" + item.id} replace>
                                 {item.client_name}

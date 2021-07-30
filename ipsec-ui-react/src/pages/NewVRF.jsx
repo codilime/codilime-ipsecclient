@@ -10,6 +10,7 @@ import "./NewVRF.scss";
 import NewEndpointRow from "../components/NewEndpointRow";
 import Breadcrumb from "../components/Breadcrumb";
 import Dump from "../components/Dump";
+import { forceNumberMinMax } from "../utils/formatters";
 
 export default function NewVRF(props) {
     const history = useHistory();
@@ -90,30 +91,11 @@ export default function NewVRF(props) {
         if (hardwareSupport === true) {
             updateArrayForCryptoPh1(softwareEncryption);
             updateArrayForCryptoPh2(softwareEncryption);
-        }
-
-        if (hardwareSupport === false) {
+        } else {
             updateArrayForCryptoPh1(hardwarePh1Encryption);
             updateArrayForCryptoPh2(hardwarePh2Encryption);
         }
     };
-
-    function forceNumberMinMax(event) {
-        let value = parseInt(event.target.value);
-        const min = parseInt(event.target.min);
-        const max = parseInt(event.target.max);
-
-        if (event.target.max && value > max) {
-            value = max;
-        }
-        if (event.target.min && value < min) {
-            value = min;
-        }
-        if (isNaN(value)) {
-            return "";
-        }
-        return value;
-    }
 
     function addEndpointsToPayload() {
         console.log("I'm adding this endpoint to the payload");
@@ -122,7 +104,9 @@ export default function NewVRF(props) {
     return (
         <div className="new-vrf-connection-wrapper">
             <div className="new-vrf-top-bar">
-                <Breadcrumb vrfAddress={(routeProps.location.pathname).slice(5)} />
+                <Breadcrumb
+                    vrfAddress={routeProps.location.pathname.slice(5)}
+                />
             </div>
             <div className="new-vrf-data-container">
                 <div className="vrf-section-header">VRF Details</div>
@@ -242,16 +226,18 @@ export default function NewVRF(props) {
                             >
                                 {arrayForCryptoPh1 &&
                                     arrayForCryptoPh1.encryption &&
-                                    arrayForCryptoPh1.encryption.map((element) => {
-                                        return (
-                                            <option
-                                                value={element}
-                                                key={uuidv4()}
-                                            >
-                                                {element}
-                                            </option>
-                                        );
-                                    })}
+                                    arrayForCryptoPh1.encryption.map(
+                                        (element) => {
+                                            return (
+                                                <option
+                                                    value={element}
+                                                    key={uuidv4()}
+                                                >
+                                                    {element}
+                                                </option>
+                                            );
+                                        }
+                                    )}
                             </select>
                             <select
                                 id="crypto_ph1_2"
@@ -263,16 +249,18 @@ export default function NewVRF(props) {
                             >
                                 {arrayForCryptoPh1 &&
                                     arrayForCryptoPh1.integrity &&
-                                    arrayForCryptoPh1.integrity.map((element) => {
-                                        return (
-                                            <option
-                                                value={element}
-                                                key={uuidv4()}
-                                            >
-                                                {element}
-                                            </option>
-                                        );
-                                    })}
+                                    arrayForCryptoPh1.integrity.map(
+                                        (element) => {
+                                            return (
+                                                <option
+                                                    value={element}
+                                                    key={uuidv4()}
+                                                >
+                                                    {element}
+                                                </option>
+                                            );
+                                        }
+                                    )}
                             </select>
                             <select
                                 id="crypto_ph1_3"
@@ -285,7 +273,7 @@ export default function NewVRF(props) {
                                 {arrayForCryptoPh1 &&
                                     arrayForCryptoPh1.key_exchange &&
                                     arrayForCryptoPh1.key_exchange.map(
-                                        (element) =>  {
+                                        (element) => {
                                             return (
                                                 <option
                                                     value={element}
@@ -310,16 +298,18 @@ export default function NewVRF(props) {
                             >
                                 {arrayForCryptoPh2 &&
                                     arrayForCryptoPh2.encryption &&
-                                    arrayForCryptoPh2.encryption.map((element) =>  {
-                                        return (
-                                            <option
-                                                value={element}
-                                                key={uuidv4()}
-                                            >
-                                                {element}
-                                            </option>
-                                        );
-                                    })}
+                                    arrayForCryptoPh2.encryption.map(
+                                        (element) => {
+                                            return (
+                                                <option
+                                                    value={element}
+                                                    key={uuidv4()}
+                                                >
+                                                    {element}
+                                                </option>
+                                            );
+                                        }
+                                    )}
                             </select>
                             <select
                                 id="crypto_ph2_2"
@@ -331,16 +321,18 @@ export default function NewVRF(props) {
                             >
                                 {arrayForCryptoPh2 &&
                                     arrayForCryptoPh2.integrity &&
-                                    arrayForCryptoPh2.integrity.map((element) => {
-                                        return (
-                                            <option
-                                                value={element}
-                                                key={uuidv4()}
-                                            >
-                                                {element}
-                                            </option>
-                                        );
-                                    })}
+                                    arrayForCryptoPh2.integrity.map(
+                                        (element) => {
+                                            return (
+                                                <option
+                                                    value={element}
+                                                    key={uuidv4()}
+                                                >
+                                                    {element}
+                                                </option>
+                                            );
+                                        }
+                                    )}
                             </select>
                             <select
                                 id="crypto_ph2_3"
@@ -373,6 +365,7 @@ export default function NewVRF(props) {
                 <div className="vrf-section-header">Endpoints</div>
                 <table className="endpoints-table">
                     <thead>
+                        {/*stworzyć komponent do headerwó z hardwaresupport*/}
                         {hardwareSupport
                             ? renderTableHeadersForHardwareSupport()
                             : renderTableHeadersForSoftwareSupport()}

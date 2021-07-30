@@ -18,45 +18,53 @@ export default function App() {
 
     async function fetchVRFsData() {
         const response = await axios.get("/api/vrfs");
-        const {data}  = response;
+        const { data } = response;
 
         if (Array.isArray(data)) {
             updateVRFConnections(data);
         } else {
-            console.log("Something went wrong, please contact support for further assistance")
+            console.log(
+                "Something went wrong, please contact support for further assistance"
+            );
         }
     }
 
     async function fetchSoftwareEncryptionData() {
         const response = await axios.get("/api/algorithms/software");
-        const {data}  = response;
+        const { data } = response;
 
         if (data && Object.keys(data).length > 0) {
             updateSoftwareEncryption(data);
         } else {
-            console.log("Something went wrong, please contact support for further assistance")
+            console.log(
+                "Something went wrong, please contact support for further assistance"
+            );
         }
     }
 
     async function fetchHardwareEncryptionPh1Data() {
         const response = await axios.get("api/algorithms/hardware/ph1");
-        const {data}  = response;
+        const { data } = response;
 
         if (data && Object.keys(data).length > 0) {
             updateHardwarePh1Encryption(data);
         } else {
-            console.log("Something went wrong, please contact support for further assistance")
+            console.log(
+                "Something went wrong, please contact support for further assistance"
+            );
         }
     }
 
     async function fetchHardwareEncryptionPh2Data() {
         const response = await axios.get("api/algorithms/hardware/ph2");
-        const {data}  = response;
+        const { data } = response;
 
         if (data && Object.keys(data).length > 0) {
             updateHardwarePh2Encryption(data);
         } else {
-            console.log("Something went wrong, please contact support for further assistance")
+            console.log(
+                "Something went wrong, please contact support for further assistance"
+            );
         }
     }
 

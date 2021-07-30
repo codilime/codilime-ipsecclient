@@ -16,6 +16,7 @@ import Breadcrumb from "../components/Breadcrumb";
 import Dump from "../components/Dump";
 import { isEmptyObject } from "../util";
 import Loader from "../components/Loader";
+import { forceNumberMinMax } from "../utils/formatters";
 
 export default function DetailViewVrf(props) {
     const { id } = useParams();
@@ -37,7 +38,8 @@ export default function DetailViewVrf(props) {
 
     const [vrfName, updateVrfName] = useState(vrfName);
     const [lanIpMask, updateLanIpMask] = useState(lanIpMask);
-    const [physicalInterface, updatePhysicalInterface] = useState(physicalInterface);
+    const [physicalInterface, updatePhysicalInterface] =
+        useState(physicalInterface);
     const [active, updateActive] = useState(active);
     const [hardwareSupport, updateHardwareSupport] = useState(hardwareSupport);
     const [vlanValue, updateVlanValue] = useState(vlanValue);
@@ -79,8 +81,22 @@ export default function DetailViewVrf(props) {
     ]);
 
     async function fetchThisVrfDetails() {
-
         const response = await axios.get(detailApiAddress);
+
+        // axios({
+        //     method: "get",
+        //     url: "detailApiAddress",
+        //     data: payload,
+        // }).then(
+        //     (response) => {
+        //         console.log(response.data.id);
+        //         updateSidebar();
+        //         history.push("/vrf/" + response.data.id);
+        //     },
+        //     (error) => {
+        //         console.log(error);
+        //     }
+        // );
 
         let data = response.data;
 
@@ -100,7 +116,9 @@ export default function DetailViewVrf(props) {
             updateCryptoPh2_2(data.crypto_ph2[1]);
             updateCryptoPh2_3(data.crypto_ph2[2]);
         } else {
-            console.log("No data to display, contact support for further support");
+            console.log(
+                "No data to display, contact support for further support"
+            );
         }
     }
 
@@ -159,11 +177,11 @@ export default function DetailViewVrf(props) {
         );
     }
 
-    const activeCheckboxHandler = () => {
+    function activeCheckboxHandler() {
         updateActive(!active);
-    };
+    }
 
-    const hardwareSupportCheckboxHandler = () => {
+    function hardwareSupportCheckboxHandler() {
         updateHardwareSupport(!hardwareSupport);
 
         if (hardwareSupport === true) {
@@ -173,25 +191,6 @@ export default function DetailViewVrf(props) {
             updateArrayForCryptoPh1(hardwarePh1Encryption);
             updateArrayForCryptoPh2(hardwarePh2Encryption);
         }
-    };
-
-    function forceNumberMinMax(event) {
-        console.log("start update");
-
-        let value = parseInt(event.target.value, 10);
-        const min = parseInt(event.target.min, 10);
-        const max = parseInt(event.target.max, 10);
-
-        if (event.target.max && value > max) {
-            value = max;
-        }
-        if (event.target.min && value < min) {
-            value = min;
-        }
-        if (isNaN(value)) {
-            return "";
-        }
-        return value;
     }
 
     return (
@@ -435,7 +434,7 @@ export default function DetailViewVrf(props) {
                                     {arrayForCryptoPh2 &&
                                         arrayForCryptoPh2.integrity &&
                                         arrayForCryptoPh2.integrity.map(
-                                             (element) => {
+                                            (element) => {
                                                 return (
                                                     <option
                                                         defaultValue={
