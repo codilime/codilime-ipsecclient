@@ -1,5 +1,4 @@
 .new-vrf-connection-wrapper {
-    //display: flex;
     width: 100%;
     flex-direction: column;
 }
@@ -66,12 +65,4 @@ select {
 }
 select {
     width: 185px;
-}
-#submit-vrf-button:enabled {
-    background-color: #3498db;
-    color: #ffffff;
-    margin: 15px;
-}
-.endpoint-btn {
-    margin: 5px 5px 5px 5px;
 }

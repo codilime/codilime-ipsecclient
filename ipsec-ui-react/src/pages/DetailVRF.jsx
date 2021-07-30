@@ -10,6 +10,7 @@ import "./NewVRF.scss";
 
 import EndpointTableRow from "../components/EndpointTableRow";
 import NewEndpointRow from "../components/NewEndpointRow";
+import EndpointTableHeader from "../components/EndpointTableHeader";
 import Button from "../components/Button";
 import Breadcrumb from "../components/Breadcrumb";
 
@@ -28,8 +29,6 @@ export default function DetailViewVrf(props) {
         hardwarePh1Encryption,
         hardwarePh2Encryption,
         updateSidebar,
-        renderTableHeadersForHardwareSupport,
-        renderTableHeadersForSoftwareSupport,
         maxValueForLocal_as,
     } = props;
 
@@ -483,9 +482,7 @@ export default function DetailViewVrf(props) {
                     <div className="vrf-section-header">Endpoints</div>
                     <table className="endpoints-table">
                         <thead>
-                            {hardwareSupport
-                                ? renderTableHeadersForHardwareSupport()
-                                : renderTableHeadersForSoftwareSupport()}
+                            <EndpointTableHeader hardwareSupport={hardwareSupport} />
                         </thead>
                         <tbody>
                             {detailVrf &&

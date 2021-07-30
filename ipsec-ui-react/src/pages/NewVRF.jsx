@@ -8,6 +8,7 @@ import axios from "axios";
 import "./NewVRF.scss";
 
 import NewEndpointRow from "../components/NewEndpointRow";
+import EndpointTableHeader from "../components/EndpointTableHeader";
 import Breadcrumb from "../components/Breadcrumb";
 import Dump from "../components/Dump";
 import { forceNumberMinMax } from "../utils/formatters";
@@ -365,10 +366,7 @@ export default function NewVRF(props) {
                 <div className="vrf-section-header">Endpoints</div>
                 <table className="endpoints-table">
                     <thead>
-                        {/*stworzyć komponent do headerwó z hardwaresupport*/}
-                        {hardwareSupport
-                            ? renderTableHeadersForHardwareSupport()
-                            : renderTableHeadersForSoftwareSupport()}
+                        <EndpointTableHeader hardwareSupport={hardwareSupport} />
                     </thead>
                     <tbody>
                         <NewEndpointRow

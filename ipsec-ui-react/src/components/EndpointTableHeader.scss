@@ -1,0 +1,13 @@
+td.break {
+  padding: 0 65px 0 0;
+}
+.endpoints-table {
+  width: 100%;
+  table-layout: fixed;
+  text-align: left;
+  thead {
+  }
+  tr:nth-child(odd) {
+    background-color: rgba(167, 167, 167, 0.74);
+  }
+}
