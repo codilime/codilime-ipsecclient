@@ -5,7 +5,7 @@ export default function() {
     return (
         <div>
             Please select VRF to view details
-            <CryptoHandler />
+            {/*<CryptoHandler />*/}
         </div>
     )
 }
