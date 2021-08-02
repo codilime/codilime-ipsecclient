@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
@@ -42,6 +43,19 @@ func (a *App) Initialize(dbName string) {
 	a.Generator = FileGenerator{}
 
 	a.initializeRoutes()
+
+	err = setNginxPassword()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+var nginxPasswordFile string = "/etc/nginx/htpasswd"
+
+func setNginxPassword() error {
+	name := "admin"
+	password := "cisco123"
+	return htpasswd.SetPassword(nginxPasswordFile, name, password, htpasswd.HashBCrypt)
 }
 
 func (a *App) Run(addr string) {
