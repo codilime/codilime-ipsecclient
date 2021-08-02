@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 
-import Button from "../Button/Button";
+import { Button } from "../Button";
 import "./NewEndpointRow.scss";
 
-export default function NewEndpointRow(props) {
-    const { hardwareSupport, forceNumberMinMax, payload } = props;
+export default function NewEndpointRow({
+    hardwareSupport,
+    forceNumberMinMax,
+    payload,
+}) {
 
     console.log(payload);
 

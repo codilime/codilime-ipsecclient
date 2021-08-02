@@ -92,7 +92,7 @@ export default function App() {
         fetchHardwareEncryptionPh2Data();
     }, []);
 
-    const maxValueForLocal_as = Math.pow(2, 32);
+    const maxValueForLocalAS = Math.pow(2, 32);
     const maxValueForVlan = "4094";
 
     return (
@@ -106,8 +106,8 @@ export default function App() {
                             path="/vrf/create"
                             render={(routeProps) => (
                                 <NewVRF
-                                    maxValueForLocal_as={maxValueForLocal_as}
-                                    maxValueForBgp={maxValueForVlan}
+                                    maxValueForLocalAS={maxValueForLocalAS}
+                                    maxValueForVlan={maxValueForVlan}
                                     routeProps={routeProps}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={
@@ -124,8 +124,8 @@ export default function App() {
                             path="/vrf/:id"
                             render={() => (
                                 <DetailVRF
-                                    maxValueForLocal_as={maxValueForLocal_as}
-                                    maxValueForBgp={maxValueForVlan}
+                                    maxValueForLocalAS={maxValueForLocalAS}
+                                    maxValueForVlan={maxValueForVlan}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={
                                         hardwarePh1Encryption

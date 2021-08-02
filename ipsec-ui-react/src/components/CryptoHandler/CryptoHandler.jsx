@@ -11,12 +11,12 @@ export default function CryptoHandler(props) {
         updatePh1,
         updatePh2,
         updatePh3,
-        cryptoStage,
+        title,
     } = props;
 
     return (
         <div className="vrf-crypto-container">
-            <label htmlFor="crypto_ph1">{cryptoStage}</label>
+            <label htmlFor="crypto_ph1">{title}</label>
             <select
                 onChange={(event) => updatePh1(event.target.value)}
                 value={valuePh1}

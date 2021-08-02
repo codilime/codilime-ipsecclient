@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 
 import "./NewVRF.scss";
+import {maxValueForLocalAS, maxValueForVlan} from "../../constants";
 
 import NewEndpointRow from "../../components/NewEndpointRow/NewEndpointRow";
 import EndpointTableHeader from "../../components/EndpointTableHeader/EndpointTableHeader";
@@ -23,7 +24,6 @@ export default function NewVRF(props) {
         hardwarePh1Encryption,
         hardwarePh2Encryption,
         updateSidebar,
-        maxValueForLocal_as,
     } = props;
 
     useEffect(() => {
@@ -187,7 +187,7 @@ export default function NewVRF(props) {
                             <input
                                 type="number"
                                 min="1"
-                                max={maxValueForLocal_as}
+                                max={maxValueForLocalAS}
                                 name="local_as"
                                 id="local_as"
                                 step="1"
@@ -202,7 +202,7 @@ export default function NewVRF(props) {
                             <input
                                 type="number"
                                 min="1"
-                                max="4094"
+                                max={maxValueForVlan}
                                 name="vlan"
                                 id="vlan"
                                 step="1"
@@ -216,7 +216,7 @@ export default function NewVRF(props) {
 
                     <div className="vrf-column-3">
                         <CryptoHandler
-                            cryptoStage={"Crypto phase 1"}
+                            title={"Crypto phase 1"}
                             softwareEncryption={softwareEncryption}
                             hardwarePh1Encryption={hardwarePh1Encryption}
                             hardwarePh2Encryption={hardwarePh2Encryption}
@@ -230,7 +230,7 @@ export default function NewVRF(props) {
                             updatePh3={updateCryptoPh1_3}
                         />
                         <CryptoHandler
-                            cryptoStage={"Crypto phase 2"}
+                            title={"Crypto phase 2"}
                             softwareEncryption={softwareEncryption}
                             hardwarePh1Encryption={hardwarePh1Encryption}
                             hardwarePh2Encryption={hardwarePh2Encryption}

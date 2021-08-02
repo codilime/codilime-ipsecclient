@@ -7,12 +7,13 @@ import axios from "axios";
 
 import "./DetailVRF.scss";
 import "../NewVRF/NewVRF.scss";
+import {maxValueForLocalAS, maxValueForVlan} from "../../constants";
 
 import EndpointTableRow from "../../components/EndpointTableRow/EndpointTableRow";
 import NewEndpointRow from "../../components/NewEndpointRow/NewEndpointRow";
 import CryptoHandler from "../../components/CryptoHandler/CryptoHandler";
 import EndpointTableHeader from "../../components/EndpointTableHeader/EndpointTableHeader";
-import Button from "../../components/Button/Button";
+import { Button } from "../../components/Button";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 
 import Dump from "../../utils/Dump";
@@ -30,8 +31,6 @@ export default function DetailViewVrf(props) {
         hardwarePh1Encryption,
         hardwarePh2Encryption,
         updateSidebar,
-        maxValueForLocal_as,
-        maxValueForVlan
     } = props;
 
     const [detailVrf, updateDetailVrf] = useState();
@@ -272,7 +271,7 @@ export default function DetailViewVrf(props) {
                                 <input
                                     type="number"
                                     min="1"
-                                    max={maxValueForLocal_as}
+                                    max={maxValueForLocalAS}
                                     name="local_as"
                                     id="local_as"
                                     step="1"
@@ -302,8 +301,7 @@ export default function DetailViewVrf(props) {
                         </div>
                         <div className="vrf-column-3">
                             <CryptoHandler
-                                key={uuidv4()}
-                                cryptoStage={"Crypto phase 1"}
+                                title={"Crypto phase 1"}
                                 softwareEncryption={softwareEncryption}
                                 hardwarePh1Encryption={hardwarePh1Encryption}
                                 hardwarePh2Encryption={hardwarePh2Encryption}
@@ -317,8 +315,7 @@ export default function DetailViewVrf(props) {
                                 updatePh3={updateCryptoPh1_3}
                             />
                             <CryptoHandler
-                                key={uuidv4()}
-                                cryptoStage={"Crypto phase 2"}
+                                title={"Crypto phase 2"}
                                 softwareEncryption={softwareEncryption}
                                 hardwarePh1Encryption={hardwarePh1Encryption}
                                 hardwarePh2Encryption={hardwarePh2Encryption}
