@@ -10,6 +10,7 @@ import "../NewVRF/NewVRF.scss";
 
 import EndpointTableRow from "../../components/EndpointTableRow/EndpointTableRow";
 import NewEndpointRow from "../../components/NewEndpointRow/NewEndpointRow";
+import CryptoHandler from "../../components/CryptoHandler/CryptoHandler";
 import EndpointTableHeader from "../../components/EndpointTableHeader/EndpointTableHeader";
 import Button from "../../components/Button/Button";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
@@ -18,7 +19,6 @@ import Dump from "../../utils/Dump";
 import { isEmptyObject } from "../../utils/util";
 import Loader from "../../components/Loader/Loader";
 import { forceNumberMinMax } from "../../utils/formatters";
-import CryptoHandler from "../../components/CryptoHandler/CryptoHandler";
 
 export default function DetailViewVrf(props) {
     const { id } = useParams();
@@ -300,6 +300,7 @@ export default function DetailViewVrf(props) {
                         </div>
                         <div className="vrf-column-3">
                             <CryptoHandler
+                                key={uuidv4()}
                                 cryptoStage={"Crypto phase 1"}
                                 softwareEncryption={softwareEncryption}
                                 hardwarePh1Encryption={hardwarePh1Encryption}
@@ -314,6 +315,7 @@ export default function DetailViewVrf(props) {
                                 updatePh3={updateCryptoPh1_3}
                             />
                             <CryptoHandler
+                                key={uuidv4()}
                                 cryptoStage={"Crypto phase 2"}
                                 softwareEncryption={softwareEncryption}
                                 hardwarePh1Encryption={hardwarePh1Encryption}
