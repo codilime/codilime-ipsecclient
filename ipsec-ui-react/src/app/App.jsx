@@ -92,9 +92,6 @@ export default function App() {
         fetchHardwareEncryptionPh2Data();
     }, []);
 
-    const maxValueForLocalAS = Math.pow(2, 32);
-    const maxValueForVlan = "4094";
-
     return (
         <Router>
             <div className="app-container">
@@ -106,8 +103,6 @@ export default function App() {
                             path="/vrf/create"
                             render={(routeProps) => (
                                 <NewVRF
-                                    maxValueForLocalAS={maxValueForLocalAS}
-                                    maxValueForVlan={maxValueForVlan}
                                     routeProps={routeProps}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={
@@ -124,8 +119,6 @@ export default function App() {
                             path="/vrf/:id"
                             render={() => (
                                 <DetailVRF
-                                    maxValueForLocalAS={maxValueForLocalAS}
-                                    maxValueForVlan={maxValueForVlan}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={
                                         hardwarePh1Encryption

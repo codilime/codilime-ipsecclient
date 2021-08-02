@@ -3,11 +3,11 @@ import React from "react";
 import "./Breadcrumb.scss";
 
 export default function Breadcrumb(props) {
-    const { vrfAddress } = props;
+    const { vrfAddress, connectionType, className } = props;
 
     return (
         <div>
-            / vrf / <span className="active-vrf">{vrfAddress}</span>
+            / {connectionType} / <span className={className}>{vrfAddress}</span>
         </div>
     );
 }

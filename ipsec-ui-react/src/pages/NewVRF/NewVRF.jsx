@@ -106,6 +106,8 @@ export default function NewVRF(props) {
             <div className="new-vrf-top-bar">
                 <Breadcrumb
                     vrfAddress={routeProps.location.pathname.slice(5)}
+                    connectionType="vrf"
+                    className="active-vrf"
                 />
             </div>
             <div className="new-vrf-data-container">

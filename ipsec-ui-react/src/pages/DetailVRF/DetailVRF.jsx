@@ -186,7 +186,11 @@ export default function DetailViewVrf(props) {
     return (
         <div>
             <div className="vrf-detail-container">
-                <Breadcrumb vrfAddress={detailVrf.client_name} />
+                <Breadcrumb
+                    vrfAddress={detailVrf.client_name}
+                    connectionType="vrf"
+                    className="active-vrf"
+                />
                 <Button
                     className="btn red-btn delete-btn"
                     changeHandler={removeVrfConnection}
