@@ -28,7 +28,7 @@ export default function NewEndpointRow({
         updateBgp(!bgp);
     }
 
-    function changeHandler(event) {
+    function handleClick(event) {
         event.preventDefault();
         console.log("button is clicked");
     }
@@ -114,7 +114,7 @@ export default function NewEndpointRow({
                         name="add"
                         className="btn"
                         textValue="Add"
-                        changeHandler={changeHandler}
+                        handleClick={handleClick}
                     />
                 </td>
             </tr>
@@ -184,7 +184,7 @@ export default function NewEndpointRow({
                         name="add"
                         className="btn"
                         textValue="Add"
-                        changeHandler={changeHandler}
+                        handleClick={handleClick}
                     />
                 </td>
             </tr>

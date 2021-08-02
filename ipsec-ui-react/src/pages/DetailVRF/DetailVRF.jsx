@@ -193,7 +193,7 @@ export default function DetailViewVrf(props) {
                 />
                 <Button
                     className="btn red-btn delete-btn"
-                    changeHandler={removeVrfConnection}
+                    handleClick={removeVrfConnection}
                     textValue="Delete VRF"
                 />
                 <br />
@@ -264,8 +264,8 @@ export default function DetailViewVrf(props) {
                                 </label>
                             </div>
                             <Button
-                                className="btn save-changes-to-vrf-button"
-                                changeHandler={updateVrfConnection}
+                                className="btn save-changes-btn"
+                                handleClick={updateVrfConnection}
                                 textValue="Save changes"
                             />
                         </div>

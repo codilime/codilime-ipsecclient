@@ -7,12 +7,12 @@
 }
 
 .sidebar-container {
-    background-color: $sidebar-background-color;
+    background-color: $dark-gray;
     width: 12%;
     height: calc(100% - 64px);
     overflow: auto;
     .sidebar-text {
-        color: $sidebar-text-color;
+        color: $white;
         text-align: center;
     }
 }

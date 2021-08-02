@@ -2,10 +2,9 @@ import React from "react";
 
 import "./Button.scss";
 
-export function Button({ className, textValue, changeHandler }) {
-    //const { className, textValue, changeHandler } = props;
+export function Button({ className, textValue, handleClick }) {
 
     return (
-        <button {...{ className, onClick: changeHandler }}>{textValue}</button>
+        <button {...{ className, onClick: handleClick }}>{textValue}</button>
     );
 }

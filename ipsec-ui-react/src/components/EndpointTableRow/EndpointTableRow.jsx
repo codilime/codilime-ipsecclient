@@ -3,6 +3,7 @@ import React from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import EndpointTableCell from "../EndpointTableCell/EndpointTableCell";
+import {Button} from "../Button";
 
 export default function EndpointTableRow(props) {
     const { endpoint, hardwareSupport } = props;
@@ -40,7 +41,7 @@ export default function EndpointTableRow(props) {
                     );
                 })}
                 <td>
-                    <button className="btn edit-btn">...</button>
+                    <Button className="btn edit-btn" textValue="..." />
                 </td>
             </tr>
         );

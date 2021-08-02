@@ -14,6 +14,7 @@ import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import Dump from "../../utils/Dump";
 import { forceNumberMinMax } from "../../utils/formatters";
 import CryptoHandler from "../../components/CryptoHandler/CryptoHandler";
+import {Button} from "../../components";
 
 export default function NewVRF(props) {
     const history = useHistory();
@@ -175,13 +176,12 @@ export default function NewVRF(props) {
                                 Hardware support
                             </label>
                         </div>
-                        <button
-                            className="btn"
+                        <Button
+                            className="btn save-changes-btn"
                             id="submit-vrf-button"
-                            onClick={pushNewVrfConnection}
-                        >
-                            Save changes
-                        </button>
+                            handleClick={pushNewVrfConnection}
+                            textValue="Save changes"
+                        />
                     </div>
                     <div className="vrf-column-2">
                         <div className="vrf-column-item-number">
@@ -263,12 +263,11 @@ export default function NewVRF(props) {
                         />
                     </tbody>
                 </table>
-                <button
+                <Button
                     className="btn endpoint-btn"
-                    onClick={addEndpointsToPayload}
-                >
-                    Add new endpoint
-                </button>
+                    handleClick={addEndpointsToPayload}
+                    textValue="Add new endpoint"
+                />
             </div>
             <Dump value={routeProps.location} />
         </div>

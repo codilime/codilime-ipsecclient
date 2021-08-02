@@ -1,13 +1,15 @@
+@import "./src/css/ColorThemes";
+
 .new-vrf-connection-wrapper {
     width: 100%;
 }
 .new-vrf-data-container {
     width: 100%;
     margin: 25px 0;
-    border: solid 1px rgba(167, 167, 167, 0.74);
+    border: solid 1px $light-gray;
 }
 .vrf-section-header {
-    background-color: rgba(167, 167, 167, 0.74);
+    background-color: $light-gray;
     width: 100%;
     font-weight: bold;
     padding-left: 3px;
