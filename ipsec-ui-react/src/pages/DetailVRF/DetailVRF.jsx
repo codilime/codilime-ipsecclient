@@ -18,6 +18,7 @@ import Dump from "../../utils/Dump";
 import { isEmptyObject } from "../../utils/util";
 import Loader from "../../components/Loader/Loader";
 import { forceNumberMinMax } from "../../utils/formatters";
+import CryptoHandler from "../../components/CryptoHandler/CryptoHandler";
 
 export default function DetailViewVrf(props) {
     const { id } = useParams();
@@ -298,172 +299,34 @@ export default function DetailViewVrf(props) {
                             </div>
                         </div>
                         <div className="vrf-column-3">
-                            <div className="vrf-crypto-container">
-                                <label htmlFor="crypto_ph1">
-                                    Crypto phase 1
-                                </label>
-                                <select
-                                    id="crypto_ph1_1"
-                                    name="crypto_ph1_1"
-                                    onChange={(event) =>
-                                        updateCryptoPh1_1(event.target.value)
-                                    }
-                                    value={cryptoPh1_1}
-                                >
-                                    {arrayForCryptoPh1 &&
-                                        arrayForCryptoPh1.encryption &&
-                                        arrayForCryptoPh1.encryption.map(
-                                            (element) => {
-                                                return (
-                                                    <option
-                                                        defaultValue={
-                                                            cryptoPh1_1
-                                                        }
-                                                        value={element}
-                                                        key={uuidv4()}
-                                                    >
-                                                        {element}
-                                                    </option>
-                                                );
-                                            }
-                                        )}
-                                </select>
-                                <select
-                                    id="crypto_ph1_2"
-                                    name="crypto_ph1_2"
-                                    onChange={(event) =>
-                                        updateCryptoPh1_2(event.target.value)
-                                    }
-                                    value={cryptoPh1_2}
-                                >
-                                    {arrayForCryptoPh1 &&
-                                        arrayForCryptoPh1.integrity &&
-                                        arrayForCryptoPh1.integrity.map(
-                                            (element) => {
-                                                return (
-                                                    <option
-                                                        defaultValue={
-                                                            cryptoPh1_2
-                                                        }
-                                                        value={element}
-                                                        key={uuidv4()}
-                                                    >
-                                                        {element}
-                                                    </option>
-                                                );
-                                            }
-                                        )}
-                                </select>
-                                <select
-                                    id="crypto_ph1_3"
-                                    name="crypto_ph1_3"
-                                    onChange={(event) =>
-                                        updateCryptoPh1_3(event.target.value)
-                                    }
-                                    value={cryptoPh1_3}
-                                >
-                                    {arrayForCryptoPh1 &&
-                                        arrayForCryptoPh1.key_exchange &&
-                                        arrayForCryptoPh1.key_exchange.map(
-                                            (element) => {
-                                                return (
-                                                    <option
-                                                        defaultValue={
-                                                            cryptoPh1_3
-                                                        }
-                                                        value={element}
-                                                        key={uuidv4()}
-                                                    >
-                                                        {element}
-                                                    </option>
-                                                );
-                                            }
-                                        )}
-                                </select>
-                            </div>
-                            <div className="vrf-crypto-container">
-                                <label htmlFor="crypto_ph2">
-                                    Crypto phase 2
-                                </label>
-                                <select
-                                    id="crypto_ph2_1"
-                                    name="crypto_ph2_1"
-                                    onChange={(event) =>
-                                        updateCryptoPh2_1(event.target.value)
-                                    }
-                                    value={cryptoPh2_1}
-                                >
-                                    {arrayForCryptoPh2 &&
-                                        arrayForCryptoPh2.encryption &&
-                                        arrayForCryptoPh2.encryption.map(
-                                            (element) => {
-                                                return (
-                                                    <option
-                                                        defaultValue={
-                                                            cryptoPh2_1
-                                                        }
-                                                        value={element}
-                                                        key={uuidv4()}
-                                                    >
-                                                        {element}
-                                                    </option>
-                                                );
-                                            }
-                                        )}
-                                </select>
-                                <select
-                                    id="crypto_ph2_2"
-                                    name="crypto_ph2_2"
-                                    onChange={(event) =>
-                                        updateCryptoPh2_2(event.target.value)
-                                    }
-                                    value={cryptoPh2_2}
-                                >
-                                    {arrayForCryptoPh2 &&
-                                        arrayForCryptoPh2.integrity &&
-                                        arrayForCryptoPh2.integrity.map(
-                                            (element) => {
-                                                return (
-                                                    <option
-                                                        defaultValue={
-                                                            cryptoPh2_2
-                                                        }
-                                                        value={element}
-                                                        key={uuidv4()}
-                                                    >
-                                                        {element}
-                                                    </option>
-                                                );
-                                            }
-                                        )}
-                                </select>
-                                <select
-                                    id="crypto_ph2_3"
-                                    name="crypto_ph2_3"
-                                    onChange={(event) =>
-                                        updateCryptoPh2_3(event.target.value)
-                                    }
-                                    value={cryptoPh2_3}
-                                >
-                                    {arrayForCryptoPh2 &&
-                                        arrayForCryptoPh2.key_exchange &&
-                                        arrayForCryptoPh2.key_exchange.map(
-                                            (element) => {
-                                                return (
-                                                    <option
-                                                        defaultValue={
-                                                            cryptoPh2_3
-                                                        }
-                                                        value={element}
-                                                        key={uuidv4()}
-                                                    >
-                                                        {element}
-                                                    </option>
-                                                );
-                                            }
-                                        )}
-                                </select>
-                            </div>
+                            <CryptoHandler
+                                cryptoStage={"Crypto phase 1"}
+                                softwareEncryption={softwareEncryption}
+                                hardwarePh1Encryption={hardwarePh1Encryption}
+                                hardwarePh2Encryption={hardwarePh2Encryption}
+                                hardwareSupport={hardwareSupport}
+                                arrayForCrypto={arrayForCryptoPh1}
+                                valuePh1={cryptoPh1_1}
+                                valuePh2={cryptoPh1_2}
+                                valuePh3={cryptoPh1_3}
+                                updatePh1={updateCryptoPh1_1}
+                                updatePh2={updateCryptoPh1_2}
+                                updatePh3={updateCryptoPh1_3}
+                            />
+                            <CryptoHandler
+                                cryptoStage={"Crypto phase 2"}
+                                softwareEncryption={softwareEncryption}
+                                hardwarePh1Encryption={hardwarePh1Encryption}
+                                hardwarePh2Encryption={hardwarePh2Encryption}
+                                hardwareSupport={hardwareSupport}
+                                arrayForCrypto={arrayForCryptoPh2}
+                                valuePh1={cryptoPh2_1}
+                                valuePh2={cryptoPh2_2}
+                                valuePh3={cryptoPh2_3}
+                                updatePh1={updateCryptoPh2_1}
+                                updatePh2={updateCryptoPh2_2}
+                                updatePh3={updateCryptoPh2_3}
+                            />
                         </div>
                     </form>
                 </div>

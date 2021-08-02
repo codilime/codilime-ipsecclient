@@ -4,27 +4,28 @@ import { v4 as uuidv4 } from "uuid";
 
 export default function CryptoHandler(props) {
     const {
-        arrayForCrypto1,
+        arrayForCrypto,
         valuePh1,
         valuePh2,
         valuePh3,
         updatePh1,
         updatePh2,
         updatePh3,
+        cryptoStage
     } = props;
 
     return (
         <div className="vrf-crypto-container">
-            <label htmlFor="crypto_ph1">Crypto phase 1</label>
+            <label htmlFor="crypto_ph1">{cryptoStage}</label>
             <select
                 id="crypto_ph1_1"
                 name="crypto_ph1_1"
                 onChange={(event) => updatePh1(event.target.value)}
                 value={valuePh1}
             >
-                {arrayForCrypto1 &&
-                    arrayForCrypto1.encryption &&
-                    arrayForCrypto1.encryption.map((element) => {
+                {arrayForCrypto &&
+                arrayForCrypto.encryption &&
+                arrayForCrypto.encryption.map((element) => {
                         return (
                             <option value={element} key={uuidv4()}>
                                 {element}
@@ -38,9 +39,9 @@ export default function CryptoHandler(props) {
                 onChange={(event) => updatePh2(event.target.value)}
                 value={valuePh2}
             >
-                {arrayForCrypto1 &&
-                    arrayForCrypto1.integrity &&
-                    arrayForCrypto1.integrity.map((element) => {
+                {arrayForCrypto &&
+                arrayForCrypto.integrity &&
+                arrayForCrypto.integrity.map((element) => {
                         return (
                             <option value={element} key={uuidv4()}>
                                 {element}
@@ -54,9 +55,9 @@ export default function CryptoHandler(props) {
                 onChange={(event) => updatePh3(event.target.value)}
                 value={valuePh3}
             >
-                {arrayForCrypto1 &&
-                    arrayForCrypto1.key_exchange &&
-                    arrayForCrypto1.key_exchange.map((element) => {
+                {arrayForCrypto &&
+                arrayForCrypto.key_exchange &&
+                arrayForCrypto.key_exchange.map((element) => {
                         return (
                             <option value={element} key={uuidv4()}>
                                 {element}
