@@ -18,7 +18,7 @@ export default function App() {
     const [hardwarePh2Encryption, updateHardwarePh2Encryption] = useState([]);
 
     async function fetchVRFsData() {
-        await axios({
+        axios({
             method: "get",
             url: "/api/vrfs",
         }).then(
@@ -35,7 +35,7 @@ export default function App() {
     }
 
     async function fetchSoftwareEncryptionData() {
-        await axios({
+        axios({
             method: "get",
             url: "/api/algorithms/software",
         }).then(
@@ -52,7 +52,7 @@ export default function App() {
     }
 
     async function fetchHardwareEncryptionPh1Data() {
-        await axios({
+        axios({
             method: "get",
             url: "api/algorithms/hardware/ph1",
         }).then(
@@ -69,7 +69,7 @@ export default function App() {
     }
 
     async function fetchHardwareEncryptionPh2Data() {
-        await axios({
+        axios({
             method: "get",
             url: "api/algorithms/hardware/ph2",
         }).then(
@@ -93,6 +93,7 @@ export default function App() {
     }, []);
 
     const maxValueForLocal_as = Math.pow(2, 32);
+    const maxValueForVlan = "4094";
 
     return (
         <Router>
@@ -106,6 +107,7 @@ export default function App() {
                             render={(routeProps) => (
                                 <NewVRF
                                     maxValueForLocal_as={maxValueForLocal_as}
+                                    maxValueForBgp={maxValueForVlan}
                                     routeProps={routeProps}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={
@@ -123,6 +125,7 @@ export default function App() {
                             render={() => (
                                 <DetailVRF
                                     maxValueForLocal_as={maxValueForLocal_as}
+                                    maxValueForBgp={maxValueForVlan}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={
                                         hardwarePh1Encryption

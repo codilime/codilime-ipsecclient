@@ -4,7 +4,9 @@ import Button from "../Button/Button";
 import "./NewEndpointRow.scss";
 
 export default function NewEndpointRow(props) {
-    const { hardwareSupport, forceNumberMinMax } = props;
+    const { hardwareSupport, forceNumberMinMax, payload } = props;
+
+    console.log(payload);
 
     const [remote_ip_sec, updateRemote_ip_sec] = useState("");
     const [local_ip, updateLocal_ip] = useState("");

@@ -81,7 +81,7 @@ export default function NewVRF(props) {
         );
     }
 
-    const activeCheckboxHandler = () => {
+    const handleActiveChange = () => {
         updateActive(!active);
     };
 
@@ -154,7 +154,7 @@ export default function NewVRF(props) {
                                 name="active"
                                 id="active"
                                 checked={active}
-                                onChange={activeCheckboxHandler}
+                                onChange={handleActiveChange}
                             />
                             <label id="checkbox-label" htmlFor="active">
                                 Active

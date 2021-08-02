@@ -31,6 +31,7 @@ export default function DetailViewVrf(props) {
         hardwarePh2Encryption,
         updateSidebar,
         maxValueForLocal_as,
+        maxValueForVlan
     } = props;
 
     const [detailVrf, updateDetailVrf] = useState();
@@ -80,8 +81,8 @@ export default function DetailViewVrf(props) {
         hardwareSupport,
     ]);
 
-    async function fetchThisVrfDetails() {
-        await axios({
+    async function fetchVRFDetails() {
+        axios({
             method: "get",
             url: detailApiAddress,
         }).then(
@@ -104,6 +105,7 @@ export default function DetailViewVrf(props) {
                     updateCryptoPh2_2(data.crypto_ph2[1]);
                     updateCryptoPh2_3(data.crypto_ph2[2]);
                 }
+                updateLoading(false);
             },
             (error) => {
                 console.log(error);
@@ -112,7 +114,7 @@ export default function DetailViewVrf(props) {
     }
 
     useEffect(() => {
-        fetchThisVrfDetails().then(() => updateLoading(false));
+        fetchVRFDetails();
     }, [id]);
 
     if (loading === true) {
@@ -285,7 +287,7 @@ export default function DetailViewVrf(props) {
                                 <input
                                     type="number"
                                     min="1"
-                                    max="4094"
+                                    max={maxValueForVlan}
                                     name="vlan"
                                     id="vlan"
                                     step="1"
@@ -355,6 +357,7 @@ export default function DetailViewVrf(props) {
                             <NewEndpointRow
                                 hardwareSupport={hardwareSupport}
                                 forceNumberMinMax={forceNumberMinMax}
+                                payload={payload}
                             />
                         </tbody>
                     </table>
