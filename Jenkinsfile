@@ -5,12 +5,10 @@ pipeline {
         stage('test') {
             agent any
             steps {
-                dir("${env.WORKSPACE}"){
-                    sh '''
-                    cd test
-                    ./test.sh
-                    '''
-                }
+                sh '''
+                cd test
+                ./test.sh
+                '''
             }
         }
     }
