@@ -11,6 +11,7 @@ export default function NewEndpointRow(props) {
     const [peer_ip, updatePeer_ip] = useState("");
     const [psk, updatePsk] = useState("");
     const [remote_as, updateRemote_as] = useState("1");
+    const [source_interface, updateSource_interface] = useState("");
     const [nat, updateNat] = useState(false);
     const [bgp, updateBgp] = useState(false);
 
@@ -89,6 +90,9 @@ export default function NewEndpointRow(props) {
                         placeholder="i.e. some_name"
                         name="source_interface"
                         id="source_interface"
+                        onChange={(event) =>
+                            updateSource_interface(event.target.value)
+                        }
                     />
                 </td>
                 <td>
