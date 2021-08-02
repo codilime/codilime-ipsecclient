@@ -34,7 +34,7 @@ export default function EndpointTableRow(props) {
                 {table.map((fieldName) => {
                     return (
                         <EndpointTableCell
-                            key={uuidv4()}
+                            key={fieldName}
                             value={endpoint[fieldName]}
                         />
                     );

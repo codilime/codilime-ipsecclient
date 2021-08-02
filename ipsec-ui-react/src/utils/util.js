@@ -16,7 +16,7 @@ export function findIndexOfObjectWithPropertyValueInArray(
 ) {
     if (Array.isArray(array)) {
         return array.findIndex((item) => {
-            return item[property] == value;
+            return item[property] === value;
         });
     }
 
@@ -27,7 +27,7 @@ export function findIndexOfObjectWithPropertyValueInAssocArray(array, value) {
     let index = -1;
 
     Object.keys(array).map(function (key) {
-        if (key == value) {
+        if (key === value) {
             index = key;
         }
     });
