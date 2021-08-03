@@ -10,8 +10,6 @@ export default function NewEndpointRow({
     payload,
 }) {
 
-    console.log(payload);
-
     const [remoteIPSec, updateRemoteIPSec] = useState("");
     const [localIP, updateLocalIP] = useState("");
     const [peerIP, updatePeerIP] = useState("");

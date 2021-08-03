@@ -101,9 +101,8 @@ export default function App() {
                     <Switch>
                         <Route
                             path="/vrf/New VRF"
-                            render={(routeProps) => (
+                            render={() => (
                                 <NewVRF
-                                    routeProps={routeProps}
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={
                                         hardwarePh1Encryption

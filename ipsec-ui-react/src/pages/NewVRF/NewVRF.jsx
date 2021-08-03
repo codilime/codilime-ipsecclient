@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { useHistory } from "react-router";
+import {useHistory, useLocation } from "react-router";
 
 import axios from "axios";
 
@@ -10,16 +10,15 @@ import {maxValueForLocalAS, maxValueForVlan} from "../../constants";
 import NewEndpointRow from "../../components/NewEndpointRow/NewEndpointRow";
 import EndpointTableHeader from "../../components/EndpointTableHeader/EndpointTableHeader";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
-import Dump from "../../utils/Dump";
 import {forceNumberClamp } from "../../utils/formatters";
 import CryptoHandler from "../../components/CryptoHandler/CryptoHandler";
 import {Button} from "../../components";
 
 export default function NewVRF(props) {
     const history = useHistory();
+    const location = useLocation();
 
     const {
-        routeProps,
         softwareEncryption,
         hardwarePh1Encryption,
         hardwarePh2Encryption,
@@ -105,7 +104,7 @@ export default function NewVRF(props) {
         <div className="new-vrf-connection-wrapper">
             <div className="new-vrf-top-bar">
                 <Breadcrumb
-                    vrfAddress={routeProps.location.pathname.slice(5)}
+                    vrfAddress={location.pathname.slice(5)}
                     connectionType="VRFs"
                     className="active-vrf"
                 />
@@ -267,7 +266,7 @@ export default function NewVRF(props) {
                     textValue="Add new endpoint"
                 />
             </div>
-            <Dump value={routeProps.location} />
+            {/*<Dump value={} />*/}
         </div>
     );
 }
