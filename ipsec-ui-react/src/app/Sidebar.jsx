@@ -25,7 +25,7 @@ export default function Sidebar(props) {
                         </li>
                     ))}
                 <li>
-                    <Link to="/vrf/create" replace>
+                    <Link to="/vrf/New VRF" replace>
                         <Button
                             className="btn new-vrf-button"
                             textValue="Add a new VRF"

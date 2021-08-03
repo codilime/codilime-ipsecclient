@@ -100,7 +100,7 @@ export default function App() {
                 <div className="main-view-container">
                     <Switch>
                         <Route
-                            path="/vrf/create"
+                            path="/vrf/New VRF"
                             render={(routeProps) => (
                                 <NewVRF
                                     routeProps={routeProps}

@@ -159,7 +159,7 @@ export default function DetailViewVrf(props) {
             (response) => {
                 console.log(response);
                 updateSidebar();
-                history.push("create");
+                history.push("New VRF");
             },
             (error) => {
                 console.log(error);
@@ -188,7 +188,7 @@ export default function DetailViewVrf(props) {
             <div className="vrf-detail-container">
                 <Breadcrumb
                     vrfAddress={detailVrf.client_name}
-                    connectionType="vrf"
+                    connectionType="VRFs"
                     className="active-vrf"
                 />
                 <Button
