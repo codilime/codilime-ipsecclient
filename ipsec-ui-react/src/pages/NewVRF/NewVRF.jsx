@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import { useHistory } from "react-router";
 
-import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 
 import "./NewVRF.scss";
@@ -12,7 +11,7 @@ import NewEndpointRow from "../../components/NewEndpointRow/NewEndpointRow";
 import EndpointTableHeader from "../../components/EndpointTableHeader/EndpointTableHeader";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import Dump from "../../utils/Dump";
-import { forceNumberMinMax } from "../../utils/formatters";
+import {forceNumberClamp } from "../../utils/formatters";
 import CryptoHandler from "../../components/CryptoHandler/CryptoHandler";
 import {Button} from "../../components";
 
@@ -195,7 +194,7 @@ export default function NewVRF(props) {
                                 step="1"
                                 value={bgpValue}
                                 onChange={(event) =>
-                                    updateBgpValue(forceNumberMinMax(event))
+                                    updateBgpValue(forceNumberClamp(event.target.value, event.target.min, event.target.max))
                                 }
                             />
                         </div>
@@ -210,7 +209,7 @@ export default function NewVRF(props) {
                                 step="1"
                                 value={vlanValue}
                                 onChange={(event) =>
-                                    updateVlanValue(forceNumberMinMax(event))
+                                    updateVlanValue(forceNumberClamp(event.target.value, event.target.min, event.target.max))
                                 }
                             />
                         </div>
@@ -259,7 +258,6 @@ export default function NewVRF(props) {
                     <tbody>
                         <NewEndpointRow
                             hardwareSupport={hardwareSupport}
-                            forceNumberMinMax={forceNumberMinMax}
                         />
                     </tbody>
                 </table>

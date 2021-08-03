@@ -19,7 +19,7 @@ import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import Dump from "../../utils/Dump";
 import { isEmptyObject } from "../../utils/util";
 import Loader from "../../components/Loader/Loader";
-import { forceNumberMinMax } from "../../utils/formatters";
+import {forceNumberClamp, forceNumberMinMax} from "../../utils/formatters";
 
 export default function DetailViewVrf(props) {
     const { id } = useParams();
@@ -159,7 +159,7 @@ export default function DetailViewVrf(props) {
             (response) => {
                 console.log(response);
                 updateSidebar();
-                history.push("New VRF");
+                history.push("create");
             },
             (error) => {
                 console.log(error);
@@ -188,7 +188,7 @@ export default function DetailViewVrf(props) {
             <div className="vrf-detail-container">
                 <Breadcrumb
                     vrfAddress={detailVrf.client_name}
-                    connectionType="VRFs"
+                    connectionType="vrf"
                     className="active-vrf"
                 />
                 <Button
@@ -281,7 +281,7 @@ export default function DetailViewVrf(props) {
                                     step="1"
                                     value={bgpValue}
                                     onChange={(event) =>
-                                        updateBgpValue(forceNumberMinMax(event))
+                                        updateBgpValue(forceNumberClamp(event.target.value, event.target.min, event.target.max))
                                     }
                                 />
                             </div>
@@ -297,7 +297,7 @@ export default function DetailViewVrf(props) {
                                     value={vlanValue}
                                     onChange={(event) =>
                                         updateVlanValue(
-                                            forceNumberMinMax(event)
+                                            forceNumberClamp(event.target.value, event.target.min, event.target.max)
                                         )
                                     }
                                 />

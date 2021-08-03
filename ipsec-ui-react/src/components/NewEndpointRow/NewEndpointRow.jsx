@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 
 import { Button } from "../Button";
+import { forceNumberClamp } from "../../utils/formatters";
 import "./NewEndpointRow.scss";
+import {maxValueForRemoteAS} from "../../constants";
 
 export default function NewEndpointRow({
     hardwareSupport,
-    forceNumberMinMax,
     payload,
 }) {
 
@@ -79,13 +80,13 @@ export default function NewEndpointRow({
                     <input
                         type="number"
                         min="1"
-                        max="4094"
+                        max={maxValueForRemoteAS}
                         name="remote_as"
                         id="remote_as"
                         step="1"
                         value={remoteAS}
                         onChange={(event) =>
-                            updateRemoteAS(forceNumberMinMax(event))
+                            updateRemoteAS(forceNumberClamp(event.target.value, event.target.min, event.target.max))
                         }
                     />
                 </td>

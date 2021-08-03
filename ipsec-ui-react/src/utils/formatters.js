@@ -14,3 +14,7 @@ export function forceNumberMinMax(event) {
     }
     return value;
 }
+
+export function forceNumberClamp (value, min, max) {
+    return Math.min(Math.max(value, min), max);
+}
