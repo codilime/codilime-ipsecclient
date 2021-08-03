@@ -167,11 +167,11 @@ export default function DetailViewVrf(props) {
         );
     }
 
-    function activeCheckboxHandler() {
+    function handleActiveChange() {
         updateActive(!active);
     }
 
-    function hardwareSupportCheckboxHandler() {
+    function handleHardwareSupportChange() {
         updateHardwareSupport(!hardwareSupport);
 
         if (hardwareSupport === true) {
@@ -246,7 +246,7 @@ export default function DetailViewVrf(props) {
                                     name="active"
                                     id="active"
                                     checked={active}
-                                    onChange={activeCheckboxHandler}
+                                    onChange={handleActiveChange}
                                 />
                                 <label htmlFor="active">Active</label>
                                 <input
@@ -254,7 +254,7 @@ export default function DetailViewVrf(props) {
                                     name="hardware_support"
                                     id="hardware_support"
                                     checked={hardwareSupport}
-                                    onChange={hardwareSupportCheckboxHandler}
+                                    onChange={handleHardwareSupportChange}
                                 />
                                 <label
                                     id="checkbox-label"

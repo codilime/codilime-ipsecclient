@@ -1,9 +1,9 @@
 import React from "react";
 
 export default function EndpointTableCell(props) {
-    const value = props.value;
+    const {value} = props;
 
-    function checkboxTemporaryHandler() {
+    function handleChange() {
         console.log("changing");
     }
 
@@ -14,14 +14,14 @@ export default function EndpointTableCell(props) {
                     <input
                         type="checkbox"
                         checked
-                        onChange={checkboxTemporaryHandler}
+                        onChange={handleChange}
                     />
                 </td>
             );
         }
         return (
             <td>
-                <input type="checkbox" onChange={checkboxTemporaryHandler} />
+                <input type="checkbox" onChange={handleChange} />
             </td>
         );
     }

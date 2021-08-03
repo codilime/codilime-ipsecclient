@@ -53,8 +53,7 @@ input {
     align-items: center;
     justify-content: flex-end;
 }
-input,
-select {
+input {
     margin: 5px;
 }
 #hardware_support {
@@ -64,6 +63,4 @@ select {
     width: 100%;
     margin: 5px;
 }
-select {
-    width: 185px;
-}
+

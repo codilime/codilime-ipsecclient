@@ -1,6 +1,5 @@
-td.break {
-    padding: 0 65px 0 0;
-}
+@import "./src/css/ColorThemes";
+
 .endpoints-table {
     width: 100%;
     table-layout: fixed;
@@ -8,6 +7,6 @@ td.break {
     thead {
     }
     tr:nth-child(odd) {
-        background-color: rgba(167, 167, 167, 0.74);
+        background-color: $light-gray;
     }
 }
