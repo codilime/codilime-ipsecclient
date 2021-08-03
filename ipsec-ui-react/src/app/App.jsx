@@ -68,7 +68,7 @@ export default function App() {
         );
     }
 
-    async function fetchHardwareEncryptionPh2Data() {
+    function fetchHardwareEncryptionPh2Data() {
         axios({
             method: "get",
             url: "api/algorithms/hardware/ph2",
