@@ -115,7 +115,7 @@ func getStrongswanFileName(prefix string) string {
 }
 
 func getSupervisorFileName(prefix string) string {
-	return "/opt/super/" + prefix + ".ini"
+	return "/opt/super_net/" + prefix + ".ini"
 }
 
 func getBirdFileName(prefix string) string {

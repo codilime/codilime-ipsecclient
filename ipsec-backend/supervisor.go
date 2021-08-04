@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const supervisorSocketPath = "/opt/super/supervisord.sock"
+const supervisorSocketPath = "/opt/super_net/supervisord.sock"
 
 func ReloadSupervisor() error {
 	client, err := supervisord.NewUnixSocketClient(supervisorSocketPath)
