@@ -1,0 +1,14 @@
+@import "./src/css/ColorThemes";
+
+.sidebar-list {
+    list-style: none;
+    margin: 5px;
+    padding: 0;
+    .sidebar-list-item {
+        margin: 15px;
+    }
+    a {
+        text-decoration: none;
+        color: $white;
+    }
+}
