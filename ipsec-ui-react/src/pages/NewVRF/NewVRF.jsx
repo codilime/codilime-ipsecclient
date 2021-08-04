@@ -182,18 +182,18 @@ export default function NewVRF(props) {
           </div>
         </form>
       </div>
-      <div className="vrf-detail-section-container">
-        <div className="vrf-section-header">Endpoints</div>
-        <table className="endpoints-table">
-          <thead>
-            <EndpointTableHeader hardwareSupport={hardwareSupport} />
-          </thead>
-          <tbody>
-            <NewEndpointRow hardwareSupport={hardwareSupport} />
-          </tbody>
-        </table>
-        <Button className="btn endpoint-btn" handleClick={addEndpointsToPayload} textValue="Add new endpoint" />
-      </div>
+      {/*<div className="vrf-detail-section-container">*/}
+      {/*  <div className="vrf-section-header">Endpoints</div>*/}
+      {/*  <table className="endpoints-table">*/}
+      {/*    <thead>*/}
+      {/*      <EndpointTableHeader hardwareSupport={hardwareSupport} />*/}
+      {/*    </thead>*/}
+      {/*    <tbody>*/}
+      {/*      <NewEndpointRow hardwareSupport={hardwareSupport} />*/}
+      {/*    </tbody>*/}
+      {/*  </table>*/}
+      {/*  <Button className="btn endpoint-btn" handleClick={addEndpointsToPayload} textValue="Add new endpoint" />*/}
+      {/*</div>*/}
       {/*<Dump value={} />*/}
     </div>
   );

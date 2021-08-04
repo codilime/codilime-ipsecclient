@@ -2,8 +2,6 @@ import React from 'react';
 
 import { Link } from 'react-router-dom';
 
-import { v4 as uuidv4 } from 'uuid';
-
 import { Button } from '../components/Button';
 import './Sidebar.scss';
 
@@ -16,7 +14,7 @@ export default function Sidebar(props) {
       <ul className="sidebar-list">
         {VRFConnections &&
           VRFConnections.map((item) => (
-            <li className="sidebar-list-item" key={uuidv4()}>
+            <li className="sidebar-list-item" key={item.id}>
               <Link to={'/vrf/' + item.id} replace>
                 {item.client_name}
               </Link>

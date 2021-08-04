@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 import { useHistory, useParams } from 'react-router';
-
+import { useForm } from 'react-hook-form';
+import { yupResolver } from "@hookform/resolvers/yup";
 import { v4 as uuidv4 } from 'uuid';
-import axios from 'axios';
 
 import './DetailVRF.scss';
 import '../NewVRF/NewVRF.scss';
@@ -13,19 +13,31 @@ import EndpointTableRow from '../../components/EndpointTableRow/EndpointTableRow
 import NewEndpointRow from '../../components/NewEndpointRow/NewEndpointRow';
 import CryptoHandler from '../../components/CryptoHandler/CryptoHandler';
 import EndpointTableHeader from '../../components/EndpointTableHeader/EndpointTableHeader';
-import { Button } from '../../components/Button';
+import { Button } from 'components';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 
 import Dump from '../../utils/Dump';
-import { isEmptyObject } from '../../utils/util';
 import Loader from '../../components/Loader/Loader';
 import { forceNumberClamp } from '../../utils/formatters';
+import {client} from "../../_api";
+import { vrfSchema } from "../../schema";
+
+const detailForm = [
+  {
+    type: 'text',
+    name: 'client_name'
+  },
+  {
+    type: 'text',
+    name: 'lan_ip'
+  }
+];
 
 export default function DetailViewVrf(props) {
   const { id } = useParams();
   const history = useHistory();
+  const { register, handleSubmit, errors } = useForm({resolver: yupResolver(vrfSchema)})
 
-  const detailApiAddress = '/api/vrfs/' + id;
   const { softwareEncryption, hardwarePh1Encryption, hardwarePh2Encryption, updateSidebar } = props;
 
   const [detailVrf, updateDetailVrf] = useState();
@@ -47,6 +59,8 @@ export default function DetailViewVrf(props) {
 
   const [arrayForCryptoPh1, updateArrayForCryptoPh1] = useState([]);
   const [arrayForCryptoPh2, updateArrayForCryptoPh2] = useState([]);
+  const [error, setError] = useState('');
+
 
   function updateDefaultPh1EncryptionData() {
     if (hardwareSupport === true) {
@@ -69,36 +83,29 @@ export default function DetailViewVrf(props) {
     updateDefaultPh2EncryptionData();
   }, [hardwarePh1Encryption, hardwarePh2Encryption, softwareEncryption, hardwareSupport]);
 
-  async function fetchVRFDetails() {
-    axios({
-      method: 'get',
-      url: detailApiAddress
-    }).then(
-      (response) => {
-        let data = response.data;
-
-        if (data && !isEmptyObject(data)) {
-          updateDetailVrf(data);
-          updateVrfName(data.client_name);
-          updateLanIpMask(data.lan_ip);
-          updatePhysicalInterface(data.physical_interface);
-          updateActive(data.active);
-          updateHardwareSupport(data.hardware_support);
-          updateVlanValue(data.vlan);
-          updateBgpValue(data.local_as);
-          updateCryptoPh1_1(data.crypto_ph1[0]);
-          updateCryptoPh1_2(data.crypto_ph1[1]);
-          updateCryptoPh1_3(data.crypto_ph1[2]);
-          updateCryptoPh2_1(data.crypto_ph2[0]);
-          updateCryptoPh2_2(data.crypto_ph2[1]);
-          updateCryptoPh2_3(data.crypto_ph2[2]);
-        }
-        updateLoading(false);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+  const fetchVRFDetails = async () => {
+    try{
+      const data = await client(`${id}`)
+      console.log(data);
+      updateDetailVrf(data);
+      updateVrfName(data.client_name);
+      updateLanIpMask(data.lan_ip);
+      updatePhysicalInterface(data.physical_interface);
+      updateActive(data.active);
+      updateHardwareSupport(data.hardware_support);
+      updateVlanValue(data.vlan);
+      updateBgpValue(data.local_as);
+      updateCryptoPh1_1(data.crypto_ph1[0]);
+      updateCryptoPh1_2(data.crypto_ph1[1]);
+      updateCryptoPh1_3(data.crypto_ph1[2]);
+      updateCryptoPh2_1(data.crypto_ph2[0]);
+      updateCryptoPh2_2(data.crypto_ph2[1]);
+      updateCryptoPh2_3(data.crypto_ph2[2]);
+      updateLoading(false);
+    }catch(err) {
+      setError(err.error)
+    }
+    console.log(error);
   }
 
   useEffect(() => {
@@ -124,38 +131,27 @@ export default function DetailViewVrf(props) {
     endpoints: detailVrf.endpoints
   };
 
-  function updateVrfConnection(event) {
-    event.preventDefault();
-    axios({
-      method: 'put',
-      url: detailApiAddress,
-      data: payload
-    }).then(
-      (response) => {
-        console.log(response);
-        updateSidebar();
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+
+  const updateVrfConnection = async (e) => {
+    e.preventDefault();
+    try{
+      await client(`${id}`, payload, '', {method: 'PUT'})
+    }catch(err) {
+      setError(err.error)
+    }
+    console.log(error);
   }
 
-  function removeVrfConnection(event) {
-    event.preventDefault();
-    axios({
-      method: 'delete',
-      url: detailApiAddress
-    }).then(
-      (response) => {
-        console.log(response);
-        updateSidebar();
-        history.push('create');
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+  const removeVrfConnection = async (e) => {
+    e.preventDefault();
+    try{
+      await client(`${id}`, {}, '', {method: 'DELETE'})
+      updateSidebar();
+      history.push('create');
+    } catch(err) {
+      setError(err.error);
+    }
+    console.log(error);
   }
 
   function handleActiveChange() {
@@ -182,20 +178,21 @@ export default function DetailViewVrf(props) {
         <br />
         <div className="vrf-detail-section-container">
           <div className="vrf-section-header">VRF Details</div>
-          <form>
+
+          <form onSubmit={handleSubmit()}>
             <div className="vrf-column-1">
               <div className="vrf-column-1-item">
                 <label htmlFor="client_name">Name:</label>
-                <input type="text" name="client_name" id="client_name" value={vrfName} onChange={(event) => updateVrfName(event.target.value)} /> <br />
+                <input type="text" name="client_name"/> <br />
                 <label htmlFor="lan_ip">LAN IP/MASK:</label>
-                <input type="text" name="lan_ip" id="lan_ip" value={lanIpMask} onChange={(event) => updateLanIpMask(event.target.value)} /> <br />
+                <input type="text" name="lan_ip"/> <br />
                 <label htmlFor="physical_interface">Physical interface:</label>
-                <input type="text" placeholder="eth0" name="physical_interface" id="physical_interface" value={physicalInterface} onChange={(event) => updatePhysicalInterface(event.target.value)} />
+                <input type="text" placeholder="eth0" name="physical_interface" />
               </div>
               <div className="vrf-column-checkbox-item">
-                <input type="checkbox" name="active" id="active" checked={active} onChange={handleActiveChange} />
+                <input type="checkbox" name="active" />
                 <label htmlFor="active">Active</label>
-                <input type="checkbox" name="hardware_support" id="hardware_support" checked={hardwareSupport} onChange={handleHardwareSupportChange} />
+                <input type="checkbox" name="hardware_support" />
                 <label id="checkbox-label" htmlFor="hardware_support">
                   Hardware support
                 </label>
@@ -210,10 +207,7 @@ export default function DetailViewVrf(props) {
                   min="1"
                   max={maxValueForLocalAS}
                   name="local_as"
-                  id="local_as"
                   step="1"
-                  value={bgpValue}
-                  onChange={(event) => updateBgpValue(forceNumberClamp(event.target.value, event.target.min, event.target.max))}
                 />
               </div>
               <div className="vrf-column-item-number">
@@ -223,16 +217,13 @@ export default function DetailViewVrf(props) {
                   min="1"
                   max={maxValueForVlan}
                   name="vlan"
-                  id="vlan"
                   step="1"
-                  value={vlanValue}
-                  onChange={(event) => updateVlanValue(forceNumberClamp(event.target.value, event.target.min, event.target.max))}
                 />
               </div>
             </div>
             <div className="vrf-column-3">
               <CryptoHandler
-                title={'Crypto phase 1'}
+                title='Crypto phase 1'
                 softwareEncryption={softwareEncryption}
                 hardwarePh1Encryption={hardwarePh1Encryption}
                 hardwarePh2Encryption={hardwarePh2Encryption}
@@ -246,7 +237,7 @@ export default function DetailViewVrf(props) {
                 updatePh3={updateCryptoPh1_3}
               />
               <CryptoHandler
-                title={'Crypto phase 2'}
+                title='Crypto phase 2'
                 softwareEncryption={softwareEncryption}
                 hardwarePh1Encryption={hardwarePh1Encryption}
                 hardwarePh2Encryption={hardwarePh2Encryption}
@@ -261,6 +252,7 @@ export default function DetailViewVrf(props) {
               />
             </div>
           </form>
+
         </div>
         <div className="vrf-detail-section-container">
           <div className="vrf-section-header">Endpoints</div>
