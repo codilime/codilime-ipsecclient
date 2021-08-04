@@ -19,7 +19,7 @@ import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import Dump from "../../utils/Dump";
 import { isEmptyObject } from "../../utils/util";
 import Loader from "../../components/Loader/Loader";
-import {forceNumberClamp, forceNumberMinMax} from "../../utils/formatters";
+import { forceNumberClamp } from "../../utils/formatters";
 
 export default function DetailViewVrf(props) {
     const { id } = useParams();
@@ -357,7 +357,6 @@ export default function DetailViewVrf(props) {
                                 })}
                             <NewEndpointRow
                                 hardwareSupport={hardwareSupport}
-                                forceNumberMinMax={forceNumberMinMax}
                                 payload={payload}
                             />
                         </tbody>

@@ -7,7 +7,6 @@ import {maxValueForRemoteAS} from "../../constants";
 
 export default function NewEndpointRow({
     hardwareSupport,
-    payload,
 }) {
 
     const [remoteIPSec, updateRemoteIPSec] = useState("");
