@@ -159,7 +159,7 @@ export default function DetailViewVrf(props) {
             (response) => {
                 console.log(response);
                 updateSidebar();
-                history.push("New VRF");
+                history.push("create");
             },
             (error) => {
                 console.log(error);
@@ -367,7 +367,6 @@ export default function DetailViewVrf(props) {
                                 })}
                             <NewEndpointRow
                                 hardwareSupport={hardwareSupport}
-                                payload={payload}
                             />
                         </tbody>
                     </table>
