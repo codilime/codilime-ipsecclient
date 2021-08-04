@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import {useHistory, useLocation } from "react-router";
+import {useHistory } from "react-router";
 
 import axios from "axios";
 
@@ -16,7 +16,6 @@ import {Button} from "../../components";
 
 export default function NewVRF(props) {
     const history = useHistory();
-    const location = useLocation();
 
     const {
         softwareEncryption,
@@ -104,7 +103,7 @@ export default function NewVRF(props) {
         <div className="new-vrf-connection-wrapper">
             <div className="new-vrf-top-bar">
                 <Breadcrumb
-                    vrfAddress={location.pathname.slice(5)}
+                    vrfAddress={"New VRF"}
                     connectionType="VRFs"
                     className="active-vrf"
                 />

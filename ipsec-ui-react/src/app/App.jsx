@@ -100,7 +100,7 @@ export default function App() {
                 <div className="main-view-container">
                     <Switch>
                         <Route
-                            path="/vrf/New VRF"
+                            path="/vrf/create"
                             render={() => (
                                 <NewVRF
                                     softwareEncryption={softwareEncryption}
