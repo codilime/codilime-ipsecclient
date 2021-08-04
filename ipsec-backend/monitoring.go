@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"net/http"
 	"strconv"
 
@@ -8,41 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func metrics(w http.ResponseWriter, r *http.Request) {
-	strongswan, err := GetStrongswanState()
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-	}
-	supervisor, err := GetSupervisorState()
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-	}
-	birdBgp, err := GetBirdState()
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-	}
-	hwBgp, err := GetHWBGP()
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-	}
-
-	sumBgp := map[string]string{}
-	for k, v := range birdBgp {
-		sumBgp[k] = v
-	}
-	for k, v := range hwBgp {
-		sumBgp[k] = v
-	}
-
-	res := map[string]interface{}{
-		"strongswan": strongswan,
-		"supervisor": supervisor,
-		"bird":       sumBgp,
-	}
-	respondWithJSON(w, http.StatusOK, res)
-}
-
-func (a *App) metricsName(w http.ResponseWriter, r *http.Request) {
+func (a *App) metrics(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
@@ -61,43 +28,57 @@ func (a *App) metricsName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	supervisor, err := GetSupervisorSingleState(vrf.ClientName)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-	}
-
 	if !*vrf.HardwareSupport {
-		strongswan, err := GetStrongswanSingleState(vrf.ClientName)
+		res, err := getSWMetrics(vrf)
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-		}
-		bird, err := GetBirdSingleState(vrf.ClientName)
-		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-		}
-		routes, err := GetBirdRoutes(vrf.ClientName)
-		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-		}
-
-		res := map[string]interface{}{
-			"strongswan": strongswan,
-			"supervisor": supervisor,
-			"bird":       bird,
-			"routes":     routes,
+			respondWithError(w, 500, err.Error())
+			return
 		}
 		respondWithJSON(w, http.StatusOK, res)
 	} else {
-		hwNeighbors, err := GetHWRoutes() // no arguments because there is only 1 vrf in the hardware
+		res, err := getHWMetrics() // no arguments because there is only one vrf in hw
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-		}
-		res := map[string]interface{}{
-			"strongswan": []string{},
-			"supervisor": supervisor,
-			"bird":       []string{},
-			"routes":     hwNeighbors,
+			respondWithError(w, 500, err.Error())
+			return
 		}
 		respondWithJSON(w, http.StatusOK, res)
 	}
+}
+
+func getSWMetrics(vrf Vrf) (map[string]interface{}, error) {
+	statuses, err := GetStrongswanSingleState(vrf.ClientName)
+	res := map[string]interface{}{
+		"endpoint_statuses": statuses,
+	}
+	return res, err
+}
+
+func getHWMetrics() (map[string]interface{}, error) {
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	res, err := restconfGetData("Cisco-IOS-XE-crypto-oper:crypto-oper-data/crypto-ikev2-sa", client)
+	if err != nil {
+		return nil, err
+	}
+	endpoints := []map[string]interface{}{}
+	sas := res["Cisco-IOS-XE-crypto-oper:crypto-ikev2-sa"].([]interface{})
+	for _, sa := range sas {
+		saData := sa.(map[string]interface{})["sa-data"].(map[string]interface{})
+		localIp := saData["local-ip-addr"]
+		remoteIp := saData["remote-ip-addr"]
+		saStatus := saData["sa-status"]
+		endpointData := map[string]interface{}{
+			"local-ip":  localIp,
+			"remote-ip": remoteIp,
+			"sa-status": saStatus,
+		}
+		endpoints = append(endpoints, endpointData)
+	}
+	ret := map[string]interface{}{
+		"endpoint_statuses": endpoints,
+	}
+	return ret, nil
 }
