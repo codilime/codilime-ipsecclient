@@ -1,3 +1,3 @@
-export function forceNumberClamp (value, min, max) {
+export function forceNumberClamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
 }

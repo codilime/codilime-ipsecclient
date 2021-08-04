@@ -3,12 +3,9 @@ import React, { useState } from "react";
 import { Button } from "../Button";
 import { forceNumberClamp } from "../../utils/formatters";
 import "./NewEndpointRow.scss";
-import {maxValueForRemoteAS} from "../../constants";
+import { maxValueForRemoteAS } from "../../constants";
 
-export default function NewEndpointRow({
-    hardwareSupport,
-}) {
-
+export default function NewEndpointRow({ hardwareSupport }) {
     const [remoteIPSec, updateRemoteIPSec] = useState("");
     const [localIP, updateLocalIP] = useState("");
     const [peerIP, updatePeerIP] = useState("");
@@ -83,7 +80,13 @@ export default function NewEndpointRow({
                         step="1"
                         value={remoteAS}
                         onChange={(event) =>
-                            updateRemoteAS(forceNumberClamp(event.target.value, event.target.min, event.target.max))
+                            updateRemoteAS(
+                                forceNumberClamp(
+                                    event.target.value,
+                                    event.target.min,
+                                    event.target.max
+                                )
+                            )
                         }
                     />
                 </td>

@@ -7,7 +7,7 @@ import axios from "axios";
 
 import "./DetailVRF.scss";
 import "../NewVRF/NewVRF.scss";
-import {maxValueForLocalAS, maxValueForVlan} from "../../constants";
+import { maxValueForLocalAS, maxValueForVlan } from "../../constants";
 
 import EndpointTableRow from "../../components/EndpointTableRow/EndpointTableRow";
 import NewEndpointRow from "../../components/NewEndpointRow/NewEndpointRow";
@@ -281,7 +281,13 @@ export default function DetailViewVrf(props) {
                                     step="1"
                                     value={bgpValue}
                                     onChange={(event) =>
-                                        updateBgpValue(forceNumberClamp(event.target.value, event.target.min, event.target.max))
+                                        updateBgpValue(
+                                            forceNumberClamp(
+                                                event.target.value,
+                                                event.target.min,
+                                                event.target.max
+                                            )
+                                        )
                                     }
                                 />
                             </div>
@@ -297,7 +303,11 @@ export default function DetailViewVrf(props) {
                                     value={vlanValue}
                                     onChange={(event) =>
                                         updateVlanValue(
-                                            forceNumberClamp(event.target.value, event.target.min, event.target.max)
+                                            forceNumberClamp(
+                                                event.target.value,
+                                                event.target.min,
+                                                event.target.max
+                                            )
                                         )
                                     }
                                 />

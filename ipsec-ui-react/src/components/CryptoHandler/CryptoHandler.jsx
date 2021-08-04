@@ -2,7 +2,7 @@ import React from "react";
 
 import { v4 as uuidv4 } from "uuid";
 
-import './CryptoHandler.scss'
+import "./CryptoHandler.scss";
 
 export default function CryptoHandler(props) {
     const {

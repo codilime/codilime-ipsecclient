@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function EndpointTableCell(props) {
-    const {value} = props;
+    const { value } = props;
 
     function handleChange() {
         console.log("changing");
@@ -11,11 +11,7 @@ export default function EndpointTableCell(props) {
         if (value === true) {
             return (
                 <td>
-                    <input
-                        type="checkbox"
-                        checked
-                        onChange={handleChange}
-                    />
+                    <input type="checkbox" checked onChange={handleChange} />
                 </td>
             );
         }

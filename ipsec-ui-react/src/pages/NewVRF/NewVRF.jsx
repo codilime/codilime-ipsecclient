@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 
-import {useHistory } from "react-router";
+import { useHistory } from "react-router";
 
 import axios from "axios";
 
 import "./NewVRF.scss";
-import {maxValueForLocalAS, maxValueForVlan} from "../../constants";
+import { maxValueForLocalAS, maxValueForVlan } from "../../constants";
 
 import NewEndpointRow from "../../components/NewEndpointRow/NewEndpointRow";
 import EndpointTableHeader from "../../components/EndpointTableHeader/EndpointTableHeader";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
-import {forceNumberClamp } from "../../utils/formatters";
+import { forceNumberClamp } from "../../utils/formatters";
 import CryptoHandler from "../../components/CryptoHandler/CryptoHandler";
-import {Button} from "../../components";
+import { Button } from "../../components";
 
 export default function NewVRF(props) {
     const history = useHistory();
@@ -192,7 +192,13 @@ export default function NewVRF(props) {
                                 step="1"
                                 value={bgpValue}
                                 onChange={(event) =>
-                                    updateBgpValue(forceNumberClamp(event.target.value, event.target.min, event.target.max))
+                                    updateBgpValue(
+                                        forceNumberClamp(
+                                            event.target.value,
+                                            event.target.min,
+                                            event.target.max
+                                        )
+                                    )
                                 }
                             />
                         </div>
@@ -207,7 +213,13 @@ export default function NewVRF(props) {
                                 step="1"
                                 value={vlanValue}
                                 onChange={(event) =>
-                                    updateVlanValue(forceNumberClamp(event.target.value, event.target.min, event.target.max))
+                                    updateVlanValue(
+                                        forceNumberClamp(
+                                            event.target.value,
+                                            event.target.min,
+                                            event.target.max
+                                        )
+                                    )
                                 }
                             />
                         </div>
@@ -254,9 +266,7 @@ export default function NewVRF(props) {
                         />
                     </thead>
                     <tbody>
-                        <NewEndpointRow
-                            hardwareSupport={hardwareSupport}
-                        />
+                        <NewEndpointRow hardwareSupport={hardwareSupport} />
                     </tbody>
                 </table>
                 <Button
