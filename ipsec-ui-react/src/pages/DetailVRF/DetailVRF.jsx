@@ -4,6 +4,8 @@ import { useHistory, useParams } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { v4 as uuidv4 } from 'uuid';
+import {boolean, number} from "yup";
+
 
 import './DetailVRF.scss';
 import '../NewVRF/NewVRF.scss';
@@ -18,7 +20,7 @@ import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 
 import Dump from '../../utils/Dump';
 import Loader from '../../components/Loader/Loader';
-import { forceNumberClamp } from '../../utils/formatters';
+// import { forceNumberClamp } from '../../utils/formatters';
 import {client} from "../../_api";
 import { vrfSchema } from "../../schema";
 
@@ -30,6 +32,26 @@ const detailForm = [
   {
     type: 'text',
     name: 'lan_ip'
+  },
+  {
+    type: 'text',
+    name: 'physical_interface'
+  },
+  {
+    type: boolean,
+    name: 'active'
+  },
+  {
+    type: boolean,
+    name: 'hardware_support'
+  },
+  {
+    type: number,
+    name: 'local_as'
+  },
+  {
+    type: number,
+    name: 'vlan'
   }
 ];
 
