@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
 export default function Loader() {
-    return (
-        <div className="lds-circle">
-            <div />
-        </div>
-    );
+  return (
+    <div className="lds-circle">
+      <div />
+    </div>
+  );
 }
