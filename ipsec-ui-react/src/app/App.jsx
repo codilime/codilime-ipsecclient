@@ -17,7 +17,7 @@ export default function App() {
     const [hardwarePh1Encryption, updateHardwarePh1Encryption] = useState([]);
     const [hardwarePh2Encryption, updateHardwarePh2Encryption] = useState([]);
 
-    async function fetchVRFsData() {
+    function fetchVRFsData() {
         axios({
             method: "get",
             url: "/api/vrfs",
@@ -34,7 +34,7 @@ export default function App() {
         );
     }
 
-    async function fetchSoftwareEncryptionData() {
+    function fetchSoftwareEncryptionData() {
         axios({
             method: "get",
             url: "/api/algorithms/software",
