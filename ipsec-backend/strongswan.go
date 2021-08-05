@@ -30,10 +30,13 @@ func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
 	defer session.Close()
 
 	m := vici.NewMessage()
-	m.Set("noblock", "yes")
+	err = m.Set("noblock", "yes")
+	if err != nil {
+		return nil, err
+	}
 	ms, err := session.StreamedCommandRequest("list-conns", "list-conn", m)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	endpoints := map[string]*monitoringEndpoint{}
 	for _, m = range ms.Messages() {
@@ -47,10 +50,13 @@ func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
 		}
 	}
 	m = vici.NewMessage()
-	m.Set("noblock", "yes")
+	err = m.Set("noblock", "yes")
+	if err != nil {
+		return nil, err
+	}
 	ms, err = session.StreamedCommandRequest("list-sas", "list-sa", m)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	for _, m = range ms.Messages() {
 		for _, key := range m.Keys() {
