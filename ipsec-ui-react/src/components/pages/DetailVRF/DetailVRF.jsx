@@ -10,6 +10,7 @@ import '../NewVRF/NewVRF.scss';
 import { maxValueForLocalAS, maxValueForVlan } from '../../../constants';
 import { Field } from "template";
 
+import { useCreateVRFMainView } from "../../../_hooks/useCreateVRFMainView";
 import EndpointTableRow from '../../EndpointTableRow/EndpointTableRow';
 import NewEndpointRow from '../../NewEndpointRow/NewEndpointRow';
 import CryptoHandler from '../../CryptoHandler/CryptoHandler';
@@ -203,6 +204,7 @@ export default function DetailViewVrf(props) {
 
           <form onSubmit={handleSubmit()}>
             <Field text="Name" name='client_name' placeholder='i.e. VRF101 Office' type='text'/>
+            {useCreateVRFMainView()}
 
             {/*<div className="vrf-column-1">*/}
             {/*  <div className="vrf-column-1-item">*/}

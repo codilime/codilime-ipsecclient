@@ -26,7 +26,8 @@ module.exports = {
       components: path.resolve(__dirname, 'src/components'),
       api: path.resolve(__dirname, 'src/_api'),
       common: path.resolve(__dirname, 'src/components/common'),
-      template: path.resolve(__dirname, 'src/components/template')
+      template: path.resolve(__dirname, 'src/components/template'),
+      db: path.resolve(__dirname, 'src/db')
     }
   },
   output: {
