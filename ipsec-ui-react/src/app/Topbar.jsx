@@ -1,7 +1,7 @@
 import React from 'react';
 
 import './Topbar.scss';
-import ciscoLogo from '../assets/cisco_logo.png';
+import ciscoLogo from '../images/cisco_logo.png';
 
 export default function Topbar() {
   return (

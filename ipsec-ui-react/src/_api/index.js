@@ -1,4 +1,4 @@
-import { detailApiAddress } from '../config'
+import { detailApiAddress } from '../config';
 
 export async function client(endpoint, data, AuthToken, options) {
   const { ...customConfig } = options ?? {};

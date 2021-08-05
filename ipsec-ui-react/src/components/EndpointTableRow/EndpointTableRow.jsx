@@ -1,7 +1,7 @@
 import React from 'react';
 
 import EndpointTableCell from '../EndpointTableCell/EndpointTableCell';
-import { Button } from '../Button';
+import { Button } from '../common/Button';
 
 export default function EndpointTableRow(props) {
   const { endpoint, hardwareSupport } = props;

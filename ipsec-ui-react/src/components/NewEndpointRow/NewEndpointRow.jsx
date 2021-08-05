@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Button } from '../Button';
+import { Button } from '../common/Button';
 import { forceNumberClamp } from '../../utils/formatters';
 import './NewEndpointRow.scss';
 import { maxValueForRemoteAS } from '../../constants';

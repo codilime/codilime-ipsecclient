@@ -6,10 +6,11 @@ import axios from 'axios';
 
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
-import DetailVRF from '../pages/DetailVRF/DetailVRF';
-import NewVRF from '../pages/NewVRF/NewVRF';
-import DefaultView from '../pages/DefaultView/DefaultView';
+import DetailVRF from '../components/pages/DetailVRF/DetailVRF';
+import NewVRF from '../components/pages/NewVRF/NewVRF';
+import DefaultView from '../components/pages/DefaultView/DefaultView';
 import './App.scss';
+import '../css/Global.scss';
 
 export default function App() {
   const [VRFConnections, updateVRFConnections] = useState([]);
@@ -100,6 +101,7 @@ export default function App() {
         <div className="main-view-container">
           <Switch>
             <Route
+              exact
               path="/vrf/create"
               render={() => (
                 <NewVRF softwareEncryption={softwareEncryption} hardwarePh1Encryption={hardwarePh1Encryption} hardwarePh2Encryption={hardwarePh2Encryption} updateSidebar={fetchVRFsData} />

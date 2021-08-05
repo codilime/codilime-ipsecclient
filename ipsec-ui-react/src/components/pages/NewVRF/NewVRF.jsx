@@ -5,14 +5,14 @@ import { useHistory } from 'react-router';
 import axios from 'axios';
 
 import './NewVRF.scss';
-import { maxValueForLocalAS, maxValueForVlan } from '../../constants';
+import { maxValueForLocalAS, maxValueForVlan } from '../../../constants';
 
-import NewEndpointRow from '../../components/NewEndpointRow/NewEndpointRow';
-import EndpointTableHeader from '../../components/EndpointTableHeader/EndpointTableHeader';
-import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
-import { forceNumberClamp } from '../../utils/formatters';
-import CryptoHandler from '../../components/CryptoHandler/CryptoHandler';
-import { Button } from '../../components';
+import NewEndpointRow from '../../NewEndpointRow/NewEndpointRow';
+import EndpointTableHeader from '../../EndpointTableHeader/EndpointTableHeader';
+import Breadcrumb from '../../Breadcrumb/Breadcrumb';
+import { forceNumberClamp } from '../../../utils/formatters';
+import CryptoHandler from '../../CryptoHandler/CryptoHandler';
+import { Button } from '../../index';
 
 export default function NewVRF(props) {
   const history = useHistory();
