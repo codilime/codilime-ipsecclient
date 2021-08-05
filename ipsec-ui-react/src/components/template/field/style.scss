@@ -1,11 +1,14 @@
 @import '../../../css/ColorThemes';
 
 .field {
-  margin: 15px 0 5px 5px;
+  margin: 15px 0 5px 5px; //instead of putting margin on each .field this can be probably done by padding on the whole container
 }
 .field__label {
   padding: 3px 3px;
   border: 0;
   outline: 0;
-  border-bottom: 0.8px solid $light-gray;
+  border-bottom: 2px solid $light-gray;
+}
+.field__label:focus-within {
+  border-bottom: 2px solid $blue;
 }
