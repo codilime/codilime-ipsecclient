@@ -25,7 +25,8 @@ module.exports = {
     alias: {
       components: path.resolve(__dirname, 'src/components'),
       api: path.resolve(__dirname, 'src/_api'),
-      common: path.resolve(__dirname, 'src/components/common')
+      common: path.resolve(__dirname, 'src/components/common'),
+      template: path.resolve(__dirname, 'src/components/template')
     }
   },
   output: {

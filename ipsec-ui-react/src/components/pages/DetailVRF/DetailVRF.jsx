@@ -4,17 +4,17 @@ import { useHistory, useParams } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { v4 as uuidv4 } from 'uuid';
-import { boolean, number } from 'yup';
 
 import './DetailVRF.scss';
 import '../NewVRF/NewVRF.scss';
 import { maxValueForLocalAS, maxValueForVlan } from '../../../constants';
+import { Field } from "template";
 
 import EndpointTableRow from '../../EndpointTableRow/EndpointTableRow';
 import NewEndpointRow from '../../NewEndpointRow/NewEndpointRow';
 import CryptoHandler from '../../CryptoHandler/CryptoHandler';
 import EndpointTableHeader from '../../EndpointTableHeader/EndpointTableHeader';
-import { Button } from 'components';
+import { Button } from 'common';
 import Breadcrumb from '../../Breadcrumb/Breadcrumb';
 
 import Dump from '../../../utils/Dump';
@@ -262,6 +262,7 @@ export default function DetailViewVrf(props) {
               />
             </div>
           </form>
+
         </div>
         <div className="vrf-detail-section-container">
           <div className="vrf-section-header">Endpoints</div>
