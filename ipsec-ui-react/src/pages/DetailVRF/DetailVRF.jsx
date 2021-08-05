@@ -27,30 +27,33 @@ import { vrfSchema } from "../../schema";
 const detailForm = [
   {
     type: 'text',
-    name: 'client_name'
+    name: 'client_name',
+    placeholder: 'i. e. VRF1 Work Office'
   },
   {
     type: 'text',
-    name: 'lan_ip'
+    name: 'lan_ip',
+    placeholder: 'i. e. secret_agent'
   },
   {
     type: 'text',
-    name: 'physical_interface'
+    name: 'physical_interface',
+    placeholder: 'i. e. eth0'
   },
   {
-    type: boolean,
+    type: 'checkbox',
     name: 'active'
   },
   {
-    type: boolean,
+    type: 'checkbox',
     name: 'hardware_support'
   },
   {
-    type: number,
+    type: 'number',
     name: 'local_as'
   },
   {
-    type: number,
+    type: 'number',
     name: 'vlan'
   }
 ];
