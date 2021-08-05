@@ -202,7 +202,7 @@ export default function DetailViewVrf(props) {
           <div className="vrf-section-header">VRF Details</div>
 
           <form onSubmit={handleSubmit()}>
-            <Field text="Name"/>
+            <Field text="Name" name='client_name' placeholder='i.e. VRF101 Office' type='text'/>
 
             {/*<div className="vrf-column-1">*/}
             {/*  <div className="vrf-column-1-item">*/}

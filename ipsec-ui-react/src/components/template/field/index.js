@@ -1,4 +1,5 @@
-import React from "react";
+import React  from "react";
+
 
 import PropTypes from "prop-types";
 
@@ -6,7 +7,8 @@ import { Input } from "common";
 import './style.scss'
 
 
-export const Field = ({text, type, name, placeholder, onChange, ref}) => {
+export const Field = ({text, type, name, placeholder, ref, onChange}) => {
+
     return (
         <div className='field'>
             <label className='field__label'>{text}</label>
