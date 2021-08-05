@@ -14,9 +14,9 @@
   font-weight: bold;
   padding-left: 3px;
 }
-form {
-  display: flex;
-}
+//form {
+//  display: flex;
+//}
 .vrf-column-1 {
   width: 24%;
 }
@@ -45,17 +45,20 @@ form {
 input[type='number'] {
   width: 100px;
 }
-input {
-  height: 21px;
-}
+
+//input {
+//  height: 21px;
+//}
+
 .vrf-column-checkbox-item {
   display: flex;
   align-items: center;
   justify-content: flex-end;
 }
-input {
-  margin: 5px;
-}
+//input {
+//  margin: 5px;
+//}
+
 #hardware_support {
   margin-left: 35px;
 }
