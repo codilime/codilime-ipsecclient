@@ -13,4 +13,5 @@ docker run --name sico_api \
         -e SWITCH_USERNAME=admin \
         -e SWITCH_PASSWORD=cisco123 \
         --network sico \
+        --publish 80:80 \
         sico_api
