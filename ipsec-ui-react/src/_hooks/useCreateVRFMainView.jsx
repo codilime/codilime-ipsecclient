@@ -18,6 +18,23 @@ export const useCreateVRFMainView = () => {
         return;
     }
   });
-
-  return { VRFColumnOneView };
+  const VRFColumnTwoView = mainVRFViewColumnTwo.map((el) => {
+    switch (el.type) {
+      case 'number': {
+        return <Field {...el} />;
+      }
+      default:
+        return;
+    }
+  })
+  const VRFColumnThreeView = mainVRFViewColumnThree.map((el) => {
+    switch (el.type) {
+      case 'array': {
+        return <Field {...el} />;
+      }
+      default:
+        return;
+    }
+  })
+  return { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView };
 };

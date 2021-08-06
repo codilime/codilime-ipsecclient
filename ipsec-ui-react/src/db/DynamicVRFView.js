@@ -7,11 +7,11 @@ export const DynamicVRFView = {
     { type: 'checkbox', name: 'hardware_support', text: 'Hardware support' }
   ],
   mainVRFViewColumnTwo: [
-    { type: 'number', name: 'local_as' },
-    { type: 'number', name: 'vlan' }
+    { type: 'number', name: 'local_as', text: 'BGP Local AS' },
+    { type: 'number', name: 'vlan', text: 'VLAN' }
   ],
   mainVRFViewColumnThree: [
-    { type: 'array', name: 'crypto_ph1' },
-    { type: 'array', name: 'crypto_ph2' }
+    { type: 'array', name: 'crypto_ph1', text: 'Crypto phase 1' },
+    { type: 'array', name: 'crypto_ph2', text: 'Crypto phase 2' }
   ]
 };

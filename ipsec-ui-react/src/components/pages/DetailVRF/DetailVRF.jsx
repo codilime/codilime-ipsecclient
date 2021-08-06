@@ -62,7 +62,7 @@ export default function DetailViewVrf(props) {
   const { id } = useParams();
   const history = useHistory();
   const { register, handleSubmit, errors } = useForm({ resolver: yupResolver(vrfSchema) });
-  const { VRFColumnOneView } = useCreateVRFMainView();
+  const { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView } = useCreateVRFMainView();
 
   const { softwareEncryption, hardwarePh1Encryption, hardwarePh2Encryption, updateSidebar } = props;
 
@@ -205,6 +205,8 @@ export default function DetailViewVrf(props) {
 
           <form onSubmit={handleSubmit()} autoComplete='off'>
             {VRFColumnOneView}
+            {VRFColumnTwoView}
+            {VRFColumnThreeView}
 
             {/*<div className="vrf-column-1">*/}
             {/*  <div className="vrf-column-1-item">*/}
