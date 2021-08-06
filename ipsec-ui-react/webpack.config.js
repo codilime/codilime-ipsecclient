@@ -22,6 +22,16 @@ module.exports = {
     },
     resolve: {
         extensions: ["*", ".js", ".jsx"],
+        alias: {
+            components: path.resolve(__dirname, "src/components"),
+            common: path.resolve(__dirname, "src/components/common"),
+            template: path.resolve(__dirname, "src/components/template"),
+            pages: path.resolve(__dirname, "src/components/pages"),
+            style: path.resolve(__dirname, "src/css"),
+            db: path.resolve(__dirname, "src/db"),
+            hooks: path.resolve(__dirname, "src/_hooks"),
+            helpers: path.resolve(__dirname, "src/_helpers"),
+        },
     },
     output: {
         path: path.resolve(__dirname, "./dist"),
@@ -31,7 +41,7 @@ module.exports = {
     devServer: {
         proxy: {
             "/api": {
-                target: "http://172.18.0.2/",
+                target: "http://172.17.0.2:80",
                 secure: false,
             },
         },

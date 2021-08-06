@@ -1,0 +1,37 @@
+@import "style/settings.scss";
+
+.endpointOption {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -5%);
+    box-shadow: $endpoint-option-shadow;
+    display: none;
+    background-color: white;
+    width: 100%;
+    max-width: 70px;
+    z-index: 4;
+    &--active {
+        display: block;
+    }
+    &__item {
+        cursor: pointer;
+        transition: $transition;
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        grid-template-rows: 1fr;
+        grid-template-areas: ". .";
+        text-align: left;
+        font-size: 10px;
+        padding: 5px 10px;
+        &:first-of-type {
+            border-bottom: $table-border;
+        }
+    }
+    &__delete {
+        color: $disactive-color;
+    }
+    &__icon {
+        margin-bottom: 3px;
+    }
+}

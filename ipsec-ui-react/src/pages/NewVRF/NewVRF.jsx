@@ -13,6 +13,7 @@ import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import { forceNumberClamp } from "../../utils/formatters";
 import CryptoHandler from "../../components/CryptoHandler/CryptoHandler";
 import { Button } from "../../components";
+import { Endpoints } from "template";
 
 export default function NewVRF(props) {
     const history = useHistory();
@@ -258,7 +259,8 @@ export default function NewVRF(props) {
                 </form>
             </div>
             <div className="vrf-detail-section-container">
-                <div className="vrf-section-header">Endpoints</div>
+                <Endpoints />
+                {/* <div className="vrf-section-header">Endpoints</div>
                 <table className="endpoints-table">
                     <thead>
                         <EndpointTableHeader
@@ -273,7 +275,7 @@ export default function NewVRF(props) {
                     className="btn endpoint-btn"
                     handleClick={addEndpointsToPayload}
                     textValue="Add new endpoint"
-                />
+                            />*/}
             </div>
             {/*<Dump value={} />*/}
         </div>

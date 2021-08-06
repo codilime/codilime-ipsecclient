@@ -10,6 +10,7 @@ import DetailVRF from "../pages/DetailVRF/DetailVRF";
 import NewVRF from "../pages/NewVRF/NewVRF";
 import DefaultView from "../pages/DefaultView/DefaultView";
 import "./App.scss";
+import 'style/global.scss'
 
 export default function App() {
     const [VRFConnections, updateVRFConnections] = useState([]);
