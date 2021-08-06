@@ -11,7 +11,7 @@ import NewVRF from '../components/pages/NewVRF/NewVRF';
 import DefaultView from '../components/pages/DefaultView/DefaultView';
 import './App.scss';
 import '../css/Global.scss';
-import {client} from "../_api";
+import { client } from '../_api';
 
 export default function App() {
   const [VRFConnections, updateVRFConnections] = useState([]);

@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import './DetailVRF.scss';
 import '../NewVRF/NewVRF.scss';
 
-import { FormDetail } from "../../template";
+import { FormDetail } from '../../template';
 import { useCreateVRFMainView } from '../../../_hooks/useCreateVRFMainView';
 import EndpointTableRow from '../../EndpointTableRow/EndpointTableRow';
 import NewEndpointRow from '../../NewEndpointRow/NewEndpointRow';
@@ -22,7 +22,7 @@ import Loader from '../../Loader/Loader';
 // import { forceNumberClamp } from '../../utils/formatters';
 import { client } from '../../../_api';
 import { vrfSchema } from '../../../schema';
-import { detailForm } from "../../../db/detailForm";
+import { detailForm } from '../../../db/detailForm';
 
 export default function DetailViewVrf(props) {
   const { id } = useParams();
@@ -168,23 +168,7 @@ export default function DetailViewVrf(props) {
         <br />
         <div className="vrf-detail-section-container">
           <div className="vrf-section-header">VRF Details</div>
-            <FormDetail />
-        </div>
-        <div className="vrf-detail-section-container">
-          <div className="vrf-section-header">Endpoints</div>
-          <table className="endpoints-table">
-            <thead>
-              <EndpointTableHeader hardwareSupport={hardwareSupport} />
-            </thead>
-            <tbody>
-              {detailVrf &&
-                detailVrf.endpoints &&
-                detailVrf.endpoints.map((endpoint) => {
-                  return <EndpointTableRow endpoint={endpoint} key={uuidv4()} hardwareSupport={hardwareSupport} />;
-                })}
-              <NewEndpointRow hardwareSupport={hardwareSupport} />
-            </tbody>
-          </table>
+          <FormDetail />
         </div>
         <Dump {...detailVrf} />
       </div>
