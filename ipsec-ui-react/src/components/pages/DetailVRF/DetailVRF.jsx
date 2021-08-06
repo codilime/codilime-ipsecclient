@@ -203,7 +203,7 @@ export default function DetailViewVrf(props) {
         <div className="vrf-detail-section-container">
           <div className="vrf-section-header">VRF Details</div>
 
-          <form onSubmit={handleSubmit()}>
+          <form onSubmit={handleSubmit()} autoComplete='off'>
             {VRFColumnOneView}
 
             {/*<div className="vrf-column-1">*/}

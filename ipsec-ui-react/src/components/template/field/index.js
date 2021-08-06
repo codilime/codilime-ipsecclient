@@ -7,7 +7,7 @@ import './style.scss';
 
 export const Field = ({ text, type, name, placeholder, references, onChange }) => {
   return (
-    <div className="field">
+    <div className="field" >
       <label className="field__label">{text}</label>
       <Input {...{ type, name, placeholder, onChange, ...references }} />
     </div>

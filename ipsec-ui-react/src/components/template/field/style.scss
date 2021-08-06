@@ -3,9 +3,8 @@
 .field {
   margin: 15px 0 5px 5px; //instead of putting margin on each .field this can be probably done by padding on the whole container
   position: relative;
-
   &__input {
-    padding: 3px 3px 5px 80px;
+    padding: 3px 3px 5px 140px;
     border: none;
     border-bottom: 2px solid $light-gray;
     outline: none;
@@ -13,6 +12,11 @@
       border-bottom: 2px solid $blue;
       color: $blue;
       outline: none;
+    }
+    &[type='checkbox'] {
+      position: relative;
+      bottom: 2px;
+      left: 150px;
     }
   }
   &__label {
