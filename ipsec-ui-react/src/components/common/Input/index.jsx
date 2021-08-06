@@ -2,12 +2,13 @@ import React from 'react';
 
 import PropTypes from 'prop-types';
 
-export function Input({ type, name, placeholder, onChange, ref }) {
-  return <input className="field__input" type={type} name={name} placeholder={placeholder} onChange={onChange} ref={ref} />;
+export function Input({ type, name, placeholder, onChange, ref, value }) {
+  return <input className="field__input" value={value} type={type} name={name} placeholder={placeholder} onChange={onChange} ref={ref} />;
 }
 
 Input.propTypes = {
   type: PropTypes.string,
+  value: PropTypes.string,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   onChange: PropTypes.func,

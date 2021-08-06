@@ -18,6 +18,9 @@
       bottom: 2px;
       left: 150px;
     }
+    &[type='number'] {
+      width: 200px;
+    }
   }
   &__label {
     padding: 3px 3px;

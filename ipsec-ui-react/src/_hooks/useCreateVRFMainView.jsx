@@ -1,77 +1,69 @@
 import React from 'react';
 
-import { DynamicVRFView } from '../db/DynamicVRFView';
+import { DynamicVRFView } from '../db/dynamicVRFView';
 import { Field } from '../components/template';
 
 export const useCreateVRFMainView = () => {
   const { mainVRFViewColumnOne, mainVRFViewColumnTwo, mainVRFViewColumnThree } = DynamicVRFView;
 
-  // const obj = {
-  //   "id": 1,
-  //   "client_name": "123",
-  //   "vlan": 1,
-  //   "crypto_ph1": [
-  //     "",
-  //     "",
-  //     ""
-  //   ],
-  //   "crypto_ph2": [
-  //     "",
-  //     "",
-  //     ""
-  //   ],
-  //   "physical_interface": "",
-  //   "active": false,
-  //   "hardware_support": false,
-  //   "local_as": 1,
-  //   "lan_ip": "asdasd",
-  //   "endpoints": null
-  // };
+  const obj = {
+    "id": 1,
+    "client_name": "test vrf",
+    "vlan": 10,
+    "crypto_ph1": [
+      "a",
+      "b",
+      "c"
+    ],
+    "crypto_ph2": [
+      "a",
+      "b",
+      "c"
+    ],
+    "physical_interface": "eth0",
+    "active": false,
+    "hardware_support": false,
+    "local_as": 14,
+    "lan_ip": "maska",
+    "endpoints": [
+      {
+        "remote_ip_sec": "213.189.47.210",
+        "local_ip": "213.189.47.210",
+        "peer_ip": "213.189.47.210",
+        "psk": "password",
+        "nat": false,
+        "bgp": true,
+        "remote_as": -1,
+        "hover": false,
+        "source_interface": ""
+      },
+      {
+        "remote_ip_sec": "213.189.47.210",
+        "local_ip": "213.189.47.210",
+        "peer_ip": "213.189.47.210",
+        "psk": "password",
+        "nat": true,
+        "bgp": true,
+        "remote_as": -1,
+        "hover": false,
+        "source_interface": ""
+      },
+      {
+        "remote_ip_sec": "213.189.47.210",
+        "local_ip": "213.189.47.210",
+        "peer_ip": "213.189.47.210",
+        "psk": "password",
+        "nat": true,
+        "bgp": false,
+        "remote_as": -1,
+        "hover": false,
+        "source_interface": ""
+      }
+    ]
+  };
 
-  const VRFColumnOneView = mainVRFViewColumnOne.map((el, index) => {
-    switch (el.name) {
-      case 'client_name': {
-        return <Field {...el} />;
-      }
-      case 'lan_ip': {
-        return <Field {...el} />;
-      }
-      case 'physical_interface': {
-        return <Field {...el} />;
-      }
-      case 'active': {
-        return <Field {...el} />;
-      }
-      case 'hardware_support': {
-        return <Field {...el} />;
-      }
-      default:
-        return;
-    }
-  });
-  const VRFColumnTwoView = mainVRFViewColumnTwo.map((el) => {
-    switch (el.name) {
-      case 'local_as': {
-        return <Field {...el} />;
-      }
-      case 'vlan': {
-        return <Field {...el} />;
-      }
-      default:
-        return;
-    }
-  })
-  const VRFColumnThreeView = mainVRFViewColumnThree.map((el) => {
-    switch (el.name) {
-      case 'crypto_ph1': {
-        return <Field {...el} />;
-      }
-      case 'crypto_ph2': {
-        return <Field {...el} />;
-      }
-      default:
-        return;
-    }
-  })
+  const VRFColumnOneView = mainVRFViewColumnOne.map((el) => <Field {...el} value={obj[el.name]} />);
+  const VRFColumnTwoView = mainVRFViewColumnTwo.map((el) => <Field {...el} value={obj[el.name]} />);
+  const VRFColumnThreeView = mainVRFViewColumnThree.map((el) => <Field {...el} value={obj[el.name]} />);
   return { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView };
 };

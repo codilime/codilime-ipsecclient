@@ -11,6 +11,7 @@ import NewVRF from '../components/pages/NewVRF/NewVRF';
 import DefaultView from '../components/pages/DefaultView/DefaultView';
 import './App.scss';
 import '../css/Global.scss';
+import {client} from "../_api";
 
 export default function App() {
   const [VRFConnections, updateVRFConnections] = useState([]);
@@ -52,6 +53,32 @@ export default function App() {
     );
   }
 
+  // const fetchSoftwareEncryptionData = async () =>
+
+  // const fetchVRFDetails = async () => {
+  //   try {
+  //     const data = await client(`${id}`);
+  //     console.log(data);
+  //     updateDetailVrf(data);
+  //     updateVrfName(data.client_name);
+  //     updateLanIpMask(data.lan_ip);
+  //     updatePhysicalInterface(data.physical_interface);
+  //     updateActive(data.active);
+  //     updateHardwareSupport(data.hardware_support);
+  //     updateVlanValue(data.vlan);
+  //     updateBgpValue(data.local_as);
+  //     updateCryptoPh1_1(data.crypto_ph1[0]);
+  //     updateCryptoPh1_2(data.crypto_ph1[1]);
+  //     updateCryptoPh1_3(data.crypto_ph1[2]);
+  //     updateCryptoPh2_1(data.crypto_ph2[0]);
+  //     updateCryptoPh2_2(data.crypto_ph2[1]);
+  //     updateCryptoPh2_3(data.crypto_ph2[2]);
+  //     updateLoading(false);
+  //   } catch (err) {
+  //     setError(err.error);
+  //   }
+  //   console.log(error);
+  // };
   async function fetchHardwareEncryptionPh1Data() {
     axios({
       method: 'get',

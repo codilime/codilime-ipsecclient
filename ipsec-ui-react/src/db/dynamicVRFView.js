@@ -1,3 +1,5 @@
+import {maxValueForVlan, minValueForVlanRemoteASLocalAS} from "../constants";
+
 export const DynamicVRFView = {
   mainVRFViewColumnOne: [
     { type: 'text', name: 'client_name', placeholder: 'i.e. VRF1 Office', text: 'Name:'},
@@ -8,7 +10,7 @@ export const DynamicVRFView = {
   ],
   mainVRFViewColumnTwo: [
     { type: 'number', name: 'local_as', text: 'BGP Local AS' },
-    { type: 'number', name: 'vlan', text: 'VLAN' }
+    { type: 'number', name: 'vlan', text: 'VLAN', max: {maxValueForVlan}, min: {minValueForVlanRemoteASLocalAS}, step: '1' }
   ],
   mainVRFViewColumnThree: [
     { type: 'array', name: 'crypto_ph1', text: 'Crypto phase 1' },
