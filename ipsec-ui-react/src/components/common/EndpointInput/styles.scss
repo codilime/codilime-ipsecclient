@@ -1,0 +1,18 @@
+@import "style/settings.scss";
+
+.endpointInput {
+    width: 100%;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    &__active {
+        border-bottom: 1px solid black;
+    }
+    &__checkbox {
+        width: auto;
+    }
+    &__icon {
+        cursor: pointer;
+        margin-top:3px;
+    }
+}
