@@ -5,7 +5,7 @@
   position: relative;
 
   &__input {
-    padding: 3px 3px 5px 50px;
+    padding: 3px 3px 5px 80px;
     border: none;
     border-bottom: 2px solid $light-gray;
     outline: none;
@@ -13,7 +13,6 @@
       border-bottom: 2px solid $blue;
       color: $blue;
       outline: none;
-
     }
   }
   &__label {
@@ -25,4 +24,3 @@
     position: absolute;
   }
 }
-

@@ -2,10 +2,8 @@ import React from 'react';
 
 import PropTypes from 'prop-types';
 
-import './style.scss';
-
-export function Input({ type, name, placeholder, onChange, ref}) {
-  return <input className='field__input' type={type} name={name} placeholder={placeholder} onChange={onChange} ref={ref} />;
+export function Input({ type, name, placeholder, onChange, ref }) {
+  return <input className="field__input" type={type} name={name} placeholder={placeholder} onChange={onChange} ref={ref} />;
 }
 
 Input.propTypes = {

@@ -8,9 +8,9 @@ import { v4 as uuidv4 } from 'uuid';
 import './DetailVRF.scss';
 import '../NewVRF/NewVRF.scss';
 import { maxValueForLocalAS, maxValueForVlan } from '../../../constants';
-import { Field } from "template";
+import { Field } from 'template';
 
-import { useCreateVRFMainView } from "../../../_hooks/useCreateVRFMainView";
+import { useCreateVRFMainView } from '../../../_hooks/useCreateVRFMainView';
 import EndpointTableRow from '../../EndpointTableRow/EndpointTableRow';
 import NewEndpointRow from '../../NewEndpointRow/NewEndpointRow';
 import CryptoHandler from '../../CryptoHandler/CryptoHandler';
@@ -62,6 +62,7 @@ export default function DetailViewVrf(props) {
   const { id } = useParams();
   const history = useHistory();
   const { register, handleSubmit, errors } = useForm({ resolver: yupResolver(vrfSchema) });
+  const { VRFColumnOneView } = useCreateVRFMainView();
 
   const { softwareEncryption, hardwarePh1Encryption, hardwarePh2Encryption, updateSidebar } = props;
 
@@ -203,8 +204,7 @@ export default function DetailViewVrf(props) {
           <div className="vrf-section-header">VRF Details</div>
 
           <form onSubmit={handleSubmit()}>
-            <Field text="Name" name='client_name' placeholder='i.e. VRF101 Office' type='text'/>
-            {useCreateVRFMainView()}
+            {VRFColumnOneView}
 
             {/*<div className="vrf-column-1">*/}
             {/*  <div className="vrf-column-1-item">*/}
@@ -266,7 +266,6 @@ export default function DetailViewVrf(props) {
             {/*  />*/}
             {/*</div>*/}
           </form>
-
         </div>
         <div className="vrf-detail-section-container">
           <div className="vrf-section-header">Endpoints</div>

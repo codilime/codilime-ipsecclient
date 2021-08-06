@@ -1,27 +1,23 @@
-import React from "react";
+import React from 'react';
 
-import { DynamicVRFView } from "../db/DynamicVRFView";
-import { Field } from "../components/template";
-
+import { DynamicVRFView } from '../db/DynamicVRFView';
+import { Field } from '../components/template';
 
 export const useCreateVRFMainView = () => {
-    const {mainVRFViewColumnOne, mainVRFViewColumnTwo, mainVRFViewColumnThree} = DynamicVRFView;
+  const { mainVRFViewColumnOne, mainVRFViewColumnTwo, mainVRFViewColumnThree } = DynamicVRFView;
 
-    const VRFColumnOneView = mainVRFViewColumnOne.map((el) => {
-        switch(el.type) {
-            case 'text': {
-                return (
-                    <Field name={el.name} placeholder={el.placeholder} type={el.type} />
-                )
-            }
-            case 'checkbox': {
-                return (
-                    <Field name={el.name} type={el.type} />
-                )
-            }
-            default: return;
-        }
-    });
+  const VRFColumnOneView = mainVRFViewColumnOne.map((el, index) => {
+    switch (el.type) {
+      case 'text': {
+        return <Field {...el} />;
+      }
+      case 'checkbox': {
+        return <Field {...el} />;
+      }
+      default:
+        return;
+    }
+  });
 
-    return { VRFColumnOneView }
-}
+  return { VRFColumnOneView };
+};
