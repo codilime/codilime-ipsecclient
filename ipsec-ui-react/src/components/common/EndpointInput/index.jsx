@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { IoEyeSharp } from "react-icons/io5";
 import { BsEyeSlashFill } from "react-icons/bs";
-import { useToggle } from "hooks";
+import { useToggle} from "../../../_hooks";
 import "./styles.scss";
 
 export const EndpointInput = ({

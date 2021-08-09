@@ -12,9 +12,9 @@ import EndpointTableHeader from '../../EndpointTableHeader/EndpointTableHeader';
 import Breadcrumb from '../../Breadcrumb/Breadcrumb';
 import { forceNumberClamp } from '../../../utils/formatters';
 import CryptoHandler from '../../CryptoHandler/CryptoHandler';
-import { Button } from 'common';
+import { Button} from "../../common";
 
-export default function NewVRF(props) {
+export function NewVRF(props) {
   const history = useHistory();
 
   const { softwareEncryption, hardwarePh1Encryption, hardwarePh2Encryption, updateSidebar } = props;

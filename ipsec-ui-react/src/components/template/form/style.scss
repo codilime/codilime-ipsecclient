@@ -1,4 +1,7 @@
 .form__fieldset {
-  display: grid;
-  grid-template-columns: 33% 33% 33%;
+  display: flex;
+  flex-wrap: wrap;
+  &__column {
+    flex-grow: 1;
+  }
 }

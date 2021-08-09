@@ -6,9 +6,9 @@ import axios from "axios";
 
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import DetailVRF from "../pages/DetailVRF/DetailVRF";
-import NewVRF from "../pages/NewVRF/NewVRF";
-import DefaultView from "../pages/DefaultView/DefaultView";
+import { DetailViewVrf } from "../components/pages/DetailVRF/DetailVRF";
+import { DefaultView } from "../components/pages/DefaultView/DefaultView";
+import { NewVRF} from "../components/pages/NewVRF/NewVRF";
 import "./App.scss";
 import 'style/global.scss'
 
@@ -118,7 +118,7 @@ export default function App() {
                         <Route
                             path="/vrf/:id"
                             render={() => (
-                                <DetailVRF
+                                <DetailViewVrf
                                     softwareEncryption={softwareEncryption}
                                     hardwarePh1Encryption={
                                         hardwarePh1Encryption

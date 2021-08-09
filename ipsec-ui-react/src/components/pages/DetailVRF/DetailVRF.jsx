@@ -24,7 +24,7 @@ import { client } from '../../../_api';
 import { vrfSchema } from '../../../schema';
 import { detailForm } from '../../../db/detailForm';
 
-export default function DetailViewVrf(props) {
+export function DetailViewVrf(props) {
   const { id } = useParams();
   const history = useHistory();
   const { register, handleSubmit, errors } = useForm({ resolver: yupResolver(vrfSchema) });
