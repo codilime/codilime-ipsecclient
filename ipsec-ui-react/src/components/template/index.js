@@ -1,2 +1,2 @@
-export { Field } from './field';
-export { FormDetail } from './form';
+export { Wrapper } from "./wrapper";
+export { Endpoints, EachEndpoint, EndpointOption } from "./endpoints";
