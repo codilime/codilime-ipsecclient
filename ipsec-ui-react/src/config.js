@@ -1,1 +1,1 @@
-export const detailApiAddress = '/api/vrfs';
+export const detailApiAddress = '/api';

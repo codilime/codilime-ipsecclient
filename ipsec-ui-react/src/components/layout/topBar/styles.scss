@@ -1,0 +1,19 @@
+@import "style/settings.scss";
+
+.topBar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-bottom: $table-border;
+  padding: 10px;
+  width: 100%;
+  background-color: white;
+  position: fixed;
+  z-index: 101;
+  &__image {
+    height: 30px;
+  }
+  &__productName {
+    margin-left: 20px;
+  }
+}

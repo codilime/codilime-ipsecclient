@@ -1,16 +1,16 @@
-@import "style/settings.scss";
+@import 'style/settings.scss';
 
 .wrapper {
-    &__header {
-        border: $wrapper-border;
-        background-color: $bgc-gray;
-    }
-    &__title {
-        padding: $wrapper-padding;
-        margin: 0;
-    }
-    &__content {
-        border: $wrapper-border;
-        border-top: none;
-    }
+  &__header {
+    border: $wrapper-border;
+    background-color: $bgc-gray;
+  }
+  &__title {
+    padding: $wrapper-padding;
+    margin: 0;
+  }
+  &__content {
+    border: $wrapper-border;
+    border-top: none;
+  }
 }

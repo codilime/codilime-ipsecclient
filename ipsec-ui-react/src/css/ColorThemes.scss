@@ -3,7 +3,6 @@ $light-gray: rgba(167, 167, 167, 0.74);
 $white: #ffffff;
 $blue: #558ce6;
 $red: #ff0000;
-
 /* Colors */
 $sidebar-background-color: #626469;
 $sidebar-text-color: #ffffff;
@@ -12,42 +11,41 @@ $gray-light-color: lightgray;
 $disactive-color: red;
 $active-color: green;
 $light-blue: lightblue;
-
 /* Border */
 $wrapper-border: 1px solid black;
 $info-border: 1px solid lightblue;
 $info-footer-border: 0.5px solid gray;
 $table-border-color: gray;
 $table-border: 0.5px solid gray;
-
+$sideBar-active-border: 1px solid blue;
+/* Border-radius */
+$button-radius: 18px;
 /* Background-color */
 $bgc-gray: #93959b;
 $bgc-info: lightblue;
 $bgc-disable: lightgray;
-
+$bgc-active: #48484b;
 /* Font-size */
 $title-size: 18px;
-
+$link-font-size: 12px;
 /* Font-color */
 $title-color: black;
 $info-title-color: white;
-
 /* Font-family */
-$title-family: "Helvetica", monospace;
-
+$title-family: 'Helvetica', monospace;
 /* Font-weight */
 $title-weight: 600;
 $info-title-weight: 400;
-
 /* Padding */
 $wrapper-padding: 10px;
 $info-padding: 5px;
-
+$padding-sm: 5px;
+$padding-md: 10px;
+$padding-lg: 15px;
+$padding-xl: 20px;
 /* Margin */
 $wrapper-margin: 0px;
-
 /* Transition */
 $transition: 0.3s linear all;
-
 /* Box-shadow */
 $endpoint-option-shadow: 0px 0px 5px -2px rgba(0, 0, 0, 0.35);

@@ -1,8 +1,5 @@
 @import '../../../css/ColorThemes';
 
-.new-vrf-connection-wrapper {
-  width: 100%;
-}
 .new-vrf-data-container {
   width: 100%;
   margin: 25px 0;
@@ -13,43 +10,4 @@
   width: 100%;
   font-weight: bold;
   padding-left: 3px;
-}
-
-.vrf-column-1 {
-  width: 24%;
-}
-.vrf-column-2 {
-  width: 16%;
-}
-.vrf-column-3 {
-  width: 58%;
-  margin-left: 15px;
-}
-.vrf-column-item {
-  width: 100%;
-  margin: 5px;
-}
-.vrf-column-1-item {
-  width: 100%;
-  margin: 5px;
-  text-align: right;
-}
-.vrf-column-item-number {
-  width: 100%;
-  margin: 5px;
-  text-align: right;
-  padding-right: 15px;
-}
-.vrf-column-checkbox-item {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-#hardware_support {
-  margin-left: 35px;
-}
-.vrf-crypto-container {
-  width: 100%;
-  margin: 5px;
 }
