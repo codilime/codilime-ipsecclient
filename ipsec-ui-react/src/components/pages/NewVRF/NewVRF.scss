@@ -1,4 +1,4 @@
-//@import '../../../css/ColorThemes';
+@import '../../../css/ColorThemes';
 //
 //.new-vrf-data-container {
 //  width: 100%;
@@ -11,3 +11,7 @@
 //  font-weight: bold;
 //  padding-left: 3px;
 //}
+
+.newVrf__name {
+  color: $breadcrumb-font-color;
+}

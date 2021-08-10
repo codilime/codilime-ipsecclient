@@ -20,9 +20,9 @@ export function FormDetail() {
       <Wrapper title="VRF details">
           <form onSubmit={handleSubmit()} autoComplete="off" className="form">
               <fieldset className="form__fieldset">
-                  <div className="form__fieldset__column">{VRFColumnOneView}</div>
-                  <div className="form__fieldset__column">{VRFColumnTwoView}</div>
-                  <div className="form__fieldset__column">{VRFColumnThreeView}</div>
+                  <div className="form__column">{VRFColumnOneView}</div>
+                  <div className="form__column">{VRFColumnTwoView}</div>
+                  <div className="form__column">{VRFColumnThreeView}</div>
               </fieldset>
               <Button  endpointButton className="vrf__btn">
                   Save changes

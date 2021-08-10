@@ -1,7 +1,7 @@
 @import '../../../css/ColorThemes';
 
 .field {
-  margin: 15px 0 5px 5px; //instead of putting margin on each .field this can be probably done by padding on the whole container
+  margin: 15px 0 5px 5px;
   position: relative;
   &__input {
     padding: 3px 3px 5px 140px;

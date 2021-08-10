@@ -9,7 +9,7 @@ export const SideBar = () => {
   const { idVrf } = useGetLocation();
   const listContext =
     vrfs !== [] ? (
-      vrfs.map(({ vlan, client_name, id }) => (
+      vrfs.map(({ client_name, id }) => (
         <li className={`sideBar__eachVrf ${id === idVrf ? 'sideBar__eachVrf--active' : ''}`} key={id}>
           <Link to={`/vrf/${id}`} className="sideBar__link">
             {client_name}

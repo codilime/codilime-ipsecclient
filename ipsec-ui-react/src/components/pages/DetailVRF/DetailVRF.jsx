@@ -17,7 +17,6 @@ export function DetailViewVrf() {
           <span>
             Vrfs / <span className="newVrf__name">{vrf.client_name}</span>
           </span>
-
         </header>
         <article>
           <FormDetail />
