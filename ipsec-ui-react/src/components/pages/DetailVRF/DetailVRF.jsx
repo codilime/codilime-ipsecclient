@@ -1,20 +1,29 @@
 import React from 'react';
 
 import { FormDetail } from 'template';
+import { useVrfLogic } from 'hooks';
 
 import { Button } from 'common';
+import { Endpoints } from '../../template';
 
 export function DetailViewVrf() {
+  const { vrf } = useVrfLogic();
+  console.log(vrf);
 
   return (
-    <div>
-      <div className="vrf-detail-container">
-        <Button className="btn red-btn delete-btn" textValue="Delete VRF" />
-        <div className="vrf-detail-section-container">
-          <div className="vrf-section-header">VRF Details</div>
+    <section>
+      <article>
+        <header className="vrf__header">
+          <span>
+            Vrfs /<span className="newVrf__name">{vrf.client_name}</span>
+          </span>
+
+        </header>
+        <article>
           <FormDetail />
-        </div>
-      </div>
-    </div>
+          <Endpoints />
+        </article>
+      </article>
+    </section>
   );
 }

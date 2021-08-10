@@ -2,19 +2,22 @@ import React from 'react';
 
 import './NewVRF.scss';
 
-import { FormDetail } from 'template';
+import { FormDetail, Endpoints } from 'template';
 
 export function NewVRF() {
   return (
-    <div className="new-vrf-connection-wrapper">
-      <div className="new-vrf-top-bar">
-      </div>
-      <div className="new-vrf-data-container">
-        <div className="vrf-section-header">VRF Details</div>
-        <form>
-          <FormDetail />
-        </form>
-      </div>
-    </div>
+      <section>
+          <article>
+              <header className="vrf__header">
+          <span>
+            Vrfs / <span className="newVrf__name">New VRF</span>
+          </span>
+              </header>
+              <article>
+                  <FormDetail />
+                  <Endpoints />
+              </article>
+          </article>
+      </section>
   );
 }

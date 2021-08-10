@@ -20,5 +20,6 @@ Field.propTypes = {
   placeholder: PropTypes.string,
   onChange: PropTypes.func,
   text: PropTypes.string,
-  references: PropTypes.any
+  references: PropTypes.any,
+  value: PropTypes.any
 };

@@ -1,6 +1,7 @@
 @import 'style/settings.scss';
 
 .wrapper {
+  margin: 15px 0;
   &__header {
     border: $wrapper-border;
     background-color: $bgc-gray;

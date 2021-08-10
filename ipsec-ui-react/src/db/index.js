@@ -45,29 +45,29 @@ export const endpoint = [
 ];
 
 export const defaultVrf = {
-  id: "",
-  client_name: "Hello",
+  id: '',
+  client_name: 'Hello',
   vlan: 0,
   crypto_ph1: [],
   crypto_ph2: [],
-  physical_interfaceL: "",
+  physical_interfaceL: '',
   active: false,
   hardware_support: false,
   local_as: 0,
-  lan_ip: "",
+  lan_ip: '',
   endpoints: [
     {
-      remote_ip_sec: "",
-      local_ip: "",
-      peer_ip: "",
-      psk: "",
+      remote_ip_sec: '',
+      local_ip: '',
+      peer_ip: '',
+      psk: '',
       nat: false,
       bgp: false,
       remote_as: -1,
       hover: false,
-      source_interface: "",
-    },
-  ],
+      source_interface: ''
+    }
+  ]
 };
 
 export const detailForm = [
@@ -103,4 +103,3 @@ export const detailForm = [
     name: 'vlan'
   }
 ];
-

@@ -1,20 +1,15 @@
-import React, { useState, createContext, useEffect } from 'react';
-
+import React, { useState, createContext } from 'react';
 import PropTypes from 'prop-types';
-
 import { defaultVrf } from 'db';
-import { useFetchData } from 'hooks';
 
-export const VrfsContext = createContext([defaultVrf]);
+export const VrfsContext = createContext(defaultVrf);
 
 export const VrfsProvider = ({ children }) => {
-  const [vrfs, setVrfs] = useState([]);
-  const { fetchData, postVrfData } = useFetchData();
-  useEffect(() => {
-    fetchData(setVrfs);
-  }, []);
-  return <VrfsContext.Provider value={{ vrfs, setVrfs }}>{children}</VrfsContext.Provider>;
+  const [vrf, setVrf] = useState(defaultVrf);
+
+  return <VrfsContext.Provider value={{ vrf, setVrf }}>{children}</VrfsContext.Provider>;
 };
+
 VrfsProvider.propTypes = {
   children: PropTypes.element
 };
