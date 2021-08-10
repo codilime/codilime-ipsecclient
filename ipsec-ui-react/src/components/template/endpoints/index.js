@@ -1,3 +1,3 @@
-export { Endpoints } from "./Table";
-export { EachEndpoint } from "./Row";
-export { EndpointOption } from "./endpointOption";
+export * from './Table';
+export * from './Row';
+export * from './endpointOption';
