@@ -1,5 +1,17 @@
 @import 'style/settings.scss';
 
+.button {
+  border: $table-border;
+  border-radius: $button-radius;
+  padding: 8px $padding-md;
+  font-size: 12px;
+  cursor: pointer;
+  text-transform: capitalize;
+  &__delete {
+    background-color: $bgc-delete;
+    color: white;
+  }
+}
 .endpointButton {
   padding: 2px 10px;
   border: none;

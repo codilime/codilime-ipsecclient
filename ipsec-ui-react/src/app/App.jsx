@@ -7,6 +7,7 @@ import { DefaultView } from '../components/pages/DefaultView/DefaultView';
 import { NewVRF } from '../components/pages/NewVRF/NewVRF';
 import { MainLayout } from 'layout';
 
+import './App.scss';
 import 'style/Global.scss';
 
 export default function App() {
