@@ -15,7 +15,7 @@ export function DetailViewVrf() {
       <article>
         <header className="vrf__header">
           <span>
-            Vrfs /<span className="newVrf__name">{vrf.client_name}</span>
+            Vrfs / <span className="newVrf__name">{vrf.client_name}</span>
           </span>
 
         </header>

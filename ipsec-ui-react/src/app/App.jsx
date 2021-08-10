@@ -6,6 +6,7 @@ import { DetailViewVrf } from '../components/pages/DetailVRF/DetailVRF';
 import { DefaultView } from '../components/pages/DefaultView/DefaultView';
 import { NewVRF } from '../components/pages/NewVRF/NewVRF';
 import { MainLayout } from 'layout';
+
 import './App.scss';
 import 'style/Global.scss';
 
