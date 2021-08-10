@@ -1,0 +1,15 @@
+@import 'style/settings.scss';
+
+.mainLayout {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  z-index: 1;
+
+  &__content {
+    padding: $padding-lg;
+    margin-left: 150px;
+    margin-top: 50px;
+    width: calc(100% - 150px);
+  }
+}
