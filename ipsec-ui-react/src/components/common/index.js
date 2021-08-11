@@ -1,2 +1,2 @@
-export { EndpointInput } from "./EndpointInput";
-export { Button, EndpointButton } from "./Button";
+export * from './EndpointInput';
+export * from './Button';

@@ -1,0 +1,12 @@
+@import 'style/settings.scss';
+
+.vrf {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  &__btn {
+    min-width: 120px;
+  }
+}

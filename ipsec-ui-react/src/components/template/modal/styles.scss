@@ -1,0 +1,56 @@
+@import 'style/settings.scss';
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  opacity: 0;
+  visibility: hidden;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999;
+  background-color: $modal-background;
+  transition: $transition;
+  &--active {
+    opacity: 1;
+    visibility: visible;
+  }
+  &__content {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+  }
+  &__header {
+    padding: $padding-md $padding-md;
+    border-bottom: $table-border;
+    height: 20%;
+  }
+  &__title {
+    font-size: $modal-title-size;
+  }
+  &__context {
+    padding: $padding-xl;
+    height: 40%;
+  }
+  &__description {
+    font-size: $modal-description-size;
+  }
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    height: 40%;
+    padding: 0 $padding-xl $padding-xl;
+  }
+  &__btn {
+    width: 45%;
+    border: none;
+    &--delete {
+      background-color: red;
+      color: white;
+    }
+  }
+}
