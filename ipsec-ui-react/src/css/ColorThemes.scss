@@ -1,39 +1,44 @@
-$dark-gray: #626469;
-$light-gray: rgba(167, 167, 167, 0.74);
-$white: #ffffff;
-$blue: #558ce6;
-$red: #ff0000;
+$primary: #049FD9;
+$gray01: #F2F2F2;
+$gray02: #626469;
+$gray03: #39393B;
+$white: #FFFFFF;
+$red: #CF2030;
+$green: #6CC04A;
 
 /* Colors */
-$sidebar-background-color: #626469;
-$sidebar-text-color: #ffffff;
-$breadcrumb-font-color: #558ce6;
-$gray-light-color: lightgray;
-$disactive-color: red;
-$active-color: green;
+$sidebar-background-color: #F2F2F2;
+$sidebar-text-color: #FFFFFF;
+$breadcrumb-font-color: #049FD9;
+$gray-light-color: #F2F2F2;
+$disactive-color: #CF2030;
+$active-color: #6CC04A;
 $light-blue: lightblue;
-$bgc-delete: red;
 
 /* Border */
-$wrapper-border: 1px solid black;
+$wrapper-border: 1px solid #39393B;
 $info-border: 1px solid lightblue;
 $info-footer-border: 0.5px solid gray;
 $table-border-color: gray;
 $table-border: 0.5px solid gray;
-$sideBar-active-border: 1px solid blue;
+$sideBar-active-border: 1px solid #049FD9;
 
 /* Border-radius */
 $button-radius: 18px;
 
 /* Background-color */
-$bgc-gray: #93959b;
+$bgc-gray: #93959B;
 $bgc-info: lightblue;
 $bgc-disable: lightgray;
-$bgc-active: #48484b;
+$bgc-active: #48484B;
+$modal-background: #00000057;
+$bgc-delete: red;
 
 /* Font-size */
 $title-size: 18px;
 $link-font-size: 12px;
+$modal-description-size: 12px;
+$modal-title-size: 12px;
 
 /* Font-color */
 $title-color: black;
@@ -56,6 +61,7 @@ $padding-xl: 20px;
 
 /* Margin */
 $wrapper-margin: 0px;
+$margin-md: 10px;
 
 /* Transition */
 $transition: 0.3s linear all;

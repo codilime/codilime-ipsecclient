@@ -25,9 +25,10 @@
     padding: $padding-md;
   }
   &__btn {
+    background: $white;
     width: 100%;
     padding: 0;
-    border-radius: 12px;
+    border-radius: 18px;
   }
   &__link {
     padding: $padding-md;

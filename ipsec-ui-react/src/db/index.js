@@ -50,7 +50,7 @@ export const defaultVrf = {
   vlan: 0,
   crypto_ph1: [],
   crypto_ph2: [],
-  physical_interfaceL: '',
+  physical_interface: '',
   active: false,
   hardware_support: false,
   local_as: 0,

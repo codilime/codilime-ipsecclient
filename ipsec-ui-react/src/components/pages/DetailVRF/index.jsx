@@ -1,23 +1,26 @@
 import React from 'react';
+
 import { Endpoints, Modal, Visualization } from 'template';
 import { Button } from 'common';
 import { useModalLogic, useVrfLogic } from 'hooks';
+import { FormDetail } from "template";
 
 export const DetailViewVrf = () => {
   const { vrf } = useVrfLogic();
   const { show, handleToggleModal } = useModalLogic();
 
   return (
-    <section>
+    <section className="vrf">
       <header className="vrf__header">
         <span>
-          Vrfs /<span className="newVrf__name">{vrf.client_name}</span>
+          VRFs / <span className="vrf__name">{vrf.client_name}</span>
         </span>
         <Button btnDelete className="vrf__btn" onClick={handleToggleModal}>
           Delete VRF
         </Button>
       </header>
       <article>
+        <FormDetail />
         <Endpoints />
         <Visualization />
       </article>

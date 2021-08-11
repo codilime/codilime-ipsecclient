@@ -28,7 +28,7 @@
   }
   &__row {
     &:nth-of-type(odd) {
-      background-color: $light-gray;
+      background-color: $gray01;
     }
   }
   &__column {
@@ -44,6 +44,9 @@
   }
   &__addBtn {
     border: $table-border;
+    border-right: none;
+    border-left: none;
+    border-bottom: none;
     padding: 10px;
     background-color: white;
   }

@@ -8,19 +8,6 @@ export const vrfSchema = yup.object().shape({
   physical_interface: yup.string().required('Please provide physical interface'),
   active: yup.boolean().required(),
   hardware_support: yup.boolean().required(),
-  local_as: yup.number().min(1).max({ maxValueForLocalAS }).integer('Please provide integer'),
-  vlan: yup.number().min(1).max({ maxValueForVlan }).integer('Please provide integer')
+  local_as: yup.number().min(1).max(maxValueForLocalAS).integer('Please provide integer'),
+  vlan: yup.number().min(1).max(maxValueForVlan).integer('Please provide integer')
 });
-
-//     names for reference
-
-//     client_name: vrfName,
-//     lan_ip: lanIpMask,
-//     active: active,
-//     vlan: parseInt(vlanValue, 10),
-//     crypto_ph1: [cryptoPh1_1, cryptoPh1_2, cryptoPh1_3],
-//     crypto_ph2: [cryptoPh2_1, cryptoPh2_2, cryptoPh2_3],
-//     physical_interface: physicalInterface,
-//     hardware_support: hardwareSupport,
-//     local_as: parseInt(bgpValue, 10),
-//     endpoints: detailVrf.endpoints

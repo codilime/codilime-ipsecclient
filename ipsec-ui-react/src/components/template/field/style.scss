@@ -7,11 +7,11 @@
     padding: 3px 3px 5px 140px;
     width: 90%;
     border: none;
-    border-bottom: 2px solid $light-gray;
+    border-bottom: 2px solid $gray01;
     outline: none;
     &:focus {
-      border-bottom: 2px solid $blue;
-      color: $blue;
+      border-bottom: 2px solid $primary;
+      color: $primary;
       outline: none;
     }
     &[type='checkbox'] {
