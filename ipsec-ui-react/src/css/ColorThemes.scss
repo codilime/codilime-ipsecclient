@@ -1,3 +1,4 @@
+/* design pallet */
 $primary: #049FD9;
 $gray01: #F2F2F2;
 $gray02: #626469;
@@ -7,32 +8,32 @@ $red: #CF2030;
 $green: #6CC04A;
 
 /* Colors */
-$sidebar-background-color: #F2F2F2;
+$sidebar-background-color: $gray01;
 $sidebar-text-color: #FFFFFF;
-$breadcrumb-font-color: #049FD9;
-$gray-light-color: #F2F2F2;
-$disactive-color: #CF2030;
+$breadcrumb-font-color: $primary;
+$gray-light-color: $gray01;
+$disactive-color: $red;
 $active-color: #6CC04A;
 $light-blue: lightblue;
 
 /* Border */
-$wrapper-border: 1px solid #39393B;
+$wrapper-border: 1px solid $gray02;
 $info-border: 1px solid lightblue;
 $info-footer-border: 0.5px solid gray;
 $table-border-color: gray;
 $table-border: 0.5px solid gray;
-$sideBar-active-border: 1px solid #049FD9;
+$sideBar-active-border: 1px solid $primary;
 
 /* Border-radius */
 $button-radius: 18px;
 
 /* Background-color */
-$bgc-gray: #93959B;
+$bgc-gray: $gray02;
 $bgc-info: lightblue;
-$bgc-disable: lightgray;
-$bgc-active: #48484B;
+$bgc-disable: $gray01;
+$bgc-active: $gray03;
 $modal-background: #00000057;
-$bgc-delete: red;
+$bgc-delete: $red;
 
 /* Font-size */
 $title-size: 18px;

@@ -1,8 +1,11 @@
+@import 'style/settings.scss';
+
 .form {
   &__fieldset {
     display: flex;
     flex-wrap: wrap;
     border: none;
+    border-bottom: 1px solid $gray03;
   }
   &__column {
     flex-grow: 1;
