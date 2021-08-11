@@ -14,6 +14,9 @@
   &--active {
     display: block;
   }
+  &__span {
+    margin-left: 5px;
+  }
   &__item {
     cursor: pointer;
     transition: $transition;
