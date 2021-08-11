@@ -46,7 +46,7 @@ export const endpoint = [
 
 export const defaultVrf = {
   id: '',
-  client_name: 'Hello',
+  client_name: '',
   vlan: 0,
   crypto_ph1: [],
   crypto_ph2: [],
