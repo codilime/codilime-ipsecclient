@@ -1,4 +1,12 @@
-export const tableHeaderSchema = [{ item: 'Remote IP' }, { item: 'Local IP' }, { item: 'Peer IP' }, { item: 'PSK' }, { item: 'NAT' }, { item: 'BGP' }, { item: 'ACTION' }];
+export const tableHeaderSchema = [
+  { item: 'Remote IP', className: "header__name" },
+  { item: 'Local IP', className: "header__name" },
+  { item: 'Peer IP', className: "header__name" },
+  { item: 'PSK', className: "header__name" },
+  { item: 'NAT', className: "header__name" },
+  { item: 'BGP', className: "header__name" },
+  { item: 'ACTION', className: "header__name" }
+];
 
 export const emptyEndpointSchema = {
   remote_ip_sec: '',
