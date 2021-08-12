@@ -5,11 +5,11 @@ import PropTypes from 'prop-types';
 import { Input } from 'common';
 import './style.scss';
 
-export const Field = ({ text, type, name, placeholder, references, onChange, value}) => {
+export const Field = ({ text, type, name, placeholder, references, onChange, value }) => {
   return (
     <div className="field">
       <label className="field__label">{text}</label>
-      <Input {...{ type, value,  name, placeholder, onChange, ...references }} />
+      <Input {...{ type, value, name, placeholder, onChange, ...references }} />
     </div>
   );
 };

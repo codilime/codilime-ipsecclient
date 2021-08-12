@@ -11,7 +11,7 @@ export const useCreateVRFMainView = () => {
 
   const { mainVRFViewColumnOne, mainVRFViewColumnTwo, mainVRFViewColumnThree } = DynamicVRFView;
 
-  const VRFColumnOneView = mainVRFViewColumnOne.map((column) => <Field {...column}  value={vrf[column.name]} />);
+  const VRFColumnOneView = mainVRFViewColumnOne.map((column) => <Field {...column} value={vrf[column.name]} />);
   const VRFColumnTwoView = mainVRFViewColumnTwo.map((column) => <Field {...column} value={vrf[column.name]} />);
   const VRFColumnThreeView = mainVRFViewColumnThree.map((column) => <Field {...column} value={vrf[column.name]} />);
 

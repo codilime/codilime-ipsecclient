@@ -2,7 +2,7 @@ import React from 'react';
 
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
-import { DetailViewVrf, NewVRF, DefaultView } from "pages";
+import { DetailViewVrf, NewVRF, DefaultView } from 'pages';
 import { MainLayout } from 'layout';
 
 import './App.scss';

@@ -7,14 +7,14 @@ import { useCreateVRFMainView } from '../../../_hooks/useCreateVRFMainView';
 import { Wrapper } from '../wrapper';
 
 import { vrfSchema } from '../../../schema';
-import { detailForm } from 'db';
+
+import { Button } from '../../common';
 
 import './style.scss';
-import { Button } from '../../common';
 
 export function FormDetail() {
   const { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView } = useCreateVRFMainView();
-  const { register, handleSubmit, errors } = useForm({ resolver: yupResolver(vrfSchema) });
+  const { handleSubmit } = useForm({ resolver: yupResolver(vrfSchema) });
 
   return (
     <Wrapper title="VRF details">

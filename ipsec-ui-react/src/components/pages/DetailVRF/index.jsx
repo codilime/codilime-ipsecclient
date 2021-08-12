@@ -3,7 +3,7 @@ import React from 'react';
 import { Endpoints, Modal, Visualization } from 'template';
 import { Button } from 'common';
 import { useModalLogic, useVrfLogic } from 'hooks';
-import { FormDetail } from "template";
+import { FormDetail } from 'template';
 
 export const DetailViewVrf = () => {
   const { vrf } = useVrfLogic();

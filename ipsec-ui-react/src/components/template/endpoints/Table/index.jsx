@@ -9,7 +9,11 @@ import './styles.scss';
 export const Endpoints = ({ data }) => {
   const { open, handleToggle } = useToggle();
 
-  const dynamicHeader = tableHeaderSchema.map((el) => <th className={el.className} key={el.item}>{el.item}</th>);
+  const dynamicHeader = tableHeaderSchema.map((el) => (
+    <th className={el.className} key={el.item}>
+      {el.item}
+    </th>
+  ));
 
   const dynamicCreateEndpoint = useMemo(() => endpoint.map((header, index) => <EachEndpoint key={index} data={header} />), [endpoint]);
 

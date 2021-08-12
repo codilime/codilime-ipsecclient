@@ -71,7 +71,7 @@ export const useEndpointLogic = (data, active) => {
       return (
         <td key={el.name} className="table__column">
           <EndpointInput {...{ ...el, onClick }} value={endpoint[el.name]} />
-          <span className='endpointOption__span'>Active</span>
+          <span className="endpointOption__span">Active</span>
         </td>
       );
     } else
