@@ -6,12 +6,12 @@ import './styles.scss';
 
 export const SideBar = () => {
   const { vrfs } = useGetVrfs();
-  const { idVrf } = useGetLocation();
+  const { currentLocation } = useGetLocation();
 
   const listContext =
     vrfs !== [] ? (
       vrfs.map(({ client_name, id }) => (
-        <li className={`sideBar__eachVrf ${id === idVrf ? 'sideBar__eachVrf--active' : ''}`} key={id}>
+        <li className={`sideBar__eachVrf ${id === parseInt(currentLocation) ? 'sideBar__eachVrf--active' : ''}`} key={id}>
           <Link to={`/vrf/${id}`} className="sideBar__link">
             {client_name}
           </Link>

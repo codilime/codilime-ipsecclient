@@ -1,0 +1,9 @@
+.vrf {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+  }
+  &__button {
+    min-width: 120px;
+  }
+}
