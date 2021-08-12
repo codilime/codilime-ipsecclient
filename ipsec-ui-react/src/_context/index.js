@@ -6,7 +6,6 @@ export const VrfsContext = createContext(defaultVrf);
 
 export const VrfsProvider = ({ children }) => {
   const [vrf, setVrf] = useState(defaultVrf);
-
   return <VrfsContext.Provider value={{ vrf, setVrf }}>{children}</VrfsContext.Provider>;
 };
 
