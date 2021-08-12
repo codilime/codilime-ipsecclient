@@ -24,7 +24,7 @@ export function FormDetail() {
           <div className="form__column">{VRFColumnTwoView}</div>
           <div className="form__column">{VRFColumnThreeView}</div>
         </fieldset>
-        <Button endpointButton className="vrf__btn vrf__btn-save">
+        <Button endpointButton className="form__btn">
           Save changes
         </Button>
       </form>

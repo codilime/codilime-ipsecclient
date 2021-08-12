@@ -13,7 +13,7 @@
     grid-template-areas: '. . . . . . .';
   }
   &__header {
-    font-size: 10px;
+    font-size: 12px;
     th {
       padding: 5px 10px;
       width: 100%;
@@ -38,6 +38,7 @@
     border-top: $table-border;
     display: flex;
     align-items: center;
+    position: relative;
     &:last-of-type {
       border-right: none;
     }
@@ -62,7 +63,4 @@
       color: blue;
     }
   }
-}
-.header__name {
-  font-size: 12px;
 }

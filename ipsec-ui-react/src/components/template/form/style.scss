@@ -1,6 +1,9 @@
 @import 'style/settings.scss';
 
 .form {
+  &__btn {
+    margin: 10px 15px;
+  }
   &__fieldset {
     display: flex;
     flex-wrap: wrap;
@@ -10,7 +13,4 @@
   &__column {
     flex-grow: 1;
   }
-}
-.vrf__btn-save {
-  margin: 10px 15px;
 }
