@@ -23,7 +23,6 @@ export const useEndpointLogic = (data, active) => {
         break;
       }
       case 'peer_ip': {
-        console.log(value);
         setEndpoint((prev) => ({
           ...prev,
           peer_ip: value

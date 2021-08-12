@@ -1,6 +1,9 @@
 import React from 'react';
+
 import PropTypes from 'prop-types';
+
 import './styles.scss';
+
 export const Button = ({ children, onClick, className, btnDelete }) => (
   <button {...{ onClick }} className={`button ${className} ${btnDelete ? 'button__delete' : ''}`}>
     {children}
