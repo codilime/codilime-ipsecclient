@@ -14,15 +14,6 @@
       color: $primary;
       outline: none;
     }
-    &[type='checkbox'] {
-      position: relative;
-      bottom: 2px;
-      transform: translateX(-50%);
-      left: 150px;
-    }
-    &[type='number'] {
-      width: 90%;
-    }
   }
   &__label {
     padding: 3px 3px;
@@ -31,5 +22,16 @@
     border: none;
     outline: none;
     position: absolute;
+  }
+}
+.input {
+  &__checkbox {
+    position: relative;
+    bottom: 2px;
+    transform: translateX(-50%);
+    left: 150px;
+  }
+  &__number {
+    width: 90%;
   }
 }
