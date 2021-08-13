@@ -19,8 +19,8 @@ export const useFetchData = () => {
     setVrf((prev) => ({ ...prev, loading: true }));
   };
 
-  const putVrfData = async (id, payload) => {
-    await client(`vrfs/${id}`, { ...payload }, '', { method: 'PUT' });
+  const putVrfData = async (payload) => {
+    await client(`vrfs/${payload.id}`, { ...payload }, '', { method: 'PUT' });
     setVrf((prev) => ({ ...prev, loading: true }));
   };
 

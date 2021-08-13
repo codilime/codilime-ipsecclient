@@ -36,7 +36,8 @@ module.exports = {
       context: path.resolve(__dirname, 'src/_context'),
       api: path.resolve(__dirname, 'src/_api'),
       pages: path.resolve(__dirname, 'src/components/pages'),
-      schema: path.resolve(__dirname, 'src/schema')
+      schema: path.resolve(__dirname, 'src/schema'),
+      utils: path.resolve(__dirname, 'src/utils')
     }
   },
   output: {

@@ -1,15 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Input } from 'common';
+import classNames from 'classnames';
 import './styles.scss';
 
-export const Field = ({ text, type, name, placeholder, register, value, error }) => (
-  <div className="field">
-    <label className="field__label">{text}</label>
-    <Input {...{ type, value, name, placeholder, register }} />
-    {error && <p className="field__error">{error.message}</p>}
-  </div>
-);
+export const Field = ({ text, type, name, placeholder, register, value, error }) => {
+  const style = classNames({
+    field: true,
+    field__checkbox: type === 'checkbox',
+    field__checkbox__active: name === 'active' && value,
+    field__checkbox__hardware: name === 'hardware_support' && value
+  });
+
+  return (
+    <div className={style}>
+      <label className={classNames({ field__label: true, field__label__checkbox: type === 'checkbox' })}>{text}</label>
+      <Input {...{ type, value, name, placeholder, register }} />
+      {error && <p className="field__error">{error.message}</p>}
+    </div>
+  );
+};
 
 Field.propTypes = {
   type: PropTypes.string,

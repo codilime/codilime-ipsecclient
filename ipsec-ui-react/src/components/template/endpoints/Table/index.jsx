@@ -1,24 +1,18 @@
-import React, { useContext } from 'react';
-import { emptyEndpointSchema, tableHeaderSchema } from 'db';
-import { Wrapper, EachEndpoint } from 'template';
+import React from 'react';
 import { EndpointButton } from 'common';
-import { useToggle } from 'hooks';
-import { VrfsContext } from 'context';
+import { Wrapper, EachEndpoint } from 'template';
+import { useToggle, useEndpoint } from 'hooks';
+import { emptyEndpointSchema, tableHeaderSchema } from 'db';
 import './styles.scss';
 
 export const Endpoints = () => {
-  const {
-    vrf: {
-      data: { endpoints }
-    }
-  } = useContext(VrfsContext);
   const { open, handleToggle } = useToggle();
+  const { vrfEndpoints, handleActionVrfEndponts } = useEndpoint(handleToggle);
+  const dynamicHeader = vrfEndpoints !== null || open ? tableHeaderSchema.map(({ item }) => <th key={item}>{item}</th>) : null;
 
-  const dynamicHeader = endpoints !== null || open ? tableHeaderSchema.map(({ item }) => <th key={item}>{item}</th>) : null;
+  const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ data: el, id: index, handleActionVrfEndponts }} />);
 
-  const dynamicCreateEndpoint = endpoints !== null ? endpoints.map((el, index) => <EachEndpoint key={index} data={el} />) : null;
-
-  const createNewEndpoint = open ? <EachEndpoint data={emptyEndpointSchema} edit /> : null;
+  const createNewEndpoint = open && <EachEndpoint {...{ active: true, data: emptyEndpointSchema, handleActionVrfEndponts }} />;
 
   const newEndpointButton = open ? 'Close a new endpoint' : 'Add a new endpoint';
 
@@ -26,7 +20,7 @@ export const Endpoints = () => {
     <Wrapper title="Endpoints">
       <table className="table">
         <thead className="table__header">
-          <tr>{dynamicHeader}</tr>
+          <tr className="table__row--header">{dynamicHeader}</tr>
         </thead>
         <tbody className="table__body">
           {dynamicCreateEndpoint}

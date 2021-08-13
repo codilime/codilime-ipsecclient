@@ -1,7 +1,7 @@
 import React from 'react';
 import { Endpoints, Modal, Visualization, FormDetail } from 'template';
-import { Button } from 'common';
 import { useModalLogic, useVrfLogic } from 'hooks';
+import { Button } from 'common';
 import './styles.scss';
 
 const VrfView = () => {
@@ -9,11 +9,12 @@ const VrfView = () => {
   const { client_name, handleDelete } = useVrfLogic(handleToggleModal);
 
   const vrfName = client_name ? client_name : 'New VRF';
-
   return (
     <section className="vrf">
       <header className="vrf__header">
-        <span>Vrfs / {vrfName}</span>
+        <span>
+          Vrfs / <span className="vrf__name">{vrfName}</span>
+        </span>
         <Button btnDelete className="vrf__btn" onClick={handleToggleModal}>
           Delete VRF
         </Button>
