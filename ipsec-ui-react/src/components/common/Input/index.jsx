@@ -6,7 +6,7 @@ import classNames from 'classnames';
 export const Input = ({ type, name, placeholder, onChange, ref, value }) => {
   return (
     <input
-      className={classNames({ input__checkbox: type === 'checkbox', input__number: type === 'number', field__input: true })}
+      className={classNames({input__checkbox: type === 'checkbox', input__number: type === 'number'}, 'field__input')}
       value={value}
       type={type}
       name={name}
