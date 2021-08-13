@@ -5,7 +5,7 @@ import { useModalLogic } from 'hooks';
 import { Button } from 'common';
 import './styles.scss';
 
-export const Modal = ({ show, header, children, btnDelete, leftButton, rightButton, handleToggleModal }) => {
+export const Modal = ({ show, header, children, btnDelete, leftButton, rightButton, handleToggleModal, handleDelete }) => {
   const { stopPropagation } = useModalLogic();
 
   return createPortal(
@@ -21,7 +21,7 @@ export const Modal = ({ show, header, children, btnDelete, leftButton, rightButt
           <Button className="modal__btn" onClick={handleToggleModal}>
             {leftButton}
           </Button>
-          <Button className="modal__btn" {...{ btnDelete }}>
+          <Button className="modal__btn" {...{ btnDelete }} onClick={handleDelete}>
             {rightButton}
           </Button>
         </div>
@@ -38,5 +38,6 @@ Modal.propTypes = {
   leftButton: PropTypes.string,
   rightButton: PropTypes.string,
   handleToggleModal: PropTypes.func,
+  handleDelete: PropTypes.func,
   btnDelete: PropTypes.bool
 };

@@ -1,0 +1,10 @@
+.form {
+  &__fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    border: none;
+  }
+  &__column {
+    flex-grow: 1;
+  }
+}

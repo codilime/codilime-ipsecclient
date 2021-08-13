@@ -6,13 +6,16 @@
   left: 50%;
   transform: translate(-50%, -5%);
   box-shadow: $endpoint-option-shadow;
-  display: none;
+  visibility: hidden;
+  opacity: 0;
   background-color: white;
   width: 100%;
   max-width: 70px;
   z-index: 4;
+  transition: $transition;
   &--active {
-    display: block;
+    visibility: visible;
+    opacity: 1;
   }
   &__item {
     cursor: pointer;

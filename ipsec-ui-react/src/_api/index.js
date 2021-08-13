@@ -5,7 +5,7 @@ export async function client(endpoint, data, AuthToken, options) {
   const headers = { 'Content-Type': 'application/json' };
   const config = {
     method: data ? 'POST' : 'GET',
-    body: data ? JSON.stringify(data) : undefined,
+    body: data ? JSON.stringify(data) : null,
     headers: {
       ...headers,
       Authorization: AuthToken ? `Bearer ${AuthToken}` : '',
@@ -15,7 +15,7 @@ export async function client(endpoint, data, AuthToken, options) {
   };
   try {
     const response = await window.fetch(`${API_URL}/${endpoint}`, config);
-    let res = await response.json();
+    const res = await response.json();
     if (response.ok) {
       return res;
     }

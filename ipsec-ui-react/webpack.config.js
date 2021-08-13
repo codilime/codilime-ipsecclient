@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
-  entry: path.resolve(__dirname, './src/index.js'),
+  entry: path.resolve(__dirname, './src/index.jsx'),
   module: {
     rules: [
       {
@@ -28,14 +28,15 @@ module.exports = {
       template: path.resolve(__dirname, 'src/components/template'),
       layout: path.resolve(__dirname, 'src/components/layout'),
       pages: path.resolve(__dirname, 'src/components/pages'),
-      style: path.resolve(__dirname, 'src/css'),
+      style: path.resolve(__dirname, 'src/scss'),
       assets: path.resolve(__dirname, 'src/assets'),
       db: path.resolve(__dirname, 'src/db'),
       hooks: path.resolve(__dirname, 'src/_hooks'),
       helpers: path.resolve(__dirname, 'src/_helpers'),
       context: path.resolve(__dirname, 'src/_context'),
       api: path.resolve(__dirname, 'src/_api'),
-      pages: path.resolve(__dirname, 'src/components/pages')
+      pages: path.resolve(__dirname, 'src/components/pages'),
+      schema: path.resolve(__dirname, 'src/schema')
     }
   },
   output: {
