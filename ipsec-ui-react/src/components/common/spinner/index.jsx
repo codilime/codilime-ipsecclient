@@ -1,7 +1,7 @@
 import Loader from 'react-loader-spinner';
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+// import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 
-export const Spinner = () => {
+export const Index = () => {
     return (
         <Loader
             type="Puff"
