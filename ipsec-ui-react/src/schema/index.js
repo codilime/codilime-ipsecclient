@@ -9,5 +9,7 @@ export const vrfSchema = yup.object().shape({
   active: yup.boolean(),
   hardware_support: yup.boolean(),
   local_as: yup.number().min(1).max(maxValueForLocalAS).integer('Please provide integer'),
-  vlan: yup.number().min(1).max(maxValueForVlan).integer('Please provide integer')
+  vlan: yup.number().min(1).max(maxValueForVlan).integer('Please provide integer'),
+  crypto_ph1: yup.array(),
+  crypto_ph2: yup.array()
 });

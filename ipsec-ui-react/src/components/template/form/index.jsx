@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCreateVRFMainView } from 'hooks';
-import { Wrapper } from 'template';
+import { Wrapper, CryptoField } from 'template';
 import { Button } from 'common';
 import './styles.scss';
 

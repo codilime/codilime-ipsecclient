@@ -7,7 +7,7 @@ import { validateDataInput } from 'utils/util.js';
 import classNames from 'classnames';
 import './styles.scss';
 
-export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, onClick }) => {
+export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, onClick, checked }) => {
   const { open, handleToggle } = useToggle();
 
   const icon = open && edit ? <BsEyeSlashFill className="endpointInput__icon" onClick={handleToggle} /> : <IoEyeSharp className="endpointInput__icon" onClick={handleToggle} />;
@@ -20,7 +20,7 @@ export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, 
         type={open && edit ? 'text' : type}
         onKeyPress={validateDataInput}
         disabled={!edit}
-        {...{ name, placeholder, value, onChange, onClick }}
+        {...{ name, placeholder, value, onChange, onClick, checked }}
       />
       {showEyes}
     </>
@@ -33,6 +33,7 @@ EndpointInput.propTypes = {
   placeholder: PropTypes.string,
   edit: PropTypes.bool,
   disabled: PropTypes.bool,
+  checked: PropTypes.bool,
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   onChange: PropTypes.func,
   onClick: PropTypes.func

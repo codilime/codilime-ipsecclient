@@ -4,12 +4,11 @@ import { EndpointButton } from 'common';
 import { EndpointOption, Modal } from 'template';
 import { useEndpointLogic, useToggle, useModalLogic } from 'hooks';
 
-
-export const EachEndpoint = ({ data, active, id, handleActionVrfEndponts }) => {
+export const EachEndpoint = ({ data, active, handleActionVrfEndponts, id }) => {
   const { open, handleToggle } = useToggle();
   const { show, handleToggleModal } = useModalLogic();
-  const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic(data, active, id, handleActionVrfEndponts);
-  
+  const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic(data, active, data.id, handleActionVrfEndponts);
+
   const activeButton = edit ? (
     <EndpointButton {...{ onClick: handleAddNewEndpoint }}>Add</EndpointButton>
   ) : (
@@ -32,12 +31,13 @@ export const EachEndpoint = ({ data, active, id, handleActionVrfEndponts }) => {
   );
 };
 
-EachEndpoint.defaultProps ={
-  id:null,
-  active:false
-}
+EachEndpoint.defaultProps = {
+  id: null,
+  active: false
+};
 EachEndpoint.propTypes = {
   data: PropTypes.shape({
+    id: PropTypes.string,
     remote_ip_sec: PropTypes.string,
     local_ip: PropTypes.string,
     peer_ip: PropTypes.string,
