@@ -1,5 +1,4 @@
-import React from 'react';
-
+import React, { lazy, Suspense } from 'react';
 import PropTypes from 'prop-types';
 
 import { TopBar, SideBar } from 'layout';

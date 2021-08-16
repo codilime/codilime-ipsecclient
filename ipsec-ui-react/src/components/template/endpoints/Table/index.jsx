@@ -6,7 +6,12 @@ import { EndpointButton } from 'common';
 import { useToggle } from 'hooks';
 import './styles.scss';
 
-export const Endpoints = ({ data }) => {
+export const Endpoints = () => {
+  const {
+    vrf: {
+      data: { endpoints }
+    }
+  } = useContext(VrfsContext);
   const { open, handleToggle } = useToggle();
 
   const dynamicHeader = tableHeaderSchema.map((el) => (
@@ -17,7 +22,7 @@ export const Endpoints = ({ data }) => {
 
   const dynamicCreateEndpoint = useMemo(() => endpoint.map((header, index) => <EachEndpoint key={index} data={header} />), [endpoint]);
 
-  const createNewEndpoint = open ? <EachEndpoint data={emptyEndpointSchema} active disabled /> : null;
+  const createNewEndpoint = open ? <EachEndpoint data={emptyEndpointSchema} edit /> : null;
 
   const newEndpointButton = open ? 'Close a new endpoint' : 'Add a new endpoint';
 

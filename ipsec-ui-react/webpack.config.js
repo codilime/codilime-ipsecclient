@@ -28,13 +28,15 @@ module.exports = {
       common: path.resolve(__dirname, 'src/components/common'),
       template: path.resolve(__dirname, 'src/components/template'),
       pages: path.resolve(__dirname, 'src/components/pages'),
-      style: path.resolve(__dirname, 'src/css'),
-      layout: path.resolve(__dirname, 'src/components/layout'),
+      style: path.resolve(__dirname, 'src/scss'),
+      assets: path.resolve(__dirname, 'src/assets'),
       db: path.resolve(__dirname, 'src/db'),
       hooks: path.resolve(__dirname, 'src/_hooks'),
       helpers: path.resolve(__dirname, 'src/_helpers'),
       context: path.resolve(__dirname, 'src/_context'),
-      api: path.resolve(__dirname, 'src/_api')
+      api: path.resolve(__dirname, 'src/_api'),
+      pages: path.resolve(__dirname, 'src/components/pages'),
+      schema: path.resolve(__dirname, 'src/schema')
     }
   },
   output: {

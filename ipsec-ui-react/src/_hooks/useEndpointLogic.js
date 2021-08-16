@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { EndpointInput } from 'common';
 import { endpointInputSchema } from 'db';
+import { VrfsContext } from 'context';
+import { useFetchData } from 'hooks';
 
-export const useEndpointLogic = (data, active) => {
-  const [endpoint, setEndpoint] = useState(data);
+export const useEndpointLogic = (endpoint) => {
+  const [disabled, setDisable] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [send, setSend] = useState(false);
+  const [endpoints, setEndpoint] = useState(endpoint);
+  const {
+    vrf: { data },
+    setVrf
+  } = useContext(VrfsContext);
+  const { putVrfData } = useFetchData();
+  const handleActiveEdit = () => setEdit((prev) => !prev);
+
+  const handleDelete = () => {
+    console.log('click');
+  };
 
   const onChange = (e) => {
     const { value, name } = e.target;
@@ -66,21 +81,54 @@ export const useEndpointLogic = (data, active) => {
     }
   };
 
+  const newEndpointState = edit ? endpoints : endpoint;
+
   const displayEndpoint = endpointInputSchema.map((el) => {
     if (el.type === 'checkbox') {
       return (
         <td key={el.name} className="table__column">
-          <EndpointInput {...{ ...el, onClick }} value={endpoint[el.name]} />
-          <span className="endpointOption__span">Active</span>
+          <EndpointInput {...{ ...el, onClick }} value={newEndpointState[el.name]} />
+          <span>Active</span>
         </td>
       );
-    } else
-      return (
-        <td key={el.name} className="table__column">
-          <EndpointInput {...{ ...el, onChange, active }} value={endpoint[el.name]} />
-        </td>
-      );
+    }
+    return (
+      <td key={el.name} className="table__column">
+        <EndpointInput {...{ ...el, onChange, edit }} value={newEndpointState[el.name]} />
+      </td>
+    );
   });
 
-  return { displayEndpoint, active, onClick };
+  const handleAddNewEndpoint = () => {
+    if (data.endpoints === null) {
+      setVrf((prev) => ({
+        ...prev,
+        data: { ...prev.data, endpoints: [endpoints] }
+      }));
+      setSend(true);
+      handleActiveEdit();
+      return setEndpoint(endpoint);
+    }
+    if (endpoints.psk !== '') {
+      setVrf((prev) => ({
+        ...prev,
+        data: { ...prev.data, endpoints: [...prev.data.endpoints, endpoints] }
+      }));
+      setSend(true);
+      handleActiveEdit();
+      return setEndpoint(endpoint);
+    }
+  };
+  const handleSendEndpoint = () => {
+    putVrfData(data.id, data);
+  };
+
+  useEffect(() => {
+    if (send) {
+      handleSendEndpoint();
+      setSend(false);
+    }
+  }, [send]);
+
+  return { displayEndpoint, disabled, edit, onClick, handleAddNewEndpoint, handleActiveEdit, handleDelete };
 };

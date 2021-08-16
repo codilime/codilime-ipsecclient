@@ -1,21 +1,17 @@
-import { useState, useEffect, useContext } from 'react';
-import { useGetLocation, useGetVrfs } from 'hooks';
+import { useContext } from 'react';
+import { useFetchData, useGetLocation } from 'hooks';
 import { VrfsContext } from 'context';
 
-export const useVrfLogic = () => {
-  const { idVrf } = useGetLocation();
-  const { vrfs } = useGetVrfs();
-  const { vrf, setVrf } = useContext(VrfsContext);
-  const findActiveVrfPage = () => {
-    if (vrfs !== []) {
-      const currentVrf = vrfs.filter((el) => el.id === idVrf);
-      if (currentVrf.length > 0) {
-        setVrf(...currentVrf);
-      }
-    }
+export const useVrfLogic = (handleToggleModal) => {
+  const { vrf } = useContext(VrfsContext);
+  const { deleteVrfData } = useFetchData();
+  const { history } = useGetLocation();
+  const { client_name, id } = vrf.data;
+
+  const handleDelete = () => {
+    deleteVrfData(id);
+    history.push('/vrf/create');
+    handleToggleModal();
   };
-  useEffect(() => {
-    if (idVrf) findActiveVrfPage();
-  }, [idVrf, vrfs]);
-  return { vrf };
+  return { client_name, handleDelete };
 };
