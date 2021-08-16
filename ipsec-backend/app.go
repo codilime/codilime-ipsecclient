@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
@@ -34,6 +34,10 @@ type App struct {
 	Generator Generator
 }
 
+func boolPointer(b bool) *bool {
+	return &b
+}
+
 func (a *App) Initialize(dbName string) error {
 	var err error
 	a.DB, err = initializeDB(dbName)
@@ -51,14 +55,17 @@ func (a *App) Initialize(dbName string) error {
 	}
 
 	hwVrf := Vrf{
-		ID:         0,
+		ID:         hardwareVrfID,
 		ClientName: "hardware",
 		CryptoPh1:  []byte("[\"aes-cbc-128\", \"sha256\", \"fourteen\"]"),
 		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
+		Active:     boolPointer(false),
 	}
 
 	if err := hwVrf.createVrf(a.DB); err != nil {
-		fmt.Println("hwVrf error:", err.Error())
+		if strings.Contains(err.Error(), "UNIQUE constraint failed: vrfs.id") {
+			return nil
+		}
 		return err
 	}
 	return nil
@@ -177,7 +184,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if vrf.ID == 0 && vrf.ClientName != oldVrf.ClientName {
+	if vrf.ID == hardwareVrfID && vrf.ClientName != oldVrf.ClientName {
 		// can't change the hardware vrf name
 		respondWithError(w, http.StatusBadRequest, "Cannot change the hardware vrf name")
 		return
@@ -221,7 +228,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) getHandlers(vrf Vrf) (handler, handler) {
-	if vrf.ID == 0 {
+	if vrf.ID == hardwareVrfID {
 		return restconfCreate, restconfDelete
 	} else {
 		return a.Generator.GenerateTemplates, a.Generator.DeleteTemplates
@@ -236,7 +243,7 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if id == 0 {
+	if id == hardwareVrfID {
 		respondWithError(w, http.StatusBadRequest, "Cannot remote the hardware VRF")
 		return
 	}

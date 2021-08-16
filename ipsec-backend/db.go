@@ -6,6 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
+const hardwareVrfID = 65535
+
 type Vrf struct {
 	ID                int64          `json:"id"`
 	ClientName        string         `json:"client_name"`
