@@ -1,7 +1,7 @@
 import React from 'react';
 import { Endpoints, Modal, Visualization, FormDetail } from 'template';
 import { useModalLogic, useVrfLogic } from 'hooks';
-import { Button } from 'common';
+import { Button, Spinner } from 'common';
 import './styles.scss';
 
 const VrfView = () => {
@@ -22,6 +22,7 @@ const VrfView = () => {
       <article>
         <FormDetail />
         <Endpoints />
+          <Spinner />
         <Visualization />
       </article>
       <Modal btnDelete {...{ show, handleToggleModal, handleDelete }} header="Delete VRF" leftButton="cancel" rightButton="delete">
