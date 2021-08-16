@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { EndpointInput } from 'common';
 import { endpointInputSchema } from 'db';
 
-export const useEndpointLogic = (endpoint, active = false, id = null, handleActionVrfEndponts) => {
+export const useEndpointLogic = (endpoint, active = false, id = null, handleActionVrfEndpoints) => {
   const [edit, setEdit] = useState(active);
   const [endpoints, setEndpoint] = useState(endpoint);
   const handleActiveEdit = () => setEdit((prev) => !prev);
@@ -41,10 +41,10 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
 
   const handleAddNewEndpoint = () => {
     if (id === null) {
-      handleActionVrfEndponts('add', endpoints);
+      handleActionVrfEndpoints('add', endpoints);
       return setEdit(false);
     }
-    handleActionVrfEndponts('change', endpoints, id);
+    handleActionVrfEndpoints('change', endpoints, id);
     return setEdit(false);
   };
 

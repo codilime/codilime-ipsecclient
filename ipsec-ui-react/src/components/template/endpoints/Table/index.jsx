@@ -7,12 +7,12 @@ import './styles.scss';
 
 export const Endpoints = () => {
   const { open, handleToggle } = useToggle();
-  const { vrfEndpoints, handleActionVrfEndponts } = useEndpoint(handleToggle);
+  const { vrfEndpoints, handleActionVrfEndpoints } = useEndpoint(handleToggle);
   const dynamicHeader = vrfEndpoints !== null || open ? tableHeaderSchema.map(({ item }) => <th key={item}>{item}</th>) : null;
 
-  const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ data: el, id: index, handleActionVrfEndponts }} />);
+  const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ data: el, id: index, handleActionVrfEndpoints }} />);
 
-  const createNewEndpoint = open && <EachEndpoint {...{ active: true, data: emptyEndpointSchema, handleActionVrfEndponts }} />;
+  const createNewEndpoint = open && <EachEndpoint {...{ active: true, data: emptyEndpointSchema, handleActionVrfEndpoints }} />;
 
   const newEndpointButton = open ? 'Close a new endpoint' : 'Add a new endpoint';
 

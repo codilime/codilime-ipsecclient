@@ -28,7 +28,7 @@ export const useEndpoint = (handleToggle) => {
     }, []);
   };
 
-  const handleActionVrfEndponts = (action, data, id) => {
+  const handleActionVrfEndpoints = (action, data, id) => {
     switch (action) {
       case 'add': {
         if (endpoints === null) {
@@ -68,5 +68,5 @@ export const useEndpoint = (handleToggle) => {
       setSend(true);
     }
   }, [send]);
-  return { vrfEndpoints, loading, handleChangeVrfEndpoints, handleActionVrfEndponts };
+  return { vrfEndpoints, loading, handleChangeVrfEndpoints, handleActionVrfEndpoints };
 };
