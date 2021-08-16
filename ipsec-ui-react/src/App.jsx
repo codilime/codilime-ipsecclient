@@ -7,7 +7,7 @@ import { DefaultView } from 'pages';
 
 const VrfView = lazy(() => import('./components/pages/vrfView'));
 
-import 'style/global.scss';
+import 'style/Global.scss';
 
 export default function App() {
   return (
