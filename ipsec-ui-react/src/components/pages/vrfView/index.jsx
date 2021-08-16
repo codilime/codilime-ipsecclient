@@ -13,7 +13,7 @@ const VrfView = () => {
     <section className="vrf">
       <header className="vrf__header">
         <span>
-          Vrfs / <span className="vrf__name">{vrfName}</span>
+          VRFs / <span className="vrf__name">{vrfName}</span>
         </span>
         <Button btnDelete className="vrf__btn" onClick={handleToggleModal}>
           Delete VRF
