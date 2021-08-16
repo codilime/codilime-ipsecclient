@@ -3,17 +3,18 @@
 .table {
   width: 100%;
   text-align: left;
-  border-collapse: collapse;
   overflow: hidden;
-  tr {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 0.8fr 0.8fr 0.5fr;
-    grid-template-rows: 1fr;
-    grid-auto-flow: row;
-    grid-template-areas: '. . . . . . .';
+  border-collapse: collapse;
+  font-size: 12px;
+  &__row--header {
+    display: flex;
+    background-color: white;
+  }
+  &__row {
+    display: flex;
+    
   }
   &__header {
-    font-size: 10px;
     th {
       padding: 5px 10px;
       width: 100%;
@@ -28,7 +29,7 @@
   }
   &__row {
     &:nth-of-type(odd) {
-      background-color: $light-gray;
+      background-color: $gray01;
     }
   }
   &__column {
@@ -38,14 +39,19 @@
     border-top: $table-border;
     display: flex;
     position: relative;
+    align-items: center;
     &:last-of-type {
       border-right: none;
     }
   }
   &__addBtn {
-    border: $table-border;
+    display: flex;
+    border-top: $table-border;
     padding: 10px;
     background-color: white;
+    &:only-of-type {
+      border-top: $table-border;
+    }
   }
   &__columnBtn {
     min-width: 120px;
@@ -55,8 +61,5 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    &__active {
-      color: blue;
-    }
   }
 }

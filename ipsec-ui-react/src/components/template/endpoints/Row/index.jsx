@@ -1,18 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { EndpointButton } from 'common';
-import { useEndpointLogic, useToggle } from 'hooks';
 import { EndpointOption, Modal } from 'template';
-import { useModalLogic } from 'hooks';
+import { useEndpointLogic, useToggle, useModalLogic } from 'hooks';
 
-export const EachEndpoint = ({ data }) => {
-  const { displayEndpoint, handleAddNewEndpoint, disabled, edit, handleActiveEdit,handleDelete } = useEndpointLogic(data);
- 
+
+export const EachEndpoint = ({ data, active, id, handleActionVrfEndponts }) => {
   const { open, handleToggle } = useToggle();
   const { show, handleToggleModal } = useModalLogic();
-
+  const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic(data, active, id, handleActionVrfEndponts);
+  
   const activeButton = edit ? (
-    <EndpointButton {...{ disabled, onClick: handleAddNewEndpoint }}>Add</EndpointButton>
+    <EndpointButton {...{ onClick: handleAddNewEndpoint }}>Add</EndpointButton>
   ) : (
     <EndpointButton secondary onClick={handleToggle}>
       ...
@@ -25,7 +24,7 @@ export const EachEndpoint = ({ data }) => {
       <td className="table__column">
         {activeButton}
         <EndpointOption {...{ open, handleToggleModal, handleActiveEdit, handleToggle }} />
-        <Modal {...{ show, handleToggleModal, handleDelete }} header="Delete endpoint" leftButton="cancel" rightButton="delete " btnDelete>
+        <Modal {...{ show, handleToggleModal }} handleDelete={() => handleActionVrfEndponts('delete', {}, id)} header="Delete endpoint" leftButton="cancel" rightButton="delete " btnDelete>
           Are you sure you want to delete the endpoint? This action cannot be undone
         </Modal>
       </td>
@@ -33,6 +32,10 @@ export const EachEndpoint = ({ data }) => {
   );
 };
 
+EachEndpoint.defaultProps ={
+  id:null,
+  active:false
+}
 EachEndpoint.propTypes = {
   data: PropTypes.shape({
     remote_ip_sec: PropTypes.string,
@@ -42,5 +45,8 @@ EachEndpoint.propTypes = {
     nat: PropTypes.bool,
     gp: PropTypes.bool
   }),
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
+  active: PropTypes.bool,
+  id: PropTypes.number,
+  handleActionVrfEndponts: PropTypes.func
 };

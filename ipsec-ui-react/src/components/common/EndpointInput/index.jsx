@@ -3,39 +3,28 @@ import PropTypes from 'prop-types';
 import { IoEyeSharp } from 'react-icons/io5';
 import { BsEyeSlashFill } from 'react-icons/bs';
 import { useToggle } from 'hooks';
+import { validateDataInput } from 'utils/util.js';
 import classNames from 'classnames';
 import './styles.scss';
 
-export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, disabled }) => {
+export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, onClick }) => {
   const { open, handleToggle } = useToggle();
-  const [alert, setAlert] = useState(false);
 
-  const icon = open ? <BsEyeSlashFill className="endpointInput__icon" onClick={handleToggle} /> : <IoEyeSharp className="endpointInput__icon" onClick={handleToggle} />;
+  const icon = open && edit ? <BsEyeSlashFill className="endpointInput__icon" onClick={handleToggle} /> : <IoEyeSharp className="endpointInput__icon" onClick={handleToggle} />;
 
   const showEyes = type === 'password' ? <>{icon}</> : null;
-  const validateDataInput = (event) => {
-    if (!/[0-9.]/.test(event.key) && event.target.name !== 'psk') {
-      event.preventDefault();
-      setAlert(true);
-      return;
-    }
-    setAlert(false);
-  };
   return (
     <>
       <input
         className={classNames({ endpointInput: true, endpointInput__checkbox: type === 'checkbox', endpointInput__active: edit })}
-        type={open ? 'text' : type}
+        type={open && edit ? 'text' : type}
         onKeyPress={validateDataInput}
-        {...{ name, placeholder, value, disabled, onChange }}
+        disabled={!edit}
+        {...{ name, placeholder, value, onChange, onClick }}
       />
       {showEyes}
     </>
   );
-};
-
-EndpointInput.defaultProps = {
-  checked: true
 };
 
 EndpointInput.propTypes = {
@@ -45,5 +34,6 @@ EndpointInput.propTypes = {
   edit: PropTypes.bool,
   disabled: PropTypes.bool,
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  onClick: PropTypes.func
 };

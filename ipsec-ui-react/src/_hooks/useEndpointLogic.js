@@ -1,24 +1,11 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState } from 'react';
 import { EndpointInput } from 'common';
 import { endpointInputSchema } from 'db';
-import { VrfsContext } from 'context';
-import { useFetchData } from 'hooks';
 
-export const useEndpointLogic = (endpoint) => {
-  const [disabled, setDisable] = useState(false);
-  const [edit, setEdit] = useState(false);
-  const [send, setSend] = useState(false);
+export const useEndpointLogic = (endpoint, active = false, id = null, handleActionVrfEndponts) => {
+  const [edit, setEdit] = useState(active);
   const [endpoints, setEndpoint] = useState(endpoint);
-  const {
-    vrf: { data },
-    setVrf
-  } = useContext(VrfsContext);
-  const { putVrfData } = useFetchData();
   const handleActiveEdit = () => setEdit((prev) => !prev);
-
-  const handleDelete = () => {
-    console.log('click');
-  };
 
   const onChange = (e) => {
     const { value, name } = e.target;
@@ -42,7 +29,7 @@ export const useEndpointLogic = (endpoint) => {
     if (el.type === 'checkbox') {
       return (
         <td key={el.name} className="table__column">
-          <EndpointInput {...{ ...el, onClick }} value={newEndpointState[el.name]} />
+          <EndpointInput {...{ ...el, onClick, edit }} value={newEndpointState[el.name]} />
           <span>Active</span>
         </td>
       );
@@ -55,35 +42,13 @@ export const useEndpointLogic = (endpoint) => {
   });
 
   const handleAddNewEndpoint = () => {
-    if (data.endpoints === null) {
-      setVrf((prev) => ({
-        ...prev,
-        data: { ...prev.data, endpoints: [endpoints] }
-      }));
-      setSend(true);
-      handleActiveEdit();
-      return setEndpoint(endpoint);
+    if (id === null) {
+      handleActionVrfEndponts('add', endpoints);
+      return setEdit(false);
     }
-    if (endpoints.psk !== '') {
-      setVrf((prev) => ({
-        ...prev,
-        data: { ...prev.data, endpoints: [...prev.data.endpoints, endpoints] }
-      }));
-      setSend(true);
-      handleActiveEdit();
-      return setEndpoint(endpoint);
-    }
-  };
-  const handleSendEndpoint = () => {
-    putVrfData(data.id, data);
+    handleActionVrfEndponts('change', endpoints, id);
+    return setEdit(false);
   };
 
-  useEffect(() => {
-    if (send) {
-      handleSendEndpoint();
-      setSend(false);
-    }
-  }, [send]);
-
-  return { displayEndpoint, disabled, edit, onClick, handleAddNewEndpoint, handleActiveEdit, handleDelete };
+  return { displayEndpoint, edit, onClick, handleAddNewEndpoint, handleActiveEdit };
 };

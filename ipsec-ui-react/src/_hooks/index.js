@@ -6,3 +6,4 @@ export * from './useGetLocation';
 export * from './useGetVrfs';
 export * from './useCreateVRFMainView';
 export * from './useVrfLogic';
+export * from './useEndpoint';

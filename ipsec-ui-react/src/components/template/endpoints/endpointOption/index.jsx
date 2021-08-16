@@ -1,10 +1,10 @@
 import React from 'react';
-import { IoPencil, IoTrashBin } from 'react-icons/io5';
 import PropTypes from 'prop-types';
+import { IoPencil, IoTrashBin } from 'react-icons/io5';
 import './styles.scss';
 
 export const EndpointOption = ({ open, handleToggleModal, handleActiveEdit, handleToggle }) => (
-  <div className={`endpointOption ${open ? 'endpointOption--active' : ''}`} onMouseLeave={handleToggle}>
+  <div className={`endpointOption ${open && 'endpointOption--active'}`} onMouseLeave={handleToggle}>
     <ul>
       <li className="endpointOption__item" onClick={handleActiveEdit}>
         <IoPencil className="endpointOption__icon" /> Edit

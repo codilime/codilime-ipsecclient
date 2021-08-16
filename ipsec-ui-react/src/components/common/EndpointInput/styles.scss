@@ -5,8 +5,12 @@
   border: none;
   outline: none;
   background-color: transparent;
+  padding:$padding-sm;
+  &:focus {
+    border-bottom: $endpoint-input-focus;
+  }
   &__active {
-    border-bottom: 1px solid black;
+    border-bottom: $endpoint-input;
   }
   &__checkbox {
     width: auto;

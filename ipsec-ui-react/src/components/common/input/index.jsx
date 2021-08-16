@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
+import { validateDataInput } from 'utils/util.js';
 
-export const Input = ({ type, name, placeholder, register }) => {
-  return <input className="field__input" {...{ type, name, placeholder }} {...register} />;
-};
+export const Input = ({ type, name, placeholder, register }) => (
+  <input className={classNames({ field__input: true, input__checkbox: type === 'checkbox' })} {...{ type, name, placeholder }} onKeyPress={validateDataInput} {...register} />
+);
 
 Input.propTypes = {
   type: PropTypes.string,

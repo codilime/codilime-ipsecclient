@@ -26,7 +26,7 @@ export const useCreateVRFMainView = () => {
 
   const submit = (data) => {
     if (data.id) {
-      putVrfData(data.id, data);
+      putVrfData(data);
     } else {
       postVrfData(data);
     }

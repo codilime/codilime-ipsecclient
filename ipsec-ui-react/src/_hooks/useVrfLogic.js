@@ -13,5 +13,5 @@ export const useVrfLogic = (handleToggleModal) => {
     history.push('/vrf/create');
     handleToggleModal();
   };
-  return { client_name, handleDelete };
+  return { vrf, client_name, handleDelete };
 };

@@ -21,7 +21,13 @@ export const Modal = ({ show, header, children, btnDelete, leftButton, rightButt
           <Button className="modal__btn" onClick={handleToggleModal}>
             {leftButton}
           </Button>
-          <Button className="modal__btn" {...{ btnDelete }} onClick={handleDelete}>
+          <Button
+            className="modal__btn"
+            {...{ btnDelete }}
+            onClick={() => {
+              handleDelete(), handleToggleModal();
+            }}
+          >
             {rightButton}
           </Button>
         </div>

@@ -1,36 +1,42 @@
-$dark-gray: #626469;
-$light-gray: rgba(167, 167, 167, 0.74);
+/* design pallet */
+$primary: #049fd9;
+$gray01: #f2f2f2;
+$gray02: #626469;
+$gray03: #39393b;
 $white: #ffffff;
-$blue: #558ce6;
-$red: #ff0000;
+$red: #cf2030;
+$green: #6cc04a;
 
 /* Colors */
-$sidebar-background-color: #626469;
+$sidebar-background-color: $gray01;
 $sidebar-text-color: #ffffff;
-$breadcrumb-font-color: #558ce6;
-$gray-light-color: lightgray;
-$disactive-color: red;
-$active-color: green;
+$breadcrumb-font-color: $primary;
+$gray-light-color: $gray01;
+$disactive-color: $red;
+$active-color: #6cc04a;
 $light-blue: lightblue;
+$vrf-active:$green;
+$hardware:$primary;
 
 /* Border */
-$wrapper-border: 1px solid black;
+$wrapper-border: 1px solid $gray02;
 $info-border: 1px solid lightblue;
 $info-footer-border: 0.5px solid gray;
 $table-border-color: gray;
 $table-border: 0.5px solid gray;
-$sideBar-active-border: 1px solid blue;
-
+$sideBar-active-border: 3px solid $primary;
+$endpoint-input-focus: 0.5px solid $primary;
+$endpoint-input: 0.5px solid $gray03;
 /* Border-radius */
 $button-radius: 18px;
 
 /* Background-color */
-$bgc-gray: #93959b;
+$bgc-gray: $gray02;
 $bgc-info: lightblue;
-$bgc-disable: lightgray;
-$bgc-active: #48484b;
+$bgc-disable: $gray01;
+$bgc-active: $gray03;
 $modal-background: #00000057;
-$bgc-delete: red;
+$bgc-delete: $red;
 
 /* Font-size */
 $title-size: 18px;
@@ -59,7 +65,9 @@ $padding-xl: 20px;
 
 /* Margin */
 $wrapper-margin: 0px;
+$margin-sm: 5px;
 $margin-md: 10px;
+$margin-lg: 15px;
 
 /* Transition */
 $transition: 0.3s linear all;
