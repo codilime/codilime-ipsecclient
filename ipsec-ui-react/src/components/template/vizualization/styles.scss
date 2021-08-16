@@ -1,0 +1,8 @@
+@import './src/scss/settings.scss';
+
+.visualization {
+  &__empty {
+    line-height: 150px;
+    text-align: center;
+  }
+}

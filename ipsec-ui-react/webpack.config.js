@@ -12,7 +12,7 @@ module.exports = {
       },
       {
         test: /\.s[ac]ss$/i,
-        use: ['style-loader', 'css-loader', 'sass-loader']
+        use: ['style-loader', 'scss-loader', 'sass-loader']
       },
       {
         test: /\.(png|jpe?g|gif)$/i,
@@ -28,13 +28,14 @@ module.exports = {
       common: path.resolve(__dirname, 'src/components/common'),
       template: path.resolve(__dirname, 'src/components/template'),
       pages: path.resolve(__dirname, 'src/components/pages'),
-      style: path.resolve(__dirname, 'src/css'),
+      style: path.resolve(__dirname, 'src/scss'),
       layout: path.resolve(__dirname, 'src/components/layout'),
       db: path.resolve(__dirname, 'src/db'),
       hooks: path.resolve(__dirname, 'src/_hooks'),
       helpers: path.resolve(__dirname, 'src/_helpers'),
       context: path.resolve(__dirname, 'src/_context'),
-      api: path.resolve(__dirname, 'src/_api')
+      api: path.resolve(__dirname, 'src/_api'),
+        schema: path.resolve(__dirname, 'src/schema')
     }
   },
   output: {

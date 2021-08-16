@@ -13,6 +13,7 @@ export const TopBar = ({ productName }) => (
 TopBar.defaultProps = {
   productName: 'IPsec User Interface'
 };
+
 TopBar.propTypes = {
   productName: PropTypes.string
 };

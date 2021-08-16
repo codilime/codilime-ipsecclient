@@ -1,30 +1,24 @@
 import React from 'react';
 
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
-
-import { useCreateVRFMainView } from '../../../_hooks/useCreateVRFMainView';
+import { useCreateVRFMainView } from 'hooks';
 import { Wrapper } from '../wrapper';
 
-import { vrfSchema } from '../../../schema';
-
-import { Button } from '../../common';
+import { Button } from 'common';
 
 import './style.scss';
 
 export function FormDetail() {
-  const { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView } = useCreateVRFMainView();
-  const { handleSubmit } = useForm({ resolver: yupResolver(vrfSchema) });
+  const { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView, handleSubmit, submit } = useCreateVRFMainView(open);
 
   return (
     <Wrapper title="VRF details">
-      <form onSubmit={handleSubmit()} autoComplete="off" className="form">
+      <form autoComplete="off" className="form" onSubmit={handleSubmit(submit)}>
         <fieldset className="form__fieldset">
           <div className="form__column">{VRFColumnOneView}</div>
           <div className="form__column">{VRFColumnTwoView}</div>
           <div className="form__column">{VRFColumnThreeView}</div>
         </fieldset>
-        <Button endpointButton className="form__btn">
+        <Button className="form__btn">
           Save changes
         </Button>
       </form>

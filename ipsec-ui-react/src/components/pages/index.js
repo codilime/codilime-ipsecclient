@@ -1,3 +1,2 @@
-export * from './DetailVRF';
-export * from './NewVRF';
+export * from './vrfView';
 export * from './DefaultView';

@@ -1,33 +1,34 @@
-import React, { useMemo } from 'react';
-import PropTypes from 'prop-types';
-import { emptyEndpointSchema, endpoint, tableHeaderSchema } from 'db';
+import React, { useContext } from 'react';
+import { emptyEndpointSchema, tableHeaderSchema } from 'db';
 import { Wrapper, EachEndpoint } from 'template';
 import { EndpointButton } from 'common';
 import { useToggle } from 'hooks';
+import { VrfsContext } from 'context';
 import './styles.scss';
 
-export const Endpoints = ({ data }) => {
+export const Endpoints = () => {
+  const {
+    vrf: {
+      data: { endpoints }
+    }
+  } = useContext(VrfsContext);
   const { open, handleToggle } = useToggle();
 
-  const dynamicHeader = tableHeaderSchema.map((el) => (
-    <th className={el.className} key={el.item}>
-      {el.item}
-    </th>
-  ));
+  const dynamicHeader = endpoints !== null || open ? tableHeaderSchema.map(({ item }) => <th key={item}>{item}</th>) : null;
 
-  const dynamicCreateEndpoint = useMemo(() => endpoint.map((header, index) => <EachEndpoint key={index} data={header} />), [endpoint]);
+  const dynamicCreateEndpoint = endpoints !== null ? endpoints.map((el, index) => <EachEndpoint key={index} data={el} />) : null;
 
-  const createNewEndpoint = open ? <EachEndpoint data={emptyEndpointSchema} active disabled /> : null;
+  const createNewEndpoint = open ? <EachEndpoint data={emptyEndpointSchema} edit /> : null;
 
   const newEndpointButton = open ? 'Close a new endpoint' : 'Add a new endpoint';
 
   return (
-    <Wrapper title="Endpoints">
-      <table className="table">
-        <thead className="table__header">
+      <Wrapper title="Endpoints">
+        <table className="table">
+          <thead className="table__header">
           <tr>{dynamicHeader}</tr>
-        </thead>
-        <tbody className="table__body">
+          </thead>
+          <tbody className="table__body">
           {dynamicCreateEndpoint}
           {createNewEndpoint}
           <tr className="table__addBtn">
@@ -35,19 +36,8 @@ export const Endpoints = ({ data }) => {
               <EndpointButton onClick={handleToggle}>{newEndpointButton}</EndpointButton>
             </td>
           </tr>
-        </tbody>
-      </table>
-    </Wrapper>
+          </tbody>
+        </table>
+      </Wrapper>
   );
-};
-
-Endpoints.propTypes = {
-  data: PropTypes.objectOf({
-    remote_ip_sec: PropTypes.string,
-    local_ip: PropTypes.string,
-    peer_ip: PropTypes.string,
-    psk: PropTypes.string,
-    nat: PropTypes.bool,
-    bgp: PropTypes.bool
-  })
 };

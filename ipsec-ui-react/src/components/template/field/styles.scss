@@ -1,4 +1,4 @@
-@import '../../../css/ColorThemes';
+@import '../../../scss/ColorThemes';
 
 .field {
   margin: 15px 0 5px 5px;
@@ -22,6 +22,11 @@
     border: none;
     outline: none;
     position: absolute;
+  }
+  &__error {
+    margin-top: 5px;
+    color: $disactive-color;
+    font-size: 10px;
   }
 }
 .input {

@@ -5,16 +5,16 @@ import { Button } from 'common';
 import { useModalLogic, useVrfLogic } from 'hooks';
 import { FormDetail } from 'template';
 
-export const DetailViewVrf = () => {
+import './styles.scss';
+
+export const VrfView = () => {
   const { vrf } = useVrfLogic();
   const { show, handleToggleModal } = useModalLogic();
 
   return (
     <section className="vrf">
       <header className="vrf__header">
-        <span>
-          VRFs / <span className="vrf__name">{vrf.client_name}</span>
-        </span>
+        <span>VRFs / <span className="vrf__name">{vrf.client_name}</span></span>
         <Button btnDelete className="vrf__btn" onClick={handleToggleModal}>
           Delete VRF
         </Button>
@@ -30,3 +30,4 @@ export const DetailViewVrf = () => {
     </section>
   );
 };
+export default VrfView;
