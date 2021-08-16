@@ -22,7 +22,6 @@ const VrfView = () => {
       <article>
         <FormDetail />
         <Endpoints />
-          <Spinner />
         <Visualization />
       </article>
       <Modal btnDelete {...{ show, handleToggleModal, handleDelete }} header="Delete VRF" leftButton="cancel" rightButton="delete">
