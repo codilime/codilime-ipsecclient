@@ -28,7 +28,7 @@ func (a *App) metrics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !*vrf.HardwareSupport {
+	if vrf.ID > 0 {
 		res, err := getSWMetrics(vrf)
 		if err != nil {
 			respondWithError(w, 500, err.Error())

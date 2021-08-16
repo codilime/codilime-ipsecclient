@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -33,7 +34,7 @@ type App struct {
 	Generator Generator
 }
 
-func (a *App) Initialize(dbName string) {
+func (a *App) Initialize(dbName string) error {
 	var err error
 	a.DB, err = initializeDB(dbName)
 	if err != nil {
@@ -48,6 +49,19 @@ func (a *App) Initialize(dbName string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	hwVrf := Vrf{
+		ID:         0,
+		ClientName: "hardware",
+		CryptoPh1:  []byte("[\"aes-cbc-128\", \"sha256\", \"fourteen\"]"),
+		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
+	}
+
+	if err := hwVrf.createVrf(a.DB); err != nil {
+		fmt.Println("hwVrf error:", err.Error())
+		return err
+	}
+	return nil
 }
 
 var nginxPasswordFile string = "/etc/nginx/htpasswd"
@@ -124,9 +138,6 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	if vrf.Active == nil {
 		vrf.Active = new(bool)
 	}
-	if vrf.HardwareSupport == nil {
-		vrf.HardwareSupport = new(bool)
-	}
 	if err := vrf.createVrf(a.DB); err != nil {
 		log.Infof("error %+v", err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -166,6 +177,12 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if vrf.ID == 0 && vrf.ClientName != oldVrf.ClientName {
+		// can't change the hardware vrf name
+		respondWithError(w, http.StatusBadRequest, "Cannot change the hardware vrf name")
+		return
+	}
+
 	if err := vrf.updateVrf(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -173,9 +190,6 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 
 	if vrf.Active == nil {
 		vrf.Active = oldVrf.Active
-	}
-	if vrf.HardwareSupport == nil {
-		vrf.HardwareSupport = oldVrf.HardwareSupport
 	}
 
 	createHandler, deleteHandler := a.getHandlers(vrf)
@@ -207,7 +221,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) getHandlers(vrf Vrf) (handler, handler) {
-	if *vrf.HardwareSupport {
+	if vrf.ID == 0 {
 		return restconfCreate, restconfDelete
 	} else {
 		return a.Generator.GenerateTemplates, a.Generator.DeleteTemplates
@@ -219,6 +233,11 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Vrf ID")
+		return
+	}
+
+	if id == 0 {
+		respondWithError(w, http.StatusBadRequest, "Cannot remote the hardware VRF")
 		return
 	}
 

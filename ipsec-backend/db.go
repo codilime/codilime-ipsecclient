@@ -14,7 +14,6 @@ type Vrf struct {
 	CryptoPh2         datatypes.JSON `json:"crypto_ph2"`
 	PhysicalInterface string         `json:"physical_interface"`
 	Active            *bool          `json:"active"` // pointer, otherwise it is impossible to set value to false
-	HardwareSupport   *bool          `json:"hardware_support"`
 	LocalAs           int            `json:"local_as"`
 	LanIP             string         `json:"lan_ip"`
 	Endpoints         datatypes.JSON `json:"endpoints"`
