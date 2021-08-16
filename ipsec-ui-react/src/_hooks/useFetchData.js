@@ -1,34 +1,33 @@
+import { useContext } from 'react';
 import { client } from 'api';
+import { useGetLocation } from 'hooks';
+import { VrfsContext } from 'context';
 
 export const useFetchData = () => {
+  const { history } = useGetLocation();
+  const { setVrf } = useContext(VrfsContext);
+
   const fetchData = async (action) => {
-    try {
-      const data = await client('vrfs');
-      action(data);
-    } catch (err) {
-      throw new Error('problem with request');
-    }
+    const data = await client('vrfs');
+    action(data);
+    setVrf((prev) => ({ ...prev, loading: false }));
   };
+
   const postVrfData = async (payload) => {
-    try {
-      await client('vrfs', { ...payload }, '', { method: 'POST' });
-    } catch (err) {
-      throw new Error('problem with request');
-    }
+    const { id } = await client('vrfs', { ...payload }, '', { method: 'POST' });
+    history.push(`/vrf/${id}`);
+    setVrf((prev) => ({ ...prev, loading: true }));
   };
+
   const putVrfData = async (id, payload) => {
-    try {
-      await client(`vrfs/${id}`, { payload }, '', { method: 'PUT' });
-    } catch (err) {
-      throw new Error('problem with request');
-    }
+    await client(`vrfs/${id}`, { ...payload }, '', { method: 'PUT' });
+    setVrf((prev) => ({ ...prev, loading: true }));
   };
+
   const deleteVrfData = async (id) => {
-    try {
-      await client(`vrfs/${id}`, {}, '', { method: 'DELETE' });
-    } catch (err) {
-      throw new Error('problem with request');
-    }
+    await client(`vrfs/${id}`, {}, '', { method: 'DELETE' });
+    setVrf((prev) => ({ ...prev, loading: true }));
   };
+
   return { fetchData, postVrfData, deleteVrfData, putVrfData };
 };

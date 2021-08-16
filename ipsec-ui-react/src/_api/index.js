@@ -1,11 +1,11 @@
-import { detailApiAddress } from '../config';
+const API_URL = '/api';
 
 export async function client(endpoint, data, AuthToken, options) {
   const { ...customConfig } = options ?? {};
   const headers = { 'Content-Type': 'application/json' };
   const config = {
     method: data ? 'POST' : 'GET',
-    body: data ? JSON.stringify(data) : undefined,
+    body: data ? JSON.stringify(data) : null,
     headers: {
       ...headers,
       Authorization: AuthToken ? `Bearer ${AuthToken}` : '',
@@ -14,8 +14,8 @@ export async function client(endpoint, data, AuthToken, options) {
     ...customConfig
   };
   try {
-    const response = await window.fetch(`${detailApiAddress}/${endpoint}`, config);
-    let res = await response.json();
+    const response = await window.fetch(`${API_URL}/${endpoint}`, config);
+    const res = await response.json();
     if (response.ok) {
       return res;
     }
