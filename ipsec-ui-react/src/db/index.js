@@ -51,7 +51,7 @@ export const DynamicVRFView = {
   mainVRFViewColumnTwo: [
     { type: 'text', name: 'local_as', text: 'BGP Local AS' },
     { type: 'text', name: 'vlan', text: 'VLAN', max: maxValueForVlan, min: minValueForVlanRemoteASLocalAS, step: '1' },
-    { type: 'checkbox', name: 'active', text: 'Active' },
+    { type: 'checkbox', name: 'active', text: 'Active' }
   ],
   mainVRFViewColumnThree: [
     { name: 'crypto_ph1', text: 'Crypto phase 1' },

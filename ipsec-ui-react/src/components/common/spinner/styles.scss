@@ -1,7 +1,7 @@
 @import 'style/settings.scss';
 
 @function rem($value) {
-  @return unquote(($value/1px)/16+'rem')
+  @return unquote(($value/1px)/16+'rem');
 }
 
 $white: #ffffff;
@@ -49,7 +49,7 @@ $dotCount: 8;
     }
     &:nth-child(6) {
       left: 50%;
-      bottom:-1%;
+      bottom: -1%;
       transform: translateX(-50%) translateY(100%);
     }
     &:nth-child(7) {
@@ -64,15 +64,17 @@ $dotCount: 8;
     }
     @for $i from 1 through $dotCount {
       &:nth-child(#{$i}) {
-        animation-delay: #{$i * $speed /$dotCount};
+        animation-delay: #{$i * $speed / $dotCount};
       }
     }
   }
 }
 
 @keyframes dotAnimate {
-  0%, 40%, 100% {
-    background-color: rgba($primary,0.25);
+  0%,
+  40%,
+  100% {
+    background-color: rgba($primary, 0.25);
   }
   20% {
     background-color: $primary;

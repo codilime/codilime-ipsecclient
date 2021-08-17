@@ -38,7 +38,7 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
       </td>
     );
   });
-  
+
   const handleAddNewEndpoint = () => {
     if (id === null) {
       handleActionVrfEndpoints('add', endpoints);
