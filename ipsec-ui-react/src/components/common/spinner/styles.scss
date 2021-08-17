@@ -9,8 +9,8 @@ $speed: 2s;
 $dotCount: 8;
 
 .loader {
-  height: rem(100px);
-  width: rem(100px);
+  height: rem(40px);
+  width: rem(40px);
   border-radius: 50%;
   position: absolute;
   top: 0;
@@ -19,8 +19,8 @@ $dotCount: 8;
   left: 0;
   margin: auto;
   &__dot {
-    width: rem(10px);
-    height: rem(10px);
+    width: rem(5px);
+    height: rem(5px);
     border-radius: rem(100px);
     position: absolute;
     animation: dotAnimate $speed ease-in-out infinite;
@@ -78,7 +78,7 @@ $dotCount: 8;
   }
   20% {
     background-color: $primary;
-    height: rem(20px);
-    width: rem(20px);
+    height: rem(10px);
+    width: rem(10px);
   }
 }
