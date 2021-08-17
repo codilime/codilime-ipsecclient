@@ -24,6 +24,7 @@ export const EndpointButton = ({ onClick, secondary, children, disabled }) => (
       endpointButton__secondary: secondary,
       endpointButton__disable: disabled
     })}
+    disabled={disabled}
   >
     {children}
   </button>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { EndpointButton } from 'common';
 import { Wrapper, EachEndpoint } from 'template';
-import { useToggle, useEndpoint } from 'hooks';
+import { useToggle, useEndpoint, useGetLocation } from 'hooks';
 import { emptyEndpointSchema, tableHeaderSchema } from 'db';
 import classNames from 'classnames';
 import './styles.scss';
@@ -9,6 +9,7 @@ import './styles.scss';
 export const Endpoints = () => {
   const { open, handleToggle } = useToggle();
   const { vrfEndpoints, handleActionVrfEndpoints } = useEndpoint(handleToggle);
+  const { currentLocation } = useGetLocation();
   const dynamicHeader = tableHeaderSchema.map(({ item }) => (
     <th key={item} className={classNames({ table__header__column: true, table__bool: item === 'NAT' || item == 'BGP' || item === 'ACTION', table__psk: item === 'PSK' })}>
       {item}
@@ -32,7 +33,9 @@ export const Endpoints = () => {
           {createNewEndpoint}
           <tr className="table__addBtn">
             <td className="table__columnBtn">
-              <EndpointButton onClick={handleToggle}>{newEndpointButton}</EndpointButton>
+              <EndpointButton disabled={currentLocation === 'create'} onClick={handleToggle}>
+                {newEndpointButton}
+              </EndpointButton>
             </td>
           </tr>
         </tbody>
