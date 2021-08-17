@@ -16,8 +16,6 @@
 
 
   &__header {
-    border-bottom: $table-border;
-
     &__column {
       padding: 5px 10px;
       width: 100%;
@@ -62,9 +60,6 @@
     border-top: $table-border;
     padding: 10px;
     background-color: white;
-    &:only-of-type {
-      border-top: none;
-    }
   }
   &__columnBtn {
     min-width: 120px;

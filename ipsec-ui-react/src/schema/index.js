@@ -4,7 +4,7 @@ import { maxValueForLocalAS, maxValueForVlan } from '../constants';
 
 export const vrfSchema = yup.object().shape({
   client_name: yup.string().min(5, 'Name should consist of at least 5 characters').max(28, 'Name should consist of maximum 28 characters').required('Please provide valid name for VRF'),
-  lan_ip: yup.string().min(5, 'Mask name should consist of at least 5 characters').max(10, 'Mask name should consist of at maximum 10 characters').required('Please provide valid name for Mask'),
+  lan_ip: yup.string().min(5, 'Mask name should consist of at least 5 characters').max(19, 'Mask name should consist of at maximum 10 characters').required('Please provide valid name for Mask'),
   physical_interface: yup.string().required('Please provide physical interface'),
   active: yup.boolean(),
   hardware_support: yup.boolean(),
