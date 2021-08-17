@@ -1,7 +1,7 @@
 import './styles.scss';
 
 export const Spinner = () => {
-    const loading = true;
+    const loading = false;
 
     if(loading) {
         return (
