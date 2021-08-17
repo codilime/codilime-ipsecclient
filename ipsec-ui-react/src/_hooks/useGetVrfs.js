@@ -23,7 +23,7 @@ export const useGetVrfs = () => {
     const currentVrf = vrfs.filter(({ id }) => id === parseInt(currentLocation));
 
     if (currentVrf.length > 0) {
-      return setVrf({ data: currentVrf[0] });
+      return setVrf((prev) => ({ ...prev, data: currentVrf[0] }));
     }
   };
 

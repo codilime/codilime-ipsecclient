@@ -10,9 +10,9 @@ const VrfView = () => {
 
   const vrfName = client_name ? client_name : 'New VRF';
 
-  // if(vrf.loading) {
-  //     return <Spinner />
-  // }
+  if(vrf.loading) {
+      return <Spinner />
+  }
 
   return (
     <section className="vrf">
