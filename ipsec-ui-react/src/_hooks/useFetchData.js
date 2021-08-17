@@ -14,18 +14,18 @@ export const useFetchData = () => {
   };
 
   const postVrfData = async (payload) => {
-    const { id } = await client('vrfs', { ...payload }, '', { method: 'POST' });
+    const { id } = await client('vrfs', { ...payload }, { method: 'POST' });
     history.push(`/vrf/${id}`);
     setVrf((prev) => ({ ...prev, loading: true }));
   };
 
   const putVrfData = async (payload) => {
-    await client(`vrfs/${payload.id}`, { ...payload }, '', { method: 'PUT' });
+    await client(`vrfs/${payload.id}`, { ...payload }, { method: 'PUT' });
     setVrf((prev) => ({ ...prev, loading: true }));
   };
 
   const deleteVrfData = async (id) => {
-    await client(`vrfs/${id}`, {}, '', { method: 'DELETE' });
+    await client(`vrfs/${id}`, {}, { method: 'DELETE' });
     setVrf((prev) => ({ ...prev, loading: true }));
   };
 

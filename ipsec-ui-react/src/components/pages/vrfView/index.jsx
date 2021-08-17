@@ -6,9 +6,14 @@ import './styles.scss';
 
 const VrfView = () => {
   const { show, handleToggleModal } = useModalLogic();
-  const { client_name, handleDelete } = useVrfLogic();
+  const { client_name, handleDelete, vrf } = useVrfLogic();
 
   const vrfName = client_name ? client_name : 'New VRF';
+
+  // if(vrf.loading) {
+  //     return <Spinner />
+  // }
+
   return (
     <section className="vrf">
       <header className="vrf__header">
@@ -22,7 +27,6 @@ const VrfView = () => {
       <article>
         <FormDetail />
         <Endpoints />
-        <Spinner />
         <Visualization />
       </article>
       <Modal btnDelete {...{ show, handleToggleModal, handleDelete }} header="Delete VRF" leftButton="cancel" rightButton="delete">
