@@ -21,7 +21,7 @@ export const CryptoField = ({ text, name, crypto, register, error }) => {
   ));
 
   return (
-    <div>
+    <>
       <div className="crypto" {...{ name }}>
         <label className="crypto__label">{text}</label>
         <select className="crypto__select" {...register(`${name}[0]`)}>
@@ -36,7 +36,7 @@ export const CryptoField = ({ text, name, crypto, register, error }) => {
       </div>
 
       {error && <p className="field__error">{error.message}</p>}
-    </div>
+    </>
   );
 };
 

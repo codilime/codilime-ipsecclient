@@ -5,10 +5,10 @@
     display: flex;
     flex-wrap: wrap;
     border: none;
-    border-bottom: 1px solid $gray02;
+    border-bottom: $wrapper-border;
   }
   &__column {
-    padding: 0 $padding-md $padding-xl ;
+    padding: 0 $padding-md $padding-xl;
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
@@ -17,6 +17,10 @@
     flex-wrap: wrap;
   }
   &__btn {
-    margin: $margin-md $margin-lg;
+    background-color: $primary;
+    color: white;
+    padding: $padding-sm $padding-md;
+    min-width: 120px;
+    margin: $margin-md $margin-md;
   }
 }

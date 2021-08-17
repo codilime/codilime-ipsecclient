@@ -7,7 +7,7 @@ import { useEndpointLogic, useToggle, useModalLogic } from 'hooks';
 export const EachEndpoint = ({ data, active, handleActionVrfEndpoints, id }) => {
   const { open, handleToggle } = useToggle();
   const { show, handleToggleModal } = useModalLogic();
-  const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic(data, active, data.id, handleActionVrfEndpoints);
+  const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic(data, active, id, handleActionVrfEndpoints);
 
   const activeButton = edit ? (
     <EndpointButton {...{ onClick: handleAddNewEndpoint }}>Add</EndpointButton>
@@ -20,7 +20,7 @@ export const EachEndpoint = ({ data, active, handleActionVrfEndpoints, id }) => 
   return (
     <tr className="table__row">
       {displayEndpoint}
-      <td className="table__column">
+      <td className="table__column table__bool">
         {activeButton}
         <EndpointOption {...{ open, handleToggleModal, handleActiveEdit, handleToggle }} />
         <Modal {...{ show, handleToggleModal }} handleDelete={() => handleActionVrfEndpoints('delete', {}, id)} header="Delete endpoint" leftButton="cancel" rightButton="delete " btnDelete>

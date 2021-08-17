@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { EndpointInput } from 'common';
 import { endpointInputSchema } from 'db';
+import classNames from 'classnames';
 
 export const useEndpointLogic = (endpoint, active = false, id = null, handleActionVrfEndpoints) => {
   const [edit, setEdit] = useState(active);
@@ -26,19 +27,18 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
   const displayEndpoint = endpointInputSchema.map((el) => {
     if (el.type === 'checkbox') {
       return (
-        <td key={el.name} className="table__column">
+        <td key={el.name} className="table__column table__bool">
           <EndpointInput {...{ ...el, onChange, edit }} checked={newEndpointState[el.name]} />
-          <span>Active</span>
         </td>
       );
     }
     return (
-      <td key={el.name} className="table__column">
+      <td key={el.name} className={classNames({ table__column: true, table__psk: el.name === 'psk' })}>
         <EndpointInput {...{ ...el, onChange, edit }} value={newEndpointState[el.name]} />
       </td>
     );
   });
-
+  
   const handleAddNewEndpoint = () => {
     if (id === null) {
       handleActionVrfEndpoints('add', endpoints);

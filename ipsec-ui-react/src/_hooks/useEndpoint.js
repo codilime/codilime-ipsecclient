@@ -37,6 +37,7 @@ export const useEndpoint = (handleToggle) => {
           setSend(true);
           break;
         }
+
         setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: [...prev.data.endpoints, data] } }));
         handleToggle();
         setSend(true);
@@ -65,7 +66,7 @@ export const useEndpoint = (handleToggle) => {
   useEffect(() => {
     if (send) {
       putVrfData(data);
-      setSend(true);
+      setSend(false);
     }
   }, [send]);
   return { vrfEndpoints, loading, handleChangeVrfEndpoints, handleActionVrfEndpoints };
