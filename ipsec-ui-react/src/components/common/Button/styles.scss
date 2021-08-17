@@ -1,12 +1,11 @@
 @import 'style/settings.scss';
 
 .button {
-  border: $table-border;
+  border: none;
   border-radius: $button-radius;
   padding: 8px $padding-md;
   font-size: 12px;
   cursor: pointer;
-  text-transform: capitalize;
   &__delete {
     background-color: $bgc-delete;
     color: white;
@@ -19,7 +18,7 @@
   color: white;
   border-radius: 12px;
   font-size: 14px;
-  width: 100%;
+  width: auto;
   max-width: 200px;
   height: 100%;
   background-color: $light-blue;
