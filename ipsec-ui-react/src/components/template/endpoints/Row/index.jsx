@@ -5,6 +5,7 @@ import { EndpointOption, Modal } from 'template';
 import { useEndpointLogic, useToggle, useModalLogic } from 'hooks';
 
 export const EachEndpoint = ({ data, active, handleActionVrfEndpoints, id }) => {
+  
   const { open, handleToggle } = useToggle();
   const { show, handleToggleModal } = useModalLogic();
   const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic(data, active, id, handleActionVrfEndpoints);
@@ -48,5 +49,5 @@ EachEndpoint.propTypes = {
   disabled: PropTypes.bool,
   active: PropTypes.bool,
   id: PropTypes.number,
-  handleActionVrfEndpoints: PropTypes.func
+  handleActionVrfEndpoints: PropTypes.func,
 };

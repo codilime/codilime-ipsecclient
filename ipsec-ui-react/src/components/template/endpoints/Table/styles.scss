@@ -14,7 +14,6 @@
     display: flex;
   }
 
-
   &__header {
     &__column {
       padding: 5px 10px;
@@ -25,7 +24,7 @@
       }
     }
   }
- 
+
   &__body {
     font-size: 10px;
   }
@@ -52,8 +51,11 @@
   &__psk {
     width: 200%;
     white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
+    &:hover .tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
   }
   &__addBtn {
     display: flex;

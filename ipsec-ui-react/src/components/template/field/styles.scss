@@ -21,15 +21,21 @@
     padding: $padding-sm $padding-lg $padding-lg 180px;
     width: 90%;
     border: none;
-    border-bottom: 2px solid $gray01;
     outline: none;
+    border-bottom: 2px solid $gray01;
+    font-weight: 300;
     &:focus {
       border-bottom: 2px solid $primary;
       color: $primary;
       outline: none;
     }
   }
+  &__error {
+    color:red;
+    font-size: 10px;
+  }
   &__label {
+    font-weight:500;
     order: 1;
     padding: 3px 3px;
     transform: translateY(-50%);
