@@ -1,0 +1,30 @@
+@import 'style/settings.scss';
+
+.tooltip {
+  position: absolute;
+  top: 85%;
+  background-color: $white;
+  box-shadow: $endpoint-option-shadow;
+  width: auto;
+  max-width: calc(100% - 20px);
+  font-size: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: $transition;
+  display: block;
+  word-wrap: break-word;
+  &__arrow {
+    position: absolute;
+    bottom: 100%;
+    left: 0%;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid white;
+  }
+  &__label {
+    word-wrap: break-word;
+    display: inline-block;
+    width: 100%;
+    padding: $padding-sm;
+  }
+}

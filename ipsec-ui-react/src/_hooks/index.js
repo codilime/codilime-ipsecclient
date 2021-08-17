@@ -7,3 +7,4 @@ export * from './useGetVrfs';
 export * from './useCreateVRFMainView';
 export * from './useVrfLogic';
 export * from './useEndpoint';
+export * from './useValidateEndpoint';
