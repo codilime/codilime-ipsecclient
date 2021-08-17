@@ -30,6 +30,10 @@
       outline: none;
     }
   }
+  &__error {
+    color:red;
+    font-size: 10px;
+  }
   &__label {
     font-weight:500;
     order: 1;

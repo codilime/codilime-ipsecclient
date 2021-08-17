@@ -28,6 +28,8 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
   const newEndpointState = edit ? endpoints : endpoint;
 
   const displayEndpoint = endpointInputSchema.map((el) => {
+    const toolTip = el.name === 'psk' && edit && newEndpointState[el.name] !== '' && <ToolTip>{newEndpointState[el.name]}</ToolTip>
+    
     if (el.type === 'checkbox') {
       return (
         <td key={el.name} className={classNames({ table__column: true, table__bool: true })}>
@@ -38,7 +40,7 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
     return (
       <td key={el.name} className={classNames({ table__column: true, table__psk: el.name === 'psk' })}>
         <EndpointInput {...{ ...el, onChange, edit, error }} value={newEndpointState[el.name]} />
-        {el.name === 'psk' && edit && newEndpointState[el.name] !== '' && <ToolTip>{newEndpointState[el.name]}</ToolTip>}
+        {toolTip}
       </td>
     );
   });
