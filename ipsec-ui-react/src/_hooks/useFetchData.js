@@ -29,5 +29,16 @@ export const useFetchData = () => {
     setVrf((prev) => ({ ...prev, loading: true }));
   };
 
-  return { fetchData, postVrfData, deleteVrfData, putVrfData };
+  const fetchSoftwareAlgorithms = async (action) => {
+    const data = await client('algorithms/software');
+    action(data);
+  };
+  const fetchHardwarePh1 = async () => {
+    const data = await client('algorithms/hardware/ph2');
+  };
+  const fetchHardwarePh2 = async () => {
+    const data = await client('algorithms/hardware/ph2');
+  };
+
+  return { fetchData, postVrfData, deleteVrfData, putVrfData, fetchSoftwareAlgorithms, fetchHardwarePh1, fetchHardwarePh2 };
 };

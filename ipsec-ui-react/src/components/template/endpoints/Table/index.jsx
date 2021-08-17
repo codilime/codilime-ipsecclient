@@ -3,16 +3,21 @@ import { EndpointButton } from 'common';
 import { Wrapper, EachEndpoint } from 'template';
 import { useToggle, useEndpoint } from 'hooks';
 import { emptyEndpointSchema, tableHeaderSchema } from 'db';
+import classNames from 'classnames';
 import './styles.scss';
 
 export const Endpoints = () => {
   const { open, handleToggle } = useToggle();
-  const { vrfEndpoints, handleActionVrfEndponts } = useEndpoint(handleToggle);
-  const dynamicHeader = vrfEndpoints !== null || open ? tableHeaderSchema.map(({ item }) => <th key={item}>{item}</th>) : null;
+  const { vrfEndpoints, handleActionVrfEndpoints } = useEndpoint(handleToggle);
+  const dynamicHeader = tableHeaderSchema.map(({ item }) => (
+    <th key={item} className={classNames({ table__header__column: true, table__bool: item === 'NAT' || item == 'BGP' || item === 'ACTION', table__psk: item === 'PSK' })}>
+      {item}
+    </th>
+  ));
 
-  const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ data: el, id: index, handleActionVrfEndponts }} />);
+  const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ data: el, id: index, handleActionVrfEndpoints }} />);
 
-  const createNewEndpoint = open && <EachEndpoint {...{ active: true, data: emptyEndpointSchema, handleActionVrfEndponts }} />;
+  const createNewEndpoint = open && <EachEndpoint {...{ active: true, data: emptyEndpointSchema, handleActionVrfEndpoints }} />;
 
   const newEndpointButton = open ? 'Close a new endpoint' : 'Add a new endpoint';
 

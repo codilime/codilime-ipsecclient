@@ -1,0 +1,21 @@
+@import 'style/settings.scss';
+
+.crypto {
+  margin: 15px 10px 5px 5px;
+  position: relative;
+  width: 90%;
+  padding: 4px 0px 12px;
+  border-bottom: 2px solid $gray01;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  &__label {
+    margin-right: $margin-xl;
+  }
+  &__select {
+    width: 20%;
+    margin: 0 $margin-md;
+    border: none;
+    color: $primary;
+  }
+}

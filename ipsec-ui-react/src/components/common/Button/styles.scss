@@ -7,13 +7,15 @@
   font-size: 12px;
   cursor: pointer;
   &__delete {
+    font-weight: 500;
+    width: 120px;
     background-color: $bgc-delete;
     color: white;
   }
 }
 
 .endpointButton {
-  padding: $padding-sm $padding-md;
+  padding: $padding-sm $padding-xl;
   border: none;
   color: white;
   border-radius: 12px;
@@ -21,9 +23,10 @@
   width: auto;
   max-width: 200px;
   height: 100%;
-  background-color: $light-blue;
+  background-color: $primary;
   cursor: pointer;
   transition: $transition;
+  margin:0 auto;
   &__secondary {
     background-color: transparent;
     color: black;

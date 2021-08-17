@@ -15,11 +15,11 @@ $gray-light-color: $gray01;
 $disactive-color: $red;
 $active-color: #6cc04a;
 $light-blue: lightblue;
-$vrf-active:$green;
-$hardware:$primary;
+$vrf-active: $primary;
+$hardware: $primary;
 
 /* Border */
-$wrapper-border: 1px solid $gray02;
+$wrapper-border: 0.5px solid $gray02;
 $info-border: 1px solid lightblue;
 $info-footer-border: 0.5px solid gray;
 $table-border-color: gray;
@@ -68,6 +68,7 @@ $wrapper-margin: 0px;
 $margin-sm: 5px;
 $margin-md: 10px;
 $margin-lg: 15px;
+$margin-xl: 20px;
 
 /* Transition */
 $transition: 0.3s linear all;

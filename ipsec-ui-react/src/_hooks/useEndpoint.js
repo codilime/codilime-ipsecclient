@@ -28,9 +28,16 @@ export const useEndpoint = (handleToggle) => {
     }, []);
   };
 
-  const handleActionVrfEndponts = (action, data, id) => {
+  const handleActionVrfEndpoints = (action, data, id) => {
     switch (action) {
       case 'add': {
+        if (endpoints === null) {
+          setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: [data] } }));
+          handleToggle();
+          setSend(true);
+          break;
+        }
+
         setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: [...prev.data.endpoints, data] } }));
         handleToggle();
         setSend(true);
@@ -59,8 +66,8 @@ export const useEndpoint = (handleToggle) => {
   useEffect(() => {
     if (send) {
       putVrfData(data);
-      setSend(true);
+      setSend(false);
     }
   }, [send]);
-  return { vrfEndpoints, loading, handleChangeVrfEndpoints, handleActionVrfEndponts };
+  return { vrfEndpoints, loading, handleChangeVrfEndpoints, handleActionVrfEndpoints };
 };

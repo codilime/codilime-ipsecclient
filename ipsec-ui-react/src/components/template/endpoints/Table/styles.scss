@@ -2,7 +2,7 @@
 
 .table {
   width: 100%;
-  text-align: left;
+  text-align: center;
   overflow: hidden;
   border-collapse: collapse;
   font-size: 12px;
@@ -12,10 +12,11 @@
   }
   &__row {
     display: flex;
-    
   }
+
+
   &__header {
-    th {
+    &__column {
       padding: 5px 10px;
       width: 100%;
       border-right: $table-border;
@@ -24,6 +25,7 @@
       }
     }
   }
+ 
   &__body {
     font-size: 10px;
   }
@@ -44,14 +46,20 @@
       border-right: none;
     }
   }
+  &__bool {
+    width: 30%;
+  }
+  &__psk {
+    width: 200%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   &__addBtn {
     display: flex;
     border-top: $table-border;
     padding: 10px;
     background-color: white;
-    &:only-of-type {
-      border-top: $table-border;
-    }
   }
   &__columnBtn {
     min-width: 120px;
