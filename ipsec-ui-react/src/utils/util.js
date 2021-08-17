@@ -3,7 +3,7 @@ export const validateDataInput = (event) => {
   if (name === 'client_name' || name === 'physical_interface' || name === 'psk') {
     return;
   }
-  if (!/[0-9.]/.test(event.key)) {
+  if (!/[0-9/.]/.test(event.key)) {
     event.preventDefault();
     return;
   }
