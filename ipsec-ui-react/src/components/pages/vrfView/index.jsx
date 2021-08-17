@@ -6,7 +6,7 @@ import './styles.scss';
 
 const VrfView = () => {
   const { show, handleToggleModal } = useModalLogic();
-  const { client_name, handleDelete } = useVrfLogic(handleToggleModal);
+  const { client_name, handleDelete } = useVrfLogic();
 
   const vrfName = client_name ? client_name : 'New VRF';
   return (

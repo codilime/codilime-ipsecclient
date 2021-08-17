@@ -2,24 +2,22 @@ import React, { useState } from 'react';
 import { EndpointInput } from 'common';
 import { endpointInputSchema } from 'db';
 
-export const useEndpointLogic = (endpoint, active = false, id = null, handleActionVrfEndponts) => {
+export const useEndpointLogic = (endpoint, active = false, id = null, handleActionVrfEndpoints) => {
   const [edit, setEdit] = useState(active);
   const [endpoints, setEndpoint] = useState(endpoint);
   const handleActiveEdit = () => setEdit((prev) => !prev);
 
   const onChange = (e) => {
-    const { value, name } = e.target;
-    setEndpoint((prev) => ({
+    const { value, name, checked, type } = e.target;
+    if (type === 'checkbox') {
+      return setEndpoint((prev) => ({
+        ...prev,
+        [name]: checked
+      }));
+    }
+    return setEndpoint((prev) => ({
       ...prev,
       [name]: value
-    }));
-  };
-
-  const onClick = (e) => {
-    const { checked, name } = e.target;
-    setEndpoint((prev) => ({
-      ...prev,
-      [name]: checked
     }));
   };
 
@@ -29,7 +27,7 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
     if (el.type === 'checkbox') {
       return (
         <td key={el.name} className="table__column">
-          <EndpointInput {...{ ...el, onClick, edit }} value={newEndpointState[el.name]} />
+          <EndpointInput {...{ ...el, onChange, edit }} checked={newEndpointState[el.name]} />
           <span>Active</span>
         </td>
       );
@@ -43,12 +41,12 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
 
   const handleAddNewEndpoint = () => {
     if (id === null) {
-      handleActionVrfEndponts('add', endpoints);
+      handleActionVrfEndpoints('add', endpoints);
       return setEdit(false);
     }
-    handleActionVrfEndponts('change', endpoints, id);
+    handleActionVrfEndpoints('change', endpoints, id);
     return setEdit(false);
   };
 
-  return { displayEndpoint, edit, onClick, handleAddNewEndpoint, handleActiveEdit };
+  return { displayEndpoint, edit, handleAddNewEndpoint, handleActiveEdit };
 };

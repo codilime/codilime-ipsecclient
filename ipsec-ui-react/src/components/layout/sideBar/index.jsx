@@ -7,7 +7,6 @@ import './styles.scss';
 export const SideBar = () => {
   const { vrfs } = useGetVrfs();
   const { currentLocation } = useGetLocation();
-
   const listContext =
     vrfs !== [] ? (
       vrfs.map(({ client_name, id }) => (
