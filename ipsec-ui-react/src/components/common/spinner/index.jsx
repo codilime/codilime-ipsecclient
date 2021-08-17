@@ -1,13 +1,21 @@
 import './styles.scss';
 
 export const Spinner = () => {
-    const loading = false;
+    const loading = true;
 
     if(loading) {
         return (
-            <div className="spinner"></div>
+            <div className="loader">
+                <div className="loader__dot"></div>
+                <div className="loader__dot"></div>
+                <div className="loader__dot"></div>
+                <div className="loader__dot"></div>
+                <div className="loader__dot"></div>
+                <div className="loader__dot"></div>
+                <div className="loader__dot"></div>
+                <div className="loader__dot"></div>
+            </div>
         );
-    } else {
-        return null;
     }
+        return null;
 }
