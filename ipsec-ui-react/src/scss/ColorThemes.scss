@@ -3,6 +3,7 @@ $primary: #049fd9;
 $gray01: #f2f2f2;
 $gray02: #626469;
 $gray03: #39393b;
+$gray04: #dfdfdf;
 $white: #ffffff;
 $red: #cf2030;
 $green: #6cc04a;
@@ -19,14 +20,15 @@ $vrf-active: $primary;
 $hardware: $primary;
 
 /* Border */
-$wrapper-border: 0.5px solid $gray02;
+$wrapper-border: 0.5px solid $gray04;
 $info-border: 1px solid lightblue;
 $info-footer-border: 0.5px solid gray;
 $table-border-color: gray;
-$table-border: 0.5px solid gray;
+$table-border: 0.5px solid $gray04;
 $sideBar-active-border: 3px solid $primary;
 $endpoint-input-focus: 0.5px solid $primary;
-$endpoint-input: 0.5px solid $gray03;
+$endpoint-input: 0.5px solid $gray04;
+
 /* Border-radius */
 $button-radius: 18px;
 
