@@ -1,7 +1,7 @@
 ### STAGE 1a: Build Front ###
 FROM node:12.7-alpine AS frontend-build
 WORKDIR /usr/src/app
-COPY ipsec-ui-react/package.json ipsec-ui-react/package-lock.json ./
+COPY ipsec-ui-react/package.json ./
 RUN npm install -g webpack webpack-cli && npm install
 COPY ipsec-ui-react/src /usr/src/app/src/
 COPY ipsec-ui-react/dist /usr/src/app/dist/
