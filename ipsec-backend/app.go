@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
@@ -33,7 +34,11 @@ type App struct {
 	Generator Generator
 }
 
-func (a *App) Initialize(dbName string) {
+func boolPointer(b bool) *bool {
+	return &b
+}
+
+func (a *App) Initialize(dbName string) error {
 	var err error
 	a.DB, err = initializeDB(dbName)
 	if err != nil {
@@ -48,6 +53,22 @@ func (a *App) Initialize(dbName string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	hwVrf := Vrf{
+		ID:         hardwareVrfID,
+		ClientName: "hardware",
+		CryptoPh1:  []byte("[\"aes-cbc-128\", \"sha256\", \"fourteen\"]"),
+		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
+		Active:     boolPointer(false),
+	}
+
+	if err := hwVrf.getVrf(a.DB); err != nil {
+		if strings.Contains(err.Error(), "record not found") {
+			return hwVrf.createVrf(a.DB)
+		}
+	}
+
+	return nil
 }
 
 var nginxPasswordFile string = "/etc/nginx/htpasswd"
@@ -124,9 +145,6 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	if vrf.Active == nil {
 		vrf.Active = new(bool)
 	}
-	if vrf.HardwareSupport == nil {
-		vrf.HardwareSupport = new(bool)
-	}
 	if err := vrf.createVrf(a.DB); err != nil {
 		log.Infof("error %+v", err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -166,6 +184,12 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if vrf.ID == hardwareVrfID && vrf.ClientName != oldVrf.ClientName {
+		// can't change the hardware vrf name
+		respondWithError(w, http.StatusBadRequest, "Cannot change the hardware vrf name")
+		return
+	}
+
 	if err := vrf.updateVrf(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -173,9 +197,6 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 
 	if vrf.Active == nil {
 		vrf.Active = oldVrf.Active
-	}
-	if vrf.HardwareSupport == nil {
-		vrf.HardwareSupport = oldVrf.HardwareSupport
 	}
 
 	createHandler, deleteHandler := a.getHandlers(vrf)
@@ -207,7 +228,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) getHandlers(vrf Vrf) (handler, handler) {
-	if *vrf.HardwareSupport {
+	if vrf.ID == hardwareVrfID {
 		return restconfCreate, restconfDelete
 	} else {
 		return a.Generator.GenerateTemplates, a.Generator.DeleteTemplates
@@ -219,6 +240,11 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Vrf ID")
+		return
+	}
+
+	if id == hardwareVrfID {
+		respondWithError(w, http.StatusBadRequest, "Cannot remote the hardware VRF")
 		return
 	}
 
