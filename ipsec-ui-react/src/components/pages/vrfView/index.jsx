@@ -18,9 +18,9 @@ const VrfView = () => {
   );
 
 
-  if(vrf.loading) {
-      return <Spinner />
-  }
+  // if(vrf.loading) {
+  //     return <Spinner />
+  // }
 
 
     return (
