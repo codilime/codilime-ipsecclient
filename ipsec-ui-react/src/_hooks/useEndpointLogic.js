@@ -17,7 +17,7 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
   const onChange = (e) => {
     const { value, name, checked, type } = e.target;
     setError((prev) => ({ ...prev, [name]: false }));
-
+  
     if (type === 'checkbox') {
       return setEndpoint((prev) => ({
         ...prev,
@@ -49,16 +49,8 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
         </td>
       );
     }
-    if (el.type === 'number') {
-      return (
-        <td key={el.name} className={classNames('table__column', 'table__bool')}>
-          <EndpointInput {...{ ...el, onChange, edit, error }} value={toString(newEndpointState[el.name])} />
-          {toolTip}
-        </td>
-      );
-    }
     return (
-      <td key={el.name} className={classNames('table__column', { table__psk: el.name === 'psk' })}>
+      <td key={el.name} className={classNames('table__column', { table__psk: el.name === 'psk', table__bool: el.name === 'remote_as' })}>
         <EndpointInput {...{ ...el, onChange, edit, error }} value={newEndpointState[el.name]} />
         {toolTip}
       </td>
