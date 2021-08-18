@@ -5,16 +5,16 @@ import { Button, Spinner } from 'common';
 import './styles.scss';
 
 const VrfView = () => {
-  const { show, handleToggleModal } = useModalLogic();
   const { client_name, handleDelete, vrf } = useVrfLogic();
-
-  const vrfName = client_name ? client_name : 'New VRF';
 
   if(vrf.loading) {
       return <Spinner />
   }
 
-  return (
+  const vrfName = client_name ? client_name : 'New VRF';
+  const { show, handleToggleModal } = useModalLogic();
+
+    return (
     <section className="vrf">
       <header className="vrf__header">
         <span>
