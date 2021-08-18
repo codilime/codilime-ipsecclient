@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useFetchData, useGetLocation } from 'hooks';
 import { VrfsContext } from 'context';
+import { HardwareId } from 'constant';
 import { defaultVrf } from 'db';
 
 export const useGetVrfs = () => {
@@ -26,7 +27,7 @@ export const useGetVrfs = () => {
     const currentVrf = vrfs.filter(({ id }) => id === parseInt(currentLocation));
 
     if (currentVrf.length > 0) {
-      if (currentVrf[0].hardware_support) {
+      if (currentVrf[0].id === HardwareId) {
         const crypto_ph1 = await fetchHardwarePh1();
         const crypto_ph2 = await fetchHardwarePh2();
         return setVrf((prev) => ({ ...prev, data: currentVrf[0], crypto: { crypto_ph1, crypto_ph2 } }));

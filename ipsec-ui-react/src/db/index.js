@@ -15,10 +15,10 @@ export const defaultVrf = {
   loading: false
 };
 
-export const tableSoftwareHeaderSchema = [{ item: 'Tunnel remote IP' }, { item: 'Tunnel local IP' }, { item: 'Tunnel peer IP' }, { item: 'PSK' }, { item: 'NAT' }, { item: 'BGP' }, { item: 'ACTION' }];
+export const tableSoftwareHeaderSchema = [{ item: 'Remote IP' }, { item: 'Tunnel local IP' }, { item: 'Tunnel peer IP' }, { item: 'PSK' }, { item: 'NAT' }, { item: 'BGP' }, { item: 'ACTION' }];
 
 export const tableHardwaHeaderSchema = [
-  { item: 'Tunnel remote IP' },
+  { item: 'Remote IP' },
   { item: 'Tunnel local IP' },
   { item: 'Tunnel peer IP' },
   { item: 'PSK' },
@@ -59,7 +59,7 @@ export const endpointHardwareSchema = [
   { type: 'text', name: 'local_ip', placeholder: 'Enter local IP' },
   { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP' },
   { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
-  { type: 'number', name: 'remote_as',placeholder:'0' },
+  { type: 'number', name: 'remote_as', placeholder: '0' },
   { type: 'text', name: 'source_interface', placeholder: 'Enter source interface' },
   { type: 'checkbox', name: 'bgp' }
 ];

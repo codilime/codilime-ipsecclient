@@ -36,6 +36,6 @@ EndpointInput.propTypes = {
   checked: PropTypes.bool,
   onChange: PropTypes.func,
   onClick: PropTypes.func,
-  value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.number]),
   error: PropTypes.shape({ remote_ip_sec: PropTypes.bool, psk: PropTypes.bool, local_ip: PropTypes.bool, peer_ip: PropTypes.bool })
 };

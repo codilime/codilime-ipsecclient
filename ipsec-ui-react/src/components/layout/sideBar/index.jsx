@@ -4,6 +4,7 @@ import { Button } from 'common';
 import { useGetLocation, useGetVrfs } from 'hooks';
 import { IoHardwareChip } from 'react-icons/io5';
 import classNames from 'classnames';
+import { HardwareId } from 'constant';
 import './styles.scss';
 
 export const SideBar = () => {
@@ -14,8 +15,8 @@ export const SideBar = () => {
     vrfs !== [] ? (
       vrfs.map(({ client_name, id }) => (
         <li className={`sideBar__eachVrf ${id === parseInt(currentLocation) ? 'sideBar__eachVrf--active' : ''}`} key={id}>
-          <Link to={`/vrf/${id}`} className={classNames('sideBar__link', { sideBar__hardware: id === 1 })}>
-            {client_name} {id === 1 && <IoHardwareChip />}
+          <Link to={`/vrf/${id}`} className={classNames('sideBar__link', { sideBar__hardware: id === parseInt(HardwareId) })}>
+            {client_name} {id ===  parseInt(HardwareId) && <IoHardwareChip className='sideBar__icon' />}
           </Link>
         </li>
       ))

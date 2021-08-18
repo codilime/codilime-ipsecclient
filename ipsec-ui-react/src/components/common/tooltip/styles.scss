@@ -3,8 +3,8 @@
 .tooltip {
   position: absolute;
   top: 75%;
-  width: auto;
-  max-width: calc(100% - 20px);
+  width: calc(100% - 20px);
+  //max-width: calc(100% - 20px);
   opacity: 0;
   visibility: hidden;
   transition: $transition;
