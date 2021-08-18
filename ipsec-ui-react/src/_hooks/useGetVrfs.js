@@ -27,7 +27,7 @@ export const useGetVrfs = () => {
     const currentVrf = vrfs.filter(({ id }) => id === parseInt(currentLocation));
 
     if (currentVrf.length > 0) {
-      if (currentVrf[0].id === HardwareId) {
+      if (currentVrf[0].id === parseInt(HardwareId)) {
         const crypto_ph1 = await fetchHardwarePh1();
         const crypto_ph2 = await fetchHardwarePh2();
         return setVrf((prev) => ({ ...prev, data: currentVrf[0], crypto: { crypto_ph1, crypto_ph2 } }));
