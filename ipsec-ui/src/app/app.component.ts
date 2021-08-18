@@ -93,32 +93,22 @@ export class AppComponent {
   }
 
   private getMetric() {
-    if (this.currentVRF == null) {
-      this.httpClient.get("/api/metrics")
-        .pipe(
-          catchError(this.handleError)
-        )
-        .subscribe((data) => {
-          if (JSON.stringify(data) === this.oldMetrics)
-            return;
-          this.oldMetrics = JSON.stringify(data);
-          this.metrics = data as Metrics;
-        });
-      return;
-    }
-    if (!this.currentVRF.active) {
-      return;
-    }
-    this.httpClient.get("/api/metrics/" + this.currentVRF.id)
-      .pipe(
-        catchError(this.handleError)
-      )
-      .subscribe((data) => {
-          if (JSON.stringify(data) === this.oldMetrics)
-            return;
-          this.oldMetrics = JSON.stringify(data);
-          this.metrics = data as Metrics;
-        });
+    // if (this.currentVRF == null) {
+    //   return;
+    // }
+    // if (!this.currentVRF.active) {
+    //   return;
+    // }
+    // this.httpClient.get("/api/metrics/" + this.currentVRF.id)
+    //   .pipe(
+    //     catchError(this.handleError)
+    //   )
+    //   .subscribe((data) => {
+    //       if (JSON.stringify(data) === this.oldMetrics)
+    //         return;
+    //       this.oldMetrics = JSON.stringify(data);
+    //       this.metrics = data as Metrics;
+    //     });
   }
 
   ngOnInit() {

@@ -15,7 +15,13 @@ func ReloadStrongSwan() error {
 	return nil
 }
 
-func GetStrongswanState() (map[string]string, error) {
+type monitoringEndpoint struct {
+	localAddr  string
+	remoteAddr string
+	status     string
+}
+
+func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
 	options := vici.WithSocketPath(socketPath)
 	session, err := vici.NewSession(options)
 	if err != nil {
@@ -23,41 +29,60 @@ func GetStrongswanState() (map[string]string, error) {
 	}
 	defer session.Close()
 
-	statuses := map[string]string{}
-	m, err := session.CommandRequest("get-conns", nil)
+	m := vici.NewMessage()
+	err = m.Set("noblock", "yes")
 	if err != nil {
 		return nil, err
 	}
-	for _, key := range m.Get("conns").([]string) {
-		statuses[key] = "DOWN"
+	ms, err := session.StreamedCommandRequest("list-conns", "list-conn", m)
+	if err != nil {
+		return nil, err
 	}
-
+	endpoints := map[string]*monitoringEndpoint{}
+	for _, m = range ms.Messages() {
+		for _, key := range m.Keys() {
+			e := &monitoringEndpoint{
+				status: "DOWN",
+			}
+			e.localAddr = m.Get(key).(*vici.Message).Get("local_addrs").([]string)[0]
+			e.remoteAddr = m.Get(key).(*vici.Message).Get("remote_addrs").([]string)[0]
+			endpoints[key] = e
+		}
+	}
 	m = vici.NewMessage()
-	m.Set("noblock", "yes")
-	ms, err := session.StreamedCommandRequest("list-sas", "list-sa", m)
+	err = m.Set("noblock", "yes")
+	if err != nil {
+		return nil, err
+	}
+	ms, err = session.StreamedCommandRequest("list-sas", "list-sa", m)
 	if err != nil {
 		return nil, err
 	}
 	for _, m = range ms.Messages() {
 		for _, key := range m.Keys() {
-			statuses[key] = m.Get(key).(*vici.Message).Get("state").(string)
+			endpoints[key].status = m.Get(key).(*vici.Message).Get("state").(string)
 		}
 	}
-
-	return statuses, nil
+	return endpoints, nil
 }
 
-func GetStrongswanSingleState(n string) (map[string]string, error) {
+func GetStrongswanSingleState(n string) ([]map[string]interface{}, error) {
 	name := strings.Replace(n, "-", "_", 1)
 	statuses, err := GetStrongswanState()
 	if err != nil {
 		return nil, err
 	}
 
-	res := map[string]string{}
+	res := []map[string]interface{}{}
 	for k, v := range statuses {
 		if strings.Contains(k, name) {
-			res[k] = v
+			res = append(res,
+				map[string]interface{}{
+					"local-ip":  v.localAddr,
+					"remote-ip": v.remoteAddr,
+					"sa-status": v.status,
+				},
+			)
 		}
 	}
 
