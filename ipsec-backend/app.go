@@ -62,12 +62,12 @@ func (a *App) Initialize(dbName string) error {
 		Active:     boolPointer(false),
 	}
 
-	if err := hwVrf.createVrf(a.DB); err != nil {
-		if strings.Contains(err.Error(), "UNIQUE constraint failed: vrfs.id") {
-			return nil
+	if err := hwVrf.getVrf(a.DB); err != nil {
+		if strings.Contains(err.Error(), "record not found") {
+			return hwVrf.createVrf(a.DB)
 		}
-		return err
 	}
+
 	return nil
 }
 
