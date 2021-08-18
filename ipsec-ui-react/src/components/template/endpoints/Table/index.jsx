@@ -2,7 +2,8 @@ import React from 'react';
 import { EndpointButton } from 'common';
 import { Wrapper, EachEndpoint } from 'template';
 import { useToggle, useEndpoint, useGetLocation } from 'hooks';
-import { emptyEndpointSchema, tableHeaderSchema } from 'db';
+import { emptyEndpointSchema, emptyHardwareSchema, tableSoftwareHeaderSchema, tableHardwaHeaderSchema } from 'db';
+import { newVrf } from 'constant';
 import classNames from 'classnames';
 import './styles.scss';
 
@@ -10,15 +11,18 @@ export const Endpoints = () => {
   const { open, handleToggle } = useToggle();
   const { vrfEndpoints, handleActionVrfEndpoints } = useEndpoint(handleToggle);
   const { currentLocation } = useGetLocation();
-  const dynamicHeader = tableHeaderSchema.map(({ item }) => (
-    <th key={item} className={classNames({ table__header__column: true, table__bool: item === 'NAT' || item == 'BGP' || item === 'ACTION', table__psk: item === 'PSK' })}>
+  const headerSchema = currentLocation === '1' ? tableHardwaHeaderSchema : tableSoftwareHeaderSchema;
+  const emptySchema = currentLocation === '1' ? emptyHardwareSchema : emptyEndpointSchema;
+
+  const dynamicHeader = headerSchema.map(({ item }) => (
+    <th key={item} className={classNames('table__header__column', { table__bool: item === 'NAT' || item == 'BGP' || item === 'ACTION' || item == 'Remote AS', table__psk: item === 'PSK' })}>
       {item}
     </th>
   ));
 
   const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ data: el, id: index, handleActionVrfEndpoints }} />);
 
-  const createNewEndpoint = open && <EachEndpoint {...{ active: true, data: emptyEndpointSchema, handleActionVrfEndpoints }} />;
+  const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, data: emptySchema, handleActionVrfEndpoints }} />;
 
   const newEndpointButton = open ? 'Close a new endpoint' : 'Add a new endpoint';
 
@@ -33,7 +37,7 @@ export const Endpoints = () => {
           {createNewEndpoint}
           <tr className="table__addBtn">
             <td className="table__columnBtn">
-              <EndpointButton disabled={currentLocation === 'create'} onClick={handleToggle}>
+              <EndpointButton disabled={currentLocation === newVrf} onClick={handleToggle}>
                 {newEndpointButton}
               </EndpointButton>
             </td>

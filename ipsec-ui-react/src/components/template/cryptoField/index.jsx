@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { useFieldArray } from 'react-hook-form';
 import './styles.scss';
 
 export const CryptoField = ({ text, name, crypto, register, error }) => {

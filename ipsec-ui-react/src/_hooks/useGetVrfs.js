@@ -4,31 +4,43 @@ import { VrfsContext } from 'context';
 import { defaultVrf } from 'db';
 
 export const useGetVrfs = () => {
-  const { fetchData } = useFetchData();
+  const { fetchData, fetchHardwarePh1, fetchHardwarePh2, fetchSoftwareAlgorithms } = useFetchData();
   const { currentLocation, history } = useGetLocation();
-  const {
-    vrf: { loading },
-    setVrf
-  } = useContext(VrfsContext);
+  const { vrf, setVrf } = useContext(VrfsContext);
   const [vrfs, setVrfs] = useState([]);
+  const { loading } = vrf;
 
-  const findActiveVrfPage = () => {
+  const cryptoPhase = async () => {
+    const crypto = await fetchSoftwareAlgorithms();
+    setVrf((prev) => ({ ...prev, crypto: { crypto_ph2: crypto, crypto_ph1: crypto } }));
+  };
+
+  const findActiveVrfPage = async () => {
     if (vrfs.length === 0) {
-      setVrf(defaultVrf);
+      setVrf((prev) => ({ ...defaultVrf, crypto: prev.crypto }));
       history.push('/vrf/create');
     }
     if (currentLocation === 'create') {
-      return setVrf(defaultVrf);
+      setVrf((prev) => ({ ...defaultVrf, crypto: prev.crypto }));
     }
     const currentVrf = vrfs.filter(({ id }) => id === parseInt(currentLocation));
 
     if (currentVrf.length > 0) {
-      return setVrf({ data: currentVrf[0] });
+      if (currentVrf[0].hardware_support) {
+        const crypto_ph1 = await fetchHardwarePh1();
+        const crypto_ph2 = await fetchHardwarePh2();
+        return setVrf((prev) => ({ ...prev, data: currentVrf[0], crypto: { crypto_ph1, crypto_ph2 } }));
+      }
+      return setVrf((prev) => ({ ...prev, data: currentVrf[0] }));
     }
   };
 
   useEffect(() => {
-    if (currentLocation && vrfs.length !== 0) findActiveVrfPage();
+    cryptoPhase();
+  }, []);
+
+  useEffect(() => {
+    if (currentLocation || vrfs.length !== 0) findActiveVrfPage();
   }, [currentLocation, vrfs]);
 
   useEffect(() => {

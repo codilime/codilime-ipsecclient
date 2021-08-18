@@ -6,18 +6,23 @@ import './styles.scss';
 
 const VrfView = () => {
   const { show, handleToggleModal } = useModalLogic();
-  const { client_name, handleDelete } = useVrfLogic();
+  const { client_name, hardware_support, handleDelete } = useVrfLogic();
 
   const vrfName = client_name ? client_name : 'New VRF';
+
+  const deleteBtn = client_name && !hardware_support && (
+    <Button btnDelete className="vrf__btn" onClick={handleToggleModal}>
+      Delete VRF
+    </Button>
+  );
+
   return (
     <section className="vrf">
       <header className="vrf__header">
         <span>
           VRFs / <span className="vrf__name">{vrfName}</span>
         </span>
-        <Button btnDelete className="vrf__btn" onClick={handleToggleModal}>
-          Delete VRF
-        </Button>
+        {deleteBtn}
       </header>
       <article>
         <FormDetail />

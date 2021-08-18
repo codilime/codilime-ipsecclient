@@ -8,25 +8,19 @@ import { vrfSchema } from 'schema';
 import { useFetchData, useGetLocation } from 'hooks';
 
 export const useCreateVRFMainView = () => {
-  const {
-    vrf: { data }
-  } = useContext(VrfsContext);
-
-  const [crypto, setcrypto] = useState();
-  const { fetchSoftwareAlgorithms } = useFetchData();
-
-  useEffect(() => {
-    fetchSoftwareAlgorithms(setcrypto);
-  }, []);
-
+  const { vrf } = useContext(VrfsContext);
   const { currentLocation } = useGetLocation();
   const { postVrfData, putVrfData } = useFetchData();
+  const { mainVRFViewColumnOne, mainVRFViewColumnTwo, mainVRFViewColumnThree } = DynamicVRFView;
+  const { data, crypto } = vrf;
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty, isValid },
     reset
   } = useForm({ resolver: yupResolver(vrfSchema) });
+
   useEffect(() => {
     reset(data);
   }, [reset, data, currentLocation]);
@@ -39,11 +33,9 @@ export const useCreateVRFMainView = () => {
     }
   };
 
-  const { mainVRFViewColumnOne, mainVRFViewColumnTwo, mainVRFViewColumnThree } = DynamicVRFView;
-
   const VRFColumnOneView = mainVRFViewColumnOne.map((el) => <Field key={el.name} {...el} value={data[el.name]} register={register(el.name)} error={errors[el.name]} />);
   const VRFColumnTwoView = mainVRFViewColumnTwo.map((el) => <Field key={el.name} {...el} value={data[el.name]} register={register(el.name)} error={errors[el.name]} />);
-  const VRFColumnThreeView = mainVRFViewColumnThree.map((el) => <CryptoField key={el.name} {...el} {...{ crypto, register }} error={errors[el.name]} />);
+  const VRFColumnThreeView = mainVRFViewColumnThree.map((el) => <CryptoField key={el.name} {...el} {...{ crypto: crypto[el.name], register }} error={errors[el.name]} />);
 
-  return { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView, handleSubmit, submit };
+  return { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView, isDirty, isValid, handleSubmit, submit };
 };

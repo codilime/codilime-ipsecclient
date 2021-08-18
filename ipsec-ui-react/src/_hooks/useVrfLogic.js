@@ -6,11 +6,11 @@ export const useVrfLogic = () => {
   const { vrf } = useContext(VrfsContext);
   const { deleteVrfData } = useFetchData();
   const { history } = useGetLocation();
-  const { client_name, id } = vrf.data;
+  const { client_name, id, hardware_support } = vrf.data;
 
   const handleDelete = () => {
     deleteVrfData(id);
     history.push('/vrf/create');
   };
-  return { vrf, client_name, handleDelete };
+  return { vrf, client_name, hardware_support, handleDelete };
 };

@@ -16,7 +16,7 @@ export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, 
   return (
     <>
       <input
-        className={classNames({ endpointInput: true, endpointInput__checkbox: type === 'checkbox', endpointInput__active: edit, endpointInput__error: error[name] })}
+        className={classNames('endpointInput', { endpointInput__checkbox: type === 'checkbox', endpointInput__active: edit, endpointInput__error: error[name] })}
         type={open && edit ? 'text' : type}
         onKeyPress={validateDataInput}
         disabled={!edit}

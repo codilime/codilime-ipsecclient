@@ -4,12 +4,10 @@ import { MainLayout } from 'layout';
 import { Routers } from './routers';
 import 'style/global.scss';
 
-export const App = () => {
-  return (
-    <Router>
-      <MainLayout>
-        <Routers />
-      </MainLayout>
-    </Router>
-  );
-};
+export const App = () => (
+  <Router>
+    <MainLayout>
+      <Routers />
+    </MainLayout>
+  </Router>
+);

@@ -1,6 +1,6 @@
 const API_URL = '/api';
 
-export async function client(endpoint, data, AuthToken, options) {
+export async function client(endpoint, data, options) {
   const { ...customConfig } = options ?? {};
   const headers = { 'Content-Type': 'application/json' };
   const config = {
@@ -8,7 +8,6 @@ export async function client(endpoint, data, AuthToken, options) {
     body: data ? JSON.stringify(data) : null,
     headers: {
       ...headers,
-      Authorization: AuthToken ? `Bearer ${AuthToken}` : '',
       ...customConfig.headers
     },
     ...customConfig
