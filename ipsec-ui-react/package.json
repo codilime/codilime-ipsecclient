@@ -28,7 +28,7 @@
     "sass-loader": "^12.1.0",
     "style-loader": "^2.0.0",
     "webpack": "^5.38.1",
-    "webpack-cli": "^4.7.2",
+    "webpack-cli": "^4.8.0",
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
@@ -65,6 +65,18 @@
       "@babel/plugin-transform-runtime",
       "@babel/plugin-proposal-class-properties",
       "@babel/plugin-transform-object-assign"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
     ]
   }
 }
