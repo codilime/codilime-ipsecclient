@@ -50,10 +50,12 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
       );
     }
     if (el.type === 'number') {
-      <td key={el.name} className={classNames('table__column', { table__bool: el.name === 'remote_as' })}>
-        <EndpointInput {...{ ...el, onChange, edit, error }} value={toString(newEndpointState[el.name])} />
-        {toolTip}
-      </td>;
+      return (
+        <td key={el.name} className={classNames('table__column', 'table__bool')}>
+          <EndpointInput {...{ ...el, onChange, edit, error }} value={toString(newEndpointState[el.name])} />
+          {toolTip}
+        </td>
+      );
     }
     return (
       <td key={el.name} className={classNames('table__column', { table__psk: el.name === 'psk' })}>
