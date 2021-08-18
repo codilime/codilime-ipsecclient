@@ -8,8 +8,8 @@ export const vrfSchema = yup.object().shape({
   physical_interface: yup.string().required('Please provide physical interface'),
   active: yup.boolean(),
   hardware_support: yup.boolean(),
-  local_as: yup.number().min(1).max(maxValueForLocalAS).integer('Please provide integer'),
-  vlan: yup.number().min(1).max(maxValueForVlan).integer('Please provide integer'),
+  local_as: yup.number().min(1, 'Local AS must be greater than 1').max(maxValueForLocalAS, 'Local AS must not exceed ' + maxValueForLocalAS).integer('Please provide integer'),
+  vlan: yup.number().min(1, 'VLAN must be greater than 1').max(maxValueForVlan, 'VLAN must not exceed ' + maxValueForVlan).integer('Please provide integer'),
   crypto_ph1: yup.array(),
   crypto_ph2: yup.array()
 });
