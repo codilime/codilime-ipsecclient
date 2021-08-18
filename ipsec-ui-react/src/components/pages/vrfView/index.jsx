@@ -1,10 +1,11 @@
 import React from 'react';
 import { Endpoints, Modal, Visualization, FormDetail } from 'template';
 import { useModalLogic, useVrfLogic } from 'hooks';
-import { Button } from 'common';
+import { Button, Spinner } from 'common';
 import './styles.scss';
 
 const VrfView = () => {
+
   const { show, handleToggleModal } = useModalLogic();
   const { client_name, hardware_support, handleDelete } = useVrfLogic();
 
@@ -16,7 +17,14 @@ const VrfView = () => {
     </Button>
   );
 
-  return (
+
+  if(vrf.loading) {
+      return <Spinner />
+  }
+
+
+    return (
+
     <section className="vrf">
       <header className="vrf__header">
         <span>
