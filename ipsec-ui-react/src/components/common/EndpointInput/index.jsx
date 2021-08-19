@@ -9,14 +9,13 @@ import './styles.scss';
 
 export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, onClick, checked, error }) => {
   const { open, handleToggle } = useToggle();
-
   const icon = open && edit ? <BsEyeSlashFill className="endpointInput__icon" onClick={handleToggle} /> : <IoEyeSharp className="endpointInput__icon" onClick={handleToggle} />;
 
   const showEyes = type === 'password' ? <>{icon}</> : null;
   return (
     <>
       <input
-        className={classNames({ endpointInput: true, endpointInput__checkbox: type === 'checkbox', endpointInput__active: edit, endpointInput__error: error[name] })}
+        className={classNames('endpointInput', { endpointInput__checkbox: type === 'checkbox', endpointInput__active: edit, endpointInput__error: error[name] })}
         type={open && edit ? 'text' : type}
         onKeyPress={validateDataInput}
         disabled={!edit}
@@ -36,6 +35,6 @@ EndpointInput.propTypes = {
   checked: PropTypes.bool,
   onChange: PropTypes.func,
   onClick: PropTypes.func,
-  value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.number]),
   error: PropTypes.shape({ remote_ip_sec: PropTypes.bool, psk: PropTypes.bool, local_ip: PropTypes.bool, peer_ip: PropTypes.bool })
 };
