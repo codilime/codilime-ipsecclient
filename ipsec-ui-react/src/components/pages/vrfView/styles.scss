@@ -8,6 +8,7 @@
   &__header {
     display: flex;
     justify-content: space-between;
+    height: 40px;
   }
   &__button {
     padding: $padding-sm $padding-md;

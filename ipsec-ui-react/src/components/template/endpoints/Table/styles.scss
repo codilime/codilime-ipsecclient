@@ -12,9 +12,12 @@
   }
   &__row {
     display: flex;
+    height: 44px;
   }
   &__header {
     &__column {
+      display: flex;
+      justify-content: flex-start;
       padding: 5px 10px;
       width: 80%;
       border-right: $table-border;
