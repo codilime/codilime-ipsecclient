@@ -1,5 +1,9 @@
 @import 'ColorThemes';
 
+@font-face {
+  font-family: ciscoSansRegular;
+}
+
 *,
 *::before,
 *::after {
@@ -15,3 +19,4 @@ body {
   font-size: 16px;
   color: $gray03;
 }
+
