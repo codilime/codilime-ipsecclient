@@ -13,18 +13,17 @@
   &__row {
     display: flex;
   }
-
   &__header {
     &__column {
       padding: 5px 10px;
       width: 80%;
       border-right: $table-border;
+      font-size: $standard-text-size;
       &:last-of-type {
         border-right: none;
       }
     }
   }
-
   &__body {
     font-size: 10px;
   }
