@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
 export const useValidateEndpoint = (endpoints) => {
-  const [error, setError] = useState({ remote_ip_sec: false, psk: false, local_ip: false, peer_ip: false });
-
+  const [error, setError] = useState({ remote_ip_sec: false, psk: false, local_ip: false, peer_ip: false, source_interface: false });
+  console.log(endpoints);
   const validateEmptyEndpoint = () => {
-    const { remote_ip_sec, psk, local_ip, peer_ip } = endpoints;
+    const { remote_ip_sec, psk, local_ip, peer_ip, remote_as, source_interface } = endpoints;
 
-    if (remote_ip_sec === '' && psk === '' && local_ip === '' && peer_ip === '') {
+    if (remote_ip_sec === '' && psk === '' && local_ip === '' && peer_ip === '' && source_interface && remote_as) {
       setError({ remote_ip_sec: true, psk: true, local_ip: true, peer_ip: true });
       return false;
     }
@@ -22,11 +22,15 @@ export const useValidateEndpoint = (endpoints) => {
       setError((prev) => ({ ...prev, peer_ip: true }));
       return false;
     }
-    if (psk === '' || psk.length > 16) {
+    if (psk === '') {
       setError((prev) => ({ ...prev, psk: true }));
       return false;
     }
-    setError({ remote_ip_sec: false, psk: false, local_ip: false, peer_ip: false });
+    if (source_interface === '') {
+      setError((prev) => ({ ...prev, source_interface: true }));
+      return false;
+    }
+    setError({ remote_ip_sec: false, psk: false, local_ip: false, peer_ip: false, source_interface: false });
     return true;
   };
 

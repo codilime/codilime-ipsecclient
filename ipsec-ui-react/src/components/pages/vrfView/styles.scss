@@ -9,6 +9,7 @@
     padding: $padding-sm $padding-md;
   }
   &__name {
+    line-height: 32px;
     color: $breadcrumb-font-color;
   }
 }

@@ -5,24 +5,26 @@ import { Button, Spinner } from 'common';
 import './styles.scss';
 
 const VrfView = () => {
-  const { client_name, handleDelete, vrf } = useVrfLogic();
+  const { show, handleToggleModal } = useModalLogic();
+  const { client_name, handleDelete, vrf, hardware } = useVrfLogic();
+  const vrfName = client_name ? client_name : 'New VRF';
+  const deleteBtn = !hardware && (
+    <Button btnDelete className="vrf__btn" onClick={handleToggleModal}>
+      Delete VRF
+    </Button>
+  );
 
-  if(vrf.loading) {
-      return <Spinner />
+  if (vrf.loading) {
+    return <Spinner />;
   }
 
-  const vrfName = client_name ? client_name : 'New VRF';
-  const { show, handleToggleModal } = useModalLogic();
-
-    return (
+  return (
     <section className="vrf">
       <header className="vrf__header">
         <span>
           VRFs / <span className="vrf__name">{vrfName}</span>
         </span>
-        <Button btnDelete className="vrf__btn" onClick={handleToggleModal}>
-          Delete VRF
-        </Button>
+        {deleteBtn}
       </header>
       <article>
         <FormDetail />

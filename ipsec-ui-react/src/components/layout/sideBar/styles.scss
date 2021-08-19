@@ -16,7 +16,7 @@
   &__eachVrf {
     font-size: $link-font-size;
     transition: $transition;
-    &--active {
+    &__active {
       border-left: $sideBar-active-border;
       background-color: $bgc-active;
     }
@@ -34,6 +34,8 @@
     color: white;
     text-decoration: none;
     display: block;
+    display: flex;
+    justify-content: space-between;
   }
   &__btnLink {
     padding: 8px $padding-md;
@@ -41,5 +43,9 @@
     color: black;
     display: block;
     height: 100%;
+  }
+  &__icon {
+    margin-left: 20px;
+    font-size: 14px;
   }
 }
