@@ -2,6 +2,7 @@
 
 @font-face {
   font-family: ciscoSansRegular;
+  src: url("../assets/CiscoSansTTRegular.ttf");
 }
 
 *,
@@ -15,8 +16,7 @@
 html,
 body {
   height: 100%;
-  font-family: 'Helvetica', monospace;
-  //font-size: 16px;
+  font-family: 'ciscoSansRegular', monospace;
   color: $gray03;
 }
 
