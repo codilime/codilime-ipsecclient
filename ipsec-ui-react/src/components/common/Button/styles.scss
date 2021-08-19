@@ -21,12 +21,12 @@
 }
 
 .endpointButton {
-  font-family: $font-family;
-  padding: $padding-sm $padding-xl;
+  font-family: 'ciscoSansRegular', monospace;
+  padding: $padding-sm;
   border: none;
   color: white;
   border-radius: $button-radius;
-  font-size: 14px;
+  font-size: $header-and-button-font-size;
   width: auto;
   max-width: 200px;
   height: 40px;
