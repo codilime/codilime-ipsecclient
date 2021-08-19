@@ -1,6 +1,7 @@
 @import 'style/settings.scss';
 
 .vrf {
+  font-size: $standard-text-size;
   &__header {
     display: flex;
     justify-content: space-between;
