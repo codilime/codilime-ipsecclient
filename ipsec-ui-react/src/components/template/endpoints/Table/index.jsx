@@ -1,18 +1,20 @@
 import React from 'react';
 import { EndpointButton } from 'common';
 import { Wrapper, EachEndpoint } from 'template';
-import { useToggle, useEndpoint, useGetLocation } from 'hooks';
+import { useToggle, useEndpoint, useGetLocation, useVrfLogic } from 'hooks';
 import { emptyEndpointSchema, emptyHardwareSchema, tableSoftwareHeaderSchema, tableHardwaHeaderSchema } from 'db';
-import { newVrf, HardwareId } from 'constant';
+import { newVrf } from 'constant';
 import classNames from 'classnames';
 import './styles.scss';
 
 export const Endpoints = () => {
   const { open, handleToggle } = useToggle();
+  const { hardware } = useVrfLogic();
   const { vrfEndpoints, handleActionVrfEndpoints } = useEndpoint(handleToggle);
   const { currentLocation } = useGetLocation();
-  const headerSchema = currentLocation === HardwareId ? tableHardwaHeaderSchema : tableSoftwareHeaderSchema;
-  const emptySchema = currentLocation === HardwareId ? emptyHardwareSchema : emptyEndpointSchema;
+
+  const headerSchema = hardware ? tableHardwaHeaderSchema : tableSoftwareHeaderSchema;
+  const emptySchema = hardware ? emptyHardwareSchema : emptyEndpointSchema;
 
   const dynamicHeader = headerSchema.map(({ item }) => (
     <th key={item} className={classNames('table__header__column', { table__bool: item === 'NAT' || item == 'BGP' || item === 'ACTION' || item == 'Remote AS', table__psk: item === 'PSK' })}>

@@ -5,7 +5,8 @@ import { VrfsContext } from 'context';
 
 export const useFetchData = () => {
   const { history } = useGetLocation();
-  const { vrf, setVrf } = useContext(VrfsContext);
+  const { setVrf } = useContext(VrfsContext);
+
   const fetchData = async (action) => {
     const data = await client('vrfs');
     action(data);

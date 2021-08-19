@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 export const useValidateEndpoint = (endpoints) => {
   const [error, setError] = useState({ remote_ip_sec: false, psk: false, local_ip: false, peer_ip: false, source_interface: false });
-
+  console.log(endpoints);
   const validateEmptyEndpoint = () => {
     const { remote_ip_sec, psk, local_ip, peer_ip, remote_as, source_interface } = endpoints;
 
@@ -24,12 +24,13 @@ export const useValidateEndpoint = (endpoints) => {
     }
     if (psk === '') {
       setError((prev) => ({ ...prev, psk: true }));
+      return false;
     }
     if (source_interface === '') {
       setError((prev) => ({ ...prev, source_interface: true }));
       return false;
     }
-    setError({ remote_ip_sec: false, psk: false, local_ip: false, peer_ip: false });
+    setError({ remote_ip_sec: false, psk: false, local_ip: false, peer_ip: false, source_interface: false });
     return true;
   };
 

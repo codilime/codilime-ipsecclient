@@ -1,23 +1,20 @@
 import React, { useState } from 'react';
 import { EndpointInput, ToolTip } from 'common';
 import { endpointInputSchema, endpointHardwareSchema } from 'db';
-import { useValidateEndpoint, useGetLocation } from 'hooks';
-import { HardwareId } from 'constant';
+import { useValidateEndpoint, useVrfLogic } from 'hooks';
 import classNames from 'classnames';
 
 export const useEndpointLogic = (endpoint, active = false, id = null, handleActionVrfEndpoints) => {
   const [edit, setEdit] = useState(active);
-  const { currentLocation } = useGetLocation();
   const [endpoints, setEndpoint] = useState(endpoint);
-  const handleActiveEdit = () => setEdit((prev) => !prev);
-
+  const { hardware } = useVrfLogic();
   const { error, validateEmptyEndpoint, setError } = useValidateEndpoint(endpoints);
-  const hardware = currentLocation === HardwareId;
+  const handleActiveEdit = () => setEdit((prev) => !prev);
 
   const onChange = (e) => {
     const { value, name, checked, type } = e.target;
     setError((prev) => ({ ...prev, [name]: false }));
-  
+
     if (type === 'checkbox') {
       return setEndpoint((prev) => ({
         ...prev,
@@ -58,8 +55,9 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
   });
 
   const handleAddNewEndpoint = () => {
-    const validate = validateEmptyEndpoint();
     console.log(endpoints, 'endpoints');
+    const validate = validateEmptyEndpoint(endpoints);
+
     if (!validate) {
       return;
     }

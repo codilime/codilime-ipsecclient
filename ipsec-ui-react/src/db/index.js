@@ -6,13 +6,14 @@ export const defaultVrf = {
     crypto_ph2: [],
     physical_interface: '',
     active: false,
-    hardware_support: false,
     local_as: 0,
     lan_ip: '',
     endpoints: null
   },
-  crypto: { crypto_ph1: { encryption: [], integrity: [], key_exchange: [] }, crypto_ph2: { encryption: [], integrity: [], key_exchange: [] } },
-  loading: false
+  softwareCrypto: { crypto_ph1: { encryption: [], integrity: [], key_exchange: [] }, crypto_ph2: { encryption: [], integrity: [], key_exchange: [] } },
+  hardwareCrypto: { crypto_ph1: { encryption: [], integrity: [], key_exchange: [] }, crypto_ph2: { encryption: [], integrity: [], key_exchange: [] } },
+  loading: false,
+  hardware: false
 };
 
 export const tableSoftwareHeaderSchema = [{ item: 'Remote IP' }, { item: 'Tunnel local IP' }, { item: 'Tunnel peer IP' }, { item: 'PSK' }, { item: 'NAT' }, { item: 'BGP' }, { item: 'ACTION' }];
@@ -27,6 +28,7 @@ export const tableHardwaHeaderSchema = [
   { item: 'BGP' },
   { item: 'ACTION' }
 ];
+
 export const emptyEndpointSchema = {
   remote_ip_sec: '',
   local_ip: '',

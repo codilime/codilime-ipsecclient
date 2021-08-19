@@ -16,7 +16,7 @@
   &__eachVrf {
     font-size: $link-font-size;
     transition: $transition;
-    &--active {
+    &__active {
       border-left: $sideBar-active-border;
       background-color: $bgc-active;
     }

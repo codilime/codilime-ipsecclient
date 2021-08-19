@@ -12,7 +12,7 @@ export const useCreateVRFMainView = () => {
   const { currentLocation } = useGetLocation();
   const { postVrfData, putVrfData } = useFetchData();
   const { mainVRFViewColumnOne, mainVRFViewColumnTwo, mainVRFViewColumnThree } = DynamicVRFView;
-  const { data, crypto } = vrf;
+  const { data, softwareCrypto, hardwareCrypto, hardware } = vrf;
 
   const {
     register,
@@ -32,6 +32,8 @@ export const useCreateVRFMainView = () => {
       postVrfData(data);
     }
   };
+  
+  const crypto = hardware ? hardwareCrypto : softwareCrypto;
 
   const VRFColumnOneView = mainVRFViewColumnOne.map((el) => <Field key={el.name} {...el} value={data[el.name]} register={register(el.name)} error={errors[el.name]} />);
   const VRFColumnTwoView = mainVRFViewColumnTwo.map((el) => <Field key={el.name} {...el} value={data[el.name]} register={register(el.name)} error={errors[el.name]} />);
