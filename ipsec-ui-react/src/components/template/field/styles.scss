@@ -16,7 +16,6 @@
       color: $hardware;
     }
   }
-
   &__input {
     padding: $padding-sm $padding-lg $padding-md 180px;
     width: 90%;
@@ -24,6 +23,7 @@
     outline: none;
     border-bottom: 2px solid $gray01;
     font-weight: 300;
+    font-family: 'ciscoSansRegular', monospace ;
     &:focus {
       border-bottom: 2px solid $primary;
       color: $primary;

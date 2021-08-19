@@ -1,11 +1,12 @@
 @import 'style/settings.scss';
 
 .button {
+  height: 40px;
   border: none;
   border-radius: $button-radius;
   padding: 8px $padding-md;
-  font-family: $font-family;
-  font-size: 14px;
+  font-family: 'ciscoSansRegular', monospace ;
+  font-size: $header-and-button-font-size;
   cursor: pointer;
   transition: $transition;
   &__delete {
@@ -24,11 +25,11 @@
   padding: $padding-sm $padding-xl;
   border: none;
   color: white;
-  border-radius: 12px;
+  border-radius: $button-radius;
   font-size: 14px;
   width: auto;
   max-width: 200px;
-  height: 100%;
+  height: 40px;
   background-color: $primary;
   cursor: pointer;
   transition: $transition;
