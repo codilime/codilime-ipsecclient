@@ -55,7 +55,6 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
   });
 
   const handleAddNewEndpoint = () => {
-    console.log(endpoints, 'endpoints');
     const validate = validateEmptyEndpoint(endpoints);
 
     if (!validate) {

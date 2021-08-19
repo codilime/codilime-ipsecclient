@@ -53,7 +53,7 @@ export const useGetVrfs = () => {
   }, [currentLocation]);
 
   useEffect(() => {
-    if (currentLocation || vrfs.length !== 0) findActiveVrfPage();
+    if (currentLocation || !vrfs.length) findActiveVrfPage();
   }, [currentLocation, vrfs]);
 
   useEffect(() => {

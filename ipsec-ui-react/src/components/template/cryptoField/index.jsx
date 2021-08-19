@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import './styles.scss';
 
 export const CryptoField = ({ text, name, crypto, register, error }) => {
-  
   const encryptionOption = crypto['encryption'].map((el) => (
     <option key={el} value={el}>
       {el}
