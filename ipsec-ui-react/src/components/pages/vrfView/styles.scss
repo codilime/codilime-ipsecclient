@@ -2,6 +2,9 @@
 
 .vrf {
   font-size: $standard-text-size;
+  &__breadcrumb {
+    font-size: $breadcrumb-font-size;
+  }
   &__header {
     display: flex;
     justify-content: space-between;
