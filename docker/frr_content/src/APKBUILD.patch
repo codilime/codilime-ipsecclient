@@ -1,0 +1,12 @@
+--- APKBUILD.in	2021-07-27 14:55:15.113886548 +0200
++++ APKBUILD.in	2021-07-27 14:58:40.346285735 +0200
+@@ -47,7 +47,8 @@
+ 		--enable-multipath=64 \
+ 		--enable-vty-group=frrvty \
+ 		--enable-user=$_user \
+-		--enable-group=$_user
++		--enable-group=$_user \
++		--disable-capabilities
+ 	make
+ }
+ 
