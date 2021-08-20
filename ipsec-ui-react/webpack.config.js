@@ -19,7 +19,7 @@ module.exports = {
         use: ['file-loader']
       },
       {
-        test: /\.(woff|woff2|ttf|eot)([\?]?.*)$/,
+        test: /\.(ttf)([\?]?.*)$/,
         use: {
           loader: 'file-loader',
           options: {
@@ -38,7 +38,8 @@ module.exports = {
       layout: path.resolve(__dirname, 'src/components/layout'),
       pages: path.resolve(__dirname, 'src/components/pages'),
       style: path.resolve(__dirname, 'src/scss'),
-      assets: path.resolve(__dirname, 'src/assets'),
+      fonts: path.resolve(__dirname, 'src/assets/fonts'),
+      images: path.resolve(__dirname, 'src/assets/images'),
       db: path.resolve(__dirname, 'src/db'),
       hooks: path.resolve(__dirname, 'src/_hooks'),
       helpers: path.resolve(__dirname, 'src/_helpers'),
