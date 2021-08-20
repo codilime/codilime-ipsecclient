@@ -4,6 +4,7 @@ $gray01: #f2f2f2;
 $gray02: #626469;
 $gray03: #39393b;
 $gray04: #dfdfdf;
+$gray05: #58585B;
 $white: #ffffff;
 $red: #cf2030;
 $green: #6cc04a;
@@ -30,7 +31,7 @@ $endpoint-input-focus: 0.5px solid $primary;
 $endpoint-input: 0.5px solid $gray03;
 
 /* Border-radius */
-$button-radius: 18px;
+$button-radius: 100px;
 
 /* Background-color */
 $bgc-gray: $gray02;
@@ -42,9 +43,12 @@ $bgc-delete: $red;
 
 /* Font-size */
 $title-size: 18px;
-$link-font-size: 12px;
-$modal-description-size: 12px;
-$modal-title-size: 12px;
+$header-and-button-font-size: 16px;
+$standard-text-size: 14px;
+$modal-description-size: 14px;
+$modal-title-size: 16px;
+$sidebar-font-size: 16px;
+$breadcrumb-font-size: 12px;
 
 /* Font-color */
 $title-color: black;
