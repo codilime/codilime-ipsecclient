@@ -25,8 +25,15 @@
   }
 }
 
+@media screen and (min-width: 770px) {
+  .crypto {
+    margin-top: 0;
+  }
+}
+
 @media screen and (min-width: 769px) and (max-width: 889px) {
   .crypto {
+    margin-top: 0;
     width: 42%;
     flex-wrap: wrap;
     align-items: flex-start;
