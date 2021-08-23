@@ -44,6 +44,7 @@ export const VisualizationThreeLabel = ({ x, y, width, height, firstText, bgpAct
     width: smWidthLabel,
     height: height / 3,
     fontSize: 10,
+    fontFamily: 'ciscoSansRegular',
     align: 'center',
     verticalAlign: 'middle'
   };
@@ -54,6 +55,7 @@ export const VisualizationThreeLabel = ({ x, y, width, height, firstText, bgpAct
     width: smWidthLabel / 2,
     height: height / 3,
     fontSize: 8,
+    fontFamily: 'ciscoSansRegular',
     align: 'center',
     verticalAlign: 'middle'
   };
@@ -64,6 +66,7 @@ export const VisualizationThreeLabel = ({ x, y, width, height, firstText, bgpAct
     width: smWidthLabel / 2,
     height: height / 3,
     fontSize: 8,
+    fontFamily: 'ciscoSansRegular',
     align: 'center',
     verticalAlign: 'middle'
   };

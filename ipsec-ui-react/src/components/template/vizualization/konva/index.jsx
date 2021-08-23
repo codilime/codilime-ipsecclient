@@ -42,7 +42,7 @@ export const Visualization = () => {
 
   return (
     <Wrapper title="Visualization">
-      <Stage width={2000} height={400}>
+      <Stage width={2000} height={700}>
         <Layer>
           <VisualizationIcon {...icon} />
           <VisualizationVrf {...vrfBox} />

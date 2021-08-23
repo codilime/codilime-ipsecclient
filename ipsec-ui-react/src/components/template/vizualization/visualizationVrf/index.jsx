@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { VisualizationOneLabel, VisualizationTwoLabel, VisualizationThreeLabel, VisualizationBox, VisualizationLine, VisualizationStatus } from 'template';
 import { variable } from '../visualizationConstants';
+import { Group } from 'react-konva';
 
 export const VisualizationVrf = ({ x, y, width, height, title, endpoints }) => {
   const { smHeightLabel, lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
@@ -48,11 +49,11 @@ export const VisualizationVrf = ({ x, y, width, height, title, endpoints }) => {
       points: [centerX, centerY, centerX + eachBreak / 2, centerY, centerX + eachBreak / 2, centerLabel, centerX + eachBreak + 10, centerLabel]
     };
     return (
-      <>
+      <Group key={index}>
         <VisualizationLine {...line} />
         <VisualizationThreeLabel {...thirdLabel} />
         <VisualizationStatus {...{ x: x + width + 100, height: 65, lineStartX: textX + smWidthLabel, lineStartY: centerLabel, title: `Remote Site ${index + 1}`, endpoint }} />
-      </>
+      </Group>
     );
   });
 
