@@ -12,7 +12,7 @@ export const SideBar = () => {
   const { currentLocation } = useGetLocation();
 
   const listContext =
-    vrfs !== [] ? (
+    !vrfs.lenght ? (
       vrfs.map(({ client_name, id }) => (
         <li className={classNames('sideBar__eachVrf', { sideBar__eachVrf__active: id == parseInt(currentLocation) })} key={id}>
           <Link to={`/vrf/${id}`} className={classNames('sideBar__link')}>
