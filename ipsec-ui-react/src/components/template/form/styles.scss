@@ -16,6 +16,12 @@
     width: calc(100% / 3);
     flex-wrap: wrap;
   }
+  &__column:nth-child(2) {
+    width: calc(100% / 4);
+  }
+  &__column:nth-child(3) {
+    width: calc(100% / 2.4);
+  }
   &__btn {
     background-color: $primary;
     color: white;

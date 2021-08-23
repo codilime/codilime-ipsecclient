@@ -1,9 +1,14 @@
 @import 'style/settings.scss';
 
 .vrf {
+  font-size: $standard-text-size;
+  &__breadcrumb {
+    font-size: $breadcrumb-font-size;
+  }
   &__header {
     display: flex;
     justify-content: space-between;
+    height: 40px;
   }
   &__button {
     padding: $padding-sm $padding-md;

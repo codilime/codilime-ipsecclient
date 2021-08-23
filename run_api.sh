@@ -2,6 +2,7 @@
 
 set -e
 
+docker network create --subnet 10.69.0.0/24 sico || true
 docker rm sico_api || true
 
 docker run --name sico_api \

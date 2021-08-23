@@ -1,5 +1,5 @@
 import React from 'react';
-import Logo from 'assets/cisco_logo.png';
+import Logo from 'images/cisco_logo.png';
 import PropTypes from 'prop-types';
 import './styles.scss';
 

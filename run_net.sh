@@ -3,6 +3,7 @@
 set -e
 
 docker rm sico_net || true 
+docker network create --subnet 10.69.0.0/24 sico || true
 
 docker run --cap-add=NET_ADMIN \
         --name sico_net \

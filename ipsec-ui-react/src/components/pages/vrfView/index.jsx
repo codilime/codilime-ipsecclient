@@ -21,7 +21,7 @@ const VrfView = () => {
   return (
     <section className="vrf">
       <header className="vrf__header">
-        <span>
+        <span className='vrf__breadcrumb'>
           VRFs / <span className="vrf__name">{vrfName}</span>
         </span>
         {deleteBtn}
