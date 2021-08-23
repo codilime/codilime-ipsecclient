@@ -17,8 +17,6 @@ const (
 	strongswanTemplatePath = templatesFolder + strongswanTemplateFile
 	supervisorTemplateFile = "supervisor.ini.template"
 	supervisorTemplatePath = templatesFolder + supervisorTemplateFile
-	birdTemplateFile       = "bird.conf.template"
-	birdTemplatePath       = templatesFolder + birdTemplateFile
 )
 
 type Endpoint struct {
@@ -63,23 +61,11 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 		return err
 	}
 
-	data, err = generateBirdTemplate(vrf)
-	if err != nil {
-		return err
-	}
-	if err := os.WriteFile(getBirdFileName(prefix), []byte(data), 0644); err != nil {
-		return err
-	}
-
 	if err = ReloadSupervisor(); err != nil {
 		return err
 	}
 
 	if err = ReloadStrongSwan(); err != nil {
-		return err
-	}
-
-	if err = ReloadBird(); err != nil {
 		return err
 	}
 
@@ -89,16 +75,10 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 func (FileGenerator) DeleteTemplates(v Vrf) error {
 	log.Infof("deleting templates for vrf %+v", v)
 	prefix := calculatePrefix(v)
-	if err := os.RemoveAll(getBirdFileName(prefix)); err != nil {
-		return err
-	}
 	if err := os.RemoveAll(getSupervisorFileName(prefix)); err != nil {
 		return err
 	}
 	if err := os.RemoveAll(getStrongswanFileName(prefix)); err != nil {
-		return err
-	}
-	if err := ReloadBird(); err != nil {
 		return err
 	}
 	if err := ReloadStrongSwan(); err != nil {
@@ -116,10 +96,6 @@ func getStrongswanFileName(prefix string) string {
 
 func getSupervisorFileName(prefix string) string {
 	return "/opt/super_net/" + prefix + ".ini"
-}
-
-func getBirdFileName(prefix string) string {
-	return "/opt/bird/" + prefix + "_bird.conf"
 }
 
 func convertToVrfWithEndpoints(vrf Vrf) (*VrfWithEndpoints, error) {
@@ -203,19 +179,6 @@ func generateSupervisorTemplate(vrf *VrfWithEndpoints) (string, error) {
 	}
 	return builder.String(), nil
 
-}
-
-func generateBirdTemplate(vrf *VrfWithEndpoints) (string, error) {
-	t, err := template.New(birdTemplateFile).
-		ParseFiles(birdTemplatePath)
-	if err != nil {
-		return "", err
-	}
-	builder := strings.Builder{}
-	if err = t.Execute(&builder, vrf); err != nil {
-		return "", err
-	}
-	return builder.String(), nil
 }
 
 func inc(i int) int {
