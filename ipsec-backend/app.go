@@ -101,12 +101,13 @@ func (a *App) initializeRoutes() {
 func getPassFromHeader(header string) (string, error) {
 	fmt.Println("get pass from header:", header)
 	prefixLen := len("Basic ")
-	based := header[prefixLen:]
+	based := strings.TrimRight(header[prefixLen:], "=")
+	fmt.Println(based)
 	decodedBasicAuth, err := base64.RawStdEncoding.DecodeString(based)
 	if err != nil {
 		return "", err
 	}
-	return strings.Split(":", string(decodedBasicAuth))[1], nil
+	return strings.Split(string(decodedBasicAuth), ":")[1], nil
 }
 
 func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {

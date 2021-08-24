@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/md5"
 	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
@@ -68,12 +69,13 @@ func ensureMasterPassFile(key string) error {
 	if _, err := os.Stat(masterPassPath); err == nil {
 		return nil // file exists
 	}
+	keySha := md5.Sum([]byte(key))
 	masterPass := randString(64)
-	encryptedMasterPass, err := encrypt([]byte(key), []byte(masterPass))
+	encryptedMasterPass, err := encrypt(keySha[:], []byte(masterPass))
 	if err != nil {
 		return err
 	}
-	encryptedBasedMasterPass := []byte{}
+	encryptedBasedMasterPass := make([]byte, base64.RawStdEncoding.EncodedLen(len(encryptedMasterPass)))
 	base64.RawStdEncoding.Encode(encryptedBasedMasterPass, encryptedMasterPass)
 	return ioutil.WriteFile(masterPassPath, encryptedBasedMasterPass, 0644)
 }
@@ -82,6 +84,7 @@ func decryptMasterPass(key string) ([]byte, error) {
 	if err := ensureMasterPassFile(key); err != nil {
 		return nil, err
 	}
+	keySha := md5.Sum([]byte(key))
 	encryptedBasedMasterPass, err := ioutil.ReadFile(masterPassPath)
 	if err != nil {
 		return nil, err
@@ -90,7 +93,7 @@ func decryptMasterPass(key string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return decrypt([]byte(key), encryptedMasterPass)
+	return decrypt(keySha[:], encryptedMasterPass)
 }
 
 func encryptPSK(key string, v *Vrf) error {
