@@ -14,14 +14,14 @@ const VrfView = () => {
     </Button>
   );
 
-  if (vrf.loading) {
-    return <Spinner />;
-  }
+  // if (vrf) {
+  //   return <Spinner />;
+  // }
 
   return (
     <section className="vrf">
       <header className="vrf__header">
-        <span className='vrf__breadcrumb'>
+        <span className="vrf__breadcrumb">
           VRFs / <span className="vrf__name">{vrfName}</span>
         </span>
         {deleteBtn}

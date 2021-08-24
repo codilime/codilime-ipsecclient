@@ -8,7 +8,7 @@
   border: none;
   outline: none;
   background-color: transparent;
-  padding: $padding-sm;
+  padding: $padding-md 0;
   text-align: left;
   &:focus {
     border-bottom: $endpoint-input-focus;

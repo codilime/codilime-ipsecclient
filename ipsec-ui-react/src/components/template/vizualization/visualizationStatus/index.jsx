@@ -5,7 +5,7 @@ import { VisualizationEndpointLabel, VisualizationLine, VisualizationEndpointBox
 
 export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWidth = 750, title, endpoint }) => {
   const firstLabel = {
-    x,
+    x: x + 100,
     y: lineStartY - 25 / 2,
     width: 130,
     height: 25,
@@ -14,7 +14,7 @@ export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWid
   };
 
   const secondLabel = {
-    x: x + lineWidth - 390,
+    x: x + lineWidth - 290,
     y: lineStartY - 25 / 2,
     width: 130,
     height: 25,
@@ -23,9 +23,9 @@ export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWid
   };
 
   const remoteSite = {
-    x: x + 600,
+    x: x + lineWidth - 50,
     y: lineStartY - 25 / 2 - height / 2,
-    width: 235,
+    width: 215,
     height,
     title,
     value: endpoint.remote_ip_sec

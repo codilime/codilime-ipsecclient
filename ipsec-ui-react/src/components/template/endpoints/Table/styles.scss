@@ -6,6 +6,7 @@
   overflow: hidden;
   border-collapse: collapse;
   font-size: 12px;
+
   &__row--header {
     display: flex;
     background-color: white;
@@ -16,12 +17,11 @@
   }
   &__header {
     &__column {
-      display: flex;
-      justify-content: flex-start;
-      padding: 5px 10px;
+      padding: $padding-md;
       width: 80%;
       border-right: $table-border;
       font-size: $standard-text-size;
+      text-align: left;
       &:last-of-type {
         border-right: none;
       }
@@ -40,7 +40,6 @@
     width: 80%;
     border-right: $table-border;
     border-top: $table-border;
-    display: flex;
     position: relative;
     &:last-of-type {
       border-right: none;
@@ -67,7 +66,7 @@
   &__addBtn {
     display: flex;
     border-top: $table-border;
-    padding: 10px;
+    padding: $padding-md;
     background-color: white;
   }
   &__columnBtn {
@@ -78,5 +77,8 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
+  }
+  &__add {
+    padding: $padding-sm $padding-md !important;
   }
 }
