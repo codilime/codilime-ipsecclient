@@ -61,6 +61,10 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 		return err
 	}
 
+	if err = generateFRRTemplate(v); err != nil {
+		return err
+	}
+
 	if err = ReloadSupervisor(); err != nil {
 		return err
 	}
@@ -79,6 +83,9 @@ func (FileGenerator) DeleteTemplates(v Vrf) error {
 		return err
 	}
 	if err := os.RemoveAll(getStrongswanFileName(prefix)); err != nil {
+		return err
+	}
+	if err := deleteFRRTemplate(v); err != nil {
 		return err
 	}
 	if err := ReloadStrongSwan(); err != nil {
