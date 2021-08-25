@@ -1,48 +1,29 @@
-import { useState, useEffect, useContext } from 'react';
-import { useFetchData, useGetLocation } from 'hooks';
+import { useEffect, useContext } from 'react';
+import { useGetLocation } from 'hooks';
 import { VrfsContext } from 'context';
 import { HardwareId } from 'constant';
 import { defaultVrf } from 'db';
+import { useInitData } from './useInitData';
 
 export const useGetVrfs = () => {
-  const { fetchData, fetchHardwarePh1, fetchHardwarePh2, fetchSoftwareAlgorithms } = useFetchData();
   const { currentLocation, history } = useGetLocation();
-  const {
-    vrf: { loading },
-    setVrf
-  } = useContext(VrfsContext);
-  const [vrfs, setVrfs] = useState([]);
-
-  const softwareCryptoPhase = async () => {
-    const crypto = await fetchSoftwareAlgorithms();
-    setVrf((prev) => ({ ...prev, softwareCrypto: { crypto_ph1: crypto, crypto_ph2: crypto } }));
-  };
-
-  const hardwareCryptoPhase = async () => {
-    const crypto_ph1 = await fetchHardwarePh1();
-    const crypto_ph2 = await fetchHardwarePh2();
-    setVrf((prev) => ({ ...prev, hardwareCrypto: { crypto_ph1, crypto_ph2 } }));
-  };
+  const { vrf, setVrf } = useContext(VrfsContext);
+  const { vrfs } = vrf;
 
   const findActiveVrfPage = async () => {
-    if (vrfs.length === 0) {
+    if (!vrfs) {
       setVrf((prev) => ({ ...prev, data: defaultVrf.data }));
       history.push('/vrf/create');
     }
     if (currentLocation === 'create') {
       setVrf((prev) => ({ ...prev, data: defaultVrf.data }));
     }
-    const currentVrf = vrfs.filter(({ id }) => id === parseInt(currentLocation));
+    const currentVrf = vrfs.filter(({ id }) => id === parseInt(currentLocation))[0];
 
-    if (currentVrf.length > 0) {
-      return setVrf((prev) => ({ ...prev, data: currentVrf[0] }));
+    if (currentVrf) {
+      return setVrf((prev) => ({ ...prev, data: currentVrf }));
     }
   };
-
-  useEffect(() => {
-    softwareCryptoPhase();
-    hardwareCryptoPhase();
-  }, []);
 
   useEffect(() => {
     if (currentLocation === HardwareId) {
@@ -53,12 +34,7 @@ export const useGetVrfs = () => {
   }, [currentLocation]);
 
   useEffect(() => {
-    if (currentLocation || !vrfs.length) findActiveVrfPage();
+    if (currentLocation && vrfs) findActiveVrfPage();
   }, [currentLocation, vrfs]);
-
-  useEffect(() => {
-    if (vrfs.length === 0 || loading) fetchData(setVrfs);
-  }, [loading]);
-
   return { vrfs };
 };

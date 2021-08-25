@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { DynamicVRFView } from 'db';
 import { VrfsContext } from 'context';
 import { Field, CryptoField } from 'template';
@@ -9,7 +9,7 @@ import { useFetchData, useGetLocation } from 'hooks';
 
 export const useCreateVRFMainView = () => {
   const { vrf } = useContext(VrfsContext);
-  const { currentLocation } = useGetLocation();
+  const { currentLocation, history } = useGetLocation();
   const { postVrfData, putVrfData } = useFetchData();
   const { mainVRFViewColumnOne, mainVRFViewColumnTwo, mainVRFViewColumnThree } = DynamicVRFView;
   const { data, softwareCrypto, hardwareCrypto, hardware } = vrf;
@@ -25,14 +25,16 @@ export const useCreateVRFMainView = () => {
     reset(data);
   }, [reset, data, currentLocation]);
 
-  const submit = (data) => {
+  const submit = async (data) => {
     if (data.id) {
-      putVrfData(data);
-    } else {
-      postVrfData(data);
+      return putVrfData(data);
+    }
+    const id = await postVrfData(data);
+    if (id) {
+      history.push(`/vrf/${id}`);
     }
   };
-  
+
   const crypto = hardware ? hardwareCrypto : softwareCrypto;
 
   const VRFColumnOneView = mainVRFViewColumnOne.map((el) => <Field key={el.name} {...el} value={data[el.name]} register={register(el.name)} error={errors[el.name]} />);

@@ -18,10 +18,13 @@
   &__header {
     &__column {
       padding: $padding-md;
-      width: 80%;
+      width: 60%;
       border-right: $table-border;
       font-size: $standard-text-size;
-      text-align: left;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       &:last-of-type {
         border-right: none;
       }
@@ -37,7 +40,7 @@
   }
   &__column {
     padding: 5px 10px;
-    width: 80%;
+    width: 60%;
     border-right: $table-border;
     border-top: $table-border;
     position: relative;
@@ -46,6 +49,7 @@
     }
   }
   &__bool {
+    min-width: 80px;
     width: 30%;
     display: flex;
     justify-content: center;

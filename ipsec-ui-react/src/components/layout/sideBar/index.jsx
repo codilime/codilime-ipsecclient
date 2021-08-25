@@ -10,19 +10,17 @@ import './styles.scss';
 export const SideBar = () => {
   const { vrfs } = useGetVrfs();
   const { currentLocation } = useGetLocation();
-
-  const listContext =
-    !vrfs.lenght ? (
-      vrfs.map(({ client_name, id }) => (
-        <li className={classNames('sideBar__eachVrf', { sideBar__eachVrf__active: id == parseInt(currentLocation) })} key={id}>
-          <Link to={`/vrf/${id}`} className={classNames('sideBar__link')}>
-            {client_name} {id === parseInt(HardwareId) && <IoHardwareChip className="sideBar__icon" />}
-          </Link>
-        </li>
-      ))
-    ) : (
-      <li>no connections</li>
-    );
+  const listContext = vrfs ? (
+    vrfs.map(({ client_name, id }) => (
+      <li className={classNames('sideBar__eachVrf', { sideBar__eachVrf__active: id == parseInt(currentLocation) })} key={id}>
+        <Link to={`/vrf/${id}`} className={classNames('sideBar__link')}>
+          {client_name} {id === parseInt(HardwareId) && <IoHardwareChip className="sideBar__icon" />}
+        </Link>
+      </li>
+    ))
+  ) : (
+    <li>no connections</li>
+  );
 
   return (
     <div className="sideBar">
