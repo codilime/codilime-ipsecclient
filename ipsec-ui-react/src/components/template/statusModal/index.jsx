@@ -20,7 +20,7 @@ export const StatusModal = ({ error, success, text }) => {
       const timeOut = setTimeout(() => handleToggleModal(), 5000);
       return () => {
         clearTimeout(timeOut);
-        setVrf((prev) => ({ ...prev, error: null }));
+        setVrf((prev) => ({ ...prev, error: null, success: false }));
       };
     }
   }, [show]);
