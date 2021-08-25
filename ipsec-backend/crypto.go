@@ -3,7 +3,7 @@ package main
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/md5"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
@@ -69,8 +69,8 @@ func ensureMasterPassFile(key string) error {
 	if _, err := os.Stat(masterPassPath); err == nil {
 		return nil // file exists
 	}
-	keySha := md5.Sum([]byte(key))
-	masterPass := randString(64)
+	keySha := sha256.Sum256([]byte(key))
+	masterPass := randString(32)
 	encryptedMasterPass, err := encrypt(keySha[:], []byte(masterPass))
 	if err != nil {
 		return err
@@ -84,7 +84,7 @@ func decryptMasterPass(key string) ([]byte, error) {
 	if err := ensureMasterPassFile(key); err != nil {
 		return nil, err
 	}
-	keySha := md5.Sum([]byte(key))
+	keySha := sha256.Sum256([]byte(key))
 	encryptedBasedMasterPass, err := ioutil.ReadFile(masterPassPath)
 	if err != nil {
 		return nil, err

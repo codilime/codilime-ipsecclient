@@ -63,6 +63,7 @@ func (a *App) Initialize(dbName string) error {
 		CryptoPh1:  []byte("[\"aes-cbc-128\", \"sha256\", \"fourteen\"]"),
 		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
 		Active:     boolPointer(false),
+		Endpoints:  []byte("[]"),
 	}
 
 	if err := hwVrf.getVrf(a.DB); err != nil {
@@ -98,10 +99,14 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
 }
 
-func getPassFromHeader(header string) (string, error) {
-	fmt.Println("get pass from header:", header)
+func getPassFromHeader(header http.Header) (string, error) {
+	authHeader := header["Authorization"]
+	if len(authHeader) == 0 {
+		return "", fmt.Errorf("no basic auth")
+	}
+	fmt.Println("get pass from header:", authHeader[0])
 	prefixLen := len("Basic ")
-	based := strings.TrimRight(header[prefixLen:], "=")
+	based := strings.TrimRight(authHeader[0][prefixLen:], "=")
 	fmt.Println(based)
 	decodedBasicAuth, err := base64.RawStdEncoding.DecodeString(based)
 	if err != nil {
@@ -116,13 +121,17 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	key, err := getPassFromHeader(r.Header["Authorization"][0])
+	key, err := getPassFromHeader(r.Header)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
 	for _, v := range vrfs {
-		decryptPSK(key, &v)
+		err = decryptPSK(key, &v)
+		if err != nil {
+			respondWithError(w, http.StatusUnauthorized, err.Error())
+			return
+		}
 	}
 	respondWithJSON(w, http.StatusOK, vrfs)
 }
@@ -145,9 +154,9 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	key, err := getPassFromHeader(r.Header["Authorization"][0])
+	key, err := getPassFromHeader(r.Header)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
 	if err := decryptPSK(key, &vrf); err != nil {
@@ -174,9 +183,9 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	if vrf.Active == nil {
 		vrf.Active = new(bool)
 	}
-	key, err := getPassFromHeader(r.Header["Authorization"][0])
+	key, err := getPassFromHeader(r.Header)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
 	if err := encryptPSK(key, &vrf); err != nil {
@@ -201,9 +210,9 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid vrf ID")
 		return
 	}
-	key, err := getPassFromHeader(r.Header["Authorization"][0])
+	key, err := getPassFromHeader(r.Header)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
 	var vrf, oldVrf Vrf
@@ -378,7 +387,7 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	respondWithJSON(w, code, map[string]string{"result": "error", "error": message})
-	log.Errorf("Error occurred: %s", message)
+	log.Error("Error occurred: %s", message)
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
