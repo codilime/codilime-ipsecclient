@@ -10,7 +10,6 @@ export const useVrfLogic = () => {
     data: { client_name, id },
     hardware
   } = vrf;
-
   const handleDelete = () => {
     deleteVrfData(id);
     history.push('/vrf/create');
