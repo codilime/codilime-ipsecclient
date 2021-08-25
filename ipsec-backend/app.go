@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -68,7 +69,7 @@ func (a *App) Initialize(dbName string) error {
 		}
 	}
 
-	return nil
+	return ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644)
 }
 
 var nginxPasswordFile string = "/etc/nginx/htpasswd"
