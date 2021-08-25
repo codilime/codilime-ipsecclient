@@ -33,19 +33,6 @@ func TestGenerateSupervisorTemplate(t *testing.T) {
 	}
 }
 
-func TestGenerateBirdTemplate(t *testing.T) {
-	vrf := generateExampleVrf()
-
-	got, err := generateBirdTemplate(vrf)
-
-	if err != nil {
-		t.Fatalf("error = %v", err)
-	}
-	if got != expectedBirdConfig {
-		t.Fatalf("got %v", got)
-	}
-}
-
 const expectedStrongswanConfig = `connections {
 
     1042_google_1 {
@@ -119,37 +106,6 @@ redirect_stderr=true
 stdout_logfile=/dev/stdout
 stdout_logfile_maxbytes = 0
 stderr_logfile_maxbytes = 0
-`
-
-const expectedBirdConfig = `ipv4 table cisco_vrf_1042;
-
-protocol kernel k_cisco_vrf_1042 {
-    vrf "vrf-1042";
-    kernel table 1042;
-    merge paths yes;
-    ipv4 {
-        table cisco_vrf_1042;
-        import none;
-        export filter local_net;
-    };
-}
-
-protocol direct c_cisco_vrf_1042 {
-    vrf "vrf-1042";
-    ipv4 {
-        table cisco_vrf_1042;
-    };
-}
-
-protocol bgp d_cisco_vrf_1042_0 from remote_peer {
-    vrf "vrf-1042";
-    ipv4 {
-        table cisco_vrf_1042;
-    };
-    local as 65001;
-    neighbor 10.10.10.20 external;
-}
-
 `
 
 func generateExampleVrf() *VrfWithEndpoints {
