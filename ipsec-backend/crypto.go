@@ -6,7 +6,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -15,49 +14,43 @@ import (
 const masterPassPath = "/iox_data/sico_pass"
 
 func encrypt(key, data []byte) ([]byte, error) {
-	fmt.Println("encrypting data", string(data), "with key", string(key))
 	blockCipher, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, err
 	}
 
 	gcm, err := cipher.NewGCM(blockCipher)
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, err
 	}
 
 	nonce := make([]byte, gcm.NonceSize())
 	if _, err = rand.Read(nonce); err != nil {
-		return nil, ReturnError(err)
+		return nil, err
 	}
 
 	ciphertext := gcm.Seal(nonce, nonce, data, nil)
-
-	fmt.Println("encrypted data", string(ciphertext))
 
 	return ciphertext, nil
 }
 
 func decrypt(key, data []byte) ([]byte, error) {
-	fmt.Println("decrypting data", string(data), " with key", string(key))
 	blockCipher, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, err
 	}
 
 	gcm, err := cipher.NewGCM(blockCipher)
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, err
 	}
 
 	nonce, ciphertext := data[:gcm.NonceSize()], data[gcm.NonceSize():]
 
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, err
 	}
-
-	fmt.Println("decrypted data", string(plaintext))
 
 	return plaintext, nil
 }
@@ -78,10 +71,9 @@ func ensureMasterPassFile(key string) error {
 	}
 	keySha := sha256.Sum256([]byte(key))
 	masterPass := randString(32)
-	fmt.Println("masterpass:", masterPass)
 	encryptedMasterPass, err := encrypt(keySha[:], []byte(masterPass))
 	if err != nil {
-		return ReturnError(err)
+		return err
 	}
 	encryptedBasedMasterPass := make([]byte, base64.RawStdEncoding.EncodedLen(len(encryptedMasterPass)))
 	base64.RawStdEncoding.Encode(encryptedBasedMasterPass, encryptedMasterPass)
@@ -90,16 +82,16 @@ func ensureMasterPassFile(key string) error {
 
 func decryptMasterPass(key string) ([]byte, error) {
 	if err := ensureMasterPassFile(key); err != nil {
-		return nil, ReturnError(err)
+		return nil, err
 	}
 	keySha := sha256.Sum256([]byte(key))
 	encryptedBasedMasterPass, err := ioutil.ReadFile(masterPassPath)
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, err
 	}
 	encryptedMasterPass, err := base64.RawStdEncoding.DecodeString(string(encryptedBasedMasterPass))
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, err
 	}
 	return decrypt(keySha[:], encryptedMasterPass)
 }
@@ -107,25 +99,24 @@ func decryptMasterPass(key string) ([]byte, error) {
 func encryptPSK(key string, v *Vrf) error {
 	masterPass, err := decryptMasterPass(key)
 	if err != nil {
-		return ReturnError(err)
+		return err
 	}
-	fmt.Println("masterpass:", string(masterPass))
 	endpoints := []endpoint{}
 	if err := json.Unmarshal(v.Endpoints, &endpoints); err != nil {
-		return ReturnError(err)
+		return err
 	}
-	for _, e := range endpoints {
+	for i, e := range endpoints {
 		encPSK, err := encrypt(masterPass, []byte(e.PSK))
 		if err != nil {
-			return ReturnError(err)
+			return err
 		}
 		encBytes := make([]byte, base64.RawStdEncoding.EncodedLen(len(encPSK)))
 		base64.RawStdEncoding.Encode(encBytes, encPSK)
-		e.PSK = string(encBytes)
+		endpoints[i].PSK = string(encBytes)
 	}
 	endpointsJSON, err := json.Marshal(&endpoints)
 	if err != nil {
-		return ReturnError(err)
+		return err
 	}
 	v.Endpoints = endpointsJSON
 	return nil
@@ -134,27 +125,26 @@ func encryptPSK(key string, v *Vrf) error {
 func decryptPSK(key string, v *Vrf) error {
 	masterPass, err := decryptMasterPass(key)
 	if err != nil {
-		return ReturnError(err)
+		return err
 	}
-	fmt.Println("masterpass:", string(masterPass))
 	endpoints := []endpoint{}
 	if err := json.Unmarshal(v.Endpoints, &endpoints); err != nil {
-		return ReturnError(err)
+		return err
 	}
-	for _, e := range endpoints {
+	for i, e := range endpoints {
 		decBytes, err := base64.RawStdEncoding.DecodeString(e.PSK)
 		if err != nil {
-			return ReturnError(err)
+			return err
 		}
 		decPSK, err := decrypt(masterPass, decBytes)
 		if err != nil {
-			return ReturnError(err)
+			return err
 		}
-		e.PSK = string(decPSK)
+		endpoints[i].PSK = string(decPSK)
 	}
 	endpointsJSON, err := json.Marshal(&endpoints)
 	if err != nil {
-		return ReturnError(err)
+		return err
 	}
 	v.Endpoints = endpointsJSON
 	return nil
