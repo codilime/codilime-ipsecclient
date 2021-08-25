@@ -2,7 +2,7 @@ import React from 'react';
 import { Stage, Layer } from 'react-konva';
 import { VisualizationIcon, VisualizationLine, VisualizationVrf } from 'template';
 
-export const VisualizationEndpoints = ({ data, dimensions }) => {
+export const VisualizationEndpoints = ({ data, dimensions, status }) => {
   const { endpoints, client_name } = data;
   const icon = {
     x: 30,
@@ -20,6 +20,7 @@ export const VisualizationEndpoints = ({ data, dimensions }) => {
     title: client_name,
     size: 8,
     endpoints,
+    status,
     dimensions
   };
 

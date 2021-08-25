@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Circle, Group, Text } from 'react-konva';
 
-export const VisualizationStatusText = ({ x, y, width, height, text, status = true }) => {
-  const statusIcon = status ? '✓' : 'X';
-  const statusColor = status ? 'green' : 'red';
+export const VisualizationStatusText = ({ x, y, width, height, status }) => {
+  const statusIcon = status === 'ACTIVE' ? '✓' : 'X';
+  const statusColor = status === 'ACTIVE' ? 'green' : 'red';
+  const statusText = status === 'ACTIVE' ? 'Working' : 'Down';
 
   return (
     <Group>
@@ -12,8 +13,8 @@ export const VisualizationStatusText = ({ x, y, width, height, text, status = tr
       <Text
         {...{
           text: statusIcon,
-          x: x + width / 2 - 37,
-          y,
+          x: x + width / 2 - 38,
+          y: y + 1,
           width: 12,
           height: 12,
           align: 'center',
@@ -24,7 +25,7 @@ export const VisualizationStatusText = ({ x, y, width, height, text, status = tr
           fontFamily: 'ciscoSansRegular'
         }}
       />
-      <Text {...{ text, x, y, width, height, align: 'center', verticalAlign: 'top', fill: statusColor, fontFamily: 'ciscoSansRegular' }} />
+      <Text {...{ text: statusText, x, y, width, height, align: 'center', verticalAlign: 'top', fill: statusColor, fontFamily: 'ciscoSansRegular' }} />
     </Group>
   );
 };
@@ -35,5 +36,5 @@ VisualizationStatusText.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   text: PropTypes.string,
-  status: PropTypes.bool
+  status: PropTypes.string
 };

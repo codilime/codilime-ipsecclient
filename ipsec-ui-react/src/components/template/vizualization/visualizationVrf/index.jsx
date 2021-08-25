@@ -4,7 +4,7 @@ import { VisualizationOneLabel, VisualizationTwoLabel, VisualizationThreeLabel, 
 import { variable } from '../visualizationConstants';
 import { Group } from 'react-konva';
 
-export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimensions }) => {
+export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimensions, status }) => {
   const { smHeightLabel, lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
   const eachBreak = 25;
 
@@ -48,21 +48,22 @@ export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimens
       color: 'black',
       points: [centerX, centerY, centerX + eachBreak / 2, centerY, centerX + eachBreak / 2, centerLabel, centerX + eachBreak + 10, centerLabel]
     };
-    const status = {
+    const connectStatus = {
       x: x + width,
       height: 65,
       lineStartX: textX + smWidthLabel,
       lineStartY: centerLabel,
       title: `Remote Site ${index + 1}`,
       endpoint,
-      lineWidth: dimensions - 620
+      lineWidth: dimensions - 620,
+      status
     };
 
     return (
       <Group key={index}>
         <VisualizationLine {...line} />
         <VisualizationThreeLabel {...thirdLabel} />
-        <VisualizationStatus {...status} />
+        <VisualizationStatus {...connectStatus} />
       </Group>
     );
   });

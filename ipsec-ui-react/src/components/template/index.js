@@ -5,3 +5,4 @@ export * from './vizualization';
 export * from './form';
 export * from './field';
 export * from './cryptoField';
+export * from './statusModal';

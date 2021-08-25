@@ -26,7 +26,7 @@ export const Visualization = () => {
 
   return (
     <Wrapper title="Visualization" references={wrapper}>
-      <VisualizationEndpoints {...{ data, dimensions }} />
+      <VisualizationEndpoints {...{ data, dimensions,status:'ACTIVE' }} />
     </Wrapper>
   );
 };

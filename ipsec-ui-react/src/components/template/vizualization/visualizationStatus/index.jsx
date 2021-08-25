@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Group } from 'react-konva';
 import { VisualizationEndpointLabel, VisualizationLine, VisualizationEndpointBox, VisualizationStatusText } from 'template';
 
-export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWidth = 750, title, endpoint }) => {
+export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWidth = 750, title, endpoint, status }) => {
   const firstLabel = {
     x: x + 100,
     y: lineStartY - 25 / 2,
@@ -30,15 +30,27 @@ export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWid
     title,
     value: endpoint.remote_ip_sec
   };
+
   const contextStatus = {
     x: lineStartX,
     y: lineStartY - 30,
-    text: 'Working',
-    width: lineWidth - 20
+    width: lineWidth - 20,
+    status
   };
-
+  const statusColor = (status) => {
+    switch (status) {
+      case 'ACTIVE': {
+        return 'green';
+      }
+      case 'DOWN': {
+        return 'red';
+      }
+      default:
+        return 'gray';
+    }
+  };
   const line = {
-    color: 'green',
+    color: statusColor(status),
     points: [lineStartX, lineStartY, lineStartX + lineWidth, lineStartY]
   };
 
