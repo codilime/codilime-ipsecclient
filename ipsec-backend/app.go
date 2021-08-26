@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -72,7 +73,7 @@ func (a *App) Initialize(dbName string) error {
 		}
 	}
 
-	return nil
+	return ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644)
 }
 
 func setNginxPassword() error {
@@ -104,10 +105,8 @@ func getPassFromHeader(header http.Header) (string, error) {
 	if len(authHeader) == 0 {
 		return "", fmt.Errorf("no basic auth")
 	}
-	fmt.Println("get pass from header:", authHeader[0])
 	prefixLen := len("Basic ")
 	based := strings.TrimRight(authHeader[0][prefixLen:], "=")
-	fmt.Println(based)
 	decodedBasicAuth, err := base64.RawStdEncoding.DecodeString(based)
 	if err != nil {
 		return "", err

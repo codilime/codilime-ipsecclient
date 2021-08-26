@@ -9,7 +9,6 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/kolo/xmlrpc v0.0.0-20201022064351-38db28db192b // indirect
 	github.com/mattn/go-sqlite3 v1.14.7
-	github.com/michalzurawski/bird_socket v0.0.0-20210521081534-713a93981d21
 	github.com/sirupsen/logrus v1.8.1
 	github.com/strongswan/govici v0.5.1
 	golang.org/x/sys v0.0.0-20210309074719-68d13333faf2 // indirect
