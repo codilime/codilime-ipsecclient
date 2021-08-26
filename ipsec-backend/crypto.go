@@ -64,7 +64,7 @@ func randString(n int) string {
 
 func (a *App) ensureMasterPass(key string) error {
 	m := Masterpass{ID: 1}
-	err := m.createMasterpass(a.DB)
+	err := m.getMasterpass(a.DB)
 
 	if err == nil {
 		return nil // the masterpass is in db

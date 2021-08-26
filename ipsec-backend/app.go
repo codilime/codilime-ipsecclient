@@ -269,6 +269,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	plaintextVrf := vrf
 	if err := a.encryptPSK(key, &vrf); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -278,7 +279,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, vrf)
+	respondWithJSON(w, http.StatusOK, plaintextVrf)
 }
 
 func (a *App) getHandlers(vrf Vrf) (handler, handler) {

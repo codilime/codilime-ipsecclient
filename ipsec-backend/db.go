@@ -79,3 +79,8 @@ func (m *Masterpass) createMasterpass(db *gorm.DB) error {
 	res := db.Create(m)
 	return res.Error
 }
+
+func (m *Masterpass) updateMasterpass(db *gorm.DB) error {
+	res := db.Updates(m)
+	return res.Error
+}
