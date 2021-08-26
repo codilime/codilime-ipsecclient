@@ -4,14 +4,15 @@
   height: 40px;
   border: none;
   border-radius: $button-radius;
-  padding: 8px $padding-md;
+  padding: 8px $padding-lg;
   font-family: 'ciscoSansRegular', monospace ;
   font-size: $header-and-button-font-size;
   cursor: pointer;
   transition: $transition;
   &__delete {
     font-weight: 500;
-    width: 120px;
+    max-width: 140px;
+    width: auto;
     background-color: $bgc-delete;
     color: white;
   }
@@ -22,13 +23,13 @@
 
 .endpointButton {
   font-family: 'ciscoSansRegular', monospace;
-  padding: $padding-sm;
+  padding: $padding-sm $padding-lg;
   border: none;
   color: white;
   border-radius: $button-radius;
   font-size: $header-and-button-font-size;
   width: auto;
-  max-width: 200px;
+  max-width: 240px;
   height: 40px;
   background-color: $primary;
   cursor: pointer;
