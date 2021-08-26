@@ -21,12 +21,20 @@ type Vrf struct {
 	Endpoints         datatypes.JSON `json:"endpoints"`
 }
 
+type Masterpass struct {
+	ID         int64
+	Masterpass string
+}
+
 func initializeDB(dbName string) (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
 	if err = db.AutoMigrate(&Vrf{}); err != nil {
+		return nil, err
+	}
+	if err = db.AutoMigrate(&Masterpass{}); err != nil {
 		return nil, err
 	}
 	return db, nil
@@ -60,4 +68,14 @@ func getVrfs(db *gorm.DB) ([]Vrf, error) {
 	var vrfs []Vrf
 	res := db.Find(&vrfs)
 	return vrfs, res.Error
+}
+
+func (m *Masterpass) getMasterpass(db *gorm.DB) error {
+	res := db.First(m, m.ID)
+	return res.Error
+}
+
+func (m *Masterpass) createMasterpass(db *gorm.DB) error {
+	res := db.Create(m)
+	return res.Error
 }

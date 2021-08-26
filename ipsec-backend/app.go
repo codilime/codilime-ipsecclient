@@ -126,7 +126,7 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for i, v := range vrfs {
-		err = decryptPSK(key, &v)
+		err = a.decryptPSK(key, &v)
 		if err != nil {
 			respondWithError(w, http.StatusUnauthorized, err.Error())
 			return
@@ -159,7 +159,7 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	if err := decryptPSK(key, &vrf); err != nil {
+	if err := a.decryptPSK(key, &vrf); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -188,7 +188,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	if err := encryptPSK(key, &vrf); err != nil {
+	if err := a.encryptPSK(key, &vrf); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -269,7 +269,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	if err := encryptPSK(key, &vrf); err != nil {
+	if err := a.encryptPSK(key, &vrf); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
