@@ -30,7 +30,8 @@ module.exports = {
       {
         test: /\.svg$/,
         loader: 'svg-inline-loader'
-      }
+      },
+      { test: /\.(woff|woff2|eot|ttf)$/, use: ['url-loader?limit=100000'] }
     ]
   },
   resolve: {

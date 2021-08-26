@@ -4,7 +4,7 @@
   border: none;
   border-radius: $button-radius-secound;
   padding: 8px $padding-md;
-  font-family: 'ciscoSansRegular', monospace ;
+  font-family: $font-family;
   font-size: $header-and-button-font-size;
   cursor: pointer;
   transition: $transition;
@@ -21,7 +21,7 @@
 }
 
 .endpointButton {
-  font-family: 'ciscoSansRegular', monospace;
+  font-family: $font-family;
   padding: 8px $padding-md;
   border: none;
   color: white;
