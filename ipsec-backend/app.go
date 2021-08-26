@@ -126,12 +126,13 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	for _, v := range vrfs {
+	for i, v := range vrfs {
 		err = decryptPSK(key, &v)
 		if err != nil {
 			respondWithError(w, http.StatusUnauthorized, err.Error())
 			return
 		}
+		vrfs[i] = v
 	}
 	respondWithJSON(w, http.StatusOK, vrfs)
 }
