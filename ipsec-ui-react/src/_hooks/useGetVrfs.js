@@ -3,7 +3,6 @@ import { useGetLocation } from 'hooks';
 import { VrfsContext } from 'context';
 import { HardwareId } from 'constant';
 import { defaultVrf } from 'db';
-import { useInitData } from './useInitData';
 
 export const useGetVrfs = () => {
   const { currentLocation, history } = useGetLocation();

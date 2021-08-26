@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import { HashRouter as Router } from 'react-router-dom';
 import { MainLayout } from 'layout';
 import { useInitData } from 'hooks';
@@ -8,14 +8,14 @@ import 'style/global.scss';
 const App = () => {
   const { fetchVrfData, fetchVrfSettings, loading } = useInitData();
 
-  useEffect(() => {
-    if (loading) fetchVrfData();
-  }, [loading]);
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     fetchVrfData();
     fetchVrfSettings();
   }, []);
+
+  useEffect(() => {
+    if (loading) fetchVrfData();
+  }, [loading]);
 
   return (
     <Router>

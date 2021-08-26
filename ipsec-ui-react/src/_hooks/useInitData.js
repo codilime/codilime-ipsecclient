@@ -8,7 +8,7 @@ export const useInitData = () => {
     vrf: { loading },
     setVrf
   } = useContext(VrfsContext);
-  
+
   const fetchVrfSettings = async () => {
     const hardware_ph1 = await fetchHardwarePh1();
     if (!hardware_ph1) {
@@ -33,5 +33,6 @@ export const useInitData = () => {
     }
     setVrf((prev) => ({ ...prev, vrfs }));
   };
+
   return { fetchVrfData, fetchVrfSettings, loading };
 };

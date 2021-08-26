@@ -20,10 +20,9 @@ export const useCreateVRFMainView = () => {
     formState: { errors, isDirty, isValid },
     reset
   } = useForm({ resolver: yupResolver(vrfSchema) });
-
   useEffect(() => {
     reset(data);
-  }, [reset, data, currentLocation]);
+  }, [data]);
 
   const submit = async (data) => {
     if (data.id) {
@@ -37,9 +36,9 @@ export const useCreateVRFMainView = () => {
 
   const crypto = hardware ? hardwareCrypto : softwareCrypto;
 
-  const VRFColumnOneView = mainVRFViewColumnOne.map((el) => <Field key={el.name} {...el} value={data[el.name]} register={register(el.name)} error={errors[el.name]} />);
-  const VRFColumnTwoView = mainVRFViewColumnTwo.map((el) => <Field key={el.name} {...el} value={data[el.name]} register={register(el.name)} error={errors[el.name]} />);
-  const VRFColumnThreeView = mainVRFViewColumnThree.map((el) => <CryptoField key={el.name} {...el} {...{ crypto: crypto[el.name], register }} error={errors[el.name]} />);
+  const VRFColumnOneView = mainVRFViewColumnOne.map((el) => <Field {...{ ...el, key: el.name, value: data[el.name], register: register(el.name), error: errors[el.name] }} />);
+  const VRFColumnTwoView = mainVRFViewColumnTwo.map((el) => <Field {...{ ...el, key: el.name, value: data[el.name], register: register(el.name), error: errors[el.name] }} />);
+  const VRFColumnThreeView = mainVRFViewColumnThree.map((el) => <CryptoField {...{ ...el, key: el.name, crypto: crypto[el.name], register, value: data[el.name], error: errors[el.name] }} />);
 
   return { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView, isDirty, isValid, handleSubmit, submit };
 };

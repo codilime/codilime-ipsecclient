@@ -1,7 +1,15 @@
 import { useState } from 'react';
 
+const validateStatus = {
+  remote_ip_sec: false,
+  psk: false,
+  local_ip: false,
+  peer_ip: false,
+  source_interface: false
+};
+
 export const useValidateEndpoint = (endpoints) => {
-  const [error, setError] = useState({ remote_ip_sec: false, psk: false, local_ip: false, peer_ip: false, source_interface: false });
+  const [error, setError] = useState(validateStatus);
   const validateEmptyEndpoint = () => {
     const { remote_ip_sec, psk, local_ip, peer_ip, remote_as, source_interface } = endpoints;
 
