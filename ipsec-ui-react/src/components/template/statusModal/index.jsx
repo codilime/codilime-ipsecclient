@@ -42,7 +42,7 @@ export const StatusModal = ({ error, success, text }) => {
 StatusModal.propTypes = {
   show: PropTypes.bool,
   header: PropTypes.string,
-  text: PropTypes.string,
+  text: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   handleToggleModal: PropTypes.func,
   error: PropTypes.any,
   success: PropTypes.bool
