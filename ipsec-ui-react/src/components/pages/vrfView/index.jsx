@@ -36,7 +36,7 @@ export const VrfView = () => {
           <Endpoints />
           <Visualization />
         </article>
-        <Modal btnDelete {...{ show, handleToggleModal, handleDelete }} header="Delete VRF" leftButton="cancel" rightButton="delete">
+        <Modal btnDelete {...{ show, handleToggleModal, handleDelete, header: 'Delete VRF', leftButton: 'Cancel', rightButton: 'Delete' }}>
           Are you sure you want to delete this VRF? this action cannot be undone
         </Modal>
       </section>

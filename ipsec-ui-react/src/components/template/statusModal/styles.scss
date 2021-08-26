@@ -3,12 +3,13 @@
 .status {
   position: fixed;
   top: 0;
+  height: 110px;
   left: 212px;
-  bottom: 0;
   right: 0;
   opacity: 0;
   visibility: hidden;
   z-index: 999999;
+  transition: $transition;
   &__active {
     opacity: 1;
     visibility: visible;
@@ -21,31 +22,9 @@
     margin-top: 54px;
     width: 100%;
     position: relative;
-
-    &__error {
-      &::before {
-        content: '';
-        position: absolute;
-        animation: errorAnimation 5s ease-in-out;
-        height: 2px;
-        bottom: 0;
-        background-color: red;
-      }
-    }
-    &__success {
-      &::before {
-        content: '';
-        position: absolute;
-        animation: errorAnimation 5s ease-in-out;
-        height: 2px;
-        bottom: 0;
-        background-color: green;
-      }
-    }
   }
   &__context {
     padding: $padding-xl;
-    height: 40%;
     box-shadow: $endpoint-option-shadow;
     text-align: center;
     &__error {
@@ -57,14 +36,5 @@
   }
   &__description {
     font-size: $modal-description-size;
-  }
-}
-
-@keyframes errorAnimation {
-  0% {
-    width: 100%;
-  }
-  100% {
-    width: 0%;
   }
 }

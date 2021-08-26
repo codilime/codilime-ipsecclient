@@ -12,8 +12,8 @@ export const StatusModal = ({ error, success, text }) => {
   const { stopPropagation, handleToggleModal, show } = useModalLogic();
 
   useEffect(() => {
-    if (error || success) handleToggleModal();
-  }, [error, success]);
+    if (error) handleToggleModal();
+  }, [error]);
 
   useEffect(() => {
     if (show) {
@@ -25,11 +25,11 @@ export const StatusModal = ({ error, success, text }) => {
     }
   }, [show]);
 
-  const modalContent = text ? text.error : 'ACTION ENDED SUCCESS';
+  const modalContent = text && text.error;
 
   return createPortal(
     <div className={classNames('status', { status__active: show })}>
-      <div className={classNames('status__content', { status__content__error: error, status__content__success: success })} onClick={stopPropagation}>
+      <div className={classNames('status__content')} onClick={stopPropagation}>
         <div className={classNames('status__context', { status__context__error: error, status__context__success: success })}>
           <p className="status__description">{modalContent}</p>
         </div>

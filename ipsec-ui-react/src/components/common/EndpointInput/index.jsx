@@ -5,6 +5,7 @@ import { BsEyeSlashFill } from 'react-icons/bs';
 import { validateDataInput } from 'utils/util.js';
 import { useToggle } from 'hooks';
 import classNames from 'classnames';
+import { ToolTip } from 'common';
 import './styles.scss';
 
 export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, onClick, checked, error }) => {
@@ -12,6 +13,8 @@ export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, 
   const icon = open && edit ? <BsEyeSlashFill className="endpointInput__icon" onClick={handleToggle} /> : <IoEyeSharp className="endpointInput__icon" onClick={handleToggle} />;
 
   const showEyes = type === 'password' ? <>{icon}</> : null;
+  const toolTip = name === 'psk' && edit && open && value !== '' && <ToolTip>{value}</ToolTip>;
+
   return (
     <>
       <input
@@ -22,6 +25,7 @@ export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, 
         {...{ name, placeholder, value, onChange, onClick, checked }}
       />
       {showEyes}
+      {toolTip}
     </>
   );
 };

@@ -1,15 +1,21 @@
 import React from 'react';
-import { Rect, Group, Text } from 'react-konva';
+import { Rect, Group, Text, Image } from 'react-konva';
 import PropTypes from 'prop-types';
 import { variable } from '../visualizationConstants';
+import Router from 'images/router.png';
+import useImage from 'use-image';
+import { VisualizationChecked } from '../visualizationChecked';
 const { labelColor, smWidthLabel } = variable;
 
-export const VisualizationOneLabel = ({ x, y, width, height, text }) => (
-  <Group>
-    <Rect {...{ x, y, width, height, fill: labelColor }} />
-    <Text {...{ text, x, y, width, height, verticalAlign: 'middle', align: 'center' }} />
-  </Group>
-);
+export const VisualizationOneLabel = ({ x, y, width, height }) => {
+  const [image] = useImage(Router);
+  return (
+    <Group>
+      <Rect {...{ x, y, width, height, fill: labelColor }} />
+      <Image {...{ image, x: x + width / 2 - 17.5, y, width: 35, height: 25 }} />
+    </Group>
+  );
+};
 
 VisualizationOneLabel.propTypes = {
   x: PropTypes.number,
@@ -19,11 +25,12 @@ VisualizationOneLabel.propTypes = {
   text: PropTypes.string
 };
 
-export const VisualizationTwoLabel = ({ x, y, width, height, firstText, secondText }) => (
+export const VisualizationTwoLabel = ({ x, y, width, height, firstText, secondText, vlan }) => (
   <Group>
     <Rect {...{ x, y, width, height, fill: labelColor }} />
-    <Text {...{ text: firstText, x, y: y + 5, width, height, align: 'center', verticalAlign: 'top', fontSize: 10 }} />
-    <Text {...{ text: secondText, x, y: y - 5, width, height, align: 'center', verticalAlign: 'bottom', fontSize: 8 }} />
+    <Text {...{ text: firstText, x: x - 5, y: y + 2, height: height / 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold' }} />
+    <Text {...{ text: secondText, x: x, y: y + height / 2, height: height / 2, width: width / 2, align: 'center', verticalAlign: 'middle', fontSize: 10 }} />
+    <Text {...{ text: vlan, x: x + width / 2, y: y + height / 2, height: height / 2, width: width / 2, align: 'left', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold' }} />
   </Group>
 );
 
@@ -33,21 +40,22 @@ VisualizationTwoLabel.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   firstText: PropTypes.string,
-  secondText: PropTypes.string
+  secondText: PropTypes.string,
+  vlan: PropTypes.number
 };
 
 export const VisualizationThreeLabel = ({ x, y, width, height, firstText, bgpActive, natActive }) => {
   const firstContent = {
-    x,
+    x: x - 7.5,
     y,
     text: firstText,
     width: smWidthLabel,
     height: height / 3,
     fontSize: 10,
-    fontFamily: 'ciscoSansRegular',
     align: 'center',
     verticalAlign: 'middle'
   };
+
   const secondContent = {
     x: x + 3,
     y: y + height / 3,
@@ -55,10 +63,10 @@ export const VisualizationThreeLabel = ({ x, y, width, height, firstText, bgpAct
     width: smWidthLabel / 2,
     height: height / 3,
     fontSize: 8,
-    fontFamily: 'ciscoSansRegular',
     align: 'center',
     verticalAlign: 'middle'
   };
+
   const thirdContent = {
     x: x + 3,
     y: y + (height / 3) * 2,
@@ -66,22 +74,28 @@ export const VisualizationThreeLabel = ({ x, y, width, height, firstText, bgpAct
     width: smWidthLabel / 2,
     height: height / 3,
     fontSize: 8,
-    fontFamily: 'ciscoSansRegular',
     align: 'center',
     verticalAlign: 'middle'
   };
-  const bgp = bgpActive ? 'Active' : 'Disactive';
-  const nat = natActive ? 'Active' : 'Disactive';
-  const bgpColor = bgpActive ? 'green' : 'red';
-  const natColor = natActive ? 'green' : 'red';
+  const checkedBgp = {
+    x: x + smWidthLabel / 2 + 10,
+    y: y + 1 + height / 3 + 2,
+    status: bgpActive
+  };
+  const checkedNat = {
+    x: x + smWidthLabel / 2 + 10,
+    y: y + 1 + (height / 3) * 2,
+    status: natActive
+  };
+
   return (
     <Group>
       <Rect {...{ x, y, width, height, fill: labelColor }} />
       <Text {...firstContent} />
       <Text {...{ ...secondContent, fontStyle: 'Bold' }} />
-      <Text {...{ ...secondContent, x: x + smWidthLabel / 2 - 3, y: y + height / 3, text: bgp, align: 'left', fill: bgpColor }} />
+      <VisualizationChecked {...checkedBgp} />
       <Text {...{ ...thirdContent, fontStyle: 'Bold' }} />
-      <Text {...{ ...thirdContent, x: x + smWidthLabel / 2 - 3, text: nat, align: 'left', fill: natColor }} />
+      <VisualizationChecked {...checkedNat} />
     </Group>
   );
 };

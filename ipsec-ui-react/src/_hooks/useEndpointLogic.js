@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { EndpointInput, ToolTip } from 'common';
+import { EndpointInput } from 'common';
 import { endpointInputSchema, endpointHardwareSchema } from 'db';
 import { useValidateEndpoint, useVrfLogic } from 'hooks';
 import classNames from 'classnames';
@@ -47,8 +47,6 @@ export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints)
   const displayEndpoint =
     endpoints &&
     endpointSchema.map((el) => {
-      const toolTip = el.name === 'psk' && edit && endpoints[el.name] !== '' && <ToolTip>{endpoints[el.name]}</ToolTip>;
-
       if (el.type === 'checkbox') {
         return (
           <td key={el.name} className={classNames('table__column', 'table__bool')}>
@@ -59,7 +57,6 @@ export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints)
       return (
         <td key={el.name} className={classNames('table__column', { table__psk: el.name === 'psk', table__bool: el.name === 'remote_as' })}>
           <EndpointInput {...{ ...el, onChange, edit, error }} value={endpoints[el.name]} />
-          {toolTip}
         </td>
       );
     });

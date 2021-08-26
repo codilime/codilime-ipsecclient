@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { EndpointButton } from 'common';
 import { EndpointOption, Modal } from 'template';
@@ -8,6 +8,7 @@ export const EachEndpoint = ({ data, active, handleActionVrfEndpoints, id }) => 
   const { open, handleToggle } = useToggle();
   const { show, handleToggleModal } = useModalLogic();
   const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic(data, active, id, handleActionVrfEndpoints);
+
   const activeButton = edit ? (
     <EndpointButton {...{ onClick: handleAddNewEndpoint }} className="table__add">
       Add

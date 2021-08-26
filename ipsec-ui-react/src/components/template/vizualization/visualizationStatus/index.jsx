@@ -2,30 +2,32 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Group } from 'react-konva';
 import { VisualizationEndpointLabel, VisualizationLine, VisualizationEndpointBox, VisualizationStatusText } from 'template';
+import { variable } from '../visualizationConstants';
+const { mdHeightLabel } = variable;
 
 export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWidth = 750, title, endpoint, status }) => {
   const firstLabel = {
     x: x + 100,
-    y: lineStartY - 25 / 2,
+    y: lineStartY - mdHeightLabel / 2,
     width: 130,
-    height: 25,
-    title: 'Local IP',
+    height: mdHeightLabel,
+    title: 'Tunnel Local IP',
     value: endpoint.local_ip
   };
 
   const secondLabel = {
-    x: x + lineWidth - 290,
-    y: lineStartY - 25 / 2,
+    x: x + lineWidth - 450,
+    y: lineStartY - mdHeightLabel / 2,
     width: 130,
-    height: 25,
-    title: 'Peer IP',
+    height: mdHeightLabel,
+    title: 'Tunnel Peer IP',
     value: endpoint.peer_ip
   };
 
   const remoteSite = {
-    x: x + lineWidth - 50,
+    x: x + lineWidth - 150,
     y: lineStartY - 25 / 2 - height / 2,
-    width: 215,
+    width: 235,
     height,
     title,
     value: endpoint.remote_ip_sec
@@ -37,6 +39,7 @@ export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWid
     width: lineWidth - 20,
     status
   };
+
   const statusColor = (status) => {
     switch (status) {
       case 'ACTIVE': {

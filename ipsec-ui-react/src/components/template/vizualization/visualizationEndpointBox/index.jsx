@@ -5,6 +5,7 @@ import { variable } from '../visualizationConstants';
 
 export const VisualizationEndpointBox = ({ x, y, width, height, title, value }) => {
   const { paddingBox, heightHeader } = variable;
+  
   const firstLabel = {
     x: x + paddingBox / 2,
     y: y + heightHeader + paddingBox / 2,
@@ -15,7 +16,7 @@ export const VisualizationEndpointBox = ({ x, y, width, height, title, value }) 
   const secondLabel = {
     x: x + paddingBox / 2 + 70,
     y: y + heightHeader + paddingBox / 2,
-    width: 130,
+    width: 150,
     height: heightHeader,
     title: 'Remote IP',
     value
