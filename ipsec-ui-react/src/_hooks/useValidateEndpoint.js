@@ -23,7 +23,7 @@ export const useValidateEndpoint = (endpoints) => {
   const [error, setError] = useState(validateStatus);
   const validateEmptyEndpoint = () => {
     const { remote_ip_sec, psk, local_ip, peer_ip, remote_as, source_interface } = endpoints;
-    if (remote_ip_sec === '' && psk === '' && local_ip === '' && peer_ip === '' && source_interface && remote_as) {
+    if (remote_ip_sec === '' && psk === '' && local_ip === '' && peer_ip === '') {
       setError({ remote_ip_sec: true, psk: true, local_ip: true, peer_ip: true });
       return false;
     }
@@ -37,6 +37,7 @@ export const useValidateEndpoint = (endpoints) => {
       setError((prev) => ({ ...prev, local_ip: true }));
       return false;
     }
+
     const checkPeer = checkIpValue(local_ip);
     if (peer_ip === '' || peer_ip.length > 16 || checkPeer) {
       setError((prev) => ({ ...prev, peer_ip: true }));
@@ -44,10 +45,6 @@ export const useValidateEndpoint = (endpoints) => {
     }
     if (psk === '') {
       setError((prev) => ({ ...prev, psk: true }));
-      return false;
-    }
-    if (source_interface === '') {
-      setError((prev) => ({ ...prev, source_interface: true }));
       return false;
     }
     setError({ remote_ip_sec: false, psk: false, local_ip: false, peer_ip: false, source_interface: false });

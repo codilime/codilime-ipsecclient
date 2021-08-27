@@ -7,6 +7,7 @@ export const vrfSchema = yup.object().shape({
   lan_ip: yup.string().min(5, 'Incorrect IP mask, should be xxx.xxx.xxx.xxx/yy').max(19, 'Incorrect IP mask, should be xxx.xxx.xxx.xxx/yy').required('Please provide valid value for LAN IP Mask'),
   physical_interface: yup.string().required('Please provide physical interface'),
   active: yup.boolean(),
+  endpoints: null,
   local_as: yup
     .number()
     .min(1, 'BGP Local AS must be greater than 1')

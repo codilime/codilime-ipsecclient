@@ -27,7 +27,7 @@ export const Endpoints = () => {
   const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, data: emptySchema, handleActionVrfEndpoints }} />;
 
   const newEndpointButton = open ? 'Close a new endpoint' : 'Add a new endpoint';
-  
+
   return (
     <Wrapper title="Endpoints">
       <table className="table">

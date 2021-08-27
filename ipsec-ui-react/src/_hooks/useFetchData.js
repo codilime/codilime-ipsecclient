@@ -4,7 +4,7 @@ import { VrfsContext } from 'context';
 
 export const useFetchData = () => {
   const { setVrf } = useContext(VrfsContext);
-  
+
   const fetchData = () => client('vrfs');
 
   const postVrfData = async (payload) => {
@@ -34,7 +34,13 @@ export const useFetchData = () => {
     }
   };
 
-  const deleteVrfData = (id) => client(`vrfs/${id}`, {}, { method: 'DELETE' });
+  const deleteVrfData = async (id) => {
+    setVrf((prev) => ({ ...prev, loading: true }));
+    const res = await client(`vrfs/${id}`, {}, { method: 'DELETE' });
+    if (res) {
+      setVrf((prev) => ({ ...prev, loading: false }));
+    }
+  };
 
   const fetchSoftwareAlgorithms = () => client('algorithms/software');
 

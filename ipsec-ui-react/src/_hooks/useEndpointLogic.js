@@ -66,6 +66,7 @@ export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints)
     if (!validate) {
       return;
     }
+
     if (id === null) {
       handleActionVrfEndpoints('add', endpoints);
       return setEdit(false);

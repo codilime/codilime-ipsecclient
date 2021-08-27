@@ -13,6 +13,7 @@ export const useCreateVRFMainView = () => {
   const { postVrfData, putVrfData } = useFetchData();
   const { mainVRFViewColumnOne, mainVRFViewColumnTwo, mainVRFViewColumnThree } = DynamicVRFView;
   const { data, softwareCrypto, hardwareCrypto, hardware } = vrf;
+  const { endpoints } = data;
 
   const {
     register,
@@ -22,15 +23,15 @@ export const useCreateVRFMainView = () => {
   } = useForm({ resolver: yupResolver(vrfSchema) });
 
   useEffect(() => {
-    reset(data);
+    if (endpoints === null) reset(data);
+    else if (!endpoints.lenght) reset({ ...data, endpoints: null });
   }, [reset, currentLocation, data]);
 
-  const submit = (data) => {
-    console.log(data);
+  const submit = async (data) => {
     if (data.id) {
-      return putVrfData(data);
+      return await putVrfData(data);
     }
-    const id = postVrfData(data);
+    const id = await postVrfData(data);
     if (id) {
       history.push(`/vrf/${id}`);
     }

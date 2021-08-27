@@ -10,7 +10,7 @@ export const useGetVrfs = () => {
   const { vrfs } = vrf;
 
   const findActiveVrfPage = () => {
-    if (!vrfs) {
+    if (!vrfs.length) {
       setVrf((prev) => ({ ...prev, data: defaultVrf.data }));
       return history.push('/vrf/create');
     }
