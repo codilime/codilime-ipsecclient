@@ -1,14 +1,14 @@
 @import 'style/settings.scss';
 
 .button {
-  height: 40px;
   border: none;
-  border-radius: $button-radius;
-  padding: 8px $padding-lg;
-  font-family: 'ciscoSansRegular', monospace ;
+  border-radius: $button-radius-secound;
+  padding: 8px $padding-md;
+  font-family: $font-family;
   font-size: $header-and-button-font-size;
   cursor: pointer;
   transition: $transition;
+  min-width: 160px;
   &__delete {
     font-weight: 500;
     max-width: 140px;
@@ -22,15 +22,15 @@
 }
 
 .endpointButton {
-  font-family: 'ciscoSansRegular', monospace;
-  padding: $padding-sm $padding-lg;
+  font-family: $font-family;
+  padding: 8px $padding-md;
   border: none;
   color: white;
-  border-radius: $button-radius;
+  border-radius: $button-radius-secound;
   font-size: $header-and-button-font-size;
   width: auto;
+  min-width: 60px;
   max-width: 240px;
-  height: 40px;
   background-color: $primary;
   cursor: pointer;
   transition: $transition;

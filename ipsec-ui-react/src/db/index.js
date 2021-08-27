@@ -13,7 +13,10 @@ export const defaultVrf = {
   softwareCrypto: { crypto_ph1: { encryption: [], integrity: [], key_exchange: [] }, crypto_ph2: { encryption: [], integrity: [], key_exchange: [] } },
   hardwareCrypto: { crypto_ph1: { encryption: [], integrity: [], key_exchange: [] }, crypto_ph2: { encryption: [], integrity: [], key_exchange: [] } },
   loading: false,
-  hardware: false
+  hardware: false,
+  vrfs: [],
+  error: null,
+  success: false
 };
 
 export const tableSoftwareHeaderSchema = [{ item: 'Remote IP' }, { item: 'Tunnel local IP' }, { item: 'Tunnel peer IP' }, { item: 'PSK' }, { item: 'NAT' }, { item: 'BGP' }, { item: 'ACTION' }];

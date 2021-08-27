@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { EndpointButton } from 'common';
 import { Wrapper, EachEndpoint } from 'template';
 import { useToggle, useEndpoint, useGetLocation, useVrfLogic } from 'hooks';

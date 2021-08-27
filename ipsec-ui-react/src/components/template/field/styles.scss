@@ -23,7 +23,7 @@
     outline: none;
     border-bottom: 2px solid $gray01;
     font-weight: 300;
-    font-family: 'ciscoSansRegular', monospace ;
+    font-family: 'ciscoSansRegular', monospace;
     &:focus {
       border-bottom: 2px solid $primary;
       color: $primary;
@@ -31,11 +31,11 @@
     }
   }
   &__error {
-    color:red;
+    color: red;
     font-size: 10px;
   }
   &__label {
-    font-weight:500;
+    font-weight: 500;
     order: 1;
     padding: 3px 3px;
     transform: translateY(-50%);

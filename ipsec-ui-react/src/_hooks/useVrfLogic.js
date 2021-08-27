@@ -8,12 +8,14 @@ export const useVrfLogic = () => {
   const { history } = useGetLocation();
   const {
     data: { client_name, id },
-    hardware
+    hardware,
+    error,
+    success
   } = vrf;
-
+  
   const handleDelete = () => {
     deleteVrfData(id);
     history.push('/vrf/create');
   };
-  return { vrf, client_name, handleDelete, hardware };
+  return { vrf, client_name, error, hardware, success, handleDelete };
 };

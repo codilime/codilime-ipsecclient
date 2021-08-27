@@ -3,13 +3,13 @@
 .endpointInput {
   align-items: flex-start;
   width: 100%;
-  font-family: 'ciscoSansRegular', monospace;
+  font-family: $font-family;
   font-size: $standard-text-size;
   border: none;
   outline: none;
   background-color: transparent;
-  padding: $padding-sm;
-  text-align: left;
+  padding: $padding-sm 0;
+  text-align: center;
   &:focus {
     border-bottom: $endpoint-input-focus;
   }

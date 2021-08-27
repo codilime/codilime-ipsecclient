@@ -17,10 +17,11 @@ Button.propTypes = {
   disabled: PropTypes.bool
 };
 
-export const EndpointButton = ({ onClick, secondary, children, disabled }) => (
+export const EndpointButton = ({ onClick, secondary, children, disabled, className }) => (
   <button
     {...{ onClick, disabled }}
     className={classNames('endpointButton', {
+      [className]: className,
       endpointButton__secondary: secondary,
       endpointButton__disabled: disabled
     })}
@@ -34,5 +35,6 @@ EndpointButton.propTypes = {
   onClick: PropTypes.func,
   secondary: PropTypes.bool,
   disabled: PropTypes.bool,
+  className: PropTypes.string,
   children: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
 };

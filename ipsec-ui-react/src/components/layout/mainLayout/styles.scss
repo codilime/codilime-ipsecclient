@@ -11,6 +11,8 @@
     margin-left: 212px;
     margin-top: 50px;
     width: calc(100% - 212px);
+    min-height: calc(100vh - 50px);
+    position: relative;
   }
 }
 

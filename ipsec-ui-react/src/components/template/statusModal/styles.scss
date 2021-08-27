@@ -1,0 +1,40 @@
+@import 'style/settings.scss';
+
+.status {
+  position: fixed;
+  top: 0;
+  height: 110px;
+  left: 212px;
+  right: 0;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 999999;
+  transition: $transition;
+  &__active {
+    opacity: 1;
+    visibility: visible;
+  }
+  &__content {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    margin-left: 0px;
+    margin-top: 54px;
+    width: 100%;
+    position: relative;
+  }
+  &__context {
+    padding: $padding-xl;
+    box-shadow: $endpoint-option-shadow;
+    text-align: center;
+    &__error {
+      color: red;
+    }
+    &__success {
+      color: green;
+    }
+  }
+  &__description {
+    font-size: $modal-description-size;
+  }
+}
