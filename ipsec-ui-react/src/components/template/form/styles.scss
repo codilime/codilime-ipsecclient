@@ -31,17 +31,13 @@
   }
 }
 
-@media screen and (min-width: 890px) and (max-width: 1532px) {
+@media screen and (min-width: 890px) and (max-width: 1366px) {
   .form {
-    &__fieldset {
-      display: flex;
-      flex-direction: column;
-    }
     &__column {
-      width: 100%;
+      width: 50%;
     }
     &__column:nth-child(2) {
-      width: 100%;
+      width: 50%;
     }
     &__column:nth-child(3) {
       width: 100%;

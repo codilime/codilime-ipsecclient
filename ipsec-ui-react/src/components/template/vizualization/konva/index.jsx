@@ -19,7 +19,7 @@ export const Visualization = () => {
     }
   }, [wrapper]);
 
-  const context = endpoints === null || !endpoints.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions, status: 'ACTIVE' }} />;
+  const context = endpoints === null || !endpoints.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions }} />;
 
   return (
     <Wrapper title="Visualization" references={wrapper}>

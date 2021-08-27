@@ -9,12 +9,12 @@ export const VisualizationStatusText = ({ x, y, width, height, status }) => {
 
   return (
     <Group>
-      <Circle {...{ x: x + width / 2 - 32, y: y + 6 }} align="center" radius={6} stroke={statusColor} fill={statusColor} />
+      <Circle {...{ x: x + width / 2 - 28, y: y - 4 }} align="center" radius={6} stroke={statusColor} fill={statusColor} />
       <Text
         {...{
           text: statusIcon,
-          x: x + width / 2 - 38,
-          y: y + 1,
+          x: x + width / 2 - 33.5,
+          y: y - 9.5,
           width: 12,
           height: 12,
           align: 'center',
@@ -22,10 +22,11 @@ export const VisualizationStatusText = ({ x, y, width, height, status }) => {
           verticalAlign: 'top',
           fill: 'white',
           fontStyle: 'bold',
-          fontFamily: 'ciscoSansRegular'
+          stroke: '#fff',
+          strokeWidth: 1
         }}
       />
-      <Text {...{ text: statusText, x, y, width, height, align: 'center', verticalAlign: 'top', fill: statusColor, fontFamily: 'ciscoSansRegular' }} />
+      <Text {...{ text: statusText, x: x + 15, y: y - 10, width: width - 15, height, align: 'center', verticalAlign: 'top', fill: statusColor, fontStyle: 'bold' }} />
     </Group>
   );
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import { Stage, Layer } from 'react-konva';
 import { VisualizationIcon, VisualizationLine, VisualizationVrf } from 'template';
 
-export const VisualizationEndpoints = ({ data, dimensions, status }) => {
+export const VisualizationEndpoints = ({ data, dimensions }) => {
   const { endpoints, client_name, physical_interface, vlan } = data;
 
   const icon = {
@@ -33,6 +33,7 @@ export const VisualizationEndpoints = ({ data, dimensions, status }) => {
     color: 'black',
     points: [0, 0, 0, 77.5, 47.5, 77.5]
   };
+
   if (!dimensions) {
     return <div>ładowanie</div>;
   }

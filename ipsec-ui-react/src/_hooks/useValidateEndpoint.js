@@ -22,7 +22,7 @@ const checkIpValue = (value) => {
 export const useValidateEndpoint = (endpoints) => {
   const [error, setError] = useState(validateStatus);
   const validateEmptyEndpoint = () => {
-    const { remote_ip_sec, psk, local_ip, peer_ip, remote_as, source_interface } = endpoints;
+    const { remote_ip_sec, psk, local_ip, peer_ip } = endpoints;
     if (remote_ip_sec === '' && psk === '' && local_ip === '' && peer_ip === '') {
       setError({ remote_ip_sec: true, psk: true, local_ip: true, peer_ip: true });
       return false;

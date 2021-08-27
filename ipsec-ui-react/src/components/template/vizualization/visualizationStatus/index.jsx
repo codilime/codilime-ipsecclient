@@ -5,9 +5,9 @@ import { VisualizationEndpointLabel, VisualizationLine, VisualizationEndpointBox
 import { variable } from '../visualizationConstants';
 const { mdHeightLabel } = variable;
 
-export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWidth = 750, title, endpoint, status }) => {
+export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWidth, title, endpoint, status }) => {
   const firstLabel = {
-    x: x + 100,
+    x: x + (lineWidth - 260) / 3 - 15,
     y: lineStartY - mdHeightLabel / 2,
     width: 130,
     height: mdHeightLabel,
@@ -16,7 +16,7 @@ export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWid
   };
 
   const secondLabel = {
-    x: x + lineWidth - 450,
+    x: x + lineWidth - (lineWidth - 260) / 3 - 130,
     y: lineStartY - mdHeightLabel / 2,
     width: 130,
     height: mdHeightLabel,
@@ -25,7 +25,7 @@ export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWid
   };
 
   const remoteSite = {
-    x: x + lineWidth - 150,
+    x: x + lineWidth - 15,
     y: lineStartY - 25 / 2 - height / 2,
     width: 235,
     height,
@@ -36,7 +36,7 @@ export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWid
   const contextStatus = {
     x: lineStartX,
     y: lineStartY - 30,
-    width: lineWidth - 20,
+    width: lineWidth,
     status
   };
 

@@ -29,8 +29,8 @@ export const VisualizationTwoLabel = ({ x, y, width, height, firstText, secondTe
   <Group>
     <Rect {...{ x, y, width, height, fill: labelColor }} />
     <Text {...{ text: firstText, x: x - 5, y: y + 2, height: height / 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold' }} />
-    <Text {...{ text: secondText, x: x, y: y + height / 2, height: height / 2, width: width / 2, align: 'center', verticalAlign: 'middle', fontSize: 10 }} />
-    <Text {...{ text: vlan, x: x + width / 2, y: y + height / 2, height: height / 2, width: width / 2, align: 'left', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold' }} />
+    <Text {...{ text: secondText, x: x + 5, y: y + height / 2, height: height / 2, width: width / 2, align: 'center', verticalAlign: 'middle', fontSize: 10 }} />
+    <Text {...{ text: vlan, x: x + width / 2 - 5, y: y + height / 2, height: height / 2, width: width / 2, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold' }} />
   </Group>
 );
 

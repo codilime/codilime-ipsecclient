@@ -7,7 +7,7 @@
   padding: 4px 0px 12px;
   border-bottom: 2px solid $gray01;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
 
   &__label {
@@ -15,7 +15,7 @@
   }
   &__select {
     width: 20%;
-    font-family: 'ciscoSansRegular', monospace ;
+    font-family: 'ciscoSansRegular', monospace;
     margin: 0 $margin-md;
     border: none;
     background-color: transparent;
@@ -24,27 +24,3 @@
     background-color: white;
   }
 }
-
-// @media screen and (min-width: 770px) {
-//   .crypto {
-//     margin-top: 0;
-//   }
-// }
-
-// @media screen and (min-width: 769px) and (max-width: 889px) {
-//   .crypto {
-//     margin-top: 0;
-//     width: 42%;
-//     flex-wrap: wrap;
-//     align-items: flex-start;
-//     justify-content: left;
-//     padding-bottom: 0;
-//     &__label {
-//       width: 100%;
-//     }
-//     &__select {
-//       width: 50%;
-//       margin: 5px;
-//     }
-//   }
-// }
