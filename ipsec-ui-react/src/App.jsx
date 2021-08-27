@@ -9,12 +9,11 @@ const App = () => {
   const { fetchVrfData, fetchVrfSettings, loading } = useInitData();
 
   useLayoutEffect(() => {
-    fetchVrfData();
     fetchVrfSettings();
   }, []);
 
   useEffect(() => {
-    if (loading) fetchVrfData();
+    if (!loading) fetchVrfData();
   }, [loading]);
 
   return (

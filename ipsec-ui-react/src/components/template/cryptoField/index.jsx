@@ -23,13 +23,13 @@ export const CryptoField = ({ text, name, crypto, register, error, value }) => {
     <>
       <div className="crypto" {...{ name }}>
         <label className="crypto__label">{text}</label>
-        <select className="crypto__select" {...register(`${name}[0]`)} value={value[0]}>
+        <select className="crypto__select" {...register(`${name}[0]`)}>
           {encryptionOption}
         </select>
-        <select className="crypto__select" {...register(`${name}[1]`)} value={value[1]}>
+        <select className="crypto__select" {...register(`${name}[1]`)}>
           {integrityOption}
         </select>
-        <select className="crypto__select" {...register(`${name}[2]`)} value={value[2]}>
+        <select className="crypto__select" {...register(`${name}[2]`)}>
           {keyExchangeOption}
         </select>
       </div>

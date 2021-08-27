@@ -4,14 +4,15 @@ import { VrfsContext } from 'context';
 
 export const useFetchData = () => {
   const { setVrf } = useContext(VrfsContext);
+  
   const fetchData = () => client('vrfs');
 
   const postVrfData = async (payload) => {
+    setVrf((prev) => ({ ...prev, loading: true }));
     try {
       const { id } = await client('vrfs', { ...payload }, { method: 'POST' });
-      setVrf((prev) => ({ ...prev, loading: true }));
       if (id) {
-        setVrf((prev) => ({ ...prev, loading: false, success: true }));
+        setVrf((prev) => ({ ...prev, loading: false }));
         return id;
       }
     } catch (error) {
@@ -20,11 +21,12 @@ export const useFetchData = () => {
   };
 
   const putVrfData = async (payload) => {
+    setVrf((prev) => ({ ...prev, loading: true }));
     try {
-      setVrf((prev) => ({ ...prev, loading: true }));
       const data = await client(`vrfs/${payload.id}`, { ...payload }, { method: 'PUT' });
+      console.log(data);
       if (data) {
-        setVrf((prev) => ({ ...prev, loading: false, success: true }));
+        setVrf((prev) => ({ ...prev, loading: false }));
         return data;
       }
     } catch (error) {

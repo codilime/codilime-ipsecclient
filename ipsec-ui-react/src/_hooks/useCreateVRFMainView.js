@@ -9,7 +9,7 @@ import { useFetchData, useGetLocation } from 'hooks';
 
 export const useCreateVRFMainView = () => {
   const { vrf } = useContext(VrfsContext);
-  const { currentLocation, history } = useGetLocation();
+  const { history, currentLocation } = useGetLocation();
   const { postVrfData, putVrfData } = useFetchData();
   const { mainVRFViewColumnOne, mainVRFViewColumnTwo, mainVRFViewColumnThree } = DynamicVRFView;
   const { data, softwareCrypto, hardwareCrypto, hardware } = vrf;
@@ -20,15 +20,17 @@ export const useCreateVRFMainView = () => {
     formState: { errors, isDirty, isValid },
     reset
   } = useForm({ resolver: yupResolver(vrfSchema) });
+
   useEffect(() => {
     reset(data);
-  }, [data]);
+  }, [reset, currentLocation, data]);
 
-  const submit = async (data) => {
+  const submit = (data) => {
+    console.log(data);
     if (data.id) {
       return putVrfData(data);
     }
-    const id = await postVrfData(data);
+    const id = postVrfData(data);
     if (id) {
       history.push(`/vrf/${id}`);
     }

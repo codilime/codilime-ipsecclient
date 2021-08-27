@@ -16,7 +16,6 @@ export const VrfView = () => {
   } = useVrfLogic();
 
   const vrfName = client_name ? client_name : 'New VRF';
-
   const deleteBtn = !hardware && (
     <Button btnDelete className="vrf__btn" onClick={handleToggleModal}>
       Delete VRF
