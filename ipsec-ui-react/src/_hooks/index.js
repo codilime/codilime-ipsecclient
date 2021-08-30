@@ -11,3 +11,4 @@ export * from './useValidateEndpoint';
 export * from './useInitData';
 export * from './useChoiceCertyficate';
 export * from './useCreateEndpointTable';
+export * from './usePopupLogic';

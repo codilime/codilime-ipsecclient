@@ -1,18 +1,18 @@
 import React from 'react';
-import { Endpoints, Modal, Visualization, FormDetail, StatusModal } from 'template';
+import { Endpoints, Modal, Visualization, FormDetail, PopupLogs, PopupStatus } from 'template';
 import { useModalLogic, useVrfLogic } from 'hooks';
 import { Button, Spinner } from 'common';
+import { usePopupLogic } from 'hooks';
 import './styles.scss';
 
 export const VrfView = () => {
   const { show, handleToggleModal } = useModalLogic();
+  const { open, handleToggle } = usePopupLogic();
   const {
     client_name,
     handleDelete,
     vrf: { loading },
-    hardware,
-    error,
-    success
+    hardware
   } = useVrfLogic();
 
   const vrfName = client_name ? client_name : 'New VRF';
@@ -21,6 +21,7 @@ export const VrfView = () => {
       Delete VRF
     </Button>
   );
+
   return (
     <>
       <section className="vrf">
@@ -28,7 +29,12 @@ export const VrfView = () => {
           <span className="vrf__breadcrumb">
             VRFs / <span className="vrf__name">{vrfName}</span>
           </span>
-          {deleteBtn}
+          <div className="vrf__box">
+            <Button className="vrf__btn" onClick={handleToggle}>
+              View logs
+            </Button>
+            {deleteBtn}
+          </div>
         </header>
         <article>
           <FormDetail />
@@ -40,7 +46,8 @@ export const VrfView = () => {
         </Modal>
       </section>
       <Spinner {...{ loading }} />
-      <StatusModal {...{ error, success, text: error }} />
+      <PopupLogs {...{ open, handleToggle }} />
+      <PopupStatus />
     </>
   );
 };

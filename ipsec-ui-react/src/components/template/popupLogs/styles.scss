@@ -1,0 +1,50 @@
+@import 'style/settings.scss';
+
+.logs {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba($color: #000000, $alpha: 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: $transition;
+  &__active {
+    opacity: 1;
+    visibility: visible;
+  }
+  &__content {
+    border: $wrapper-border;
+    width: 70%;
+    margin: 0 auto;
+    background-color: white;
+  }
+  &__header {
+    font-weight: 600;
+    border: $wrapper-border;
+    background-color: $gray01;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  &__icon {
+    font-size: 20px;
+    margin-right: $margin-md;
+    cursor: pointer;
+  }
+  &__title {
+    padding: $wrapper-padding;
+    margin: 0;
+    font-size: $header-and-button-font-size;
+  }
+  &__context {
+    height: 50vh;
+    margin: 0 auto;
+    border: $wrapper-border;
+    border-top: none;
+  }
+}

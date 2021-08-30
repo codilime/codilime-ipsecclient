@@ -19,15 +19,6 @@ module.exports = {
         use: ['file-loader']
       },
       {
-        test: /\.(ttf)([\?]?.*)$/,
-        use: {
-          loader: 'file-loader',
-          options: {
-            name: '[name].[ext]'
-          }
-        }
-      },
-      {
         test: /\.svg$/,
         loader: 'svg-inline-loader'
       },
