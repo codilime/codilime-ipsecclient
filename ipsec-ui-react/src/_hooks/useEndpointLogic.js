@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { EndpointInput } from 'common';
+import { EndpointInput, ToolTipInfo } from 'common';
 import { endpointInputSchema, endpointHardwareSchema } from 'db';
 import { useValidateEndpoint, useVrfLogic, useChoiceCertyficate } from 'hooks';
+
 import classNames from 'classnames';
 
 export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints, psk, handleChangePsk) => {
@@ -62,13 +63,17 @@ export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints,
         return (
           <td key={el.name} className={classNames('table__column', { table__psk: el.name === 'psk', table__bool: el.name === 'remote_as' })}>
             <EndpointInput {...{ ...el, onChange, edit, error }} value={endpoints[el.name]} />
+            {edit && (
+              <ToolTipInfo {...{ error: error[el.name] }}>
+                <p>Max value 255.255.255.255</p> <p>Min value 0.0.0.0</p>
+              </ToolTipInfo>
+            )}
           </td>
         );
     });
 
   const handleAddNewEndpoint = () => {
     const validate = validateEmptyEndpoint(endpoints);
-    console.log(endpoints, validate);
     if (!validate) {
       return;
     }

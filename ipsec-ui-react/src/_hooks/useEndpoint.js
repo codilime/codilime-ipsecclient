@@ -52,6 +52,7 @@ export const useEndpoint = (handleToggle) => {
         const newArray = handleDeleteVrfEndpoints(id);
         setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: newArray } }));
         setSend(true);
+        break;
       }
       default:
         break;

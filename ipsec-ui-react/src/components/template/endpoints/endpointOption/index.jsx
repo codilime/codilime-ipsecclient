@@ -10,9 +10,11 @@ export const EndpointOption = ({ open, handleToggleModal, handleActiveEdit, hand
       <li className="endpointOption__item" onClick={handleActiveEdit}>
         <IoPencil className="endpointOption__icon" /> Edit
       </li>
-      <li className="endpointOption__item" onClick={() => handleChangePsk('reset')}>
-        <HiOutlineSwitchHorizontal className="endpointOption__icon" /> Key
-      </li>
+      {edit && (
+        <li className="endpointOption__item" onClick={() => handleChangePsk('reset')}>
+          <HiOutlineSwitchHorizontal className="endpointOption__icon" /> Key
+        </li>
+      )}
       <li className="endpointOption__item endpointOption__delete " onClick={handleToggleModal}>
         <IoTrashBin className="endpointOption__icon" /> Delete
       </li>

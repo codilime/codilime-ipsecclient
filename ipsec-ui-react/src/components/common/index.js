@@ -5,3 +5,4 @@ export * from './tooltip';
 export * from './spinner';
 export * from './topSideIcon';
 export * from './uploadButton';
+export * from './toolTipInfo';

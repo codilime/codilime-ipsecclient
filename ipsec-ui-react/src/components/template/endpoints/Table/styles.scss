@@ -98,9 +98,14 @@
     align-items: center;
   }
   &__icon {
-    font-size: 22px;
-    margin-left: 10px;
+    position: absolute;
+    right: 5px;
+    color: black;
+    font-size: 14px;
+    top: 45%;
+    transform: translate(-50%, -50%);
     cursor: pointer;
+    transition: $transition;
   }
   &__switch {
     margin: 0 10px;

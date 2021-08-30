@@ -1,0 +1,20 @@
+@import 'style/settings.scss';
+
+.toolTipInfo {
+  position: absolute;
+  top: 65%;
+  left: 10%;
+  right: 10%;
+  font-size: 8px;
+  background-color: #393939;
+  color: white;
+  padding: $padding-sm;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+  opacity: 0;
+  visibility: hidden;
+  transition: $transition;
+  &__active {
+    opacity: 1;
+    visibility: visible;
+  }
+}
