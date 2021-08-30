@@ -1,8 +1,6 @@
 from typing import cast
 import requests, time, json
 from requests.auth import HTTPBasicAuth
-import eventlet
-eventlet.monkey_patch()
 
 VRFS_URL = "http://sico_api/api/vrfs"
 
@@ -11,16 +9,14 @@ basicAuth=HTTPBasicAuth("admin", "cisco123")
 def setup_module():
     print("setup")
     while True:
+        print("sleeping")
+        time.sleep(3)
         print("waiting for sico_api...")
         try:
-            with eventlet.Timeout(10):
-                r = requests.get(VRFS_URL, auth=basicAuth)
-            if r.status_code > 400:
-                print("wrong status code, exiting")
+            r = requests.get(VRFS_URL, auth=basicAuth, timeout=3)
+            if r.status_code < 400:
                 return
         except:
-            print("sleeping")
-            time.sleep(3)
             continue
 
 def ordered(obj):
@@ -56,9 +52,9 @@ def test_post():
     }
 
     r = requests.post(VRFS_URL, json=post, auth=basicAuth)
-    if r.status_code > 400:
+    if r.status_code >= 400:
         print(r.text)
-        assert r.status_code > 400
+        assert r.status_code >= 400
 
 def test_put():
     put = {
@@ -94,17 +90,17 @@ def test_put():
     }
 
     r = requests.put(VRFS_URL+"/1", json=put, auth=basicAuth)
-    if r.status_code > 400:
+    if r.status_code >= 400:
         print(r.text)
-        assert r.status_code > 400
+        assert r.status_code >= 400
 
 get_template="""{"id":1,"client_name":"test","vlan":123,"crypto_ph1":["aes128","sha256","modp1024"],"crypto_ph2":["aes128","sha1","modp1024"],"physical_interface":"eth0","active":true,"local_as":123,"lan_ip":"10.0.0.1","endpoints":[{"remote_ip_sec":"10.1.0.1","local_ip":"10.2.0.1","peer_ip":"10.3.0.1","psk":"asdasdasdasd","nat":true,"bgp":true,"remote_as":321,"source_interface":""}]}"""
 
 def test_get():
     r = requests.get(VRFS_URL+"/1", auth=basicAuth)
-    if r.status_code > 400:
+    if r.status_code >= 400:
         print(r.text)
-        assert r.status_code > 400
+        assert r.status_code >= 400
     template = json.loads(get_template)
     result = json.loads(r.text)
     if ordered(result) != ordered(template):
@@ -114,9 +110,9 @@ def test_get():
 
 def test_delete():
     r = requests.delete(VRFS_URL+"/1", auth=basicAuth)
-    if r.status_code > 400:
+    if r.status_code >= 400:
         print(r.text)
-        assert r.status_code > 400
+        assert r.status_code >= 400
 
 def test_hw_put():
     put = {
@@ -152,17 +148,17 @@ def test_hw_put():
     }
 
     r = requests.put(VRFS_URL+"/65535", json=put, auth=basicAuth)
-    if r.status_code > 400:
+    if r.status_code >= 400:
         print(r.text)
-        assert r.status_code > 400
+        assert r.status_code >= 400
 
 get_template="""{"id":1,"client_name":"test","vlan":123,"crypto_ph1":["aes128","sha256","modp1024"],"crypto_ph2":["aes128","sha1","modp1024"],"physical_interface":"eth0","active":true,"local_as":123,"lan_ip":"10.0.0.1","endpoints":[{"remote_ip_sec":"10.1.0.1","local_ip":"10.2.0.1","peer_ip":"10.3.0.1","psk":"asdasdasdasd","nat":true,"bgp":true,"remote_as":321,"source_interface":""}]}"""
 
 def test_hw_get():
     r = requests.get(VRFS_URL+"/65535", auth=basicAuth)
-    if r.status_code > 400:
+    if r.status_code >= 400:
         print(r.text)
-        assert r.status_code > 400
+        assert r.status_code >= 400
     # template = json.loads(get_template)
     # result = json.loads(r.text)
     # if ordered(result) != ordered(template):
