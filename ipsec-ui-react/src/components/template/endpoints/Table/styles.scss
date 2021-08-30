@@ -3,7 +3,6 @@
 .table {
   width: 100%;
   text-align: center;
-  overflow: hidden;
   border-collapse: collapse;
   font-size: 12px;
 
@@ -48,6 +47,7 @@
       border-right: none;
     }
   }
+
   &__bool {
     min-width: 80px;
     width: 30%;
@@ -67,6 +67,9 @@
       visibility: visible;
     }
   }
+  &__psk__choice {
+    justify-content: space-around;
+  }
   &__addBtn {
     display: flex;
     border-top: $table-border;
@@ -84,5 +87,25 @@
   }
   &__add {
     padding: $padding-sm $padding-md !important;
+  }
+  &__center {
+    display: flex;
+    font-weight: 700;
+  }
+  &__certificates {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &__icon {
+    font-size: 22px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  &__switch {
+    margin: 0 10px;
+  }
+  &__title {
+    font-weight: 700;
   }
 }

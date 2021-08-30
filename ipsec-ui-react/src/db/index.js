@@ -19,17 +19,25 @@ export const defaultVrf = {
   success: false
 };
 
-export const tableSoftwareHeaderSchema = [{ item: 'Remote IP' }, { item: 'Tunnel local IP' }, { item: 'Tunnel peer IP' }, { item: 'PSK' }, { item: 'NAT' }, { item: 'BGP' }, { item: 'ACTION' }];
+export const tableSoftwareHeaderSchema = [
+  { header: 'Remote IP' },
+  { header: 'Tunnel local IP' },
+  { header: 'Tunnel peer IP' },
+  { header: 'PSK / Certificates' },
+  { header: 'NAT' },
+  { header: 'BGP' },
+  { header: 'ACTION' }
+];
 
 export const tableHardwaHeaderSchema = [
-  { item: 'Remote IP' },
-  { item: 'Tunnel local IP' },
-  { item: 'Tunnel peer IP' },
-  { item: 'PSK' },
-  { item: 'Remote AS' },
-  { item: 'Source interface' },
-  { item: 'BGP' },
-  { item: 'ACTION' }
+  { header: 'Remote IP' },
+  { header: 'Tunnel local IP' },
+  { header: 'Tunnel peer IP' },
+  { header: 'PSK / Certificates' },
+  { header: 'Remote AS' },
+  { header: 'Source interface' },
+  { header: 'BGP' },
+  { header: 'ACTION' }
 ];
 
 export const emptyEndpointSchema = {
@@ -55,7 +63,7 @@ export const endpointInputSchema = [
   { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP' },
   { type: 'text', name: 'local_ip', placeholder: 'Enter local IP' },
   { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP' },
-  { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
+  { type: 'radio', name: 'psk' },
   { type: 'checkbox', name: 'nat' },
   { type: 'checkbox', name: 'bgp' }
 ];
@@ -63,7 +71,7 @@ export const endpointHardwareSchema = [
   { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP' },
   { type: 'text', name: 'local_ip', placeholder: 'Enter local IP' },
   { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP' },
-  { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
+  { type: 'radio', name: 'psk' },
   { type: 'number', name: 'remote_as', placeholder: '0' },
   { type: 'text', name: 'source_interface', placeholder: 'Enter source interface' },
   { type: 'checkbox', name: 'bgp' }

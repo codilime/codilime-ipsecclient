@@ -10,6 +10,7 @@
   background-color: transparent;
   padding: $padding-sm 0;
   text-align: center;
+  cursor: pointer;
   &:focus {
     border-bottom: $endpoint-input-focus;
   }
@@ -19,6 +20,13 @@
   &__checkbox {
     margin: 0 auto;
     width: auto;
+  }
+  &__file {
+    display: none;
+  }
+  &__radio {
+    width: auto;
+    margin-right: 15px;
   }
   &__icon {
     cursor: pointer;

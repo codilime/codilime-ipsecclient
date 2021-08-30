@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { EndpointInput } from 'common';
 import { endpointInputSchema, endpointHardwareSchema } from 'db';
-import { useValidateEndpoint, useVrfLogic } from 'hooks';
+import { useValidateEndpoint, useVrfLogic, useChoiceCertyficate } from 'hooks';
 import classNames from 'classnames';
 
-export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints) => {
+export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints, psk, handleChangePsk) => {
   const [edit, setEdit] = useState(active);
   const [endpoints, setEndpoint] = useState(null);
   const { hardware } = useVrfLogic();
   const { error, validateEmptyEndpoint, setError } = useValidateEndpoint(endpoints);
+  const { handleGeneratePskField } = useChoiceCertyficate(edit, onchange, error, handleChangePsk, psk, setEndpoint, endpoints);
+
   const handleActiveEdit = () => setEdit((prev) => !prev);
 
   const onChange = (e) => {
@@ -54,15 +56,19 @@ export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints)
           </td>
         );
       }
-      return (
-        <td key={el.name} className={classNames('table__column', { table__psk: el.name === 'psk', table__bool: el.name === 'remote_as' })}>
-          <EndpointInput {...{ ...el, onChange, edit, error }} value={endpoints[el.name]} />
-        </td>
-      );
+      if (el.name === 'psk') {
+        return handleGeneratePskField(el);
+      } else
+        return (
+          <td key={el.name} className={classNames('table__column', { table__psk: el.name === 'psk', table__bool: el.name === 'remote_as' })}>
+            <EndpointInput {...{ ...el, onChange, edit, error }} value={endpoints[el.name]} />
+          </td>
+        );
     });
 
   const handleAddNewEndpoint = () => {
     const validate = validateEmptyEndpoint(endpoints);
+    console.log(endpoints, validate);
     if (!validate) {
       return;
     }

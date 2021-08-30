@@ -1,32 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { EndpointButton } from 'common';
-import { Wrapper, EachEndpoint } from 'template';
-import { useToggle, useEndpoint, useGetLocation, useVrfLogic } from 'hooks';
-import { emptyEndpointSchema, emptyHardwareSchema, tableSoftwareHeaderSchema, tableHardwaHeaderSchema } from 'db';
+import { Wrapper } from 'template';
+import { useCreateEndpointTable } from 'hooks';
 import { newVrf } from 'constant';
-import classNames from 'classnames';
 import './styles.scss';
 
 export const Endpoints = () => {
-  const { open, handleToggle } = useToggle();
-  const { hardware } = useVrfLogic();
-  const { vrfEndpoints, handleActionVrfEndpoints } = useEndpoint(handleToggle);
-  const { currentLocation } = useGetLocation();
-
-  const headerSchema = hardware ? tableHardwaHeaderSchema : tableSoftwareHeaderSchema;
-  const emptySchema = hardware ? emptyHardwareSchema : emptyEndpointSchema;
-
-  const dynamicHeader = headerSchema.map(({ item }) => (
-    <th key={item} className={classNames('table__header__column', { table__bool: item === 'NAT' || item == 'BGP' || item === 'ACTION' || item == 'Remote AS', table__psk: item === 'PSK' })}>
-      {item}
-    </th>
-  ));
-
-  const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ data: el, id: index, handleActionVrfEndpoints }} />);
-
-  const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, data: emptySchema, handleActionVrfEndpoints }} />;
-
-  const newEndpointButton = open ? 'Close a new endpoint' : 'Add a new endpoint';
+  const { dynamicCreateEndpoint, dynamicHeader, createNewEndpoint, newEndpointButton, handleToggle, currentLocation } = useCreateEndpointTable();
 
   return (
     <Wrapper title="Endpoints">

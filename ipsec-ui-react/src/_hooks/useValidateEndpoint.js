@@ -43,10 +43,6 @@ export const useValidateEndpoint = (endpoints) => {
       setError((prev) => ({ ...prev, peer_ip: true }));
       return false;
     }
-    if (psk === '') {
-      setError((prev) => ({ ...prev, psk: true }));
-      return false;
-    }
     setError({ remote_ip_sec: false, psk: false, local_ip: false, peer_ip: false, source_interface: false });
     return true;
   };

@@ -9,3 +9,5 @@ export * from './useVrfLogic';
 export * from './useEndpoint';
 export * from './useValidateEndpoint';
 export * from './useInitData';
+export * from './useChoiceCertyficate';
+export * from './useCreateEndpointTable';
