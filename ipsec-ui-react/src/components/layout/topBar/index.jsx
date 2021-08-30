@@ -2,12 +2,13 @@ import React from 'react';
 import Logo from 'images/cisco_logo.png';
 import PropTypes from 'prop-types';
 import { useLoginLogic } from 'hooks';
-import { TopSideIcon } from 'common';
+import { TopSideIcon, CircleInfo } from 'common';
 import { FiSettings, FiBell, FiLogOut } from 'react-icons/fi';
 import './styles.scss';
 
 export const TopBar = ({ productName }) => {
   const { handleLogout } = useLoginLogic();
+
   return (
     <header className="topBar">
       <div className="topBar__right">
@@ -17,6 +18,7 @@ export const TopBar = ({ productName }) => {
       <div className="topBar__left">
         <TopSideIcon>
           <FiBell className="topBar__icon" />
+          <CircleInfo>1</CircleInfo>
         </TopSideIcon>
         <TopSideIcon>
           <FiSettings className="topBar__icon" />
