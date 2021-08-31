@@ -25,6 +25,7 @@
   &__icon {
     cursor: pointer;
     transition: $transition;
+    color: $gray05;
     &:hover {
       color: $primary;
     }

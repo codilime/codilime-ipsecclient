@@ -13,3 +13,4 @@ export * from './useChoiceCertyficate';
 export * from './useCreateEndpointTable';
 export * from './usePopupLogic';
 export * from './useLoginLogic';
+export * from './useSettingLogic';

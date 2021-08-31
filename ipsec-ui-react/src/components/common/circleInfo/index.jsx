@@ -7,5 +7,5 @@ export const CircleInfo = ({ children }) => {
 };
 
 CircleInfo.propTypes = {
-  children: PropTypes.number
+  children: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 };

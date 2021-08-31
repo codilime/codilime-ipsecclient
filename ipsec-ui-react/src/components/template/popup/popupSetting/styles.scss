@@ -1,0 +1,22 @@
+@import 'style/settings.scss';
+
+.setting {
+  display: flex;
+  height: 100%;
+  &__nav {
+    background-color: $bgc-gray;
+    height: 100%;
+    min-width: 120px;
+  }
+  &__option {
+    list-style-type: none;
+    padding: $padding-md;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+  }
+  &__active {
+    border-left: $sideBar-active-border;
+    background-color: $bgc-active;
+  }
+}

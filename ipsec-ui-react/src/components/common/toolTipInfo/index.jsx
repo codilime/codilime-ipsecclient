@@ -23,6 +23,6 @@ export const ToolTipInfo = ({ children, error }) => {
 };
 
 ToolTipInfo.propTypes = {
-  children: PropTypes.string,
+  children: PropTypes.any,
   error: PropTypes.object
 };
