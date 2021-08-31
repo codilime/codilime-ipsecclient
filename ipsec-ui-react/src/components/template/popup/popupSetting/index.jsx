@@ -5,7 +5,7 @@ import { useSettingLogic } from 'hooks';
 import './styles.scss';
 
 export const PopupSetting = ({ open, handleToggle }) => {
-  const { handleChangeActiveSetting, activeSetting } = useSettingLogic();
+  const { handleChangeActiveSetting, activeSetting } = useSettingLogic(open);
   return (
     <Popup {...{ open, handleToggle, title: 'Settings' }}>
       <section className="setting">

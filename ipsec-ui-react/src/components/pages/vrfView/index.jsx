@@ -2,12 +2,12 @@ import React from 'react';
 import { Endpoints, Modal, Visualization, FormDetail, PopupLogs, PopupStatus } from 'template';
 import { useModalLogic, useVrfLogic } from 'hooks';
 import { Button, Spinner } from 'common';
-import { usePopupLogic } from 'hooks';
+import { useToggle } from 'hooks';
 import './styles.scss';
 
 export const VrfView = () => {
   const { show, handleToggleModal } = useModalLogic();
-  const { open, handleToggle } = usePopupLogic();
+  const { open, handleToggle } = useToggle();
   const {
     client_name,
     handleDelete,

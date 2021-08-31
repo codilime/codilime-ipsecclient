@@ -1,7 +1,7 @@
 import React from 'react';
 import Logo from 'images/cisco_logo.png';
 import PropTypes from 'prop-types';
-import { useLoginLogic, useSettingLogic } from 'hooks';
+import { useLoginLogic, useToggle } from 'hooks';
 import { TopSideIcon, CircleInfo } from 'common';
 import { PopupSetting } from 'template';
 import { FiSettings, FiBell, FiLogOut } from 'react-icons/fi';
@@ -9,7 +9,7 @@ import './styles.scss';
 
 export const TopBar = ({ productName }) => {
   const { handleLogout } = useLoginLogic();
-  const { open, handleToggle } = useSettingLogic();
+  const { open, handleToggle } = useToggle();
   return (
     <header className="topBar">
       <div className="topBar__right">
