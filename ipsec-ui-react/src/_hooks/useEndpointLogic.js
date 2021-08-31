@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { EndpointInput, ToolTipInfo } from 'common';
-import { endpointInputSchema, endpointHardwareSchema } from 'db';
+import { endpointInputSchema, endpointHardwareSchema, emptyEndpointSchema, emptyHardwareSchema } from 'db';
 import { useValidateEndpoint, useVrfLogic, useChoiceCertyficate } from 'hooks';
-
 import classNames from 'classnames';
 
-export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints, psk, handleChangePsk) => {
+export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints) => {
   const [edit, setEdit] = useState(active);
-  const [endpoints, setEndpoint] = useState(null);
   const { hardware } = useVrfLogic();
+  const emptyEndpoint = hardware ? emptyHardwareSchema : emptyEndpointSchema;
+  const [endpoints, setEndpoint] = useState(emptyEndpoint);
   const { error, validateEmptyEndpoint, setError } = useValidateEndpoint(endpoints);
-  const { handleGeneratePskField } = useChoiceCertyficate(edit, onchange, error, handleChangePsk, psk, setEndpoint, endpoints);
-
+  const { handleGeneratePskField } = useChoiceCertyficate(edit, error, setEndpoint, endpoints);
   const handleActiveEdit = () => setEdit((prev) => !prev);
 
   const onChange = (e) => {
@@ -77,7 +76,6 @@ export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints,
     if (!validate) {
       return;
     }
-
     if (id === null) {
       handleActionVrfEndpoints('add', endpoints);
       return setEdit(false);

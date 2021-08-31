@@ -59,7 +59,13 @@ export const emptyHardwareSchema = {
   remote_ip_sec: '',
   local_ip: '',
   peer_ip: '',
-  psk: '',
+  authentication: {
+    type: '',
+    psk: '',
+    local_cert: '',
+    remote_cert: '',
+    private_key: ''
+  },
   remote_as: 0,
   source_interface: '',
   bgp: false

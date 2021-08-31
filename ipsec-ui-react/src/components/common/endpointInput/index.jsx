@@ -19,11 +19,11 @@ export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, 
         className={classNames('endpointInput', {
           endpointInput__checkbox: type === 'checkbox',
           endpointInput__active: edit && type !== 'file',
-          endpointInput__error: error[name],
+          endpointInput__error: error && error[name],
           endpointInput__radio: type === 'radio',
           endpointInput__file: type === 'file'
         })}
-        {...{ type: open && edit ? 'text' : type, name, placeholder, value, onChange, onClick, checked, disabled: !edit, onKeyPress: validateDataInput, ref: references }}
+        {...{ type: open && edit ? 'text' : type, name, placeholder, value, onChange, onClick, onKeyPress: validateDataInput, checked, disabled: !edit, ref: references }}
       />
 
       {showEyes}

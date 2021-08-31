@@ -24,5 +24,5 @@ export const ToolTipInfo = ({ children, error }) => {
 
 ToolTipInfo.propTypes = {
   children: PropTypes.any,
-  error: PropTypes.object
+  error: PropTypes.any
 };

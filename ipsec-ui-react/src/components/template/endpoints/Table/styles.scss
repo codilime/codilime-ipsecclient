@@ -99,17 +99,20 @@
   &__icon {
     position: absolute;
     right: 5px;
-    color: black;
     font-size: 14px;
     top: 45%;
     transform: translate(-50%, -50%);
-    color:$gray05;
+    color: $gray05;
     cursor: pointer;
     transition: $transition;
-    margin-top:2px
+    margin-top: 2px;
+    &__change {
+      right: 0px;
+    }
   }
+
   &__iconBox {
-    padding:$padding-sm;
+    padding: $padding-sm;
   }
   &__title {
     font-weight: 700;
