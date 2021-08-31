@@ -1,11 +1,12 @@
 ### STAGE 1a: Build Front ###
 FROM node:12.7-alpine AS frontend-build
 WORKDIR /usr/src/app
-COPY ipsec-ui/package.json ipsec-ui/package-lock.json ./
-RUN npm install
-COPY ipsec-ui/src /usr/src/app/src/
-COPY ipsec-ui/angular.json ipsec-ui/tsconfig.app.json ipsec-ui/tsconfig.json ipsec-ui/tsconfig.spec.json /usr/src/app/
-RUN npm run dist
+COPY ipsec-ui-react/package.json ./
+RUN npm install -g webpack webpack-cli --loglevel verbose -ddd && npm install --loglevel verbose -ddd
+COPY ipsec-ui-react/src /usr/src/app/src/
+COPY ipsec-ui-react/dist /usr/src/app/dist/
+COPY ipsec-ui-react/webpack.config.js /usr/src/app/
+RUN webpack build --config ./webpack.config.js --mode production
 
 ### STAGE 1b: Build API ###
 FROM golang:1.16.3-alpine3.13 AS middleware-build
@@ -33,8 +34,8 @@ COPY docker/api.ini /etc/supervisor.d/
 
 #Front
 RUN mkdir /run/nginx
-COPY ipsec-ui/nginx.conf /etc/nginx/conf.d/default.conf.template
-COPY --from=frontend-build /usr/src/app/dist/ipsec-ui /usr/share/nginx/html
+COPY ipsec-ui-react/nginx.conf /etc/nginx/conf.d/default.conf.template
+COPY --from=frontend-build /usr/src/app/dist/ /usr/share/nginx/html
 COPY docker/front.ini /etc/supervisor.d/
 COPY docker/nginx.sh /usr/local/sbin/
 

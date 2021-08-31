@@ -16,14 +16,14 @@
       color: $hardware;
     }
   }
-
   &__input {
-    padding: $padding-sm $padding-lg $padding-lg 180px;
+    padding: $padding-sm $padding-lg $padding-md 180px;
     width: 90%;
     border: none;
     outline: none;
     border-bottom: 2px solid $gray01;
     font-weight: 300;
+    font-family: 'ciscoSansRegular', monospace;
     &:focus {
       border-bottom: 2px solid $primary;
       color: $primary;
@@ -31,11 +31,11 @@
     }
   }
   &__error {
-    color:red;
+    color: red;
     font-size: 10px;
   }
   &__label {
-    font-weight:500;
+    font-weight: 500;
     order: 1;
     padding: 3px 3px;
     transform: translateY(-50%);
@@ -54,5 +54,21 @@
   &__checkbox {
     width: 10%;
     bottom: 2px;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1532px) {
+  .field {
+    &__input {
+      width: 100%;
+    }
+    &__checkbox {
+      width: 14%;
+    }
+    &__label {
+      &__checkbox {
+        margin-left: 0;
+      }
+    }
   }
 }

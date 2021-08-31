@@ -2,31 +2,39 @@
 
 .button {
   border: none;
-  border-radius: $button-radius;
+  border-radius: $button-radius-secound;
   padding: 8px $padding-md;
-  font-size: 12px;
+  font-family: $font-family;
+  font-size: $header-and-button-font-size;
   cursor: pointer;
+  transition: $transition;
+  min-width: 160px;
   &__delete {
     font-weight: 500;
-    width: 120px;
+    max-width: 140px;
+    width: auto;
     background-color: $bgc-delete;
     color: white;
+  }
+  &__disabled {
+    background-color: $bgc-disable;
   }
 }
 
 .endpointButton {
-  padding: $padding-sm $padding-xl;
+  font-family: $font-family;
+  padding: 8px $padding-md;
   border: none;
   color: white;
-  border-radius: 12px;
-  font-size: 14px;
+  border-radius: $button-radius-secound;
+  font-size: $header-and-button-font-size;
   width: auto;
-  max-width: 200px;
-  height: 100%;
+  min-width: 60px;
+  max-width: 240px;
   background-color: $primary;
   cursor: pointer;
   transition: $transition;
-  margin:0 auto;
+  margin: 0 auto;
   &__secondary {
     background-color: transparent;
     color: black;
@@ -34,7 +42,7 @@
     letter-spacing: 2px;
     font-size: 12px;
   }
-  &__disable {
+  &__disabled {
     background-color: $bgc-disable;
   }
 }

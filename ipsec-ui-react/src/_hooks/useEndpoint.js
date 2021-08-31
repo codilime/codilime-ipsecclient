@@ -37,7 +37,6 @@ export const useEndpoint = (handleToggle) => {
           setSend(true);
           break;
         }
-
         setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: [...prev.data.endpoints, data] } }));
         handleToggle();
         setSend(true);

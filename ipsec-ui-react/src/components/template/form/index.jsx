@@ -1,11 +1,11 @@
 import React from 'react';
 import { useCreateVRFMainView } from 'hooks';
-import { Wrapper, CryptoField } from 'template';
+import { Wrapper } from 'template';
 import { Button } from 'common';
 import './styles.scss';
 
 export function FormDetail() {
-  const { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView, handleSubmit, submit } = useCreateVRFMainView(open);
+  const { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView, handleSubmit, submit, isDirty } = useCreateVRFMainView(open);
 
   return (
     <Wrapper title="VRF details">
@@ -15,7 +15,9 @@ export function FormDetail() {
           <div className="form__column">{VRFColumnTwoView}</div>
           <div className="form__column">{VRFColumnThreeView}</div>
         </fieldset>
-        <Button className="form__btn">Save changes</Button>
+        <Button className="form__btn" disabled={!isDirty}>
+          Save changes
+        </Button>
       </form>
     </Wrapper>
   );

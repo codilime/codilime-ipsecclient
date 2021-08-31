@@ -1,39 +1,39 @@
-import { useState, useEffect, useContext } from 'react';
-import { useFetchData, useGetLocation } from 'hooks';
+import { useEffect, useContext } from 'react';
+import { useGetLocation } from 'hooks';
 import { VrfsContext } from 'context';
+import { HardwareId } from 'constant';
 import { defaultVrf } from 'db';
 
 export const useGetVrfs = () => {
-  const { fetchData } = useFetchData();
   const { currentLocation, history } = useGetLocation();
-  const {
-    vrf: { loading },
-    setVrf
-  } = useContext(VrfsContext);
-  const [vrfs, setVrfs] = useState([]);
+  const { vrf, setVrf } = useContext(VrfsContext);
+  const { vrfs } = vrf;
 
   const findActiveVrfPage = () => {
-    if (vrfs.length === 0) {
-      setVrf(defaultVrf);
-      history.push('/vrf/create');
+    if (!vrfs.length) {
+      setVrf((prev) => ({ ...prev, data: defaultVrf.data }));
+      return history.push('/vrf/create');
     }
     if (currentLocation === 'create') {
-      return setVrf(defaultVrf);
+      return setVrf((prev) => ({ ...prev, data: defaultVrf.data }));
     }
-    const currentVrf = vrfs.filter(({ id }) => id === parseInt(currentLocation));
+    const currentVrf = vrfs.filter(({ id }) => id === parseInt(currentLocation))[0];
 
-    if (currentVrf.length > 0) {
-      return setVrf({ data: currentVrf[0] });
+    if (currentVrf) {
+      return setVrf((prev) => ({ ...prev, data: currentVrf }));
     }
   };
 
   useEffect(() => {
-    if (currentLocation && vrfs.length !== 0) findActiveVrfPage();
-  }, [currentLocation, vrfs]);
+    if (currentLocation === HardwareId) {
+      setVrf((prev) => ({ ...prev, hardware: true }));
+    } else {
+      setVrf((prev) => ({ ...prev, hardware: false }));
+    }
+  }, [currentLocation]);
 
   useEffect(() => {
-    if (vrfs.length === 0 || loading) fetchData(setVrfs);
-  }, [loading]);
-
+    if (currentLocation) findActiveVrfPage();
+  }, [currentLocation, vrfs]);
   return { vrfs };
 };

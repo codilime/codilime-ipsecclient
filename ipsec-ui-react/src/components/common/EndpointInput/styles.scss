@@ -1,11 +1,15 @@
 @import 'style/settings.scss';
 
 .endpointInput {
+  align-items: flex-start;
   width: 100%;
+  font-family: $font-family;
+  font-size: $standard-text-size;
   border: none;
   outline: none;
   background-color: transparent;
-  padding: $padding-sm;
+  padding: $padding-sm 0;
+  text-align: center;
   &:focus {
     border-bottom: $endpoint-input-focus;
   }

@@ -22,7 +22,21 @@ module.exports = {
       {
         test: /\.(png|jpe?g|gif)$/i,
         use: ['file-loader']
-      }
+      },
+      {
+        test: /\.(ttf)([\?]?.*)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]'
+          }
+        }
+      },
+      {
+        test: /\.svg$/,
+        loader: 'svg-inline-loader'
+      },
+      { test: /\.(woff|woff2|eot|ttf)$/, use: ['url-loader?limit=100000'] }
     ]
   },
   resolve: {
@@ -34,14 +48,16 @@ module.exports = {
       layout: path.resolve(__dirname, 'src/components/layout'),
       pages: path.resolve(__dirname, 'src/components/pages'),
       style: path.resolve(__dirname, 'src/scss'),
-      assets: path.resolve(__dirname, 'src/assets'),
+      fonts: path.resolve(__dirname, 'src/assets/fonts'),
+      images: path.resolve(__dirname, 'src/assets/images'),
       db: path.resolve(__dirname, 'src/db'),
       hooks: path.resolve(__dirname, 'src/_hooks'),
       helpers: path.resolve(__dirname, 'src/_helpers'),
       context: path.resolve(__dirname, 'src/_context'),
       api: path.resolve(__dirname, 'src/_api'),
       schema: path.resolve(__dirname, 'src/schema'),
-      utils: path.resolve(__dirname, 'src/utils')
+      utils: path.resolve(__dirname, 'src/utils'),
+      constant: path.resolve(__dirname, 'src/constants')
     }
   },
   output: {
@@ -59,7 +75,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://172.17.0.2:80',
+        target: 'http://0.0.0.0:80',
         secure: false
       }
     },

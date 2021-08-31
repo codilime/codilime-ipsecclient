@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { EndpointInput, ToolTip } from 'common';
-import { endpointInputSchema } from 'db';
-import { useValidateEndpoint } from 'hooks';
+import React, { useState, useEffect } from 'react';
+import { EndpointInput } from 'common';
+import { endpointInputSchema, endpointHardwareSchema } from 'db';
+import { useValidateEndpoint, useVrfLogic } from 'hooks';
 import classNames from 'classnames';
 
-export const useEndpointLogic = (endpoint, active = false, id = null, handleActionVrfEndpoints) => {
+export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints) => {
   const [edit, setEdit] = useState(active);
-  const [endpoints, setEndpoint] = useState(endpoint);
-  const handleActiveEdit = () => setEdit((prev) => !prev);
+  const [endpoints, setEndpoint] = useState(null);
+  const { hardware } = useVrfLogic();
   const { error, validateEmptyEndpoint, setError } = useValidateEndpoint(endpoints);
+  const handleActiveEdit = () => setEdit((prev) => !prev);
 
   const onChange = (e) => {
     const { value, name, checked, type } = e.target;
@@ -19,37 +20,53 @@ export const useEndpointLogic = (endpoint, active = false, id = null, handleActi
         [name]: checked
       }));
     }
+    if (type === 'number') {
+      return setEndpoint((prev) => ({
+        ...prev,
+        [name]: parseInt(value)
+      }));
+    }
     return setEndpoint((prev) => ({
       ...prev,
       [name]: value
     }));
   };
 
-  const newEndpointState = edit ? endpoints : endpoint;
+  useEffect(() => {
+    setEndpoint(endpoint);
+  }, [endpoint]);
 
-  const displayEndpoint = endpointInputSchema.map((el) => {
-    const toolTip = el.name === 'psk' && edit && newEndpointState[el.name] !== '' && <ToolTip>{newEndpointState[el.name]}</ToolTip>
-    
-    if (el.type === 'checkbox') {
+  useEffect(() => {
+    return () => {
+      setEdit(false);
+    };
+  }, [endpoint]);
+
+  const endpointSchema = hardware ? endpointHardwareSchema : endpointInputSchema;
+
+  const displayEndpoint =
+    endpoints &&
+    endpointSchema.map((el) => {
+      if (el.type === 'checkbox') {
+        return (
+          <td key={el.name} className={classNames('table__column', 'table__bool')}>
+            <EndpointInput {...{ ...el, onChange, edit, error }} checked={endpoints[el.name]} />
+          </td>
+        );
+      }
       return (
-        <td key={el.name} className={classNames({ table__column: true, table__bool: true })}>
-          <EndpointInput {...{ ...el, onChange, edit, error }} checked={newEndpointState[el.name]} />
+        <td key={el.name} className={classNames('table__column', { table__psk: el.name === 'psk', table__bool: el.name === 'remote_as' })}>
+          <EndpointInput {...{ ...el, onChange, edit, error }} value={endpoints[el.name]} />
         </td>
       );
-    }
-    return (
-      <td key={el.name} className={classNames({ table__column: true, table__psk: el.name === 'psk' })}>
-        <EndpointInput {...{ ...el, onChange, edit, error }} value={newEndpointState[el.name]} />
-        {toolTip}
-      </td>
-    );
-  });
+    });
 
   const handleAddNewEndpoint = () => {
-    const validate = validateEmptyEndpoint();
+    const validate = validateEmptyEndpoint(endpoints);
     if (!validate) {
       return;
     }
+
     if (id === null) {
       handleActionVrfEndpoints('add', endpoints);
       return setEdit(false);

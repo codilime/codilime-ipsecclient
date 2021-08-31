@@ -11,11 +11,11 @@
   position: fixed;
   z-index: 101;
   &__image {
-    height: 30px;
+    height: 32px;
   }
   &__productName {
     margin-left: 20px;
-    font-size: 22px;
-    color: $gray03;
+    font-size: 24px;
+    color: $gray05;
   }
 }

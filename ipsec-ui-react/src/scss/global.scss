@@ -1,4 +1,11 @@
-@import "ColorThemes";
+@import 'ColorThemes';
+
+@font-face {
+  font-family: 'Cisco Sans';
+  src: url('../assets/fonts/CiscoSans.woff2') format('woff2'), url('../assets/fonts/CiscoSans.woff') format('woff'), url('../assets/fonts/CiscoSans.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
 
 *,
 *::before,
@@ -11,7 +18,7 @@
 html,
 body {
   height: 100%;
-  font-family: 'Helvetica', monospace;
-  font-size: 16px;
+  font-family: 'Cisco Sans', monospace;
+  letter-spacing: 1px;
   color: $gray03;
 }

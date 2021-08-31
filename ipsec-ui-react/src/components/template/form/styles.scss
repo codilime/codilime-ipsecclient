@@ -13,8 +13,14 @@
     justify-content: flex-start;
     align-items: flex-start;
     align-content: flex-start;
-    width: calc(100% / 3);
+    width: 25%;
     flex-wrap: wrap;
+  }
+  &__column:nth-child(2) {
+    width: 25%;
+  }
+  &__column:nth-child(3) {
+    width: 50%;
   }
   &__btn {
     background-color: $primary;
@@ -22,5 +28,37 @@
     padding: $padding-sm $padding-md;
     min-width: 120px;
     margin: $margin-md $margin-md;
+  }
+}
+
+@media screen and (min-width: 890px) and (max-width: 1366px) {
+  .form {
+    &__column {
+      width: 50%;
+    }
+    &__column:nth-child(2) {
+      width: 50%;
+    }
+    &__column:nth-child(3) {
+      width: 100%;
+    }
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 889px) {
+  .form {
+    &__fieldset {
+      display: flex;
+      flex-direction: column;
+    }
+    &__column {
+      width: 100%;
+    }
+    &__column:nth-child(2) {
+      width: 100%;
+    }
+    &__column:nth-child(3) {
+      width: 100%;
+    }
   }
 }

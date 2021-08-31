@@ -6,25 +6,30 @@
   overflow: hidden;
   border-collapse: collapse;
   font-size: 12px;
+
   &__row--header {
     display: flex;
     background-color: white;
   }
   &__row {
     display: flex;
+    height: 44px;
   }
-
   &__header {
     &__column {
-      padding: 5px 10px;
-      width: 100%;
+      padding: $padding-md;
+      width: 60%;
       border-right: $table-border;
+      font-size: $standard-text-size;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       &:last-of-type {
         border-right: none;
       }
     }
   }
-
   &__body {
     font-size: 10px;
   }
@@ -35,23 +40,28 @@
   }
   &__column {
     padding: 5px 10px;
-    width: 100%;
+    width: 60%;
     border-right: $table-border;
     border-top: $table-border;
-    display: flex;
     position: relative;
-    align-items: center;
     &:last-of-type {
       border-right: none;
     }
   }
   &__bool {
+    min-width: 80px;
     width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   &__psk {
-    width: 200%;
+    width: 180%;
     white-space: nowrap;
     text-overflow: ellipsis;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     &:hover .tooltip {
       opacity: 1;
       visibility: visible;
@@ -60,7 +70,7 @@
   &__addBtn {
     display: flex;
     border-top: $table-border;
-    padding: 10px;
+    padding: $padding-md;
     background-color: white;
   }
   &__columnBtn {
@@ -71,5 +81,8 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
+  }
+  &__add {
+    padding: $padding-sm $padding-md !important;
   }
 }
