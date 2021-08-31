@@ -71,7 +71,9 @@ export const useChoiceCertyficate = (edit, onChange, error, handleChangePsk, sch
       return (
         <td key={el.name} className={classNames('table__column', 'table__psk')}>
           <EndpointInput {...{ ...el, onChange, edit, error }} />
-          <AiFillCloseCircle className="table__icon" onClick={() => handleChangePsk('reset')} />
+          <div className='table__iconBox'>
+            <AiFillCloseCircle className="table__icon" onClick={() => handleChangePsk('reset')} />
+          </div>
         </td>
       );
     }

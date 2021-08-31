@@ -55,8 +55,6 @@ module.exports = {
     path: OUTPUT_PATH,
     filename: 'bundle.js',
     publicPath: OUTPUT_PATH,
-
-
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),

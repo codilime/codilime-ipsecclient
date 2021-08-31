@@ -10,17 +10,17 @@ export const RestConfForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty }
+    formState: { errors }
   } = useForm({ resolver: yupResolver(restConfSchema) });
 
   const displayForm = DynamicRestConfForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register }} />);
   return (
-    <Wrapper {...{title:'Restconf credentials'}}>
+    <Wrapper {...{ title: 'Restconf credentials' }}>
       <form className="loginForm" onSubmit={handleSubmit}>
         <fieldset className="loginForm__fieldset">
           {displayForm}
           <div className="loginForm__submit">
-            <Button className='loginForm__btn'>Save changes</Button>
+            <Button className="loginForm__btn">Save changes</Button>
           </div>
         </fieldset>
       </form>

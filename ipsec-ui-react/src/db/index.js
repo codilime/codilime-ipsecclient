@@ -44,7 +44,13 @@ export const emptyEndpointSchema = {
   remote_ip_sec: '',
   local_ip: '',
   peer_ip: '',
-  psk: '',
+  authentication: {
+    type: '',
+    psk: '',
+    local_cert: '',
+    remote_cert: '',
+    private_key: ''
+  },
   nat: false,
   bgp: false
 };

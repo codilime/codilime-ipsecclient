@@ -49,5 +49,15 @@
     margin: 0 auto;
     border: $wrapper-border;
     border-top: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  &__footer {
+    padding: $padding-md;
+  }
+  &__save {
+    background-color: $primary;
+    color:white;
   }
 }

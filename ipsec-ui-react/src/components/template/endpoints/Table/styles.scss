@@ -103,8 +103,13 @@
     font-size: 14px;
     top: 45%;
     transform: translate(-50%, -50%);
+    color:$gray05;
     cursor: pointer;
     transition: $transition;
+    margin-top:2px
+  }
+  &__iconBox {
+    padding:$padding-sm;
   }
   &__title {
     font-weight: 700;

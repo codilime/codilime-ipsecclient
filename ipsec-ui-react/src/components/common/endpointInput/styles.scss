@@ -35,6 +35,7 @@
     cursor: pointer;
     font-size: 16px;
     transform: translateX(-100%);
+    color:$gray05;
   }
   &__error {
     border-bottom: 1px solid red;
