@@ -30,6 +30,9 @@
       outline: none;
     }
   }
+  &__input__setting {
+    padding: $padding-sm $padding-lg $padding-md;
+  }
   &__error {
     color: red;
     font-size: 10px;

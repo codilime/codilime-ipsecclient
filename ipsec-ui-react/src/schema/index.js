@@ -21,3 +21,17 @@ export const vrfSchema = yup.object().shape({
   crypto_ph1: yup.array(),
   crypto_ph2: yup.array()
 });
+
+export const newLoginSchema = yup.object().shape({
+  currentPassword: yup.string().min(5).required(),
+  newPassword: yup.string().min(8, '').required(''),
+  newPasswordConfirmation: yup
+    .string()
+    .required('')
+    .oneOf([yup.ref('newPassword'), null], '')
+});
+
+export const restConfSchema = yup.object().shape({
+  login: yup.string().min(5).required(),
+  password: yup.string().min(8).required()
+});

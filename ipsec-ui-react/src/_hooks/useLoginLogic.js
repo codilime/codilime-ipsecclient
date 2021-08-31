@@ -1,5 +1,4 @@
 import { client } from 'api';
-import { useGetLocation } from 'hooks';
 
 export const useLoginLogic = () => {
   //TODO:CHANGE LOGIN/PASSWORD

@@ -1,0 +1,18 @@
+@import 'style/settings.scss';
+
+.loginForm {
+  &__fieldset {
+    border: none;
+  }
+  &__submit {
+    margin-top: $margin-lg;
+    border-top: $wrapper-border;
+  }
+  &__btn {
+    background-color: $primary;
+    color: white;
+    padding: $padding-sm $padding-md;
+    min-width: 120px;
+    margin: $margin-md $margin-md;
+  }
+}

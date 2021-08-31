@@ -98,3 +98,13 @@ export const DynamicVRFView = {
     { name: 'crypto_ph2', text: 'Crypto phase 2' }
   ]
 };
+
+export const DynamicLoginForm = [
+  { type: 'password', name: 'currentPassword', placeholder: 'Current password' },
+  { type: 'password', name: 'newPassword', placeholder: 'New password' },
+  { type: 'password', name: 'newPasswordConfirmation', placeholder: 'Repeat new password' }
+];
+export const DynamicRestConfForm = [
+  { type: 'text', name: 'login', placeholder: 'Login' },
+  { type: 'password', name: 'password', placeholder: 'Password' }
+];

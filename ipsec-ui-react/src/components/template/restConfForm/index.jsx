@@ -1,28 +1,26 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { newLoginSchema } from 'schema';
+import { restConfSchema } from 'schema';
 import { Wrapper, Field } from 'template';
 import { Button } from 'common';
-import { DynamicLoginForm } from 'db';
-import './styles.scss';
+import { DynamicRestConfForm } from 'db';
 
-export const LoginForm = () => {
+export const RestConfForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
-  } = useForm({ resolver: yupResolver(newLoginSchema) });
+    formState: { errors, isDirty }
+  } = useForm({ resolver: yupResolver(restConfSchema) });
 
-  const displayForm = DynamicLoginForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register }} />);
-
+  const displayForm = DynamicRestConfForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register }} />);
   return (
-    <Wrapper {...{ title: 'Change global password' }}>
+    <Wrapper {...{title:'Restconf credentials'}}>
       <form className="loginForm" onSubmit={handleSubmit}>
         <fieldset className="loginForm__fieldset">
           {displayForm}
           <div className="loginForm__submit">
-            <Button className="loginForm__btn">Save changes</Button>
+            <Button className='loginForm__btn'>Save changes</Button>
           </div>
         </fieldset>
       </form>

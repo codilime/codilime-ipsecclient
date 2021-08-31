@@ -2,21 +2,33 @@
 
 .setting {
   display: flex;
+  justify-content: stretch;
+  align-items: stretch;
   height: 100%;
+
   &__nav {
-    background-color: $bgc-gray;
-    height: 100%;
+    background-color: white;
+    color: #58585b;
     min-width: 120px;
+    border-right: $wrapper-border;
   }
   &__option {
     list-style-type: none;
     padding: $padding-md;
     cursor: pointer;
-    color: white;
     text-decoration: none;
   }
   &__active {
     border-left: $sideBar-active-border;
-    background-color: $bgc-active;
+    background-color: $gray01;
+  }
+  &__content {
+    padding: 0 $padding-lg;
+    width: 100%;
+    display: none;
+    transition: $transition;
+    &__active {
+      display: block;
+    }
   }
 }

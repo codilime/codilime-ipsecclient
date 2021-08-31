@@ -1,11 +1,17 @@
 import React from 'react';
+import { LoginForm, RestConfForm } from 'template';
+import classNames from 'classnames';
 
-export const SettingContent = () => {
+export const SettingContent = ({ activeSetting }) => {
   return (
-    <section>
-      <article>1</article>
-      <article>2</article>
-      <article>3</article>
-    </section>
+    <>
+      <article className={classNames('setting__content', { setting__content__active: activeSetting.profile })}>
+        <LoginForm />
+        <RestConfForm />
+      </article>
+      <article className={classNames('setting__content', { setting__content__active: activeSetting.certificate })}>
+        <RestConfForm />
+      </article>
+    </>
   );
 };

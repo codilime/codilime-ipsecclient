@@ -8,7 +8,7 @@ export * from './cryptoField';
 export * from './popup/popupStatus';
 export * from './popup/popupLogs';
 export * from './popup/popupSetting';
-export * from './reftForm';
+export * from './restConfForm';
 export * from './loginForm';
 export * from './certificates';
 export * from './popup';
