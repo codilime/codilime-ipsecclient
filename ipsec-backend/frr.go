@@ -17,7 +17,7 @@ func runTmpVtyshFile(tmpFile string) error {
 }
 
 func generateFRRTemplate(vrf Vrf) error {
-	endpoints := make([]endpoint, 0)
+	endpoints := make([]Endpoint, 0)
 	if err := json.Unmarshal([]byte(vrf.Endpoints.String()), &endpoints); err != nil {
 		return err
 	}

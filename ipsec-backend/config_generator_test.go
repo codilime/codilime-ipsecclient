@@ -114,17 +114,23 @@ func generateExampleVrf() *VrfWithEndpoints {
 			LocalIP:     "10.10.10.10",
 			PeerIP:      "10.10.10.20",
 			RemoteIPSec: "192.168.0.42",
-			PSK:         "Qy0oakYuYzI+4n7N3GhDZIvOf81dywVD",
-			BGP:         true,
-			NAT:         false,
+			Authentication: EndpointAuth{
+				Type: "psk",
+				PSK:  "Qy0oakYuYzI+4n7N3GhDZIvOf81dywVD",
+			},
+			BGP: true,
+			NAT: false,
 		},
 		{
 			LocalIP:     "10.20.20.20",
 			PeerIP:      "10.20.20.30",
 			RemoteIPSec: "192.168.10.142",
-			PSK:         "Cty+3M9e82VV5NVgkIPu2PP3U7G8v5Ja",
-			BGP:         false,
-			NAT:         true,
+			Authentication: EndpointAuth{
+				Type: "psk",
+				PSK:  "Cty+3M9e82VV5NVgkIPu2PP3U7G8v5Ja",
+			},
+			BGP: false,
+			NAT: true,
 		},
 	}
 	cryptoPh1 := []string{

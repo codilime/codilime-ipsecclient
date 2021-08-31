@@ -19,13 +19,23 @@ const (
 	supervisorTemplatePath = templatesFolder + supervisorTemplateFile
 )
 
+type EndpointAuth struct {
+	Type       string `json:"type"`
+	PSK        string `json:"psk"`
+	LocalCert  string `json:"local_cert"`
+	RemoteCert string `json:"remote_cert"`
+	PrivateKey string `json:"private_key"`
+}
+
 type Endpoint struct {
-	RemoteIPSec string `json:"remote_ip_sec"`
-	LocalIP     string `json:"local_ip"`
-	PeerIP      string `json:"peer_ip"`
-	PSK         string `json:"psk"`
-	NAT         bool   `json:"nat"`
-	BGP         bool   `json:"bgp"`
+	RemoteIPSec     string       `json:"remote_ip_sec"`
+	LocalIP         string       `json:"local_ip"`
+	PeerIP          string       `json:"peer_ip"`
+	RemoteAS        int          `json:"remote_as"`
+	NAT             bool         `json:"nat"`
+	BGP             bool         `json:"bgp"`
+	SourceInterface string       `json:"source_interface"`
+	Authentication  EndpointAuth `json:"authentication"`
 }
 
 type VrfWithEndpoints struct {

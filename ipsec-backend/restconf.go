@@ -16,17 +16,6 @@ import (
 
 const switchBase = "https://%s/restconf/data/"
 
-type endpoint struct {
-	RemoteIPSec     string `json:"remote_ip_sec"`
-	LocalIP         string `json:"local_ip"`
-	PeerIP          string `json:"peer_ip"`
-	PSK             string `json:"psk"`
-	RemoteAS        int    `json:"remote_as"`
-	NAT             bool   `json:"nat"`
-	BGP             bool   `json:"bgp"`
-	SourceInterface string `json:"source_interface"`
-}
-
 func restconfCreate(vrf Vrf) error {
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -34,7 +23,7 @@ func restconfCreate(vrf Vrf) error {
 		},
 	}
 
-	dbEndpoints := make([]endpoint, 0)
+	dbEndpoints := make([]Endpoint, 0)
 	if err := json.Unmarshal([]byte(vrf.Endpoints.String()), &dbEndpoints); err != nil {
 		return err
 	}
@@ -88,7 +77,7 @@ func restconfDelete(vrf Vrf) error {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	dbEndpoints := make([]endpoint, 0)
+	dbEndpoints := make([]Endpoint, 0)
 	if err := json.Unmarshal([]byte(vrf.Endpoints.String()), &dbEndpoints); err != nil {
 		return err
 	}
@@ -174,10 +163,10 @@ func restconfDoPolicy(vrf Vrf, client *http.Client) error {
 	return nil
 }
 
-func restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []endpoint) error {
+func restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
 
 	peers := make([]string, 0, len(dbEndpoints))
-	for i, endpoint := range dbEndpoints {
+	for i, Endpoint := range dbEndpoints {
 		peer :=
 			`{
 			"name": "%s",
@@ -190,7 +179,7 @@ func restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []endpoint) e
 			  "key": "%s"
 			}
 			}`
-		peerData := fmt.Sprintf(peer, vrf.ClientName+strconv.Itoa(i), endpoint.RemoteIPSec, endpoint.PSK)
+		peerData := fmt.Sprintf(peer, vrf.ClientName+strconv.Itoa(i), Endpoint.RemoteIPSec, Endpoint.Authentication.PSK)
 		peers = append(peers, peerData)
 	}
 
@@ -323,8 +312,8 @@ func restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) err
 	return nil
 }
 
-func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) error {
-	for i, endpoint := range dbEndpoints {
+func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
+	for i, Endpoint := range dbEndpoints {
 		tunName := (hash(vrf.ClientName) + i) % 65536
 		tunnel := `{
 			"interface": {
@@ -361,7 +350,7 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 			}
 			}`
 		tunnelData := fmt.Sprintf(tunnel, tunName, vrf.ClientName+strconv.Itoa(i),
-			endpoint.LocalIP, endpoint.SourceInterface, endpoint.RemoteIPSec, vrf.ClientName)
+			Endpoint.LocalIP, Endpoint.SourceInterface, Endpoint.RemoteIPSec, vrf.ClientName)
 		if err := tryRestconfPatch("Cisco-IOS-XE-native:native/interface", tunnelData, client); err != nil {
 			return err
 		}
@@ -369,7 +358,7 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []endpoint) err
 	return nil
 }
 
-func restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []endpoint) error {
+func restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
 	bgp := `{
 		"bgp": [
 		  {
@@ -384,15 +373,15 @@ func restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []endpoint) error {
 		]
 	      }`
 	neighbors := []string{}
-	for _, endpoint := range dbEndpoints {
-		if !endpoint.BGP {
+	for _, Endpoint := range dbEndpoints {
+		if !Endpoint.BGP {
 			continue
 		}
 		neighbor := `{
 			"id": "%s",
 			"remote-as": %d
 		      }`
-		neighbors = append(neighbors, fmt.Sprintf(neighbor, endpoint.PeerIP, endpoint.RemoteAS))
+		neighbors = append(neighbors, fmt.Sprintf(neighbor, Endpoint.PeerIP, Endpoint.RemoteAS))
 	}
 	bgpData := fmt.Sprintf(bgp, vrf.LocalAs, strings.Join(neighbors, ","))
 	if err := tryRestconfPatch("Cisco-IOS-XE-native:native/router/bgp", bgpData, client); err != nil {

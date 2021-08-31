@@ -29,7 +29,7 @@ secrets {
 {{ range $index, $val := .Endpoints }}{{ $i := inc $index }}
     ike-{{ $.Vlan }}_{{ $.ClientName }}_{{ $i }} {
         id = {{ $val.RemoteIPSec }}
-        secret = {{ $val.PSK }}
+        secret = {{ $val.Authentication.PSK }}
     }
 {{ end }}
 }
