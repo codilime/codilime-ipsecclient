@@ -63,7 +63,7 @@ export const endpointInputSchema = [
   { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP' },
   { type: 'text', name: 'local_ip', placeholder: 'Enter local IP' },
   { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP' },
-  { type: 'radio', name: 'psk' },
+  { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
   { type: 'checkbox', name: 'nat' },
   { type: 'checkbox', name: 'bgp' }
 ];
@@ -71,7 +71,7 @@ export const endpointHardwareSchema = [
   { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP' },
   { type: 'text', name: 'local_ip', placeholder: 'Enter local IP' },
   { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP' },
-  { type: 'radio', name: 'psk' },
+  { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
   { type: 'number', name: 'remote_as', placeholder: '0' },
   { type: 'text', name: 'source_interface', placeholder: 'Enter source interface' },
   { type: 'checkbox', name: 'bgp' }

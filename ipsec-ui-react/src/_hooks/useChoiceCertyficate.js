@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import classNames from 'classnames';
-import { EndpointInput, UploadButton } from 'common';
+import { EndpointInput, UploadButton, Button } from 'common';
+import { AiFillCloseCircle } from 'react-icons/ai';
 
 export const useChoiceCertyficate = (edit, onChange, error, handleChangePsk, schema, setEndpoint, endpoints) => {
   const [certyficate, setCertyficate] = useState({ key: '', certificate: '', peerCertificate: '' });
@@ -54,13 +55,14 @@ export const useChoiceCertyficate = (edit, onChange, error, handleChangePsk, sch
     if (!schema.psk && !schema.certificates) {
       return (
         <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
-          <div className="table__center">
-            <EndpointInput {...{ ...el, onChange: () => handleChangePsk('psk'), edit, error, checked: schema.psk, value: 'PSK' }} />
-            <p>PSK</p>
+          <div className="table__center" onClick={() => handleChangePsk('psk')}>
+            <EndpointInput {...{ ...el, edit, error }} />
           </div>
+          <span className="table__text">or</span>
           <div className="table__center">
-            <EndpointInput {...{ ...el, name: 'certificates', onChange: handleChangePsk, edit, error, checked: schema.certificates, value: 'certificates' }} />
-            <p>Certificates</p>
+            <Button className="table__btn" onClick={handleChangePsk}>
+              X509
+            </Button>
           </div>
         </td>
       );
@@ -68,7 +70,8 @@ export const useChoiceCertyficate = (edit, onChange, error, handleChangePsk, sch
     if (schema.psk) {
       return (
         <td key={el.name} className={classNames('table__column', 'table__psk')}>
-          <EndpointInput {...{ type: 'password', name: 'psk', onChange, edit, error }} />
+          <EndpointInput {...{ ...el, onChange, edit, error }} />
+          <AiFillCloseCircle className="table__icon" onClick={() => handleChangePsk('reset')} />
         </td>
       );
     }
@@ -90,6 +93,7 @@ export const useChoiceCertyficate = (edit, onChange, error, handleChangePsk, sch
             <p className="table__title">Peer Certificate:</p>
             <UploadButton {...{ onClick: handleUploadFile, name: 'peerCertificate', edit }}>{certyficate.peerCertificate ? certyficate.peerCertificate : 'Attach File'}</UploadButton>
           </div>
+          <AiFillCloseCircle className="table__icon" onClick={() => handleChangePsk('reset')} />
         </td>
       );
     }
