@@ -1,4 +1,4 @@
-curl -XPOST http://localhost/api/vrfs -u "admin:cisco123" -d @- << EOF
+curl -v -XPOST http://localhost/api/vrfs -u "admin:cisco123" -d @- << EOF
 {
    "id":1,
    "client_name":"test",
@@ -14,7 +14,6 @@ curl -XPOST http://localhost/api/vrfs -u "admin:cisco123" -d @- << EOF
    ],
    "physical_interface":"eth0",
    "active":false,
-   "hardware_support":false,
    "local_as":123,
    "lan_ip":"10.0.0.1",
    "endpoints":[

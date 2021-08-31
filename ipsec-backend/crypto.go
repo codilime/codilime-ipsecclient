@@ -106,6 +106,9 @@ func encryptPSK(key string, v *Vrf) error {
 		return err
 	}
 	for i, e := range endpoints {
+		if e.Authentication.Type != "psk" {
+			continue
+		}
 		encPSK, err := encrypt(masterPass, []byte(e.Authentication.PSK))
 		if err != nil {
 			return err
@@ -132,6 +135,9 @@ func decryptPSK(key string, v *Vrf) error {
 		return err
 	}
 	for i, e := range endpoints {
+		if e.Authentication.Type != "psk" {
+			continue
+		}
 		decBytes, err := base64.RawStdEncoding.DecodeString(e.Authentication.PSK)
 		if err != nil {
 			return err
