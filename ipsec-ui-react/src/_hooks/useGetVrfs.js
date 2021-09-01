@@ -3,20 +3,19 @@ import { useGetLocation } from 'hooks';
 import { VrfsContext } from 'context';
 import { HardwareId } from 'constant';
 import { defaultVrf } from 'db';
-import { useInitData } from './useInitData';
 
 export const useGetVrfs = () => {
   const { currentLocation, history } = useGetLocation();
   const { vrf, setVrf } = useContext(VrfsContext);
   const { vrfs } = vrf;
 
-  const findActiveVrfPage = async () => {
-    if (!vrfs) {
+  const findActiveVrfPage = () => {
+    if (!vrfs.length) {
       setVrf((prev) => ({ ...prev, data: defaultVrf.data }));
-      history.push('/vrf/create');
+      return history.push('/vrf/create');
     }
     if (currentLocation === 'create') {
-      setVrf((prev) => ({ ...prev, data: defaultVrf.data }));
+      return setVrf((prev) => ({ ...prev, data: defaultVrf.data }));
     }
     const currentVrf = vrfs.filter(({ id }) => id === parseInt(currentLocation))[0];
 
@@ -34,7 +33,7 @@ export const useGetVrfs = () => {
   }, [currentLocation]);
 
   useEffect(() => {
-    if (currentLocation && vrfs) findActiveVrfPage();
+    if (currentLocation) findActiveVrfPage();
   }, [currentLocation, vrfs]);
   return { vrfs };
 };

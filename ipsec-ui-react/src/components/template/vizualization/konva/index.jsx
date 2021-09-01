@@ -6,17 +6,12 @@ import './styles.scss';
 
 export const Visualization = () => {
   const emptyEndpoint = <div className="visualization__empty">Add endpoints to vizualize them</div>;
+  const [dimensions, setDimensions] = useState(0);
   const {
     vrf: { data }
   } = useContext(VrfsContext);
-  const { endpoints } = data;
-
-  if (endpoints === null || !endpoints.length) {
-    return <Wrapper title="Visualization">{emptyEndpoint}</Wrapper>;
-  }
-
-  const [dimensions, setDimensions] = useState(0);
   const wrapper = useRef(null);
+  const { endpoints } = data;
 
   useEffect(() => {
     if (wrapper.current) {
@@ -24,9 +19,11 @@ export const Visualization = () => {
     }
   }, [wrapper]);
 
+  const context = endpoints === null || !endpoints.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions }} />;
+
   return (
     <Wrapper title="Visualization" references={wrapper}>
-      <VisualizationEndpoints {...{ data, dimensions,status:'ACTIVE' }} />
+      {context}
     </Wrapper>
   );
 };

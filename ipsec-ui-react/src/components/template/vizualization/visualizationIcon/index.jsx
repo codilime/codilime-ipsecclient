@@ -12,7 +12,7 @@ export const VisualizationIcon = ({ x, y, width, height, text }) => {
       <Rect {...{ x, y, width, height, fill: variable.bgcColor }} />
       <Image {...{ image, x, y, width, height }} />
       <Rect {...{ x: x / 2, y: y + height, width: width + x, height: 20, fill: variable.labelColor }} />
-      <Text {...{ text, x: x / 2, y: height + y, width: width + x, height: 20, align: 'center', verticalAlign: 'middle', fontSize: 10, fill: 'black', fontFamily: 'ciscoSansRegular' }} />
+      <Text {...{ text, x: x / 2 - 5, y: height + y, width: width + x, height: 20, align: 'center', verticalAlign: 'middle', fontSize: 10, fill: 'black' }} />
     </Group>
   );
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './styles.scss';
 
-export const CryptoField = ({ text, name, crypto, register, error }) => {
+export const CryptoField = ({ text, name, crypto, register, error, value }) => {
   const encryptionOption = crypto['encryption'].map((el) => (
     <option key={el} value={el}>
       {el}
@@ -33,7 +33,6 @@ export const CryptoField = ({ text, name, crypto, register, error }) => {
           {keyExchangeOption}
         </select>
       </div>
-
       {error && <p className="field__error">{error.message}</p>}
     </>
   );
@@ -48,8 +47,7 @@ CryptoField.propTypes = {
   text: PropTypes.string,
   register: PropTypes.any,
   value: PropTypes.array,
-  control: PropTypes.any,
-  getValues: PropTypes.any,
+  value: PropTypes.array,
   error: PropTypes.shape({ message: PropTypes.string, type: PropTypes.string, ref: PropTypes.any }),
   crypto: PropTypes.shape({ encryption: PropTypes.array, integrity: PropTypes.array, key_exchange: PropTypes.array })
 };

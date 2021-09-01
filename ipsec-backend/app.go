@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -15,13 +17,14 @@ import (
 )
 
 const (
-	vrfsPath        = "/api/vrfs"
-	vrfsIDPath      = vrfsPath + "/{id:[0-9]+}"
-	metricsPath     = "/api/metrics"
-	softwarePath    = "/api/algorithms/software"
-	hardwarePathPh1 = "/api/algorithms/hardware/ph1"
-	hardwarePathPh2 = "/api/algorithms/hardware/ph2"
-	logsPath        = "/api/logs/{name:[a-zA-Z0-9-_]+}"
+	vrfsPath          = "/api/vrfs"
+	vrfsIDPath        = vrfsPath + "/{id:[0-9]+}"
+	metricsPath       = "/api/metrics"
+	softwarePath      = "/api/algorithms/software"
+	hardwarePathPh1   = "/api/algorithms/hardware/ph1"
+	hardwarePathPh2   = "/api/algorithms/hardware/ph2"
+	logsPath          = "/api/logs/{name:[a-zA-Z0-9-_]+}"
+	nginxPasswordFile = "/etc/nginx/htpasswd"
 )
 
 type Generator interface {
@@ -61,6 +64,7 @@ func (a *App) Initialize(dbName string) error {
 		CryptoPh1:  []byte("[\"aes-cbc-128\", \"sha256\", \"fourteen\"]"),
 		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
 		Active:     boolPointer(false),
+		Endpoints:  []byte("[]"),
 	}
 
 	if err := hwVrf.getVrf(a.DB); err != nil {
@@ -71,8 +75,6 @@ func (a *App) Initialize(dbName string) error {
 
 	return ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644)
 }
-
-var nginxPasswordFile string = "/etc/nginx/htpasswd"
 
 func setNginxPassword() error {
 	name := "admin"
@@ -98,13 +100,39 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
 }
 
-func (a *App) getVrfs(w http.ResponseWriter, _ *http.Request) {
+func getPassFromHeader(header http.Header) (string, error) {
+	authHeader := header["Authorization"]
+	if len(authHeader) == 0 {
+		return "", fmt.Errorf("no basic auth")
+	}
+	prefixLen := len("Basic ")
+	based := strings.TrimRight(authHeader[0][prefixLen:], "=")
+	decodedBasicAuth, err := base64.RawStdEncoding.DecodeString(based)
+	if err != nil {
+		return "", err
+	}
+	return strings.Split(string(decodedBasicAuth), ":")[1], nil
+}
+
+func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 	vrfs, err := getVrfs(a.DB)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	for i, v := range vrfs {
+		err = decryptPSK(key, &v)
+		if err != nil {
+			respondWithError(w, http.StatusUnauthorized, err.Error())
+			return
+		}
+		vrfs[i] = v
+	}
 	respondWithJSON(w, http.StatusOK, vrfs)
 }
 
@@ -124,6 +152,15 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		default:
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 		}
+		return
+	}
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	if err := decryptPSK(key, &vrf); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -146,6 +183,15 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	if vrf.Active == nil {
 		vrf.Active = new(bool)
 	}
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	if err := encryptPSK(key, &vrf); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 	if err := vrf.createVrf(a.DB); err != nil {
 		log.Infof("error %+v", err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -164,7 +210,11 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid vrf ID")
 		return
 	}
-
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
 	var vrf, oldVrf Vrf
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&vrf); err != nil {
@@ -188,11 +238,6 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	if vrf.ID == hardwareVrfID && vrf.ClientName != oldVrf.ClientName {
 		// can't change the hardware vrf name
 		respondWithError(w, http.StatusBadRequest, "Cannot change the hardware vrf name")
-		return
-	}
-
-	if err := vrf.updateVrf(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -223,6 +268,14 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
+	}
+	if err := encryptPSK(key, &vrf); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := vrf.updateVrf(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	respondWithJSON(w, http.StatusOK, vrf)
@@ -334,7 +387,7 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	respondWithJSON(w, code, map[string]string{"result": "error", "error": message})
-	log.Errorf("Error occurred: %s", message)
+	log.Error("Error occurred: %s", message)
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {

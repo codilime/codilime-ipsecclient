@@ -4,7 +4,7 @@ import { VisualizationOneLabel, VisualizationTwoLabel, VisualizationThreeLabel, 
 import { variable } from '../visualizationConstants';
 import { Group } from 'react-konva';
 
-export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimensions, status }) => {
+export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimensions, physical_interface, vlan }) => {
   const { smHeightLabel, lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
   const eachBreak = 25;
 
@@ -13,33 +13,34 @@ export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimens
     y: y + heightHeader + paddingBox,
     width: smWidthLabel,
     height: mdHeightLabel,
-    firstText: 'eth0-YYY',
-    secondText: 'eth0-YYY'
+    firstText: physical_interface,
+    secondText: `VLAN`,
+    vlan
   };
 
   const secondLabel = {
     x: x + paddingBox + smWidthLabel + eachBreak,
     y: y + height / 2,
     width: smWidthLabel,
-    height: smHeightLabel,
-    text: 'x'
+    height: heightHeader,
+    router: true
   };
 
   const hightOfX = (height - 20) / 2 - (20 + mdHeightLabel / 2);
 
   const endpointStatus = endpoints.map((endpoint, index) => {
-    const textY = y + heightHeader + paddingBox + index * smWidthLabel;
+    const textY = y + heightHeader + paddingBox + index * 80;
     const textX = x + width - paddingBox - smWidthLabel;
     const centerX = textX - 25;
     const centerY = y + height / 2 + smHeightLabel / 2 + 2.5;
     const centerLabel = textY + lgHeightLabel / 2;
-
+    const status = 'ACTIVE';
     const thirdLabel = {
       x: textX,
       y: textY,
       width: smWidthLabel,
       height: lgHeightLabel,
-      firstText: `Ipsec ${index + 1}`,
+      firstText: `Endpoint ${index + 1}`,
       bgpActive: endpoint.bgp,
       natActive: endpoint.nat
     };
@@ -55,7 +56,7 @@ export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimens
       lineStartY: centerLabel,
       title: `Remote Site ${index + 1}`,
       endpoint,
-      lineWidth: dimensions - 620,
+      lineWidth: dimensions - 700,
       status
     };
 

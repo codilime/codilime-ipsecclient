@@ -1,0 +1,108 @@
+version: '3.7'
+services:
+  ipsec-1:
+    container_name: site1
+    build:
+      context: strongswan
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site1
+    privileged: yes
+    restart: always
+    networks:
+      ipsec:
+        ipv4_address: 10.5.0.101
+
+  ipsec-2:
+    container_name: site2
+    build:
+      context: strongswan
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site2
+    privileged: yes
+    restart: always
+    networks:
+      ipsec:
+        ipv4_address: 10.5.0.102
+
+  ipsec-3:
+    container_name: site3
+    build:
+      context: strongswan
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site3
+    privileged: yes
+    restart: always
+    networks:
+      ipsec:
+        ipv4_address: 10.5.0.103
+
+  ipsec-4:
+    container_name: site4
+    build:
+      context: strongswan
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site4
+    privileged: yes
+    restart: always
+    networks:
+      ipsec:
+        ipv4_address: 10.5.0.104
+
+
+  bird-1:
+    container_name: bird1
+    pid: service:ipsec-1
+    network_mode: service:ipsec-1
+    privileged: yes
+    build:
+      context: bird
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site1
+
+  bird-2:
+    container_name: bird2
+    pid: service:ipsec-2
+    network_mode: service:ipsec-2
+    privileged: yes
+    build:
+      context: bird
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site2
+
+  bird-3:
+    container_name: bird3
+    pid: service:ipsec-3
+    network_mode: service:ipsec-3
+    privileged: yes
+    build:
+      context: bird
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site3
+
+  bird-4:
+    container_name: bird4
+    pid: service:ipsec-4
+    network_mode: service:ipsec-4
+    privileged: yes
+    build:
+      context: bird
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site4
+
+networks:
+  ipsec:
+    name: ipsec
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: ipsec_br
+    ipam:
+     config:
+       - subnet: 10.5.0.0/24

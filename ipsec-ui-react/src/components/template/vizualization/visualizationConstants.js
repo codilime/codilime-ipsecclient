@@ -2,8 +2,8 @@ const smHeightLabel = 20;
 const mdHeightLabel = 35;
 const lgHeightLabel = 50;
 
-const smWidthLabel = 80;
-const mdWidthLabel = 120;
+const smWidthLabel = 100;
+const mdWidthLabel = 150;
 
 const smTextSize = 8;
 const mdTextSize = 10;

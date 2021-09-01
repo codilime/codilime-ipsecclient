@@ -3,8 +3,8 @@
 .status {
   position: fixed;
   top: 0;
-  left: 0;
-  bottom: 0;
+  height: 110px;
+  left: 212px;
   right: 0;
   opacity: 0;
   visibility: hidden;
@@ -18,35 +18,13 @@
     background-color: white;
     display: flex;
     flex-direction: column;
-    margin-left: 212px;
+    margin-left: 0px;
     margin-top: 54px;
-    width: calc(100% - 212px);
+    width: 100%;
     position: relative;
-
-    &__error {
-      &::before {
-        content: '';
-        position: absolute;
-        animation: errorAnimation 5s ease-in-out;
-        height: 2px;
-        bottom: 0;
-        background-color: red;
-      }
-    }
-    &__success {
-      &::before {
-        content: '';
-        position: absolute;
-        animation: errorAnimation 5s ease-in-out;
-        height: 2px;
-        bottom: 0;
-        background-color: green;
-      }
-    }
   }
   &__context {
     padding: $padding-xl;
-    height: 40%;
     box-shadow: $endpoint-option-shadow;
     text-align: center;
     &__error {
@@ -58,14 +36,5 @@
   }
   &__description {
     font-size: $modal-description-size;
-  }
-}
-
-@keyframes errorAnimation {
-  0% {
-    width: 100%;
-  }
-  100% {
-    width: 0%;
   }
 }

@@ -12,9 +12,9 @@ export const useVrfLogic = () => {
     error,
     success
   } = vrf;
-
-  const handleDelete = async () => {
-    await deleteVrfData(id);
+  
+  const handleDelete = () => {
+    deleteVrfData(id);
     history.push('/vrf/create');
   };
   return { vrf, client_name, error, hardware, success, handleDelete };

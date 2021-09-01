@@ -8,7 +8,7 @@ export const useInitData = () => {
     vrf: { loading },
     setVrf
   } = useContext(VrfsContext);
-  
+
   const fetchVrfSettings = async () => {
     const hardware_ph1 = await fetchHardwarePh1();
     if (!hardware_ph1) {
@@ -26,6 +26,7 @@ export const useInitData = () => {
       setVrf((prev) => ({ ...prev, hardwareCrypto: { crypto_ph1: hardware_ph1, crypto_ph2: hardware_ph2 }, softwareCrypto: { crypto_ph1, crypto_ph2: crypto_ph1 } }));
     }
   };
+
   const fetchVrfData = async () => {
     const vrfs = await fetchData();
     if (!vrfs) {
@@ -33,5 +34,6 @@ export const useInitData = () => {
     }
     setVrf((prev) => ({ ...prev, vrfs }));
   };
+
   return { fetchVrfData, fetchVrfSettings, loading };
 };

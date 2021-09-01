@@ -5,7 +5,7 @@ import { Button } from 'common';
 import './styles.scss';
 
 export function FormDetail() {
-  const { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView, handleSubmit, submit, isValid, isDirty } = useCreateVRFMainView(open);
+  const { VRFColumnOneView, VRFColumnTwoView, VRFColumnThreeView, handleSubmit, submit, isDirty } = useCreateVRFMainView(open);
 
   return (
     <Wrapper title="VRF details">
