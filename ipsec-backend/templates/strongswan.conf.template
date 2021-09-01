@@ -3,12 +3,22 @@ connections {
     {{ $.Vlan }}_{{ $.ClientName }}_{{ $i }} {
         remote_addrs = {{ $val.RemoteIPSec }}
         local {
-            auth = psk
-            id = {{ $val.RemoteIPSec }}
+            {{ if $val.IsPSK }}
+                auth = psk
+                id = {{ $val.RemoteIPSec }}
+            {{ else if $val.IsCerts }}
+                auth = pubkey
+                certs = "/opt/certs/{{$.ClientName}}-{{$val.PeerIP}}.pem"
+            {{ end }}
         }
         remote {
-            auth = psk
-            id = {{ $val.RemoteIPSec }}
+            {{ if $val.IsPSK }}
+                auth = psk
+                id = {{ $val.RemoteIPSec }}
+            {{ else if $val.IsCerts }}
+                auth = pubkey
+                certs = "/opt/certs/{{$.ClientName}}-{{$val.LocalIP}}.pem"
+            {{ end }}
         }
         children {
             site-cisco_{{ $i }} {
@@ -28,8 +38,12 @@ connections {
 secrets {
 {{ range $index, $val := .Endpoints }}{{ $i := inc $index }}
     ike-{{ $.Vlan }}_{{ $.ClientName }}_{{ $i }} {
-        id = {{ $val.RemoteIPSec }}
-        secret = {{ $val.Authentication.PSK }}
+        {{ if $val.IsPSK }}
+            id = {{ $val.RemoteIPSec }}
+            secret = {{ $val.Authentication.PSK }}
+        {{ else if $val.IsCerts }}
+            file = "/opt/certs/{{$.ClientName}}-{{$val.PeerIP}}.key.pem"
+        {{ end }}
     }
 {{ end }}
 }

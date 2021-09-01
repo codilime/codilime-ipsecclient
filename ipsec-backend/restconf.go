@@ -179,6 +179,7 @@ func restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) e
 			  "key": "%s"
 			}
 			}`
+		// TODO hw certs
 		peerData := fmt.Sprintf(peer, vrf.ClientName+strconv.Itoa(i), Endpoint.RemoteIPSec, Endpoint.Authentication.PSK)
 		peers = append(peers, peerData)
 	}

@@ -12,6 +12,10 @@ COPY docker/ipsec_reload.ini /etc/supervisor.d/
 COPY docker/ipsec_reload.sh /usr/local/sbin/
 
 RUN ln -s /etc/swanctl/conf.d /opt/ipsec
+RUN ln -s /etc/swanctl/x509ca /opt/ipsec/x509ca
+RUN ln -s /etc/swanctl/x509 /opt/ipsec/x509
+RUN ln -s /etc/swanctl/rsa /opt/ipsec/rsa
+
 RUN chown -R ipsec:ipsec /etc/swanctl
 
 #FRR

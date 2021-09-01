@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
@@ -38,6 +39,20 @@ type Endpoint struct {
 	Authentication  EndpointAuth `json:"authentication"`
 }
 
+func (e *Endpoint) IsPSK() string {
+	if e.Authentication.Type == "psk" {
+		return "psk"
+	}
+	return ""
+}
+
+func (e *Endpoint) IsCerts() string {
+	if e.Authentication.Type == "certs" {
+		return "certs"
+	}
+	return ""
+}
+
 type VrfWithEndpoints struct {
 	Vrf
 	Endpoints []Endpoint
@@ -46,12 +61,48 @@ type VrfWithEndpoints struct {
 type FileGenerator struct {
 }
 
+func saveCerts(v *VrfWithEndpoints) error {
+	for _, e := range v.Endpoints {
+		filename := fmt.Sprintf("/opt/certs/%s-%s.pem", v.ClientName, e.PeerIP)
+		if err := ioutil.WriteFile(filename, []byte(e.Authentication.RemoteCert), 0644); err != nil {
+			return err
+		}
+		filename = fmt.Sprintf("/opt/certs/%s-%s.pem", v.ClientName, e.LocalIP)
+		if err := ioutil.WriteFile(filename, []byte(e.Authentication.LocalCert), 0644); err != nil {
+			return err
+		}
+		filename = fmt.Sprintf("/opt/certs/%s-%s.key.pem", v.ClientName, e.PeerIP)
+		if err := ioutil.WriteFile(filename, []byte(e.Authentication.PrivateKey), 0644); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func deleteCerts(v *VrfWithEndpoints) error {
+	for _, e := range v.Endpoints {
+		filenames := []string{
+			fmt.Sprintf("/opt/certs/%s-%s.pem", v.ClientName, e.PeerIP),
+			fmt.Sprintf("/opt/certs/%s-%s.pem", v.ClientName, e.LocalIP),
+			fmt.Sprintf("/opt/certs/%s-%s.key.pem", v.ClientName, e.PeerIP),
+		}
+		for _, f := range filenames {
+			if err := os.Remove(f); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func (FileGenerator) GenerateTemplates(v Vrf) error {
 	log.Infof("generating templates for vrf %+v", v)
 	vrf, err := convertToVrfWithEndpoints(v)
 	if err != nil {
 		return err
 	}
+
+	saveCerts(vrf)
 
 	prefix := calculatePrefix(v)
 
@@ -88,6 +139,10 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 
 func (FileGenerator) DeleteTemplates(v Vrf) error {
 	log.Infof("deleting templates for vrf %+v", v)
+	vrf, err := convertToVrfWithEndpoints(v)
+	if err != nil {
+		return err
+	}
 	prefix := calculatePrefix(v)
 	if err := os.RemoveAll(getSupervisorFileName(prefix)); err != nil {
 		return err
@@ -102,6 +157,9 @@ func (FileGenerator) DeleteTemplates(v Vrf) error {
 		return err
 	}
 	if err := ReloadSupervisor(); err != nil {
+		return err
+	}
+	if err := deleteCerts(vrf); err != nil {
 		return err
 	}
 	return nil
