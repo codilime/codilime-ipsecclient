@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useToggle } from './useToggle';
 
-export const useSettingLogic = (open) => {
+export const useSettingLogic = () => {
+  const { open, handleToggle } = useToggle();
   const [activeSetting, setActiveSetting] = useState({ profile: true, restConf: false, certificate: false });
 
   const handleChangeActiveSetting = (name) => {
@@ -17,9 +19,9 @@ export const useSettingLogic = (open) => {
 
   useEffect(() => {
     if (!open) {
-      setActiveSetting({ profile: true, certificate: false });
+      setActiveSetting({ profile: true, restConf: false, certificate: false });
     }
   }, [open]);
 
-  return { handleChangeActiveSetting, activeSetting };
+  return { activeSetting, open, handleToggle, handleChangeActiveSetting };
 };

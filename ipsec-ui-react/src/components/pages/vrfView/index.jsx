@@ -23,6 +23,15 @@ export const VrfView = () => {
     </Button>
   );
 
+  const buttons = client_name && (
+    <div className="vrf__box">
+      <Button className="vrf__btn" onClick={handleToggle}>
+        View logs
+      </Button>
+      {deleteBtn}
+    </div>
+  );
+
   return (
     <>
       <section className="vrf">
@@ -30,12 +39,7 @@ export const VrfView = () => {
           <span className="vrf__breadcrumb">
             VRFs / <span className="vrf__name">{vrfName}</span>
           </span>
-          <div className="vrf__box">
-            <Button className="vrf__btn" onClick={handleToggle}>
-              View logs
-            </Button>
-            {deleteBtn}
-          </div>
+          {buttons}
         </header>
         <article>
           <FormDetail />

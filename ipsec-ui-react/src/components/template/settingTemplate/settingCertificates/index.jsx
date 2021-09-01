@@ -1,5 +1,5 @@
 import React from 'react';
 
-export const Certificates = () => {
+export const SettingCertificates = () => {
   return <article>Certificate</article>;
 };

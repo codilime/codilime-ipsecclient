@@ -3,15 +3,23 @@
 .wrapper {
   margin: $margin-lg 0;
   overflow: hidden;
+  font-size: $header-and-button-font-size;
   &__header {
     font-weight: 600;
     border: $wrapper-border;
     background-color: $gray01;
+    padding: $wrapper-padding;
+    display: flex;
+    justify-content: space-between;
   }
   &__title {
-    padding: $wrapper-padding;
     margin: 0;
-    font-size: $header-and-button-font-size;
+  }
+  &__btn {
+    color: $primary;
+    border: none;
+    font-size: 10px;
+    cursor: pointer;
   }
   &__content {
     margin: 0 auto;

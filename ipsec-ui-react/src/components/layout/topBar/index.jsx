@@ -1,15 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Logo from 'images/cisco_logo.png';
 import PropTypes from 'prop-types';
-import { useLoginLogic, useToggle } from 'hooks';
-import { TopSideIcon, CircleInfo } from 'common';
-import { PopupSetting } from 'template';
-import { FiSettings, FiBell, FiLogOut } from 'react-icons/fi';
+import { Notification, Logout, Setting } from 'template';
 import './styles.scss';
 
 export const TopBar = ({ productName }) => {
-  const { handleLogout } = useLoginLogic();
-  const { open, handleToggle } = useToggle();
+  const [openPopup, setOpenPopup] = useState({ setting: false, notice: false });
+
+  const handleOpenAction = (name) => {
+    if (name === 'setting') {
+      return setOpenPopup((prev) => ({ setting: !prev.setting, notice: false }));
+    }
+    return setOpenPopup((prev) => ({ notice: !prev.notice, setting: false }));
+  };
+
   return (
     <header className="topBar">
       <div className="topBar__right">
@@ -17,21 +21,9 @@ export const TopBar = ({ productName }) => {
         <p className="topBar__productName">{productName}</p>
       </div>
       <div className="topBar__left">
-        <TopSideIcon>
-          <>
-            <FiBell className="topBar__icon" />
-            <CircleInfo>1</CircleInfo>
-          </>
-        </TopSideIcon>
-        <TopSideIcon>
-          <>
-            <FiSettings className="topBar__icon" onClick={handleToggle} />
-            <PopupSetting {...{ open, handleToggle, title: 'Settings' }} />
-          </>
-        </TopSideIcon>
-        <TopSideIcon>
-          <FiLogOut className="topBar__icon" onClick={handleLogout} />
-        </TopSideIcon>
+        <Notification {...{ open: openPopup.notice, handleToggle: handleOpenAction }} />
+        <Setting {...{ open: openPopup.setting, handleToggle: () => handleOpenAction('setting') }} />
+        <Logout />
       </div>
     </header>
   );
