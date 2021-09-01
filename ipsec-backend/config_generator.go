@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
@@ -19,13 +20,37 @@ const (
 	supervisorTemplatePath = templatesFolder + supervisorTemplateFile
 )
 
+type EndpointAuth struct {
+	Type       string `json:"type"`
+	PSK        string `json:"psk"`
+	LocalCert  string `json:"local_cert"`
+	RemoteCert string `json:"remote_cert"`
+	PrivateKey string `json:"private_key"`
+}
+
 type Endpoint struct {
-	RemoteIPSec string `json:"remote_ip_sec"`
-	LocalIP     string `json:"local_ip"`
-	PeerIP      string `json:"peer_ip"`
-	PSK         string `json:"psk"`
-	NAT         bool   `json:"nat"`
-	BGP         bool   `json:"bgp"`
+	RemoteIPSec     string       `json:"remote_ip_sec"`
+	LocalIP         string       `json:"local_ip"`
+	PeerIP          string       `json:"peer_ip"`
+	RemoteAS        int          `json:"remote_as"`
+	NAT             bool         `json:"nat"`
+	BGP             bool         `json:"bgp"`
+	SourceInterface string       `json:"source_interface"`
+	Authentication  EndpointAuth `json:"authentication"`
+}
+
+func (e *Endpoint) IsPSK() string {
+	if e.Authentication.Type == "psk" {
+		return "psk"
+	}
+	return ""
+}
+
+func (e *Endpoint) IsCerts() string {
+	if e.Authentication.Type == "certs" {
+		return "certs"
+	}
+	return ""
 }
 
 type VrfWithEndpoints struct {
@@ -36,10 +61,48 @@ type VrfWithEndpoints struct {
 type FileGenerator struct {
 }
 
+func saveCerts(v *VrfWithEndpoints) error {
+	for _, e := range v.Endpoints {
+		filename := fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.PeerIP)
+		if err := ioutil.WriteFile(filename, []byte(e.Authentication.RemoteCert), 0644); err != nil {
+			return err
+		}
+		filename = fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.LocalIP)
+		if err := ioutil.WriteFile(filename, []byte(e.Authentication.LocalCert), 0644); err != nil {
+			return err
+		}
+		filename = fmt.Sprintf("/opt/ipsec/rsa/%s-%s.key.pem", v.ClientName, e.PeerIP)
+		if err := ioutil.WriteFile(filename, []byte(e.Authentication.PrivateKey), 0644); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func deleteCerts(v *VrfWithEndpoints) error {
+	for _, e := range v.Endpoints {
+		filenames := []string{
+			fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.PeerIP),
+			fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.LocalIP),
+			fmt.Sprintf("/opt/ipsec/rsa/%s-%s.key.pem", v.ClientName, e.PeerIP),
+		}
+		for _, f := range filenames {
+			if err := os.Remove(f); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func (FileGenerator) GenerateTemplates(v Vrf) error {
 	log.Infof("generating templates for vrf %+v", v)
 	vrf, err := convertToVrfWithEndpoints(v)
 	if err != nil {
+		return err
+	}
+
+	if err := saveCerts(vrf); err != nil {
 		return err
 	}
 
@@ -78,6 +141,10 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 
 func (FileGenerator) DeleteTemplates(v Vrf) error {
 	log.Infof("deleting templates for vrf %+v", v)
+	vrf, err := convertToVrfWithEndpoints(v)
+	if err != nil {
+		return err
+	}
 	prefix := calculatePrefix(v)
 	if err := os.RemoveAll(getSupervisorFileName(prefix)); err != nil {
 		return err
@@ -94,11 +161,14 @@ func (FileGenerator) DeleteTemplates(v Vrf) error {
 	if err := ReloadSupervisor(); err != nil {
 		return err
 	}
+	if err := deleteCerts(vrf); err != nil {
+		return err
+	}
 	return nil
 }
 
 func getStrongswanFileName(prefix string) string {
-	return "/opt/ipsec/" + prefix + ".conf"
+	return "/opt/ipsec/conf/" + prefix + ".conf"
 }
 
 func getSupervisorFileName(prefix string) string {
