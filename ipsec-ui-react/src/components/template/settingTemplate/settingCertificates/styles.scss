@@ -19,6 +19,9 @@
   }
   &__checked {
     width: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   &__box {
     padding: $padding-md;

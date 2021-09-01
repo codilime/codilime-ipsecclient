@@ -10,6 +10,7 @@ export const SettingCertificates = () => {
         <table className="table">
           <thead className="table__header">
             <tr className="table__row--header">
+              <th className="table__setting__column">File Name</th>
               <th className="table__setting__column">Common Name</th>
               <th className="table__setting__column table__setting__time">Time upload file</th>
               <th className="table__setting__column table__setting__checked"></th>
@@ -17,6 +18,7 @@ export const SettingCertificates = () => {
           </thead>
           <tbody className="table__body">
             <tr className="table__row">
+              <td className="table__setting__column">File name</td>
               <td className="table__setting__column">Common name certificates</td>
               <td className="table__setting__column table__setting__time">25.10.2021 19:43</td>
               <td className="table__setting__column table__setting__checked">
@@ -24,6 +26,7 @@ export const SettingCertificates = () => {
               </td>
             </tr>
             <tr className="table__row">
+              <td className="table__setting__column">File name</td>
               <td className="table__setting__column">Common name certificates</td>
               <td className="table__setting__column table__setting__time">25.10.2021 19:43</td>
               <td className="table__setting__column table__setting__checked">
@@ -33,7 +36,7 @@ export const SettingCertificates = () => {
           </tbody>
         </table>
       </Wrapper>
-      <div className="certificates_box">
+      <div className="certificates__box">
         <Button className="certificates__button">Import Certificates</Button>
         <Button className="certificates__button" {...{ btnDelete: true }}>
           Delete checked
