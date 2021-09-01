@@ -1,0 +1,39 @@
+@import 'style/settings.scss';
+
+.notification {
+  position: absolute;
+  top: 120%;
+  right: 25%;
+  min-width: 320px;
+  background-color: white;
+  opacity: 0;
+  visibility: hidden;
+  transition: $transition;
+  &__active {
+    opacity: 1;
+    visibility: visible;
+  }
+  &__wrapper {
+    margin: 0;
+    font-size: 10px;
+  }
+  &__each {
+    padding: $padding-md;
+    border-bottom: $wrapper-border;
+  }
+  &__description {
+    margin: $margin-md 0px;
+  }
+  &__btn {
+    color: $primary;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  &__empty {
+    padding: $padding-md;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

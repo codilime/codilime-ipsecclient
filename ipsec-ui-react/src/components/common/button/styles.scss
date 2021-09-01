@@ -9,12 +9,14 @@
   cursor: pointer;
   transition: $transition;
   min-width: 160px;
+
   &__delete {
     font-weight: 500;
     max-width: 140px;
     width: auto;
     background-color: $bgc-delete;
     color: white;
+    margin-left: $margin-md;
   }
   &__disabled {
     background-color: $bgc-disable;

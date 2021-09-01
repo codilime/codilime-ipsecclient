@@ -8,5 +8,3 @@ export const validateDataInput = (event) => {
     return;
   }
 };
-
-

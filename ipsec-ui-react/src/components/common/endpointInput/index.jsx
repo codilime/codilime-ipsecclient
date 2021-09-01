@@ -5,27 +5,28 @@ import { BsEyeSlashFill } from 'react-icons/bs';
 import { validateDataInput } from 'utils/util.js';
 import { useToggle } from 'hooks';
 import classNames from 'classnames';
-import { ToolTip } from 'common';
 import './styles.scss';
 
-export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, onClick, checked, error }) => {
+export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, onClick, checked, error, references }) => {
   const { open, handleToggle } = useToggle();
   const icon = open && edit ? <BsEyeSlashFill className="endpointInput__icon" onClick={handleToggle} /> : <IoEyeSharp className="endpointInput__icon" onClick={handleToggle} />;
 
   const showEyes = type === 'password' ? <>{icon}</> : null;
-  const toolTip = name === 'psk' && edit && open && value !== '' && <ToolTip>{value}</ToolTip>;
 
   return (
     <>
       <input
-        className={classNames('endpointInput', { endpointInput__checkbox: type === 'checkbox', endpointInput__active: edit, endpointInput__error: error[name] })}
-        type={open && edit ? 'text' : type}
-        onKeyPress={validateDataInput}
-        disabled={!edit}
-        {...{ name, placeholder, value, onChange, onClick, checked }}
+        className={classNames('endpointInput', {
+          endpointInput__checkbox: type === 'checkbox',
+          endpointInput__active: edit && type !== 'file',
+          endpointInput__error: error && error[name],
+          endpointInput__radio: type === 'radio',
+          endpointInput__file: type === 'file'
+        })}
+        {...{ type: open && edit ? 'text' : type, name, placeholder, value, onChange, onClick, onKeyPress: validateDataInput, checked, disabled: !edit, ref: references }}
       />
+
       {showEyes}
-      {toolTip}
     </>
   );
 };
@@ -33,6 +34,7 @@ export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, 
 EndpointInput.propTypes = {
   type: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  references: PropTypes.any,
   placeholder: PropTypes.string,
   edit: PropTypes.bool,
   disabled: PropTypes.bool,

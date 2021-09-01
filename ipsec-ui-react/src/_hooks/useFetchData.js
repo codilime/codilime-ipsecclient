@@ -24,7 +24,6 @@ export const useFetchData = () => {
     setVrf((prev) => ({ ...prev, loading: true }));
     try {
       const data = await client(`vrfs/${payload.id}`, { ...payload }, { method: 'PUT' });
-      console.log(data);
       if (data) {
         setVrf((prev) => ({ ...prev, loading: false }));
         return data;

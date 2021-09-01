@@ -1,0 +1,16 @@
+@import 'style/settings.scss';
+
+.uploadButton {
+  padding: $padding-sm $padding-md;
+  background-color: $primary;
+  color: white;
+  border: none;
+  border-radius: $button-radius;
+  margin: 0 $margin-md;
+  font-family: $font-family;
+  cursor: pointer;
+  transition: $transition;
+  &__disabled {
+    background-color: $gray02;
+  }
+}

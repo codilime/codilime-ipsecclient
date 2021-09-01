@@ -14,7 +14,7 @@
   z-index: 999999;
   background-color: $modal-background;
   transition: $transition;
-  &--active {
+  &__active {
     opacity: 1;
     visibility: visible;
   }

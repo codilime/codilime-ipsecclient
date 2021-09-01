@@ -24,9 +24,11 @@
     position: relative;
   }
   &__context {
-    padding: $padding-xl;
+    padding: $padding-md $padding-xl;
     box-shadow: $endpoint-option-shadow;
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     &__error {
       color: red;
     }
@@ -36,5 +38,8 @@
   }
   &__description {
     font-size: $modal-description-size;
+    width: 70%;
+    color: red;
+    @include cutText;
   }
 }

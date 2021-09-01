@@ -5,4 +5,7 @@ export * from './vizualization';
 export * from './form';
 export * from './field';
 export * from './cryptoField';
-export * from './statusModal';
+export * from './popup';
+export * from './notifications';
+export * from './logout';
+export * from './settingTemplate';

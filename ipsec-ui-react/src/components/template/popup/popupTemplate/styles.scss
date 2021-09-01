@@ -1,0 +1,64 @@
+@import 'style/settings.scss';
+
+.popup {
+  position: absolute;
+  left: 212px;
+  right: 0;
+  top: 54px;
+  bottom: 0;
+  background-color: rgba($color: #000000, $alpha: 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: $transition;
+  z-index: 99999;
+  &__active {
+    opacity: 1;
+    visibility: visible;
+  }
+  &__content {
+    width: 70%;
+    margin: 0 auto;
+    background-color: white;
+    overflow: hidden;
+    border: $wrapper-border;
+  }
+  &__header {
+    font-weight: 600;
+    border: $wrapper-border;
+    background-color: $gray01;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  &__icon {
+    font-size: 20px;
+    margin-right: $margin-md;
+    cursor: pointer;
+  }
+  &__title {
+    padding: $wrapper-padding;
+    margin: 0;
+    font-size: $header-and-button-font-size;
+  }
+  &__context {
+    height: 50vh;
+    min-height: 520px;
+    margin: 0 auto;
+    border: $wrapper-border;
+    border-top: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  &__footer {
+    text-align: right;
+    padding: $padding-md;
+  }
+  &__save {
+    background-color: $primary;
+    color: white;
+  }
+}

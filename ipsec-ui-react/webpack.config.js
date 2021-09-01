@@ -24,15 +24,6 @@ module.exports = {
         use: ['file-loader']
       },
       {
-        test: /\.(ttf)([\?]?.*)$/,
-        use: {
-          loader: 'file-loader',
-          options: {
-            name: '[name].[ext]'
-          }
-        }
-      },
-      {
         test: /\.svg$/,
         loader: 'svg-inline-loader'
       },
@@ -64,8 +55,6 @@ module.exports = {
     path: OUTPUT_PATH,
     filename: 'bundle.js',
     publicPath: OUTPUT_PATH,
-
-
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
