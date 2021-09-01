@@ -24,7 +24,9 @@ export const useCreateVRFMainView = () => {
 
   useEffect(() => {
     if (endpoints === null) reset(data);
-    else if (!endpoints.lenght) reset({ ...data, endpoints: null });
+    else if (!endpoints.length) {
+      reset({ ...data, endpoints: null });
+    } else reset({ ...data });
   }, [reset, currentLocation, data]);
 
   const submit = async (data) => {
