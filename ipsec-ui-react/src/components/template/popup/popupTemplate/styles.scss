@@ -54,10 +54,11 @@
     justify-content: space-between;
   }
   &__footer {
+    text-align: right;
     padding: $padding-md;
   }
   &__save {
     background-color: $primary;
-    color:white;
+    color: white;
   }
 }
