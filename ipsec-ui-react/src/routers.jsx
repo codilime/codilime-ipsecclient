@@ -5,9 +5,9 @@ import { DefaultView, VrfView } from 'pages';
 export const Routers = () => {
   return (
     <Switch>
-      <Route exact path="/vrf/create" component={VrfView} />
-      <Route exact path="/vrf/:id" component={VrfView} />
-      <Route path="*" component={DefaultView} />
+      <Route exact path="/vrf/create" render={() => <VrfView />} />
+      <Route exact path="/vrf/:id" render={() => <VrfView />} />
+      <Route path="*" render={() => <DefaultView />} />
     </Switch>
   );
 };
