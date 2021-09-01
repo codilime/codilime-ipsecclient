@@ -23,7 +23,7 @@ def wait_for_sico_net():
     while True:
         print("waiting for sico_net...")
         if os.path.exists("/opt/super_net/supervisord.sock") and \
-            os.path.exists("/opt/ipsec/charon.vici"):
+            os.path.exists("/opt/ipsec/conf/charon.vici"):
             return
         time.sleep(3)
 

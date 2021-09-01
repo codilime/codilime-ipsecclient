@@ -8,7 +8,7 @@ connections {
                 id = {{ $val.RemoteIPSec }}
             {{ else if $val.IsCerts }}
                 auth = pubkey
-                certs = "/opt/certs/{{$.ClientName}}-{{$val.PeerIP}}.pem"
+                certs = {{$.ClientName}}-{{$val.PeerIP}}.pem
             {{ end }}
         }
         remote {
@@ -17,7 +17,7 @@ connections {
                 id = {{ $val.RemoteIPSec }}
             {{ else if $val.IsCerts }}
                 auth = pubkey
-                certs = "/opt/certs/{{$.ClientName}}-{{$val.LocalIP}}.pem"
+                certs = {{$.ClientName}}-{{$val.LocalIP}}.pem
             {{ end }}
         }
         children {
@@ -42,7 +42,7 @@ secrets {
             id = {{ $val.RemoteIPSec }}
             secret = {{ $val.Authentication.PSK }}
         {{ else if $val.IsCerts }}
-            file = "/opt/certs/{{$.ClientName}}-{{$val.PeerIP}}.key.pem"
+            file = {{$.ClientName}}-{{$val.PeerIP}}.key.pem
         {{ end }}
     }
 {{ end }}
