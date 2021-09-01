@@ -15,8 +15,8 @@ export const PopupStatus = () => {
   useEffect(() => {
     if (error) handleToggleModal();
   }, [error]);
-
-  const errorStatus = error && error.result;
+  console.log(error);
+  const errorStatus = error && error.error;
 
   return (
     <div className={classNames('status', { status__active: show })}>

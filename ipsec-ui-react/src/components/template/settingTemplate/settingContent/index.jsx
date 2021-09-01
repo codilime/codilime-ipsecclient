@@ -1,5 +1,5 @@
 import React from 'react';
-import { LoginForm, RestConfForm } from 'template';
+import { LoginForm, RestConfForm, SettingCertificates } from 'template';
 import classNames from 'classnames';
 
 export const SettingContent = ({ activeSetting }) => {
@@ -12,7 +12,7 @@ export const SettingContent = ({ activeSetting }) => {
         <RestConfForm />
       </article>
       <article className={classNames('setting__content', { setting__content__active: activeSetting.certificate })}>
-        <RestConfForm />
+        <SettingCertificates />
       </article>
     </>
   );

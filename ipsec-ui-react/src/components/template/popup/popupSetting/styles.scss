@@ -23,7 +23,7 @@
     background-color: $gray01;
   }
   &__content {
-    padding: 0 $padding-lg;
+    padding: $padding-sm $padding-lg;
     width: 100%;
     display: none;
     transition: $transition;

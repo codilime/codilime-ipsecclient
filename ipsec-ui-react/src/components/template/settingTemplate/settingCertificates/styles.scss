@@ -1,0 +1,43 @@
+@import 'style/settings.scss';
+
+.table__setting {
+  &__column {
+    padding: $padding-md;
+    width: 100%;
+    border-right: $table-border;
+    font-size: 12px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    &:last-of-type {
+      border-right: none;
+    }
+  }
+
+  &__time {
+    width: 40%;
+  }
+  &__checked {
+    width: 80px;
+  }
+  &__box {
+    padding: $padding-md;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+  }
+}
+.certificates {
+  &__box {
+    padding: $padding-md 0 $padding-sm;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  &__button {
+    margin-left: $margin-md;
+    background-color: $primary;
+    color: white;
+  }
+}

@@ -14,6 +14,7 @@ export const RestConfForm = () => {
   } = useForm({ resolver: yupResolver(restConfSchema) });
 
   const displayForm = DynamicRestConfForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register }} />);
+
   return (
     <Wrapper {...{ title: 'Restconf credentials' }}>
       <form className="loginForm" onSubmit={handleSubmit}>

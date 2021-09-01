@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { EndpointInput, UploadButton, Button, UploadCertificates } from 'common';
+import { EndpointInput, Button, UploadCertificates } from 'common';
 import { AiFillCloseCircle } from 'react-icons/ai';
 
 export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
@@ -8,6 +8,18 @@ export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
   const {
     authentication: { type, psk, private_key, local_cert, remote_cert }
   } = endpoints;
+
+  useEffect(() => {
+    if (private_key) {
+      setFileName((prev) => ({ ...prev, key: 'Complate' }));
+    }
+    if (local_cert) {
+      setFileName((prev) => ({ ...prev, certificate: 'Complate' }));
+    }
+    if (remote_cert) {
+      setFileName((prev) => ({ ...prev, peerCertificate: 'Complate' }));
+    }
+  }, [endpoints]);
 
   const key = useRef(null);
   const certificate = useRef(null);
@@ -107,9 +119,7 @@ export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
       return (
         <td key={el.name} className={classNames('table__column', 'table__psk')}>
           <EndpointInput {...{ ...el, onChange: handleUpdateEndpoint, edit, error, value: psk }} />
-          <div className="table__iconBox">
-            <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />
-          </div>
+          <div className="table__iconBox">{edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}</div>
         </td>
       );
     }
@@ -153,7 +163,7 @@ export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
             }}
           />
 
-          <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />
+          {edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}
         </td>
       );
     }

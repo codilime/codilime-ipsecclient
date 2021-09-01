@@ -2,11 +2,11 @@
 FROM node:12.7-alpine AS frontend-build
 WORKDIR /usr/src/app
 COPY ipsec-ui-react/package.json ./
-RUN npm install -g webpack webpack-cli --loglevel verbose -ddd && npm install --loglevel verbose -ddd
+RUN npm install -g webpack webpack-cli && npm install 
 COPY ipsec-ui-react/src /usr/src/app/src/
-COPY ipsec-ui-react/dist /usr/src/app/dist/
 COPY ipsec-ui-react/webpack.config.js /usr/src/app/
 RUN webpack build --config ./webpack.config.js --mode production
+
 
 ### STAGE 1b: Build API ###
 FROM golang:1.16.3-alpine3.13 AS middleware-build
