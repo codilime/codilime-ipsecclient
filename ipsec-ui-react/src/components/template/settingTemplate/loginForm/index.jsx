@@ -14,11 +14,15 @@ export const LoginForm = () => {
     formState: { errors }
   } = useForm({ resolver: yupResolver(newLoginSchema) });
 
-  const displayForm = DynamicLoginForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register }} />);
+  const submit = (data) => {
+    console.log(data);
+  };
+
+  const displayForm = DynamicLoginForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register: register(input.name), validate: false }} />);
 
   return (
     <Wrapper {...{ title: 'Change global password' }}>
-      <form className="loginForm" onSubmit={handleSubmit}>
+      <form className="loginForm" onSubmit={handleSubmit(submit)}>
         <fieldset className="loginForm__fieldset">
           {displayForm}
           <div className="loginForm__submit">

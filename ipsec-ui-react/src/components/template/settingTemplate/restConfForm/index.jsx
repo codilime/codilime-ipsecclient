@@ -13,11 +13,16 @@ export const RestConfForm = () => {
     formState: { errors }
   } = useForm({ resolver: yupResolver(restConfSchema) });
 
-  const displayForm = DynamicRestConfForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register }} />);
+  const displayForm = DynamicRestConfForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register: register(input.name), validate: false }} />);
+
+  const submit = (data) => {
+    console.log(data);
+    window.alert(`login: ${data.login} password: ${data.password}`);
+  };
 
   return (
     <Wrapper {...{ title: 'Restconf credentials' }}>
-      <form className="loginForm" onSubmit={handleSubmit}>
+      <form className="loginForm" onSubmit={handleSubmit(submit)}>
         <fieldset className="loginForm__fieldset">
           {displayForm}
           <div className="loginForm__submit">

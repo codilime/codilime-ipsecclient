@@ -13,7 +13,6 @@
       border-right: none;
     }
   }
-
   &__time {
     width: 40%;
   }
@@ -38,9 +37,22 @@
     justify-content: flex-end;
     align-items: center;
   }
+  &__wrapper {
+    overflow-y: scroll;
+    max-height: 390px;
+  }
   &__button {
     margin-left: $margin-md;
     background-color: $primary;
     color: white;
+  }
+  &__empty {
+    min-height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &__input {
+    display: none;
   }
 }

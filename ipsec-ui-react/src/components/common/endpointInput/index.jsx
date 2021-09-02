@@ -11,7 +11,7 @@ export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, 
   const { open, handleToggle } = useToggle();
   const icon = open && edit ? <BsEyeSlashFill className="endpointInput__icon" onClick={handleToggle} /> : <IoEyeSharp className="endpointInput__icon" onClick={handleToggle} />;
 
-  const showEyes = type === 'password' ? <>{icon}</> : null;
+  const showEyes = type === 'password' && edit ? <>{icon}</> : null;
 
   return (
     <>

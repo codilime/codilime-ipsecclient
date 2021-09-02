@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import classNames from 'classnames';
 import { EndpointInput, Button, UploadCertificates } from 'common';
 import { AiFillCloseCircle } from 'react-icons/ai';
+import classNames from 'classnames';
 
 export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
   const [fileName, setFileName] = useState({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' });
@@ -104,7 +104,7 @@ export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
       return (
         <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
           <div className="table__center" onClick={() => handleChooseAuthentication('psk')}>
-            <EndpointInput {...{ ...el, edit, error }} />
+            <EndpointInput {...{ ...el, error }} />
           </div>
           <span className="table__text">or</span>
           <div className="table__center">

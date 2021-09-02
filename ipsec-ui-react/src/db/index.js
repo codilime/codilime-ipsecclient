@@ -12,9 +12,11 @@ export const defaultVrf = {
   },
   softwareCrypto: { crypto_ph1: { encryption: [], integrity: [], key_exchange: [] }, crypto_ph2: { encryption: [], integrity: [], key_exchange: [] } },
   hardwareCrypto: { crypto_ph1: { encryption: [], integrity: [], key_exchange: [] }, crypto_ph2: { encryption: [], integrity: [], key_exchange: [] } },
+  certificates: [],
+  vrfs: [],
+  logErrors: [],
   loading: false,
   hardware: false,
-  vrfs: [],
   error: null,
   success: false
 };
