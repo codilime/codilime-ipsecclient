@@ -8,6 +8,7 @@ docker rm sico_api || true && docker rm sico_net || true && docker rm sico_test 
 docker rmi sico_api || true && docker rmi sico_net || true && docker rmi sico_test || true
 
 docker system prune -f
+docker volume prune -f
 
 cd ..
 
