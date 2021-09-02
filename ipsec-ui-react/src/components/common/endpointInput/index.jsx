@@ -25,7 +25,6 @@ export const EndpointInput = ({ type, placeholder, name, value, edit, onChange, 
         })}
         {...{ type: open && edit ? 'text' : type, name, placeholder, value, onChange, onClick, onKeyPress: validateDataInput, checked, disabled: !edit, ref: references }}
       />
-
       {showEyes}
     </>
   );

@@ -52,7 +52,7 @@ export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints)
       if (el.type === 'checkbox') {
         return (
           <td key={el.name} className={classNames('table__column', 'table__bool')}>
-            <EndpointInput {...{ ...el, onChange, edit, error }} checked={endpoints[el.name]} />
+            <EndpointInput {...{ ...el, onChange, edit, error, checked: endpoints[el.name] }} />
           </td>
         );
       }
@@ -61,7 +61,7 @@ export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints)
       } else
         return (
           <td key={el.name} className={classNames('table__column', { table__psk: el.name === 'psk', table__bool: el.name === 'remote_as' })}>
-            <EndpointInput {...{ ...el, onChange, edit, error }} value={endpoints[el.name]} />
+            <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints[el.name] }} />
             {edit && (
               <ToolTipInfo {...{ error: error[el.name] }}>
                 <p>Max value 255.255.255.255</p> <p>Min value 0.0.0.0</p>

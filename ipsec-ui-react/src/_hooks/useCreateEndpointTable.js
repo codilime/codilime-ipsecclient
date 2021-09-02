@@ -8,7 +8,6 @@ import { newVrf, endpointTableConst } from 'constant';
 const { pskCertificates, nat, bgp, action, remote } = endpointTableConst;
 
 export const useCreateEndpointTable = () => {
-  const [psk, setPsk] = useState({ psk: false, certificates: false });
   const { open, handleToggle } = useToggle();
   const { hardware } = useVrfLogic();
   const { vrfEndpoints, handleActionVrfEndpoints } = useEndpoint(handleToggle);
@@ -17,22 +16,6 @@ export const useCreateEndpointTable = () => {
   useEffect(() => {
     if (open) handleToggle();
   }, [currentLocation]);
-
-  const handleChangePsk = (name) => {
-    if (name === 'reset') {
-      return setPsk({ psk: false, certificates: false });
-    }
-    if (name === 'psk') {
-      return setPsk({ psk: true, certificates: false });
-    }
-    return setPsk({ certificates: true, psk: false });
-  };
-
-  useEffect(() => {
-    if (!open) {
-      setPsk({ psk: false, certificates: false });
-    }
-  }, [open]);
 
   const headerSchema = hardware ? tableHardwaHeaderSchema : tableSoftwareHeaderSchema;
   const emptySchema = hardware ? emptyHardwareSchema : emptyEndpointSchema;
@@ -51,9 +34,9 @@ export const useCreateEndpointTable = () => {
     );
   });
 
-  const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ data: el, id: index, handleActionVrfEndpoints, handleChangePsk, psk }} />);
+  const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ data: el, id: index, handleActionVrfEndpoints }} />);
 
-  const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, data: emptySchema, handleActionVrfEndpoints, handleChangePsk, psk }} />;
+  const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, data: emptySchema, handleActionVrfEndpoints }} />;
 
   const newEndpointButton = open ? 'Close a new endpoint' : 'Add a new endpoint';
 
@@ -63,8 +46,6 @@ export const useCreateEndpointTable = () => {
     createNewEndpoint,
     newEndpointButton,
     handleToggle,
-    currentLocation,
-    handleChangePsk,
-    psk
+    currentLocation
   };
 };
