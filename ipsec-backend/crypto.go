@@ -6,12 +6,9 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
 	"math/rand"
-	"os"
+	"strings"
 )
-
-const masterPassPath = "/iox_data/sico_pass"
 
 func encrypt(key, data []byte) ([]byte, error) {
 	blockCipher, err := aes.NewCipher(key)
@@ -65,10 +62,17 @@ func randString(n int) string {
 	return string(b)
 }
 
-func ensureMasterPassFile(key string) error {
-	if _, err := os.Stat(masterPassPath); err == nil {
-		return nil // file exists
+func (a *App) ensureMasterPass(key string) error {
+	m := Masterpass{ID: 1}
+	err := m.getMasterpass(a.DB)
+
+	if err == nil {
+		return nil // the masterpass is in db
 	}
+	if !strings.Contains(err.Error(), "record not found") {
+		return err // this is a different error than not found
+	}
+	// not found, encrypt the masterpass to db
 	keySha := sha256.Sum256([]byte(key))
 	masterPass := randString(32)
 	encryptedMasterPass, err := encrypt(keySha[:], []byte(masterPass))
@@ -77,27 +81,30 @@ func ensureMasterPassFile(key string) error {
 	}
 	encryptedBasedMasterPass := make([]byte, base64.RawStdEncoding.EncodedLen(len(encryptedMasterPass)))
 	base64.RawStdEncoding.Encode(encryptedBasedMasterPass, encryptedMasterPass)
-	return ioutil.WriteFile(masterPassPath, encryptedBasedMasterPass, 0644)
+	m.Masterpass = string(encryptedBasedMasterPass)
+	return m.createMasterpass(a.DB)
 }
 
-func decryptMasterPass(key string) ([]byte, error) {
-	if err := ensureMasterPassFile(key); err != nil {
+func (a *App) decryptMasterPass(key string) ([]byte, error) {
+	if err := a.ensureMasterPass(key); err != nil {
 		return nil, err
 	}
-	keySha := sha256.Sum256([]byte(key))
-	encryptedBasedMasterPass, err := ioutil.ReadFile(masterPassPath)
+	m := Masterpass{ID: 1}
+	err := m.getMasterpass(a.DB)
 	if err != nil {
 		return nil, err
 	}
+	encryptedBasedMasterPass := m.Masterpass
 	encryptedMasterPass, err := base64.RawStdEncoding.DecodeString(string(encryptedBasedMasterPass))
 	if err != nil {
 		return nil, err
 	}
+	keySha := sha256.Sum256([]byte(key))
 	return decrypt(keySha[:], encryptedMasterPass)
 }
 
-func encryptPSK(key string, v *Vrf) error {
-	masterPass, err := decryptMasterPass(key)
+func (a *App) encryptPSK(key string, v *Vrf) error {
+	masterPass, err := a.decryptMasterPass(key)
 	if err != nil {
 		return err
 	}
@@ -122,8 +129,8 @@ func encryptPSK(key string, v *Vrf) error {
 	return nil
 }
 
-func decryptPSK(key string, v *Vrf) error {
-	masterPass, err := decryptMasterPass(key)
+func (a *App) decryptPSK(key string, v *Vrf) error {
+	masterPass, err := a.decryptMasterPass(key)
 	if err != nil {
 		return err
 	}
