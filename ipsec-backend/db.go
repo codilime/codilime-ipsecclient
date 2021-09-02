@@ -21,9 +21,10 @@ type Vrf struct {
 	Endpoints         datatypes.JSON `json:"endpoints"`
 }
 
-type Masterpass struct {
-	ID         int64
-	Masterpass string
+type Setting struct {
+	ID    int64
+	Name  string
+	Value string
 }
 
 func initializeDB(dbName string) (*gorm.DB, error) {
@@ -34,7 +35,7 @@ func initializeDB(dbName string) (*gorm.DB, error) {
 	if err = db.AutoMigrate(&Vrf{}); err != nil {
 		return nil, err
 	}
-	if err = db.AutoMigrate(&Masterpass{}); err != nil {
+	if err = db.AutoMigrate(&Setting{}); err != nil {
 		return nil, err
 	}
 	return db, nil
@@ -70,17 +71,17 @@ func getVrfs(db *gorm.DB) ([]Vrf, error) {
 	return vrfs, res.Error
 }
 
-func (m *Masterpass) getMasterpass(db *gorm.DB) error {
-	res := db.First(m, m.ID)
+func (s *Setting) getSetting(db *gorm.DB) error {
+	res := db.First(s, s.ID)
 	return res.Error
 }
 
-func (m *Masterpass) createMasterpass(db *gorm.DB) error {
-	res := db.Create(m)
+func (s *Setting) createSetting(db *gorm.DB) error {
+	res := db.Create(s)
 	return res.Error
 }
 
-func (m *Masterpass) updateMasterpass(db *gorm.DB) error {
-	res := db.Updates(m)
+func (s *Setting) updateSetting(db *gorm.DB) error {
+	res := db.Updates(s)
 	return res.Error
 }

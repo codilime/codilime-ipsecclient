@@ -71,6 +71,7 @@ func (a *App) Initialize(dbName string) error {
 		if strings.Contains(err.Error(), "record not found") {
 			return hwVrf.createVrf(a.DB)
 		}
+		return err
 	}
 
 	return ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644)

@@ -63,48 +63,55 @@ func randString(n int) string {
 }
 
 func (a *App) ensureMasterPass(key string) error {
-	m := Masterpass{ID: 1}
-	err := m.getMasterpass(a.DB)
+	_, err := a.getSetting(key, "masterpass")
+	if err != nil {
+		if strings.Contains(err.Error(), "record not found") {
+			masterPass := randString(32)
+			return a.setSetting(key, "masterpass", masterPass)
+		}
+	}
+	return nil
+}
 
-	if err == nil {
-		return nil // the masterpass is in db
-	}
-	if !strings.Contains(err.Error(), "record not found") {
-		return err // this is a different error than not found
-	}
-	// not found, encrypt the masterpass to db
-	keySha := sha256.Sum256([]byte(key))
-	masterPass := randString(32)
-	encryptedMasterPass, err := encrypt(keySha[:], []byte(masterPass))
+func (a *App) setSetting(pass, name, value string) error {
+	s := Setting{}
+	s.Name = name
+	keySha := sha256.Sum256([]byte(pass))
+	encryptedValue, err := encrypt(keySha[:], []byte(value))
 	if err != nil {
 		return err
 	}
-	encryptedBasedMasterPass := make([]byte, base64.RawStdEncoding.EncodedLen(len(encryptedMasterPass)))
-	base64.RawStdEncoding.Encode(encryptedBasedMasterPass, encryptedMasterPass)
-	m.Masterpass = string(encryptedBasedMasterPass)
-	return m.createMasterpass(a.DB)
+	encryptedBasedValue := make([]byte, base64.RawStdEncoding.EncodedLen(len(encryptedValue)))
+	base64.RawStdEncoding.Encode(encryptedBasedValue, encryptedValue)
+	s.Value = string(encryptedBasedValue)
+	if err := s.getSetting(a.DB); err != nil {
+		if !strings.Contains(err.Error(), "record not found") {
+			return err
+		}
+		return s.createSetting(a.DB)
+	}
+	return a.DB.Where("name = ?", name).Update("value", s.Value).Error
 }
 
-func (a *App) decryptMasterPass(key string) ([]byte, error) {
-	if err := a.ensureMasterPass(key); err != nil {
-		return nil, err
+func (a *App) getSetting(pass, name string) (string, error) {
+	s := Setting{}
+	if err := a.DB.Where("name = ?", name).First(&s).Error; err != nil {
+		return "", err
 	}
-	m := Masterpass{ID: 1}
-	err := m.getMasterpass(a.DB)
+	encryptedValue, err := base64.RawStdEncoding.DecodeString(string(s.Value))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	encryptedBasedMasterPass := m.Masterpass
-	encryptedMasterPass, err := base64.RawStdEncoding.DecodeString(string(encryptedBasedMasterPass))
-	if err != nil {
-		return nil, err
-	}
-	keySha := sha256.Sum256([]byte(key))
-	return decrypt(keySha[:], encryptedMasterPass)
+	keySha := sha256.Sum256([]byte(pass))
+	b, err := decrypt(keySha[:], encryptedValue)
+	return string(b), err
 }
 
 func (a *App) encryptPSK(key string, v *Vrf) error {
-	masterPass, err := a.decryptMasterPass(key)
+	if err := a.ensureMasterPass(key); err != nil {
+		return err
+	}
+	masterPass, err := a.getSetting(key, "masterpass")
 	if err != nil {
 		return err
 	}
@@ -116,7 +123,7 @@ func (a *App) encryptPSK(key string, v *Vrf) error {
 		if e.Authentication.Type != "psk" {
 			continue
 		}
-		encPSK, err := encrypt(masterPass, []byte(e.Authentication.PSK))
+		encPSK, err := encrypt([]byte(masterPass), []byte(e.Authentication.PSK))
 		if err != nil {
 			return err
 		}
@@ -133,7 +140,10 @@ func (a *App) encryptPSK(key string, v *Vrf) error {
 }
 
 func (a *App) decryptPSK(key string, v *Vrf) error {
-	masterPass, err := a.decryptMasterPass(key)
+	if err := a.ensureMasterPass(key); err != nil {
+		return err
+	}
+	masterPass, err := a.getSetting(key, "masterpass")
 	if err != nil {
 		return err
 	}
@@ -149,7 +159,7 @@ func (a *App) decryptPSK(key string, v *Vrf) error {
 		if err != nil {
 			return err
 		}
-		decPSK, err := decrypt(masterPass, decBytes)
+		decPSK, err := decrypt([]byte(masterPass), decBytes)
 		if err != nil {
 			return err
 		}
