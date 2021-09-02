@@ -1,6 +1,6 @@
 import React from 'react';
 import { CircleInfo, TopSideIcon } from 'common';
-import { BoxNotification } from 'template';
+import { BoxNotification, PopupNotification } from 'template';
 import { FiBell } from 'react-icons/fi';
 import PropTypes from 'prop-types';
 
@@ -15,6 +15,7 @@ export const Notification = ({ open, handleToggle }) => {
         <FiBell className="topBar__icon" onClick={handleToggle} />
         {newNotification}
         <BoxNotification {...{ open, handleToggle, notifications }} />
+        {/* <PopupNotification {...{ open: true }} /> */}
       </>
     </TopSideIcon>
   );

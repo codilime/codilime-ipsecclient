@@ -14,7 +14,7 @@ export const defaultVrf = {
   hardwareCrypto: { crypto_ph1: { encryption: [], integrity: [], key_exchange: [] }, crypto_ph2: { encryption: [], integrity: [], key_exchange: [] } },
   certificates: [],
   vrfs: [],
-  logErrors: [],
+  notifications: [],
   loading: false,
   hardware: false,
   error: null,
