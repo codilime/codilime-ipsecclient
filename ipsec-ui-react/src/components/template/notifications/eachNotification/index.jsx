@@ -1,16 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const EachNotification = ({ title, description, onClick }) => {
+export const EachNotification = ({ time, description }) => {
   return (
     <div className="notification__each">
-      <header className="notification__header">
-        <h2 className="notification__title">{title}</h2>
-      </header>
+      <h4 className="notification__time">{time}</h4>
       <p className="notification__description">{description}</p>
-      <button {...{ onClick }} className="notification__btn">
-        View
-      </button>
     </div>
   );
 };
@@ -21,7 +16,6 @@ EachNotification.defaultProps = {
 };
 
 EachNotification.propTypes = {
-  title: PropTypes.string,
-  description: PropTypes.string,
-  onClick: PropTypes.func
+  time: PropTypes.element,
+  description: PropTypes.string
 };

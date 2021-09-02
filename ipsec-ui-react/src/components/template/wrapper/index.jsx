@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './styles.scss';
 
-export const Wrapper = ({ title, children, className, references, headerAction, onClick }) => {
+export const Wrapper = ({ title, children, className, references, headerAction, onClick, small }) => {
   const headerActionBtn = headerAction && (
     <button className="wrapper__btn" {...{ onClick }}>
       {headerAction}
@@ -11,12 +11,12 @@ export const Wrapper = ({ title, children, className, references, headerAction, 
   );
 
   return (
-    <div className={classNames('wrapper', { [className]: className })}>
+    <div className={classNames('wrapper', { wrapper__small: small })}>
       <div className="wrapper__header">
         <h3 className="wrapper__title">{title}</h3>
         {headerActionBtn}
       </div>
-      <div className="wrapper__content" ref={references}>
+      <div className={classNames('wrapper__content', { [className]: className })} ref={references}>
         {children}
       </div>
     </div>
@@ -29,5 +29,6 @@ Wrapper.propTypes = {
   className: PropTypes.string,
   headerAction: PropTypes.string,
   onClick: PropTypes.func,
-  children: PropTypes.element
+  children: PropTypes.element,
+  small: PropTypes.bool
 };

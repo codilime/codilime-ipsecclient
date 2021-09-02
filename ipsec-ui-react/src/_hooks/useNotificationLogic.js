@@ -1,7 +1,13 @@
-import { useToggle } from './useToggle';
+import { useState, useContext } from 'react';
+import { VrfsContext } from 'context';
 
 export const useNotificationLogic = () => {
-  const { open, handleToggle } = useToggle();
+  const {
+    vrf: { notifications }
+  } = useContext(VrfsContext);
 
-  return { open, handleToggle };
+  const [openLogs, setOpenLogs] = useState(false);
+  const handleOpenLogs = () => setOpenLogs((prev) => !prev);
+
+  return { openLogs, handleOpenLogs, notifications };
 };

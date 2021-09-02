@@ -24,7 +24,6 @@ export const PopupStatus = () => {
         <div className={classNames('status__context', { status__context__error: error })}>
           <p className="status__description">{errorStatus}</p>
           <div className="status__buttons">
-            <Button>Show more</Button>
             <Button btnDelete onClick={handleToggleModal}>
               Close
             </Button>

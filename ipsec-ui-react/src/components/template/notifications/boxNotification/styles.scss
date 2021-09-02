@@ -17,12 +17,17 @@
     margin: 0;
     font-size: 10px;
   }
+  &__content {
+    max-height: 245px;
+    overflow-y: scroll;
+  }
   &__each {
     padding: $padding-md;
     border-bottom: $wrapper-border;
   }
   &__description {
     margin: $margin-md 0px;
+    color: red;
   }
   &__btn {
     color: $primary;
