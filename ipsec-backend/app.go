@@ -23,6 +23,7 @@ const (
 	softwarePath      = "/api/algorithms/software"
 	hardwarePathPh1   = "/api/algorithms/hardware/ph1"
 	hardwarePathPh2   = "/api/algorithms/hardware/ph2"
+	settingsPath      = "/api/settings/{name:[a-zA-Z]+}"
 	logsPath          = "/api/logs/{name:[a-zA-Z0-9-_]+}"
 	nginxPasswordFile = "/etc/nginx/htpasswd"
 )
@@ -97,6 +98,8 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(softwarePath, a.getSoftwareAlgorithms).Methods(http.MethodGet)
 	a.Router.HandleFunc(hardwarePathPh1, a.getHardwareAlgorithmsPh1).Methods(http.MethodGet)
 	a.Router.HandleFunc(hardwarePathPh2, a.getHardwareAlgorithmsPh2).Methods(http.MethodGet)
+	a.Router.HandleFunc(settingsPath, a.apiGetSetting).Methods(http.MethodGet)
+	a.Router.HandleFunc(settingsPath, a.apiSetSetting).Methods(http.MethodPost)
 	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet).Queries("offset", "{offset:[-0-9]+}", "length", "{length:[-0-9]+}")
 	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
 }
@@ -113,6 +116,50 @@ func getPassFromHeader(header http.Header) (string, error) {
 		return "", err
 	}
 	return strings.Split(string(decodedBasicAuth), ":")[1], nil
+}
+
+func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
+	name := mux.Vars(r)["name"]
+	if name == "masterpass" {
+		respondWithError(w, http.StatusBadRequest, "masterpass cannot be used as a setting name")
+		return
+	}
+
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	value, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := a.setSetting(key, name, string(value)); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "success", "value": string(value), "name": name})
+}
+
+func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
+	name := mux.Vars(r)["name"]
+	if name == "masterpass" {
+		respondWithError(w, http.StatusBadRequest, "masterpass cannot be used as a setting name")
+		return
+	}
+
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	value, err := a.getSetting(key, name)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "success", "value": value, "name": name})
 }
 
 func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
