@@ -34,9 +34,11 @@ type Generator interface {
 }
 
 type App struct {
-	Router    *mux.Router
-	DB        *gorm.DB
-	Generator Generator
+	Router         *mux.Router
+	DB             *gorm.DB
+	Generator      Generator
+	switchUsername string
+	switchPassword string
 }
 
 func boolPointer(b bool) *bool {
@@ -54,7 +56,7 @@ func (a *App) Initialize(dbName string) error {
 
 	a.initializeRoutes()
 
-	err = setNginxPassword()
+	err = a.setDefaultPasswords()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,10 +80,15 @@ func (a *App) Initialize(dbName string) error {
 	return ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644)
 }
 
-func setNginxPassword() error {
+func (a *App) setDefaultPasswords() error {
 	name := "admin"
 	password := "cisco123"
-	return htpasswd.SetPassword(nginxPasswordFile, name, password, htpasswd.HashBCrypt)
+	if err := htpasswd.SetPassword(nginxPasswordFile, name, password, htpasswd.HashBCrypt); err != nil {
+		return err
+	}
+	a.setSetting(password, "switch_username", "admin")
+	a.setSetting(password, "switch_password", "cisco123")
+	return nil
 }
 
 func (a *App) Run(addr string) {
@@ -293,7 +300,11 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		vrf.Active = oldVrf.Active
 	}
 
-	createHandler, deleteHandler := a.getHandlers(vrf)
+	createHandler, deleteHandler, err := a.getHandlers(key, vrf)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	if *oldVrf.Active != *vrf.Active {
 		if *vrf.Active {
@@ -330,11 +341,24 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, plaintextVrf)
 }
 
-func (a *App) getHandlers(vrf Vrf) (handler, handler) {
+func (a *App) getSwitchCreds(key string) error {
+	var err error
+	a.switchUsername, err = a.getSetting(key, "switch_username")
+	if err != nil {
+		return err
+	}
+	a.switchPassword, err = a.getSetting(key, "switch_password")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *App) getHandlers(key string, vrf Vrf) (handler, handler, error) {
 	if vrf.ID == hardwareVrfID {
-		return restconfCreate, restconfDelete
+		return a.restconfCreate, a.restconfDelete, a.getSwitchCreds(key)
 	} else {
-		return a.Generator.GenerateTemplates, a.Generator.DeleteTemplates
+		return a.Generator.GenerateTemplates, a.Generator.DeleteTemplates, nil
 	}
 }
 
@@ -343,6 +367,12 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Vrf ID")
+		return
+	}
+
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
 
@@ -356,7 +386,11 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	_, deleteHandler := a.getHandlers(vrf)
+	_, deleteHandler, err := a.getHandlers(key, vrf)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 	if *vrf.Active {
 		if err := deleteHandler(vrf); err != nil {
 			respondWithError(w, http.StatusInternalServerError, err.Error())
