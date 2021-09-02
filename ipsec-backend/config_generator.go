@@ -63,15 +63,15 @@ type FileGenerator struct {
 
 func saveCerts(v *VrfWithEndpoints) error {
 	for _, e := range v.Endpoints {
-		filename := fmt.Sprintf("/opt/certs/%s-%s.pem", v.ClientName, e.PeerIP)
+		filename := fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.PeerIP)
 		if err := ioutil.WriteFile(filename, []byte(e.Authentication.RemoteCert), 0644); err != nil {
 			return err
 		}
-		filename = fmt.Sprintf("/opt/certs/%s-%s.pem", v.ClientName, e.LocalIP)
+		filename = fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.LocalIP)
 		if err := ioutil.WriteFile(filename, []byte(e.Authentication.LocalCert), 0644); err != nil {
 			return err
 		}
-		filename = fmt.Sprintf("/opt/certs/%s-%s.key.pem", v.ClientName, e.PeerIP)
+		filename = fmt.Sprintf("/opt/ipsec/rsa/%s-%s.key.pem", v.ClientName, e.PeerIP)
 		if err := ioutil.WriteFile(filename, []byte(e.Authentication.PrivateKey), 0644); err != nil {
 			return err
 		}
@@ -82,9 +82,9 @@ func saveCerts(v *VrfWithEndpoints) error {
 func deleteCerts(v *VrfWithEndpoints) error {
 	for _, e := range v.Endpoints {
 		filenames := []string{
-			fmt.Sprintf("/opt/certs/%s-%s.pem", v.ClientName, e.PeerIP),
-			fmt.Sprintf("/opt/certs/%s-%s.pem", v.ClientName, e.LocalIP),
-			fmt.Sprintf("/opt/certs/%s-%s.key.pem", v.ClientName, e.PeerIP),
+			fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.PeerIP),
+			fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.LocalIP),
+			fmt.Sprintf("/opt/ipsec/rsa/%s-%s.key.pem", v.ClientName, e.PeerIP),
 		}
 		for _, f := range filenames {
 			if err := os.Remove(f); err != nil {
@@ -102,7 +102,9 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 		return err
 	}
 
-	saveCerts(vrf)
+	if err := saveCerts(vrf); err != nil {
+		return err
+	}
 
 	prefix := calculatePrefix(v)
 
@@ -166,7 +168,7 @@ func (FileGenerator) DeleteTemplates(v Vrf) error {
 }
 
 func getStrongswanFileName(prefix string) string {
-	return "/opt/ipsec/" + prefix + ".conf"
+	return "/opt/ipsec/conf/" + prefix + ".conf"
 }
 
 func getSupervisorFileName(prefix string) string {
