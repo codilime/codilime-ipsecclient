@@ -11,7 +11,11 @@ COPY docker/strongswan_content/no_route.conf /etc/strongswan.d/no_route.conf
 COPY docker/ipsec_reload.ini /etc/supervisor.d/
 COPY docker/ipsec_reload.sh /usr/local/sbin/
 
-RUN ln -s /etc/swanctl/conf.d /opt/ipsec
+RUN mkdir -p /opt/ipsec/conf && rm -rf /etc/swanctl/conf.d && ln -s /opt/ipsec/conf /etc/swanctl/conf.d && \
+        mkdir /opt/ipsec/x509ca && rm -rf /etc/swanctl/x509ca && ln -s /opt/ipsec/x509ca /etc/swanctl/x509ca && \
+        mkdir /opt/ipsec/x509 && rm -rf /etc/swanctl/x509 && ln -s /opt/ipsec/x509 /etc/swanctl/x509 && \
+        mkdir /opt/ipsec/rsa && rm -rf /etc/swanctl/rsa && ln -s /opt/ipsec/rsa /etc/swanctl/rsa
+
 RUN chown -R ipsec:ipsec /etc/swanctl
 
 #FRR

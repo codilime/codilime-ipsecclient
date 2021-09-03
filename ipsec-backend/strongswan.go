@@ -6,7 +6,7 @@ import (
 	"github.com/strongswan/govici/vici"
 )
 
-const socketPath = "/opt/ipsec/charon.vici"
+const socketPath = "/opt/ipsec/conf/charon.vici"
 
 func ReloadStrongSwan() error {
 	if err := RestartSupervisorProcess("strongswan_reload"); err != nil {
