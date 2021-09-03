@@ -8,6 +8,7 @@ COPY docker/ipsec.ini /etc/supervisor.d/
 COPY docker/ipsec_reload.sh /usr/local/sbin/
 COPY docker/ipsec_reload.ini /etc/supervisor.d/
 COPY docker/strongswan_content/no_route.conf /etc/strongswan.d/no_route.conf
+COPY docker/strongswan_content/status.sh /usr/local/bin/
 COPY docker/ipsec_reload.ini /etc/supervisor.d/
 COPY docker/ipsec_reload.sh /usr/local/sbin/
 
