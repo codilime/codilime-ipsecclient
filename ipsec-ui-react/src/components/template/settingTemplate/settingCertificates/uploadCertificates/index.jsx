@@ -9,9 +9,7 @@ export const UploadCertificates = ({ references, onChange, onClick }) => {
       <Button className="certificates__button" {...{ onClick }}>
         Import Certificates
       </Button>
-      <Button className="certificates__button" {...{ btnDelete: true }}>
-        Delete checked
-      </Button>
+      <Button {...{ btnDelete: true }}>Delete checked</Button>
     </div>
   );
 };

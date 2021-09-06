@@ -1,7 +1,6 @@
 export * from './endpointInput';
 export * from './button';
 export * from './input';
-export * from './spinner';
 export * from './topSideIcon';
 export * from './uploadButton';
 export * from './toolTipInfo';

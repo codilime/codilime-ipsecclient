@@ -1,11 +1,11 @@
 import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom';
-import { Spinner } from 'common';
+import { Spinner } from 'template';
 import { VrfsProvider } from 'context';
 const App = lazy(() => import('./App'));
 
 ReactDOM.render(
-  <Suspense fallback={<Spinner/>}>
+  <Suspense fallback={<Spinner />}>
     <VrfsProvider>
       <App />
     </VrfsProvider>

@@ -9,3 +9,4 @@ export * from './popup';
 export * from './notifications';
 export * from './logout';
 export * from './settingTemplate';
+export * from './loading'

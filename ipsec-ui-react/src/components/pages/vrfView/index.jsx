@@ -1,7 +1,7 @@
 import React from 'react';
-import { Endpoints, Modal, Visualization, FormDetail, PopupLogs, PopupStatus } from 'template';
+import { Endpoints, Modal, Visualization, FormDetail, PopupLogs, PopupStatus, Spinner } from 'template';
 import { useModalLogic, useVrfLogic } from 'hooks';
-import { Button, Spinner } from 'common';
+import { Button } from 'common';
 import { useToggle } from 'hooks';
 import './styles.scss';
 

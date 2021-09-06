@@ -11,13 +11,13 @@ export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
 
   useEffect(() => {
     if (private_key) {
-      setFileName((prev) => ({ ...prev, key: 'Complate' }));
+      setFileName((prev) => ({ ...prev, key: 'Complete' }));
     }
     if (local_cert) {
-      setFileName((prev) => ({ ...prev, certificate: 'Complate' }));
+      setFileName((prev) => ({ ...prev, certificate: 'Complete' }));
     }
     if (remote_cert) {
-      setFileName((prev) => ({ ...prev, peerCertificate: 'Complate' }));
+      setFileName((prev) => ({ ...prev, peerCertificate: 'Complete' }));
     }
   }, [endpoints]);
 

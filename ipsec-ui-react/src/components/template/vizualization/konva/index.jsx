@@ -1,6 +1,5 @@
 import React, { useContext, useRef, useEffect, useState } from 'react';
-import { Wrapper } from 'template';
-import { VisualizationEndpoints } from 'template';
+import { Wrapper, VisualizationEndpoints, Cube } from 'template';
 import { VrfsContext } from 'context';
 import './styles.scss';
 
@@ -8,7 +7,7 @@ export const Visualization = () => {
   const emptyEndpoint = <div className="visualization__empty">Add endpoints to vizualize them</div>;
   const [dimensions, setDimensions] = useState(0);
   const {
-    vrf: { data }
+    vrf: { data, loading }
   } = useContext(VrfsContext);
   const wrapper = useRef(null);
   const { endpoints } = data;
@@ -20,6 +19,14 @@ export const Visualization = () => {
   }, [wrapper]);
 
   const context = endpoints === null || !endpoints.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions }} />;
+  const status = true;
+  if (status) {
+    return (
+      <Wrapper title="Visualization">
+        <Cube />
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper title="Visualization" references={wrapper}>
