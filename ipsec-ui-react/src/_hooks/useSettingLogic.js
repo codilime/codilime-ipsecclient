@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useToggle } from './useToggle';
+import { client } from 'api';
 
 export const useSettingLogic = () => {
   const { open, handleToggle } = useToggle();
@@ -22,6 +23,10 @@ export const useSettingLogic = () => {
       setActiveSetting({ profile: true, restConf: false, certificate: false });
     }
   }, [open]);
+  
+  const handleSendRestCont = async (data) => {
+    await client('/settings/restConf', { ...data }, { method: 'POST' });
+  };
 
-  return { activeSetting, open, handleToggle, handleChangeActiveSetting };
+  return { activeSetting, open, handleToggle, handleChangeActiveSetting, handleSendRestCont };
 };

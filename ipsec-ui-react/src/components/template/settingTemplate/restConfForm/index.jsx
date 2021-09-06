@@ -5,6 +5,7 @@ import { restConfSchema } from 'schema';
 import { Wrapper, Field } from 'template';
 import { Button } from 'common';
 import { DynamicRestConfForm } from 'db';
+import { useSettingLogic } from 'hooks';
 
 export const RestConfForm = () => {
   const {
@@ -12,16 +13,12 @@ export const RestConfForm = () => {
     handleSubmit,
     formState: { errors }
   } = useForm({ resolver: yupResolver(restConfSchema) });
-
+  const { handleSendRestCont } = useSettingLogic();
   const displayForm = DynamicRestConfForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register: register(input.name), validate: false }} />);
-
-  const submit = (data) => {
-    console.log(data);
-  };
 
   return (
     <Wrapper {...{ title: 'Restconf credentials' }}>
-      <form className="loginForm" onSubmit={handleSubmit(submit)}>
+      <form className="loginForm" onSubmit={handleSubmit(handleSendRestCont)}>
         <fieldset className="loginForm__fieldset">
           {displayForm}
           <div className="loginForm__submit">
