@@ -32,6 +32,6 @@ export const newLoginSchema = yup.object().shape({
 });
 
 export const restConfSchema = yup.object().shape({
-  login: yup.string().min(5).required(),
-  password: yup.string().min(8).required()
+  switch_username: yup.string().min(5).required(),
+  switch_password: yup.string().min(8).required()
 });

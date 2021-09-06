@@ -17,7 +17,6 @@ export const RestConfForm = () => {
 
   const submit = (data) => {
     console.log(data);
-    window.alert(`login: ${data.login} password: ${data.password}`);
   };
 
   return (

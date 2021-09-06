@@ -119,6 +119,6 @@ export const DynamicLoginForm = [
   { type: 'password', name: 'newPasswordConfirmation', placeholder: 'Repeat new password' }
 ];
 export const DynamicRestConfForm = [
-  { type: 'text', name: 'login', placeholder: 'Login' },
-  { type: 'password', name: 'password', placeholder: 'Password' }
+  { type: 'text', name: 'switch_username', placeholder: 'Login' },
+  { type: 'password', name: 'switch_password', placeholder: 'Password' }
 ];
