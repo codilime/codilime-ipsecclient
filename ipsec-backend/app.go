@@ -23,7 +23,7 @@ const (
 	softwarePath      = "/api/algorithms/software"
 	hardwarePathPh1   = "/api/algorithms/hardware/ph1"
 	hardwarePathPh2   = "/api/algorithms/hardware/ph2"
-	settingsPath      = "/api/settings/{name:[a-zA-Z]+}"
+	settingsPath      = "/api/settings/{name:[a-zA-Z0-9-_]+}"
 	logsPath          = "/api/logs/{name:[a-zA-Z0-9-_]+}"
 	nginxPasswordFile = "/etc/nginx/htpasswd"
 )
@@ -86,6 +86,7 @@ func (a *App) setDefaultPasswords() error {
 	if err := htpasswd.SetPassword(nginxPasswordFile, name, password, htpasswd.HashBCrypt); err != nil {
 		return err
 	}
+	a.ensureMasterPass(password)
 	a.setSetting(password, "switch_username", "admin")
 	a.setSetting(password, "switch_password", "cisco123")
 	return nil

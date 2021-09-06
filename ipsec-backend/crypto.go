@@ -63,21 +63,47 @@ func randString(n int) string {
 }
 
 func (a *App) ensureMasterPass(key string) error {
-	_, err := a.getSetting(key, "masterpass")
-	if err != nil {
+	m := Masterpass{}
+	if err := a.DB.First(&m).Error; err != nil {
 		if strings.Contains(err.Error(), "record not found") {
-			masterPass := randString(32)
-			return a.setSetting(key, "masterpass", masterPass)
+			masterpass := randString(32)
+			keySha := sha256.Sum256([]byte(key))
+			encryptedMasterpass, err := encrypt(keySha[:], []byte(masterpass))
+			if err != nil {
+				return err
+			}
+			encryptedBasedMasterpass := make([]byte, base64.RawStdEncoding.EncodedLen(len(encryptedMasterpass)))
+			base64.RawStdEncoding.Encode(encryptedBasedMasterpass, encryptedMasterpass)
+			m.Masterpass = string(encryptedBasedMasterpass)
+			return a.DB.Create(&m).Error
 		}
+		return err
 	}
 	return nil
+}
+
+func (a *App) getMasterpass(key string) (string, error) {
+	m := Masterpass{}
+	if err := a.DB.First(&m).Error; err != nil {
+		return "", err
+	}
+	encryptedMasterpass, err := base64.RawStdEncoding.DecodeString(string(m.Masterpass))
+	if err != nil {
+		return "", err
+	}
+	keySha := sha256.Sum256([]byte(key))
+	b, err := decrypt(keySha[:], encryptedMasterpass)
+	return string(b), err
 }
 
 func (a *App) setSetting(pass, name, value string) error {
 	s := Setting{}
 	s.Name = name
-	keySha := sha256.Sum256([]byte(pass))
-	encryptedValue, err := encrypt(keySha[:], []byte(value))
+	masterpass, err := a.getMasterpass(pass)
+	if err != nil {
+		return err
+	}
+	encryptedValue, err := encrypt([]byte(masterpass), []byte(value))
 	if err != nil {
 		return err
 	}
@@ -95,6 +121,10 @@ func (a *App) setSetting(pass, name, value string) error {
 
 func (a *App) getSetting(pass, name string) (string, error) {
 	s := Setting{}
+	masterpass, err := a.getMasterpass(pass)
+	if err != nil {
+		return "", err
+	}
 	if err := a.DB.Where("name = ?", name).First(&s).Error; err != nil {
 		return "", err
 	}
@@ -102,15 +132,11 @@ func (a *App) getSetting(pass, name string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	keySha := sha256.Sum256([]byte(pass))
-	b, err := decrypt(keySha[:], encryptedValue)
+	b, err := decrypt([]byte(masterpass), encryptedValue)
 	return string(b), err
 }
 
 func (a *App) encryptPSK(key string, v *Vrf) error {
-	if err := a.ensureMasterPass(key); err != nil {
-		return err
-	}
 	masterPass, err := a.getSetting(key, "masterpass")
 	if err != nil {
 		return err
@@ -140,9 +166,6 @@ func (a *App) encryptPSK(key string, v *Vrf) error {
 }
 
 func (a *App) decryptPSK(key string, v *Vrf) error {
-	if err := a.ensureMasterPass(key); err != nil {
-		return err
-	}
 	masterPass, err := a.getSetting(key, "masterpass")
 	if err != nil {
 		return err

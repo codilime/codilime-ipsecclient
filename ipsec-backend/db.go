@@ -27,6 +27,11 @@ type Setting struct {
 	Value string
 }
 
+type Masterpass struct {
+	ID         int64
+	Masterpass string
+}
+
 func initializeDB(dbName string) (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{})
 	if err != nil {
@@ -36,6 +41,9 @@ func initializeDB(dbName string) (*gorm.DB, error) {
 		return nil, err
 	}
 	if err = db.AutoMigrate(&Setting{}); err != nil {
+		return nil, err
+	}
+	if err = db.AutoMigrate(&Masterpass{}); err != nil {
 		return nil, err
 	}
 	return db, nil
