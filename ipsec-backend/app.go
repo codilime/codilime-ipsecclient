@@ -23,6 +23,7 @@ const (
 	softwarePath      = "/api/algorithms/software"
 	hardwarePathPh1   = "/api/algorithms/hardware/ph1"
 	hardwarePathPh2   = "/api/algorithms/hardware/ph2"
+	settingsPath      = "/api/settings/{name:[a-zA-Z]+}"
 	logsPath          = "/api/logs/{name:[a-zA-Z0-9-_]+}"
 	nginxPasswordFile = "/etc/nginx/htpasswd"
 )
@@ -33,9 +34,11 @@ type Generator interface {
 }
 
 type App struct {
-	Router    *mux.Router
-	DB        *gorm.DB
-	Generator Generator
+	Router         *mux.Router
+	DB             *gorm.DB
+	Generator      Generator
+	switchUsername string
+	switchPassword string
 }
 
 func boolPointer(b bool) *bool {
@@ -53,7 +56,7 @@ func (a *App) Initialize(dbName string) error {
 
 	a.initializeRoutes()
 
-	err = setNginxPassword()
+	err = a.setDefaultPasswords()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -71,15 +74,21 @@ func (a *App) Initialize(dbName string) error {
 		if strings.Contains(err.Error(), "record not found") {
 			return hwVrf.createVrf(a.DB)
 		}
+		return err
 	}
 
 	return ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644)
 }
 
-func setNginxPassword() error {
+func (a *App) setDefaultPasswords() error {
 	name := "admin"
 	password := "cisco123"
-	return htpasswd.SetPassword(nginxPasswordFile, name, password, htpasswd.HashBCrypt)
+	if err := htpasswd.SetPassword(nginxPasswordFile, name, password, htpasswd.HashBCrypt); err != nil {
+		return err
+	}
+	a.setSetting(password, "switch_username", "admin")
+	a.setSetting(password, "switch_password", "cisco123")
+	return nil
 }
 
 func (a *App) Run(addr string) {
@@ -96,6 +105,8 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(softwarePath, a.getSoftwareAlgorithms).Methods(http.MethodGet)
 	a.Router.HandleFunc(hardwarePathPh1, a.getHardwareAlgorithmsPh1).Methods(http.MethodGet)
 	a.Router.HandleFunc(hardwarePathPh2, a.getHardwareAlgorithmsPh2).Methods(http.MethodGet)
+	a.Router.HandleFunc(settingsPath, a.apiGetSetting).Methods(http.MethodGet)
+	a.Router.HandleFunc(settingsPath, a.apiSetSetting).Methods(http.MethodPost)
 	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet).Queries("offset", "{offset:[-0-9]+}", "length", "{length:[-0-9]+}")
 	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
 }
@@ -112,6 +123,50 @@ func getPassFromHeader(header http.Header) (string, error) {
 		return "", err
 	}
 	return strings.Split(string(decodedBasicAuth), ":")[1], nil
+}
+
+func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
+	name := mux.Vars(r)["name"]
+	if name == "masterpass" {
+		respondWithError(w, http.StatusBadRequest, "masterpass cannot be used as a setting name")
+		return
+	}
+
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	value, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := a.setSetting(key, name, string(value)); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "success", "value": string(value), "name": name})
+}
+
+func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
+	name := mux.Vars(r)["name"]
+	if name == "masterpass" {
+		respondWithError(w, http.StatusBadRequest, "masterpass cannot be used as a setting name")
+		return
+	}
+
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	value, err := a.getSetting(key, name)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "success", "value": value, "name": name})
 }
 
 func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
@@ -245,7 +300,11 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		vrf.Active = oldVrf.Active
 	}
 
-	createHandler, deleteHandler := a.getHandlers(vrf)
+	createHandler, deleteHandler, err := a.getHandlers(key, vrf)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	if *oldVrf.Active != *vrf.Active {
 		if *vrf.Active {
@@ -282,11 +341,24 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, plaintextVrf)
 }
 
-func (a *App) getHandlers(vrf Vrf) (handler, handler) {
+func (a *App) getSwitchCreds(key string) error {
+	var err error
+	a.switchUsername, err = a.getSetting(key, "switch_username")
+	if err != nil {
+		return err
+	}
+	a.switchPassword, err = a.getSetting(key, "switch_password")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *App) getHandlers(key string, vrf Vrf) (handler, handler, error) {
 	if vrf.ID == hardwareVrfID {
-		return restconfCreate, restconfDelete
+		return a.restconfCreate, a.restconfDelete, a.getSwitchCreds(key)
 	} else {
-		return a.Generator.GenerateTemplates, a.Generator.DeleteTemplates
+		return a.Generator.GenerateTemplates, a.Generator.DeleteTemplates, nil
 	}
 }
 
@@ -295,6 +367,12 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Vrf ID")
+		return
+	}
+
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
 
@@ -308,7 +386,11 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	_, deleteHandler := a.getHandlers(vrf)
+	_, deleteHandler, err := a.getHandlers(key, vrf)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 	if *vrf.Active {
 		if err := deleteHandler(vrf); err != nil {
 			respondWithError(w, http.StatusInternalServerError, err.Error())

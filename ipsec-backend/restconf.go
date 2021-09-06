@@ -16,7 +16,7 @@ import (
 
 const switchBase = "https://%s/restconf/data/"
 
-func restconfCreate(vrf Vrf) error {
+func (a *App) restconfCreate(vrf Vrf) error {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -29,7 +29,7 @@ func restconfCreate(vrf Vrf) error {
 	}
 
 	// Remove NAT-T as 9300X does not support it yet
-	if err := tryRestconfDelete("Cisco-IOS-XE-native:native/crypto/ipsec/nat-transparency", client); err != nil {
+	if err := a.tryRestconfDelete("Cisco-IOS-XE-native:native/crypto/ipsec/nat-transparency", client); err != nil {
 		fmt.Println("NAT-T config already removed, skipping", err)
 	}
 
@@ -43,35 +43,35 @@ func restconfCreate(vrf Vrf) error {
 		return err
 	}
 
-	if err := restconfDoProposal(vrf, client, cryptoPh1); err != nil {
+	if err := a.restconfDoProposal(vrf, client, cryptoPh1); err != nil {
 		return err
 	}
-	if err := restconfDoPolicy(vrf, client); err != nil {
+	if err := a.restconfDoPolicy(vrf, client); err != nil {
 		return err
 	}
-	if err := restconfDoEndpoints(vrf, client, dbEndpoints); err != nil {
+	if err := a.restconfDoEndpoints(vrf, client, dbEndpoints); err != nil {
 		return err
 	}
-	if err := restconfDoProfile(vrf, client); err != nil {
+	if err := a.restconfDoProfile(vrf, client); err != nil {
 		return err
 	}
-	if err := restconfDoTransformSet(vrf, cryptoPh2, client); err != nil {
+	if err := a.restconfDoTransformSet(vrf, cryptoPh2, client); err != nil {
 		return err
 	}
-	if err := restconfDoIpsecProfile(vrf, client, cryptoPh2[len(cryptoPh2)-1]); err != nil {
+	if err := a.restconfDoIpsecProfile(vrf, client, cryptoPh2[len(cryptoPh2)-1]); err != nil {
 		return err
 	}
-	if err := restconfDoTunnels(vrf, client, dbEndpoints); err != nil {
+	if err := a.restconfDoTunnels(vrf, client, dbEndpoints); err != nil {
 		return err
 	}
-	if err := restconfDoBGP(vrf, client, dbEndpoints); err != nil {
+	if err := a.restconfDoBGP(vrf, client, dbEndpoints); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func restconfDelete(vrf Vrf) error {
+func (a *App) restconfDelete(vrf Vrf) error {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -83,41 +83,41 @@ func restconfDelete(vrf Vrf) error {
 	}
 	// Ignore delete errors. Sometimes there is a leftover configuration left and some of the calls will return 404.
 	// We just want to make sure that nothing in the configuration will conflict with what we're inserting
-	if err := tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/router/bgp=%d", vrf.LocalAs), client); err != nil {
+	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/router/bgp=%d", vrf.LocalAs), client); err != nil {
 		fmt.Println("delete error occured:", err)
 	}
 	for i := range dbEndpoints {
 		tunName := (hash(vrf.ClientName) + i) % 65536
-		if err := tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/interface/Tunnel=%d", tunName), client); err != nil {
+		if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/interface/Tunnel=%d", tunName), client); err != nil {
 			fmt.Println("delete error occured:", err)
 		}
 	}
-	if err := tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ipsec/profile=%s", vrf.ClientName), client); err != nil {
+	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ipsec/profile=%s", vrf.ClientName), client); err != nil {
 		fmt.Println("delete error occured:", err)
 	}
-	if err := tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ipsec/transform-set=%s", vrf.ClientName), client); err != nil {
+	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ipsec/transform-set=%s", vrf.ClientName), client); err != nil {
 		fmt.Println("delete error occured:", err)
 	}
-	if err := tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ikev2/profile=%s", vrf.ClientName), client); err != nil {
+	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ikev2/profile=%s", vrf.ClientName), client); err != nil {
 		fmt.Println("delete error occured:", err)
 	}
-	if err := tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ikev2/keyring=%s", vrf.ClientName), client); err != nil {
+	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ikev2/keyring=%s", vrf.ClientName), client); err != nil {
 		fmt.Println("delete error occured:", err)
 	}
-	if err := tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ikev2/policy=%s", vrf.ClientName), client); err != nil {
+	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ikev2/policy=%s", vrf.ClientName), client); err != nil {
 		fmt.Println("delete error occured:", err)
 	}
-	if err := tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ikev2/proposal=%s", vrf.ClientName), client); err != nil {
+	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ikev2/proposal=%s", vrf.ClientName), client); err != nil {
 		fmt.Println("delete error occured:", err)
 	}
 	return nil
 }
 
-func tryRestconfDelete(path string, client *http.Client) error {
-	return tryRestconfRequest("DELETE", path, "", client)
+func (a *App) tryRestconfDelete(path string, client *http.Client) error {
+	return a.tryRestconfRequest("DELETE", path, "", client)
 }
 
-func restconfDoProposal(vrf Vrf, client *http.Client, cryptoPh1 []string) error {
+func (a *App) restconfDoProposal(vrf Vrf, client *http.Client, cryptoPh1 []string) error {
 	proposal := `{
 		"proposal": {
 		  "name": "%s",
@@ -136,13 +136,13 @@ func restconfDoProposal(vrf Vrf, client *http.Client, cryptoPh1 []string) error 
 		}
 	}`
 	proposalData := fmt.Sprintf(proposal, vrf.ClientName, cryptoPh1[0], cryptoPh1[1], cryptoPh1[1], cryptoPh1[2])
-	if err := tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ikev2/proposal", proposalData, client); err != nil {
+	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ikev2/proposal", proposalData, client); err != nil {
 		return err
 	}
 	return nil
 }
 
-func restconfDoPolicy(vrf Vrf, client *http.Client) error {
+func (a *App) restconfDoPolicy(vrf Vrf, client *http.Client) error {
 	policy := `{
 		"policy": {
 		  "name": "%s",
@@ -157,13 +157,13 @@ func restconfDoPolicy(vrf Vrf, client *http.Client) error {
 		}
 	}`
 	policyData := fmt.Sprintf(policy, vrf.ClientName, vrf.ClientName)
-	if err := tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ikev2/policy", policyData, client); err != nil {
+	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ikev2/policy", policyData, client); err != nil {
 		return err
 	}
 	return nil
 }
 
-func restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
+func (a *App) restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
 
 	peers := make([]string, 0, len(dbEndpoints))
 	for i, Endpoint := range dbEndpoints {
@@ -191,13 +191,13 @@ func restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) e
 		}
 	}`
 	keyringData := fmt.Sprintf(keyring, vrf.ClientName, "["+strings.Join(peers, ",")+"]")
-	if err := tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ikev2/keyring", keyringData, client); err != nil {
+	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ikev2/keyring", keyringData, client); err != nil {
 		return err
 	}
 	return nil
 }
 
-func restconfDoProfile(vrf Vrf, client *http.Client) error {
+func (a *App) restconfDoProfile(vrf Vrf, client *http.Client) error {
 	profile := `{
 		"profile": {
 		  "name": "%s",
@@ -226,13 +226,13 @@ func restconfDoProfile(vrf Vrf, client *http.Client) error {
 		}
 		}`
 	profileData := fmt.Sprintf(profile, vrf.ClientName, vrf.ClientName)
-	if err := tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ikev2/profile", profileData, client); err != nil {
+	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ikev2/profile", profileData, client); err != nil {
 		return err
 	}
 	return nil
 }
 
-func restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) error {
+func (a *App) restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) error {
 	// esp: always present
 	// key-bit: when it's gcm or aes
 	keyBit := ""
@@ -271,7 +271,7 @@ func restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) er
 		}
 		}`
 	transformSetData := fmt.Sprintf(transformSet, vrf.ClientName, esp, keyBit, espHmac, tunnelOptionName)
-	if err := tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ipsec/transform-set", transformSetData, client); err != nil {
+	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ipsec/transform-set", transformSetData, client); err != nil {
 		return err
 	}
 	return nil
@@ -286,7 +286,7 @@ func containsADigit(str string) bool {
 	return false
 }
 
-func restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) error {
+func (a *App) restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) error {
 	ipsecProfile := `{
 		"profile": {
 		  "name": "%s",
@@ -307,13 +307,13 @@ func restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) err
 		}
 		}`
 	ipsecProfileData := fmt.Sprintf(ipsecProfile, vrf.ClientName, vrf.ClientName, cryptoName, vrf.ClientName)
-	if err := tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ipsec/profile", ipsecProfileData, client); err != nil {
+	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ipsec/profile", ipsecProfileData, client); err != nil {
 		return err
 	}
 	return nil
 }
 
-func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
+func (a *App) restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
 	for i, Endpoint := range dbEndpoints {
 		tunName := (hash(vrf.ClientName) + i) % 65536
 		tunnel := `{
@@ -352,14 +352,14 @@ func restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) err
 			}`
 		tunnelData := fmt.Sprintf(tunnel, tunName, vrf.ClientName+strconv.Itoa(i),
 			Endpoint.LocalIP, Endpoint.SourceInterface, Endpoint.RemoteIPSec, vrf.ClientName)
-		if err := tryRestconfPatch("Cisco-IOS-XE-native:native/interface", tunnelData, client); err != nil {
+		if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/interface", tunnelData, client); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
+func (a *App) restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
 	bgp := `{
 		"bgp": [
 		  {
@@ -385,22 +385,22 @@ func restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
 		neighbors = append(neighbors, fmt.Sprintf(neighbor, Endpoint.PeerIP, Endpoint.RemoteAS))
 	}
 	bgpData := fmt.Sprintf(bgp, vrf.LocalAs, strings.Join(neighbors, ","))
-	if err := tryRestconfPatch("Cisco-IOS-XE-native:native/router/bgp", bgpData, client); err != nil {
+	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/router/bgp", bgpData, client); err != nil {
 		return err
 	}
 	return nil
 }
 
-func tryRestconfPatch(path, data string, client *http.Client) error {
-	return tryRestconfRequest("PATCH", path, data, client)
+func (a *App) tryRestconfPatch(path, data string, client *http.Client) error {
+	return a.tryRestconfRequest("PATCH", path, data, client)
 }
 
-func tryRestconfRequest(method, path, data string, client *http.Client) error {
+func (a *App) tryRestconfRequest(method, path, data string, client *http.Client) error {
 	retries := 20
 	for i := 0; i < retries; i++ {
 		time.Sleep(time.Millisecond * 500)
 		fmt.Printf("%s: %s (%d)\n", method, path, i)
-		err := restconfDoRequest(method, path, data, client)
+		err := a.restconfDoRequest(method, path, data, client)
 		if err == nil {
 			fmt.Println(method, "successful")
 			return nil
@@ -417,7 +417,7 @@ func tryRestconfRequest(method, path, data string, client *http.Client) error {
 	return fmt.Errorf("%s: retry limit %d exceeded", path, retries)
 }
 
-func restconfDoRequest(method, path, data string, client *http.Client) error {
+func (a *App) restconfDoRequest(method, path, data string, client *http.Client) error {
 	fmt.Printf("%s: %s\n%s\n", method, path, data)
 	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + path
 	req, err := http.NewRequest(method, fullPath, strings.NewReader(data))
@@ -426,7 +426,7 @@ func restconfDoRequest(method, path, data string, client *http.Client) error {
 	}
 	req.Header.Add("Content-Type", "application/yang-data+json")
 	req.Header.Add("Accept", "application/yang-data+json")
-	req.SetBasicAuth(os.Getenv("SWITCH_USERNAME"), os.Getenv("SWITCH_PASSWORD"))
+	req.SetBasicAuth(a.switchUsername, a.switchPassword)
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
@@ -441,7 +441,7 @@ func restconfDoRequest(method, path, data string, client *http.Client) error {
 	return nil
 }
 
-func restconfGetData(path string, client *http.Client) (map[string]interface{}, error) {
+func (a *App) restconfGetData(path string, client *http.Client) (map[string]interface{}, error) {
 	fmt.Printf("GET: %s\n", path)
 	ret := map[string]interface{}{}
 	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + path
@@ -451,7 +451,7 @@ func restconfGetData(path string, client *http.Client) (map[string]interface{}, 
 	}
 	req.Header.Add("Content-Type", "application/yang-data+json")
 	req.Header.Add("Accept", "application/yang-data+json")
-	req.SetBasicAuth(os.Getenv("SWITCH_USERNAME"), os.Getenv("SWITCH_PASSWORD"))
+	req.SetBasicAuth(a.switchUsername, a.switchPassword)
 	resp, err := client.Do(req)
 	if err != nil {
 		return ret, err
