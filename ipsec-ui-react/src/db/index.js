@@ -1,13 +1,12 @@
 export const defaultVrf = {
   data: {
     client_name: '',
-    vlan: 0,
+    vlans: [],
     crypto_ph1: [],
     crypto_ph2: [],
     physical_interface: '',
     active: false,
     local_as: 0,
-    lan_ip: '',
     endpoints: null
   },
   softwareCrypto: { crypto_ph1: { encryption: [], integrity: [], key_exchange: [] }, crypto_ph2: { encryption: [], integrity: [], key_exchange: [] } },
@@ -15,6 +14,11 @@ export const defaultVrf = {
   certificates: [],
   vrfs: [],
   notifications: [],
+  vlans: [
+    { vlan: 110, ip: '10.10.10.10/32' },
+    { vlan: 100, ip: '10.10.10.10/16' },
+    { vlan: 130, ip: '10.10.10.10/8' }
+  ],
   loading: false,
   hardware: false,
   error: null,
@@ -96,21 +100,21 @@ export const maxValueForVlan = 4094;
 export const maxValueForRemoteAS = 4094;
 export const minValueForVlanRemoteASLocalAS = 1;
 
-export const DynamicVRFView = {
-  mainVRFViewColumnOne: [
-    { type: 'text', name: 'client_name', placeholder: 'i.e. VRF1 Office', text: 'Name:' },
-    { type: 'text', name: 'lan_ip', placeholder: 'i. e. 10.0.0.1/24', text: 'Lan IP / Mask:' },
-    { type: 'checkbox', name: 'active', text: 'Active' }
-  ],
-  mainVRFViewColumnTwo: [
-    { type: 'text', name: 'local_as', text: 'BGP Local AS' },
-    { type: 'text', name: 'vlan', text: 'VLAN', max: maxValueForVlan, min: minValueForVlanRemoteASLocalAS, step: '1' }
-  ],
-  mainVRFViewColumnThree: [
-    { name: 'crypto_ph1', text: 'Crypto phase 1' },
-    { name: 'crypto_ph2', text: 'Crypto phase 2' }
-  ]
-};
+export const DynamicVrfDetails = [
+  { type: 'text', name: 'client_name', placeholder: 'i.e. VRF1 Office', text: 'Name:' },
+  { name: 'crypto_ph1', text: 'Crypto phase 1' },
+  { type: 'text', name: 'local_as', text: 'BGP Local AS' },
+  { name: 'crypto_ph2', text: 'Crypto phase 2' },
+  { type: 'checkbox', name: 'active', text: 'Active' }
+];
+
+export const DynamicVrfHardwareDetails = [
+  { type: 'text', name: 'client_name', placeholder: 'i.e. VRF1 Office', text: 'Name:' },
+  { name: 'crypto_ph1', text: 'Crypto phase 1' },
+  { type: 'text', name: 'local_as', text: 'BGP Local AS' },
+  { name: 'crypto_ph2', text: 'Crypto phase 2' },
+  { type: 'checkbox', name: 'active', text: 'Active' }
+];
 
 export const DynamicLoginForm = [
   { type: 'password', name: 'currentPassword', placeholder: 'Current password' },

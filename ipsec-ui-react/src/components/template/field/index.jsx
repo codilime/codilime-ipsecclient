@@ -4,12 +4,12 @@ import { Input } from 'common';
 import classNames from 'classnames';
 import './styles.scss';
 
-export const Field = ({ text, type, name, placeholder, register, value, error, setting, validate = true }) => (
+export const Field = ({ text, type, name, placeholder, register, value, error, setting, validate = true, className }) => (
   <div
     className={classNames('field', {
       field__checkbox: type === 'checkbox',
       field__checkbox__active: name === 'active' && value,
-      field__checkbox__hardware: name === 'hardware_support' && value
+      [className]: className
     })}
   >
     <label className={classNames('field__label', { field__label__checkbox: type === 'checkbox' })}>{text}</label>
@@ -27,5 +27,6 @@ Field.propTypes = {
   value: PropTypes.any,
   setting: PropTypes.bool,
   error: PropTypes.shape({ message: PropTypes.string, type: PropTypes.string, ref: PropTypes.any }),
-  validate: PropTypes.bool
+  validate: PropTypes.bool,
+  className: PropTypes.string
 };

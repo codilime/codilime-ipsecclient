@@ -29,6 +29,6 @@ Wrapper.propTypes = {
   className: PropTypes.string,
   headerAction: PropTypes.string,
   onClick: PropTypes.func,
-  children: PropTypes.element,
+  children: PropTypes.node,
   small: PropTypes.bool
 };

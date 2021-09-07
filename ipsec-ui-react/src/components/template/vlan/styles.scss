@@ -1,0 +1,85 @@
+@import 'style/settings.scss';
+
+.vlan {
+  display: flex;
+  flex-direction: column;
+  width: calc(30%);
+  padding: 0px $padding-lg $padding-sm;
+  height: 180px;
+  font-size: 14px;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 5px;
+    border-bottom: $wrapper-border;
+  }
+  &__label {
+    position: absolute;
+    left: 5px;
+    top: 1px;
+  }
+  &__select {
+    &__box {
+      position: relative;
+      width: 100%;
+      border-bottom: 2px solid $gray01;
+      display: flex;
+      justify-content: flex-end;
+    }
+    color:$gray02;
+    font-size: 14px;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    padding: 0px 0px 2px;
+    outline: none;
+  }
+  &__btn {
+    padding: 5px 10px;
+    margin: 5px 0px 5px 10px;
+    color: white;
+    background-color: $primary;
+    border: none;
+    border-radius: $button-radius;
+    cursor: pointer;
+  }
+  &__table {
+    color: $gray02;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  &__head {
+    background-color: $gray01;
+  }
+  &__body {
+    display: block;
+    overflow-y: scroll;
+    height: 60px;
+  }
+
+  &__row {
+    display: flex;
+    padding: 5px 10px;
+    justify-content: space-between;
+    border-bottom: $wrapper-border;
+    &__header {
+      padding-right: 20px;
+    }
+    &__empty {
+      color:black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+  }
+  &__cancel {
+    cursor: pointer;
+    color: red;
+    font-weight: 700;
+  }
+}
