@@ -6,9 +6,11 @@ export const useVlanLogic = (setValue) => {
     vrf: { vlans, data }
   } = useContext(VrfsContext);
   const [vlan, setVlan] = useState(null);
-
+  console.log(vlan, 'vlan', data.vlans);
   useEffect(() => {
-    setVlan(data.vlans);
+    if (data.vlans) {
+      setVlan(data.vlans);
+    }
   }, [data]);
 
   const select = useRef(null);
