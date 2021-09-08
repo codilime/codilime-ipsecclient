@@ -3,7 +3,6 @@ import { CircleInfo, TopSideIcon } from 'common';
 import { BoxNotification, PopupNotification } from 'template';
 import { useNotificationLogic } from 'hooks';
 import { FiBell } from 'react-icons/fi';
-import PropTypes from 'prop-types';
 
 interface INotification {
   open: boolean;

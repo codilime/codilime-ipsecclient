@@ -1,9 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 import { Popup } from 'template';
 import { Button } from 'common';
 
-export const PopupLogs = ({ logs, open, handleToggle }) => {
+interface IPopupLogs {
+  open: boolean;
+  handleToggle: () => void;
+  logs: Array<string>;
+}
+
+export const PopupLogs: FC<IPopupLogs> = ({ logs = [], open, handleToggle }) => {
   const displayLogs = logs.map((log) => log);
 
   return (
@@ -14,14 +19,4 @@ export const PopupLogs = ({ logs, open, handleToggle }) => {
       </div>
     </Popup>
   );
-};
-
-PopupLogs.defaultProps = {
-  logs: []
-};
-
-PopupLogs.propTypes = {
-  open: PropTypes.bool,
-  handleToggle: PropTypes.func,
-  logs: PropTypes.array
 };

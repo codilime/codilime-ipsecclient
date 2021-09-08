@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { MdClose } from 'react-icons/md';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './styles.scss';
 
-export const Popup = ({ open, handleToggle, title, children }) => {
+interface IPopup {
+  open: boolean;
+  handleToggle: () => void;
+  children: any;
+  title: string;
+}
+
+export const Popup: FC<IPopup> = ({ open, handleToggle, title, children }) => {
   return createPortal(
     <div className={classNames('popup', { popup__active: open })} onClick={handleToggle}>
       <section className="popup__content" onClick={(e) => e.stopPropagation()}>
@@ -18,11 +25,4 @@ export const Popup = ({ open, handleToggle, title, children }) => {
     </div>,
     document.getElementById('root')
   );
-};
-
-Popup.propTypes = {
-  open: PropTypes.bool,
-  handleToggle: PropTypes.func,
-  children: PropTypes.any,
-  title: PropTypes.string
 };

@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Popup, EachError } from 'template';
-import PropTypes from 'prop-types';
 import './styles.scss';
 
-export const PopupNotification = ({ open, handleToggle, notifications }) => {
+interface IPopupNotification {
+  open: boolean;
+  handleToggle: () => void;
+  notifications: Array<string>;
+}
+
+export const PopupNotification: FC<IPopupNotification> = ({ open, handleToggle, notifications = [] }) => {
   const displayError = notifications.map((error, index) => <EachError key={index} {...error} />);
 
   return (
@@ -21,14 +26,4 @@ export const PopupNotification = ({ open, handleToggle, notifications }) => {
       </section>
     </Popup>
   );
-};
-
-PopupNotification.defaultProps = {
-  notifications: []
-};
-
-PopupNotification.propTypes = {
-  open: PropTypes.bool,
-  handleToggle: PropTypes.func,
-  notifications: PropTypes.array
 };
