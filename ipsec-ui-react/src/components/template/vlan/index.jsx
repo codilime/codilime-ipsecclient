@@ -8,7 +8,7 @@ export const Vlan = ({ setValue }) => {
   const { options, select, vlan, handleAddNewVlan, handleDeleteVlan } = useVlanLogic(setValue);
   console.log(vlan);
   const displayVlans =
-    vlan === null || !vlan.lenght ? (
+    vlan === null || !vlan.length ? (
       <tr className="vlan__row__empty">
         <td>Add Vlans from dropdown</td>
       </tr>
