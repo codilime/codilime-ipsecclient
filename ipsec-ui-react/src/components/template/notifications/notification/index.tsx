@@ -1,16 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { CircleInfo, TopSideIcon } from 'common';
 import { BoxNotification, PopupNotification } from 'template';
 import { useNotificationLogic } from 'hooks';
 import { FiBell } from 'react-icons/fi';
 import PropTypes from 'prop-types';
 
-export const Notification = ({ open, handleToggle }) => {
+interface INotification {
+  open: boolean;
+  handleToggle: () => void;
+}
+
+export const Notification: FC<INotification> = ({ open, handleToggle }) => {
   const { openLogs, handleOpenLogs, notifications } = useNotificationLogic();
 
   const newNotification = notifications.length ? <CircleInfo /> : null;
   const logs = notifications.reverse();
-  
+
   useEffect(() => {
     if (open && openLogs) handleToggle();
   }, [open, openLogs]);
@@ -25,9 +30,4 @@ export const Notification = ({ open, handleToggle }) => {
       </>
     </TopSideIcon>
   );
-};
-
-Notification.propTypes = {
-  open: PropTypes.bool,
-  handleToggle: PropTypes.func
 };

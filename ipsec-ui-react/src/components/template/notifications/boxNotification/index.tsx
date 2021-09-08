@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Wrapper, EachNotification } from 'template';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './styles.scss';
 
-export const BoxNotification = ({ open, handleToggle, notifications, handleOpenLogs }) => {
+interface IBoxNotification {
+  open: boolean;
+  handleToggle: () => void;
+  handleOpenLogs: () => void;
+  notifications: Array<string>;
+}
+
+export const BoxNotification: FC<IBoxNotification> = ({ open, handleToggle, notifications, handleOpenLogs }) => {
   const displayNotification = notifications.length ? (
     notifications.map((notice, index) => <EachNotification key={index} {...notice} />)
   ) : (
@@ -22,11 +29,4 @@ export const BoxNotification = ({ open, handleToggle, notifications, handleOpenL
 
 BoxNotification.defaultProps = {
   notifications: []
-};
-
-BoxNotification.propTypes = {
-  open: PropTypes.bool,
-  handleToggle: PropTypes.func,
-  handleOpenLogs: PropTypes.func,
-  notifications: PropTypes.array
 };
