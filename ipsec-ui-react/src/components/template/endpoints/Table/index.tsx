@@ -1,8 +1,10 @@
 import React from 'react';
+
 import { EndpointButton } from 'common';
 import { Wrapper } from 'template';
 import { useCreateEndpointTable } from 'hooks';
 import { newVrf } from 'constant';
+
 import './styles.scss';
 
 export const Endpoints = () => {

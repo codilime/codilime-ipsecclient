@@ -1,10 +1,25 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 import { EndpointButton } from 'common';
 import { EndpointOption, Modal } from 'template';
 import { useEndpointLogic, useToggle, useModalLogic } from 'hooks';
 
-export const EachEndpoint = ({ data, active, handleActionVrfEndpoints, id }) => {
+interface IEachEndpoint {
+  data: {
+    id: string;
+    remote_ip_sec: string;
+    local_ip: string;
+    peer_ip: string;
+    psk: string;
+    nat: boolean;
+    gp: boolean;
+  };
+  disabled: boolean;
+  active: boolean;
+  id: number;
+  handleActionVrfEndpoints: () => void;
+}
+
+export const EachEndpoint: FC<IEachEndpoint> = ({ data, active = false, handleActionVrfEndpoints, id = null }) => {
   const { open, handleToggle } = useToggle();
   const { show, handleToggleModal } = useModalLogic();
   const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic(data, active, id, handleActionVrfEndpoints);
@@ -34,24 +49,4 @@ export const EachEndpoint = ({ data, active, handleActionVrfEndpoints, id }) => 
       </td>
     </tr>
   );
-};
-
-EachEndpoint.defaultProps = {
-  id: null,
-  active: false
-};
-EachEndpoint.propTypes = {
-  data: PropTypes.shape({
-    id: PropTypes.string,
-    remote_ip_sec: PropTypes.string,
-    local_ip: PropTypes.string,
-    peer_ip: PropTypes.string,
-    psk: PropTypes.string,
-    nat: PropTypes.bool,
-    gp: PropTypes.bool
-  }),
-  disabled: PropTypes.bool,
-  active: PropTypes.bool,
-  id: PropTypes.number,
-  handleActionVrfEndpoints: PropTypes.func
 };
