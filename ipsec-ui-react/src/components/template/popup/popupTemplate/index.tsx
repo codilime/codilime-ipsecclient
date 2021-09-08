@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { MdClose } from 'react-icons/md';
 import { createPortal } from 'react-dom';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './styles.scss';
 

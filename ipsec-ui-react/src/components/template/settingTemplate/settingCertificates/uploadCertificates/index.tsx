@@ -1,8 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 import { Button } from 'common';
 
-export const UploadCertificates = ({ references, onChange, onClick }) => {
+interface IUploadCertificates {
+  references: any;
+  onChange: () => void;
+  onClick: () => void;
+}
+
+export const UploadCertificates: FC<IUploadCertificates> = ({ references, onChange, onClick }) => {
   return (
     <div className="certificates__box">
       <input {...{ type: 'file', name: 'uploadCerts', ref: references, onChange }} className="certificates__input" multiple />
@@ -12,10 +17,4 @@ export const UploadCertificates = ({ references, onChange, onClick }) => {
       <Button {...{ btnDelete: true }}>Delete checked</Button>
     </div>
   );
-};
-
-UploadCertificates.propTypes = {
-  references: PropTypes.any,
-  onChange: PropTypes.func,
-  onClick: PropTypes.func
 };

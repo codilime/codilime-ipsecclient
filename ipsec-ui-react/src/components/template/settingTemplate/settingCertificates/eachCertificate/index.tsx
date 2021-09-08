@@ -1,7 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 
-export const EachCertificate = ({ name, commonName, time, checked, onChange }) => {
+interface IEachCertificate {
+  name: string;
+  commonName: string;
+  time: Date;
+  checked: boolean;
+  onChange: () => void;
+}
+
+export const EachCertificate: FC<IEachCertificate> = ({ name, commonName, time, checked, onChange }) => {
   return (
     <tr className="table__row">
       <td className="table__setting__column">{name}</td>
@@ -12,12 +19,4 @@ export const EachCertificate = ({ name, commonName, time, checked, onChange }) =
       </td>
     </tr>
   );
-};
-
-EachCertificate.propTypes = {
-  name: PropTypes.string,
-  commonName: PropTypes.string,
-  time: PropTypes.element,
-  checked: PropTypes.bool,
-  onChange: PropTypes.func
 };
