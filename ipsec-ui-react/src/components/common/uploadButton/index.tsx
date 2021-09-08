@@ -7,6 +7,7 @@ interface IUploadButton {
   children: ReactNode;
   name: string;
   className: string;
+  edit: boolean;
 }
 
 export const UploadButton: FC<IUploadButton> = ({ onClick, children, name, edit, className }) => {
