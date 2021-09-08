@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { FC } from 'react';
 
-export const EachVlan = ({ vlan, ip, onClick }) => (
+interface IEachVlan {
+  vlan: string;
+  ip: string;
+  onClick: (name: string) => void;
+}
+
+export const EachVlan: FC<IEachVlan> = ({ vlan, ip, onClick }) => (
   <tr className="vlan__row">
     <td className="vlan__column">{vlan}</td>
     <td className="vlan__column">{ip}</td>

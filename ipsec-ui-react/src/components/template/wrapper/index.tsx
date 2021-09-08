@@ -1,9 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FC, Ref, ReactNode } from 'react';
 import classNames from 'classnames';
 import './styles.scss';
 
-export const Wrapper = ({ title, children, className, references, headerAction, onClick, small }) => {
+interface IWrapper {
+  title: string;
+  references?: Ref<HTMLDivElement>;
+  className?: string;
+  headerAction?: string;
+  onClick?: () => void;
+  children: ReactNode;
+  small?: boolean;
+}
+
+export const Wrapper: FC<IWrapper> = ({ title, children, className, references, headerAction, onClick, small }) => {
   const headerActionBtn = headerAction && (
     <button className="wrapper__btn" {...{ onClick }}>
       {headerAction}
@@ -21,14 +30,4 @@ export const Wrapper = ({ title, children, className, references, headerAction, 
       </div>
     </div>
   );
-};
-
-Wrapper.propTypes = {
-  title: PropTypes.string.isRequired,
-  references: PropTypes.any,
-  className: PropTypes.string,
-  headerAction: PropTypes.string,
-  onClick: PropTypes.func,
-  children: PropTypes.node,
-  small: PropTypes.bool
 };

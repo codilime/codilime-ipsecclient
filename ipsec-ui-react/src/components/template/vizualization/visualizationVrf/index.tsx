@@ -1,10 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { VisualizationOneLabel, VisualizationTwoLabel, VisualizationThreeLabel, VisualizationBox, VisualizationLine, VisualizationStatus } from 'template';
+import React, { FC } from 'react';
+
+import { VisualizationOneLabel, VisualizationTwoLabel, VisualizationThreeLabel, VisualizationBox, VisualizationLine, VisualizationStatus } from 'components/template';
 import { variable } from '../visualizationConstants';
 import { Group } from 'react-konva';
+import { visualization } from '../interface';
 
-export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimensions, physical_interface, vlan }) => {
+interface IVisualizationVrf extends visualization {
+  title: string;
+  endpoints: Array<any>;
+  dimensions: number;
+  physical_interface: string;
+  vlan: number;
+}
+
+export const VisualizationVrf: FC<IVisualizationVrf> = ({ x, y, width, height, title, endpoints, dimensions, physical_interface, vlan }) => {
   const { smHeightLabel, lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
   const eachBreak = 25;
 
@@ -84,14 +93,4 @@ export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimens
       {endpointStatus}
     </VisualizationBox>
   );
-};
-
-VisualizationVrf.propTypes = {
-  x: PropTypes.number,
-  y: PropTypes.number,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  title: PropTypes.string,
-  endpoints: PropTypes.array,
-  dimensions: PropTypes.number
 };

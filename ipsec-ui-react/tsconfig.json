@@ -9,7 +9,24 @@
     "target": "es5",
     "jsx": "react",
     "allowJs": true,
-    "baseUrl": "./src"
+    "baseUrl": "src",
+    "paths": {
+      "template": ["components/template"],
+      "common": ["components/common"],
+      "layout": ["components/layout"],
+      "pages": ["components/pages"],
+      "context": ["_context"],
+      "api": ["_api"],
+      "schema": ["schema"],
+      "utils": ["utils/*"],
+      "constant": ["constant"],
+      "style": ["scss/*"],
+      "fonts": ["assets/fonts"],
+      "images": ["assets/images"],
+      "db": ["db"],
+      "hooks": ["_hooks"]
+    }
   },
-  "exclude": ["spec"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }
