@@ -1,10 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 import { IoPencil, IoTrashBin } from 'react-icons/io5';
 import classNames from 'classnames';
 import './styles.scss';
 
-export const EndpointOption = ({ open, handleToggleModal, handleActiveEdit, handleToggle }) => (
+interface IEndpointOption {
+  open: boolean;
+  handleToggleModal: () => void;
+  handleActiveEdit: () => void;
+  handleToggle: () => void;
+}
+
+export const EndpointOption: FC<IEndpointOption> = ({ open, handleToggleModal, handleActiveEdit, handleToggle }) => (
   <div className={classNames('endpointOption', { endpointOption__active: open })} onMouseLeave={handleToggle}>
     <ul>
       <li className="endpointOption__item" onClick={handleActiveEdit}>
@@ -16,10 +22,3 @@ export const EndpointOption = ({ open, handleToggleModal, handleActiveEdit, hand
     </ul>
   </div>
 );
-
-EndpointOption.propTypes = {
-  open: PropTypes.bool,
-  handleToggleModal: PropTypes.func,
-  handleActiveEdit: PropTypes.func,
-  handleToggle: PropTypes.func
-};
