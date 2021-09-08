@@ -6,11 +6,11 @@ interface ICryptoField {
   text: string;
   register: any;
   value: [];
-  error: any;
-  crypto: any;
+  crypto: { encryption: Array<string>; integrity: Array<string>; key_exchange: Array<string> };
+  error: { message: string; type: string; ref: any };
 }
 
-export const CryptoField: FC<ICryptoField> = ({ text, name, crypto, register, error }) => {
+export const CryptoField: FC<ICryptoField> = ({ text, name, crypto = { encryption: [''], integrity: [''], key_exchange: [''] }, register, error }) => {
   const encryptionOption = crypto['encryption'].map((el) => (
     <option key={el} value={el}>
       {el}
@@ -45,12 +45,3 @@ export const CryptoField: FC<ICryptoField> = ({ text, name, crypto, register, er
     </>
   );
 };
-
-CryptoField.defaultProps = {
-  crypto: { encryption: [''], integrity: [''], key_exchange: [''] }
-};
-
-// CryptoField.propTypes = {
-//   error: PropTypes.shape({ message: PropTypes.string, type: PropTypes.string, ref: PropTypes.any }),
-//   crypto: PropTypes.shape({ encryption: PropTypes.array, integrity: PropTypes.array, key_exchange: PropTypes.array })
-// };

@@ -7,10 +7,10 @@ interface ITopBar {
   productName: string;
 }
 
-export const TopBar: FC<ITopBar> = ({ productName }) => {
+export const TopBar: FC<ITopBar> = ({ productName = 'IPsec User Interface' }) => {
   const [openPopup, setOpenPopup] = useState({ setting: false, notice: false });
 
-  const handleOpenAction = (name) => {
+  const handleOpenAction = (name: string) => {
     if (name === 'setting') {
       return setOpenPopup((prev) => ({ setting: !prev.setting, notice: false }));
     }
@@ -30,8 +30,4 @@ export const TopBar: FC<ITopBar> = ({ productName }) => {
       </div>
     </header>
   );
-};
-
-TopBar.defaultProps = {
-  productName: 'IPsec User Interface'
 };
