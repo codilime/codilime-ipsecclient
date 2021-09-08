@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { EndpointInput, UploadButton } from 'common';
-import PropTypes from 'prop-types';
 
 interface IUploadCertificates {
   type?: string;
