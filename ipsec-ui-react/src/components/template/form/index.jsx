@@ -4,7 +4,7 @@ import { Wrapper, Vlan } from 'template';
 import { Button } from 'common';
 import './styles.scss';
 
-export function FormDetail() {
+export const FormDetail = () => {
   const { handleSubmit, submit, isDirty, displayDetails, setValue, hardware } = useCreateVRFMainView();
 
   return (
@@ -20,4 +20,4 @@ export function FormDetail() {
       </form>
     </Wrapper>
   );
-}
+};
