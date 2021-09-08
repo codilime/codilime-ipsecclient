@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { LoginForm, RestConfForm, SettingCertificates } from 'template';
 import classNames from 'classnames';
 
-export const SettingContent = ({ activeSetting }) => {
+interface ISettingContent {
+  activeSetting: { profile: boolean; restConf: boolean; certificate: boolean };
+}
+
+export const SettingContent: FC<ISettingContent> = ({ activeSetting }) => {
   return (
     <>
       <article className={classNames('setting__content', { setting__content__active: activeSetting.profile })}>

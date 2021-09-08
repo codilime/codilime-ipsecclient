@@ -1,8 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 import classNames from 'classnames';
 
-export const SettingOption = ({ activeSetting, handleChangeActiveSetting }) => {
+interface ISettingOption {
+  activeSetting: { login: boolean; certificate: boolean; kredki: boolean; profile: boolean; restConf: boolean };
+  handleChangeActiveSetting: () => void;
+}
+
+export const SettingOption: FC<ISettingOption> = ({ activeSetting, handleChangeActiveSetting }) => {
   return (
     <nav className="setting__nav">
       <ul className="setting__list">
@@ -18,9 +22,4 @@ export const SettingOption = ({ activeSetting, handleChangeActiveSetting }) => {
       </ul>
     </nav>
   );
-};
-
-SettingOption.propTypes = {
-  activeSetting: PropTypes.shape({ login: PropTypes.bool, certificate: PropTypes.bool, kredki: PropTypes.bool }),
-  handleChangeActiveSetting: PropTypes.func
 };
