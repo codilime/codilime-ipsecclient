@@ -1,10 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 import classNames from 'classnames';
 import { useVrfLogic } from 'hooks';
 import { validateDataInput } from 'utils/util.js';
 
-export const Input = ({ type, name, placeholder, register, setting, validate }) => {
+interface IInput {
+  type?: string;
+  name: string;
+  placeholder?: string;
+  register?: any;
+  setting?: boolean;
+  validate?: boolean;
+}
+
+export const Input: FC<IInput> = ({ type, name, placeholder, register, setting, validate }) => {
   const { hardware } = useVrfLogic();
   const readOnly = hardware && name === 'client_name';
   const validated = validate ? validateDataInput : null;
@@ -14,13 +22,4 @@ export const Input = ({ type, name, placeholder, register, setting, validate }) 
       {...{ type, name, placeholder, readOnly, onKeyPress: validated, ...register }}
     />
   );
-};
-
-Input.propTypes = {
-  type: PropTypes.string,
-  setting: PropTypes.bool,
-  name: PropTypes.string.isRequired,
-  placeholder: PropTypes.string,
-  register: PropTypes.any,
-  validate: PropTypes.bool
 };
