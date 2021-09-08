@@ -1,11 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { FC, ReactNode, useEffect } from 'react';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import { BiInfoCircle } from 'react-icons/bi';
 import { useToggle } from 'hooks';
 import './styles.scss';
 
-export const ToolTipInfo = ({ children, error }) => {
+interface IToolTipInfo {
+  children: ReactNode;
+  error: any;
+}
+
+export const ToolTipInfo: FC<IToolTipInfo> = ({ children, error }) => {
   const { open, handleToggle } = useToggle();
 
   useEffect(() => {
@@ -20,9 +24,4 @@ export const ToolTipInfo = ({ children, error }) => {
       </div>
     </>
   );
-};
-
-ToolTipInfo.propTypes = {
-  children: PropTypes.any,
-  error: PropTypes.any
 };
