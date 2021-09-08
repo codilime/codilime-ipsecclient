@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import Logo from 'images/cisco_logo.png';
-import PropTypes from 'prop-types';
 import { Notification, Logout, Setting } from 'template';
 import './styles.scss';
 
-export const TopBar = ({ productName }) => {
+interface ITopBar {
+  productName: string;
+}
+
+export const TopBar: FC<ITopBar> = ({ productName }) => {
   const [openPopup, setOpenPopup] = useState({ setting: false, notice: false });
 
   const handleOpenAction = (name) => {
@@ -31,8 +34,4 @@ export const TopBar = ({ productName }) => {
 
 TopBar.defaultProps = {
   productName: 'IPsec User Interface'
-};
-
-TopBar.propTypes = {
-  productName: PropTypes.string
 };
