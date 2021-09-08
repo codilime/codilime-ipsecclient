@@ -1,8 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 import './styles.scss';
 
-export const CryptoField = ({ text, name, crypto, register, error }) => {
+interface ICryptoField {
+  name: string;
+  text: string;
+  register: any;
+  value: [];
+  error: any;
+  crypto: any;
+}
+
+export const CryptoField: FC<ICryptoField> = ({ text, name, crypto, register, error }) => {
   const encryptionOption = crypto['encryption'].map((el) => (
     <option key={el} value={el}>
       {el}
@@ -42,12 +50,7 @@ CryptoField.defaultProps = {
   crypto: { encryption: [''], integrity: [''], key_exchange: [''] }
 };
 
-CryptoField.propTypes = {
-  name: PropTypes.string,
-  text: PropTypes.string,
-  register: PropTypes.any,
-  value: PropTypes.array,
-  value: PropTypes.array,
-  error: PropTypes.shape({ message: PropTypes.string, type: PropTypes.string, ref: PropTypes.any }),
-  crypto: PropTypes.shape({ encryption: PropTypes.array, integrity: PropTypes.array, key_exchange: PropTypes.array })
-};
+// CryptoField.propTypes = {
+//   error: PropTypes.shape({ message: PropTypes.string, type: PropTypes.string, ref: PropTypes.any }),
+//   crypto: PropTypes.shape({ encryption: PropTypes.array, integrity: PropTypes.array, key_exchange: PropTypes.array })
+// };
