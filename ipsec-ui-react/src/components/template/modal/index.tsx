@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { useModalLogic } from 'hooks';
@@ -6,7 +6,18 @@ import { Button } from 'common';
 import classNames from 'classnames';
 import './styles.scss';
 
-export const Modal = ({ show, header, children, btnDelete, leftButton, rightButton, handleToggleModal, handleDelete }) => {
+interface IModal {
+  show: boolean;
+  header: PropTypes.string;
+  children: ReactNode;
+  leftButton: string;
+  rightButton: string;
+  handleToggleModal: () => void;
+  handleDelete: () => void;
+  btnDelete: boolean;
+}
+
+export const Modal: FC<IModal> = ({ show, header, children, btnDelete, leftButton, rightButton, handleToggleModal, handleDelete }) => {
   const { stopPropagation } = useModalLogic();
 
   return createPortal(
@@ -38,15 +49,4 @@ export const Modal = ({ show, header, children, btnDelete, leftButton, rightButt
     </div>,
     document.getElementById('root')
   );
-};
-
-Modal.propTypes = {
-  show: PropTypes.bool,
-  header: PropTypes.string,
-  children: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
-  leftButton: PropTypes.string,
-  rightButton: PropTypes.string,
-  handleToggleModal: PropTypes.func,
-  handleDelete: PropTypes.func,
-  btnDelete: PropTypes.bool
 };
