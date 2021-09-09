@@ -1,6 +1,6 @@
 import React, { useState, createContext } from 'react';
 import PropTypes from 'prop-types';
-import { defaultVrf } from 'db';
+import { defaultVrf } from '../db';
 
 export const VrfsContext = createContext(defaultVrf);
 

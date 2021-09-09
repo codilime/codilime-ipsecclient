@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
-
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
@@ -36,25 +36,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
-    alias: {
-      components: path.resolve(__dirname, 'src/components'),
-      common: path.resolve(__dirname, 'src/components/common'),
-      template: path.resolve(__dirname, 'src/components/template'),
-      layout: path.resolve(__dirname, 'src/components/layout'),
-      pages: path.resolve(__dirname, 'src/components/pages'),
-      style: path.resolve(__dirname, 'src/scss'),
-      fonts: path.resolve(__dirname, 'src/assets/fonts'),
-      images: path.resolve(__dirname, 'src/assets/images'),
-      db: path.resolve(__dirname, 'src/db'),
-      hooks: path.resolve(__dirname, 'src/_hooks'),
-      helpers: path.resolve(__dirname, 'src/_helpers'),
-      context: path.resolve(__dirname, 'src/_context'),
-      api: path.resolve(__dirname, 'src/_api'),
-      schema: path.resolve(__dirname, 'src/schema'),
-      utils: path.resolve(__dirname, 'src/utils'),
-      constant: path.resolve(__dirname, 'src/constants')
-    }
+    extensions: ['*', '.js', '.jsx', '.ts', 'tsx']
   },
   output: {
     path: OUTPUT_PATH,
@@ -72,7 +54,6 @@ module.exports = {
     historyApiFallback: {
       index: OUTPUT_PATH
     },
-    contentBase: OUTPUT_PATH,
-    hot: true
+    contentBase: OUTPUT_PATH
   }
 };

@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -16,23 +15,9 @@
     "isolatedModules": true,
     "noEmit": false,
     "jsx": "react-jsx",
+    "baseUrl": "src",
     "paths": {
-      "components/*": ["components"],
-      "common/*": ["components/common"],
-      "template": ["components/template"],
-      "layout/*": ["components/layout"],
-      "pages/*": ["components/pages"],
-      "style/*": ["scss"],
-      "fonts/*": ["assets/fonts"],
-      "images/*": ["assets/images"],
-      "db/*": ["db"],
-      "hooks/*": ["_hooks"],
-      "helpers/*": ["_helpers"],
-      "context/*": ["_context"],
-      "api/*": ["_api"],
-      "schema/*": ["schema"],
-      "utils/*": ["utils"],
-      "constant/*": ["constants'"]
+      "db/*": ["db"]
     }
   },
   "include": ["src"]

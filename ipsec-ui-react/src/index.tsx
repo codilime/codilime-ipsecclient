@@ -1,16 +1,15 @@
 import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom';
-import { Spinner } from 'template';
-import { VrfsProvider } from 'context';
-const App = lazy(() => import('./App'));
+import { Spinner } from './components/template';
+import { VrfsProvider } from './_context';
+//const App = lazy(() => import('./App'));
 
 ReactDOM.render(
-  <Suspense fallback={<Spinner />}>
+  <Suspense fallback={<div>Loading</div>}>
     <VrfsProvider>
-      <App />
+      {/* <App /> */}
+      <h3>hjello</h3>
     </VrfsProvider>
   </Suspense>,
   document.getElementById('root')
 );
-
-module.hot.accept();
