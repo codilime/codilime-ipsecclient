@@ -4,12 +4,12 @@ import { BoxNotification, PopupNotification } from 'template';
 import { useNotificationLogic } from 'hooks';
 import { FiBell } from 'react-icons/fi';
 
-interface INotification {
+interface NotificationProps {
   open: boolean;
   handleToggle: () => void;
 }
 
-export const Notification: FC<INotification> = ({ open, handleToggle }) => {
+export const Notification: FC<NotificationProps> = ({ open, handleToggle }) => {
   const { openLogs, handleOpenLogs, notifications } = useNotificationLogic();
 
   const newNotification = notifications.length ? <CircleInfo /> : null;

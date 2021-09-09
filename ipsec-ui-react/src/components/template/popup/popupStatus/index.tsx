@@ -1,11 +1,11 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, FC } from 'react';
 import { useModalLogic } from 'hooks';
 import classNames from 'classnames';
 import { VrfsContext } from 'context';
 import { Button } from 'common';
 import './styles.scss';
 
-export const PopupStatus = () => {
+export const PopupStatus: FC = () => {
   const {
     vrf: { error }
   } = useContext(VrfsContext);

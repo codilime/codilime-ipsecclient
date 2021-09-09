@@ -2,13 +2,13 @@ import React, { FC } from 'react';
 import { Popup } from 'template';
 import { Button } from 'common';
 
-interface IPopupLogs {
+interface PopupLogsProps {
   open: boolean;
   handleToggle: () => void;
   logs: string[];
 }
 
-export const PopupLogs: FC<IPopupLogs> = ({ logs = [], open, handleToggle }) => {
+export const PopupLogs: FC<PopupLogsProps> = ({ logs = [], open, handleToggle }) => {
   const displayLogs = logs.map((log) => log);
 
   return (

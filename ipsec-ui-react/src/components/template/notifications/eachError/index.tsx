@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 
-interface IEachError {
+interface EachErrorProps {
   time: Date;
   description: string;
 }
 
-export const EachError: FC<IEachError> = ({ time, description }) => {
+export const EachError: FC<EachErrorProps> = ({ time, description }) => {
   return (
     <div className="notifications__log">
       <p className="notifications__time">{time}</p>

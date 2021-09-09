@@ -3,15 +3,15 @@ import React, { FC } from 'react';
 import { Popup, SettingOption, SettingContent } from 'template';
 import './styles.scss';
 
-interface IPopupSetting {
+interface PopupSettingProps {
   open: boolean;
   handleToggle: () => void;
   handleChangeActiveSetting: () => void;
   activeSetting: { profile: boolean; restConf: boolean; certificate: boolean };
-  logs: Array<string>;
+  logs: string[];
 }
 
-export const PopupSetting: FC<IPopupSetting> = ({ open, handleToggle, handleChangeActiveSetting, activeSetting }) => {
+export const PopupSetting: FC<PopupSettingProps> = ({ open, handleToggle, handleChangeActiveSetting, activeSetting }) => {
   return (
     <Popup {...{ open, handleToggle, title: 'Settings' }}>
       <section className="setting">

@@ -2,13 +2,13 @@ import React, { FC } from 'react';
 import { Popup, EachError } from 'template';
 import './styles.scss';
 
-interface IPopupNotification {
+interface PopupNotificationProps {
   open: boolean;
   handleToggle: () => void;
-  notifications: Array<string>;
+  notifications: string[];
 }
 
-export const PopupNotification: FC<IPopupNotification> = ({ open, handleToggle, notifications = [] }) => {
+export const PopupNotification: FC<PopupNotificationProps> = ({ open, handleToggle, notifications = [] }) => {
   const displayError = notifications.map((error, index) => <EachError key={index} {...error} />);
 
   return (

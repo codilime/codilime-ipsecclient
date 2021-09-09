@@ -4,14 +4,13 @@ import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import './styles.scss';
 
-interface IPopup {
+interface PopupProps {
   open: boolean;
   handleToggle: () => void;
-  children: any;
   title: string;
 }
 
-export const Popup: FC<IPopup> = ({ open, handleToggle, title, children }) => {
+export const Popup: FC<PopupProps> = ({ open, handleToggle, title, children }) => {
   return createPortal(
     <div className={classNames('popup', { popup__active: open })} onClick={handleToggle}>
       <section className="popup__content" onClick={(e) => e.stopPropagation()}>
