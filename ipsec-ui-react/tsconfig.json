@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["webpack-env"],
+    "types": ["webpack-env", "node"],
     "checkJs": false,
     "allowJs": true,
     "skipLibCheck": true,
