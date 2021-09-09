@@ -1,14 +1,10 @@
-import React, { useState, createContext } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, createContext, FunctionComponent } from 'react';
 import { defaultVrf } from 'db';
 
 export const VrfsContext = createContext(defaultVrf);
 
-export const VrfsProvider = ({ children }) => {
+export const VrfsProvider: FunctionComponent = ({ children }) => {
   const [vrf, setVrf] = useState(defaultVrf);
+  // @ts-ignore TODO
   return <VrfsContext.Provider value={{ vrf, setVrf }}>{children}</VrfsContext.Provider>;
-};
-
-VrfsProvider.propTypes = {
-  children: PropTypes.element
 };

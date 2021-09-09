@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
+    "baseUrl": ".",
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["webpack-env"],
+    "checkJs": false,
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
     "moduleResolution": "node",
@@ -17,23 +19,27 @@
     "noEmit": false,
     "jsx": "react-jsx",
     "paths": {
-      "components/*": ["components"],
-      "common/*": ["components/common"],
-      "template": ["components/template"],
-      "layout/*": ["components/layout"],
-      "pages/*": ["components/pages"],
-      "style/*": ["scss"],
-      "fonts/*": ["assets/fonts"],
-      "images/*": ["assets/images"],
-      "db/*": ["db"],
-      "hooks/*": ["_hooks"],
-      "helpers/*": ["_helpers"],
-      "context/*": ["_context"],
-      "api/*": ["_api"],
-      "schema/*": ["schema"],
-      "utils/*": ["utils"],
-      "constant/*": ["constants'"]
+      "components/*": ["src/components"],
+      "common/*": ["src/components/common"],
+      "template": ["src/components/template"],
+      "layout/*": ["src/components/layout"],
+      "pages/*": ["src/components/pages"],
+      "style/*": ["src/scss"],
+      "fonts/*": ["src/assets/fonts"],
+      "images/*": ["src/assets/images"],
+      "db": ["src/db"],
+      "hooks/*": ["src/hooks"],
+      "helpers/*": ["src/helpers"],
+      "context": ["src/context"],
+      "api/*": ["src/api"],
+      "schema/*": ["src/schema"],
+      "utils/*": ["src/utils"],
+      "constant/*": ["src/constants'"]
     }
   },
-  "include": ["src"]
+  "include": ["src/**/*", "src/**/*"],
+  "exclude": [
+    "*.js",
+    "*.jsx",
+  ]
 }

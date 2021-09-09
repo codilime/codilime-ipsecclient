@@ -36,7 +36,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
       components: path.resolve(__dirname, 'src/components'),
       common: path.resolve(__dirname, 'src/components/common'),
@@ -47,10 +47,10 @@ module.exports = {
       fonts: path.resolve(__dirname, 'src/assets/fonts'),
       images: path.resolve(__dirname, 'src/assets/images'),
       db: path.resolve(__dirname, 'src/db'),
-      hooks: path.resolve(__dirname, 'src/_hooks'),
-      helpers: path.resolve(__dirname, 'src/_helpers'),
-      context: path.resolve(__dirname, 'src/_context'),
-      api: path.resolve(__dirname, 'src/_api'),
+      hooks: path.resolve(__dirname, 'src/hooks'),
+      helpers: path.resolve(__dirname, 'src/helpers'),
+      context: path.resolve(__dirname, 'src/context'),
+      api: path.resolve(__dirname, 'src/api'),
       schema: path.resolve(__dirname, 'src/schema'),
       utils: path.resolve(__dirname, 'src/utils'),
       constant: path.resolve(__dirname, 'src/constants')
