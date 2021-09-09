@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { newLoginSchema } from 'schema';
@@ -7,7 +7,7 @@ import { Button } from 'common';
 import { DynamicLoginForm } from 'db';
 import './styles.scss';
 
-export const LoginForm = () => {
+export const LoginForm: FC = () => {
   const {
     register,
     handleSubmit,

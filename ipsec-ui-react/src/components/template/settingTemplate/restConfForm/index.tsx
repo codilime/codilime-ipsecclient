@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { restConfSchema } from 'schema';
@@ -7,7 +7,7 @@ import { Button } from 'common';
 import { DynamicRestConfForm } from 'db';
 import { useSettingLogic } from 'hooks';
 
-export const RestConfForm = () => {
+export const RestConfForm: FC = () => {
   const {
     register,
     handleSubmit,

@@ -1,13 +1,13 @@
-import React, { FC } from 'react';
+import React, { FC, ChangeEvent, MouseEvent } from 'react';
 import { Button } from 'common';
 
-interface IUploadCertificates {
+interface UploadCertificatesProps {
   references: any;
-  onChange: () => void;
-  onClick: () => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  onClick?: (e: MouseEvent<HTMLInputElement>) => void;
 }
 
-export const UploadCertificates: FC<IUploadCertificates> = ({ references, onChange, onClick }) => {
+export const UploadCertificates: FC<UploadCertificatesProps> = ({ references, onChange, onClick }) => {
   return (
     <div className="certificates__box">
       <input {...{ type: 'file', name: 'uploadCerts', ref: references, onChange }} className="certificates__input" multiple />

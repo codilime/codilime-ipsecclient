@@ -1,14 +1,14 @@
-import React, { FC } from 'react';
+import React, { FC, ChangeEvent } from 'react';
 
-interface IEachCertificate {
+interface EachCertificateProps {
   name: string;
   commonName: string;
   time: Date;
   checked: boolean;
-  onChange: () => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const EachCertificate: FC<IEachCertificate> = ({ name, commonName, time, checked, onChange }) => {
+export const EachCertificate: FC<EachCertificateProps> = ({ name, commonName, time, checked, onChange }) => {
   return (
     <tr className="table__row">
       <td className="table__setting__column">{name}</td>

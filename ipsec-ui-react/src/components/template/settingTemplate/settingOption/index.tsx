@@ -1,12 +1,12 @@
 import React, { FC } from 'react';
 import classNames from 'classnames';
 
-interface ISettingOption {
+interface SettingOptionProps {
   activeSetting: { login: boolean; certificate: boolean; kredki: boolean; profile: boolean; restConf: boolean };
   handleChangeActiveSetting: () => void;
 }
 
-export const SettingOption: FC<ISettingOption> = ({ activeSetting, handleChangeActiveSetting }) => {
+export const SettingOption: FC<SettingOptionProps> = ({ activeSetting, handleChangeActiveSetting }) => {
   return (
     <nav className="setting__nav">
       <ul className="setting__list">
