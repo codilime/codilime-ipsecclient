@@ -1,15 +1,42 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
-    "moduleResolution": "node",
-    "noImplicitAny": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "module": "esnext",
+    "baseUrl": ".",
     "target": "es5",
-    "jsx": "react",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["webpack-env", "node"],
+    "checkJs": false,
     "allowJs": true,
-    "baseUrl": "./src"
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "jsx": "react-jsx",
+    "paths": {
+      "components/*": ["src/components"],
+      "common/*": ["src/components/common"],
+      "template": ["src/components/template"],
+      "layout/*": ["src/components/layout"],
+      "pages/*": ["src/components/pages"],
+      "style/*": ["src/scss"],
+      "fonts/*": ["src/assets/fonts"],
+      "images/*": ["src/assets/images"],
+      "db": ["src/db"],
+      "hooks/*": ["src/hooks"],
+      "helpers/*": ["src/helpers"],
+      "context": ["src/context"],
+      "api/*": ["src/api"],
+      "schema/*": ["src/schema"],
+      "utils/*": ["src/utils"],
+      "constant/*": ["src/constants'"]
+    }
   },
-  "exclude": ["spec"]
+  "include": ["src/**/*", "src/**/*"],
+  "exclude": ["*.js", "*.jsx"]
 }

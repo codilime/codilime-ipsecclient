@@ -1,9 +1,9 @@
 const API_URL = '/api';
 
-export async function client(endpoint, data, options) {
+export async function client(endpoint: RequestInfo, data?: any, options?: RequestInit) {
   const { ...customConfig } = options ?? {};
   const headers = { 'Content-Type': 'application/json' };
-  const config = {
+  const config: RequestInit = {
     method: data ? 'POST' : 'GET',
     body: data ? JSON.stringify(data) : null,
     headers: {
@@ -19,7 +19,7 @@ export async function client(endpoint, data, options) {
       return res;
     }
     return Promise.reject(res);
-  } catch (error) {
+  } catch (error: any) {
     return Promise.reject(error ? error.message : data);
   }
 }
