@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Text, Rect, Group } from 'react-konva';
-import PropTypes from 'prop-types';
 
-export const VisualizationChecked = ({ x, y, status }) => {
+interface IVisualizationChecked {
+  x: number;
+  y: number;
+  status: boolean;
+}
+
+export const VisualizationChecked: FC<IVisualizationChecked> = ({ x, y, status }) => {
   const checked = status ? '✓' : '';
   const strokeColor = status ? 'green' : 'black';
   return (
@@ -11,10 +16,4 @@ export const VisualizationChecked = ({ x, y, status }) => {
       <Text {...{ text: checked, x, y, width: 10, height: 10, align: 'center', verticalAlign: 'middle', fontSize: 10, fill: strokeColor }} />
     </Group>
   );
-};
-
-VisualizationChecked.propTypes = {
-  x: PropTypes.number,
-  y: PropTypes.number,
-  status: PropTypes.bool
 };

@@ -4,7 +4,7 @@ import { VrfsContext } from 'context';
 import './styles.scss';
 
 export const Visualization = () => {
-  const emptyEndpoint = <div className="visualization__empty">Add endpoints to vizualize them</div>;
+  const emptyEndpoint = <div className="visualization__empty">Add endpoints to visualize them</div>;
   const [dimensions, setDimensions] = useState(0);
   const {
     vrf: { data, loading }

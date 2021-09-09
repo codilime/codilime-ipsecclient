@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Rect, Group, Text, Image } from 'react-konva';
 import PropTypes from 'prop-types';
 import { variable } from '../visualizationConstants';
@@ -7,7 +7,15 @@ import useImage from 'use-image';
 import { VisualizationChecked } from '../visualizationChecked';
 const { labelColor, smWidthLabel } = variable;
 
-export const VisualizationOneLabel = ({ x, y, width, height }) => {
+interface IVisualizationOneLabel {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  text: string;
+}
+
+export const VisualizationOneLabel: FC<IVisualizationOneLabel> = ({ x, y, width, height }) => {
   const [image] = useImage(Router);
   return (
     <Group>
@@ -17,15 +25,17 @@ export const VisualizationOneLabel = ({ x, y, width, height }) => {
   );
 };
 
-VisualizationOneLabel.propTypes = {
-  x: PropTypes.number,
-  y: PropTypes.number,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  text: PropTypes.string
-};
+interface IVisualizationTwoLabel {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  firstText: string;
+  secondText: string;
+  vlan: string; // wcześniej był number, ale TS wyrzuca info, że type number is not assigneable to text w linii 43
+}
 
-export const VisualizationTwoLabel = ({ x, y, width, height, firstText, secondText, vlan }) => (
+export const VisualizationTwoLabel: FC<IVisualizationTwoLabel> = ({ x, y, width, height, firstText, secondText, vlan }) => (
   <Group>
     <Rect {...{ x, y, width, height, fill: labelColor }} />
     <Text {...{ text: firstText, x: x - 5, y: y + 2, height: height / 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold' }} />
@@ -34,17 +44,17 @@ export const VisualizationTwoLabel = ({ x, y, width, height, firstText, secondTe
   </Group>
 );
 
-VisualizationTwoLabel.propTypes = {
-  x: PropTypes.number,
-  y: PropTypes.number,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  firstText: PropTypes.string,
-  secondText: PropTypes.string,
-  vlan: PropTypes.number
-};
+interface IVisualizationThreeLabel {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  firstText: string;
+  bgpActive: boolean;
+  natActive: boolean;
+}
 
-export const VisualizationThreeLabel = ({ x, y, width, height, firstText, bgpActive, natActive }) => {
+export const VisualizationThreeLabel: FC<IVisualizationThreeLabel> = ({ x, y, width, height, firstText, bgpActive, natActive }) => {
   const firstContent = {
     x: x - 7.5,
     y,
@@ -98,14 +108,4 @@ export const VisualizationThreeLabel = ({ x, y, width, height, firstText, bgpAct
       <VisualizationChecked {...checkedNat} />
     </Group>
   );
-};
-
-VisualizationThreeLabel.propTypes = {
-  x: PropTypes.number,
-  y: PropTypes.number,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  firstText: PropTypes.string,
-  bgpActive: PropTypes.bool,
-  natActive: PropTypes.bool
 };
