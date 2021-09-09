@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { useModalLogic } from 'hooks';
@@ -9,7 +9,6 @@ import './styles.scss';
 interface IModal {
   show: boolean;
   header: PropTypes.string;
-  children: ReactNode;
   leftButton: string;
   rightButton: string;
   handleToggleModal: () => void;

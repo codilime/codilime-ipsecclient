@@ -1,12 +1,8 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 import { TopBar, SideBar } from 'layout';
 import './styles.scss';
 
-interface IMainLayout {
-  children: ReactNode;
-}
-
-export const MainLayout: FC<IMainLayout> = ({ children }) => (
+export const MainLayout: FC = ({ children }) => (
   <section className="mainLayout">
     <TopBar />
     <SideBar />

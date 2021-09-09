@@ -5,7 +5,6 @@ import { useToggle } from 'hooks';
 import './styles.scss';
 
 interface IToolTipInfo {
-  children: ReactNode;
   error: any;
 }
 
