@@ -1,6 +1,6 @@
 const API_URL = '/api';
 
-export async function client(endpoint, data, options) {
+export async function client(endpoint: any, data: any, options: any) {
   const { ...customConfig } = options ?? {};
   const headers = { 'Content-Type': 'application/json' };
   const config = {
