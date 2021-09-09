@@ -4,8 +4,8 @@ import { useVrfLogic } from 'hooks';
 import { validateDataInput } from 'utils/util.js';
 
 interface IInput {
-  type?: string;
   name: string;
+  type?: string;
   placeholder?: string;
   register?: any;
   setting?: boolean;

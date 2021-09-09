@@ -1,10 +1,9 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 import classNames from 'classnames';
 import './styles.scss';
 
 interface IUploadButton {
   onClick: () => void;
-  children: ReactNode;
   name: string;
   className: string;
   edit: boolean;

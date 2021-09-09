@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Endpoints, Modal, Visualization, FormDetail, PopupLogs, PopupStatus, Spinner } from 'template';
 import { useModalLogic, useVrfLogic } from 'hooks';
 import { Button } from 'common';
 import { useToggle } from 'hooks';
 import './styles.scss';
 
-export const VrfView = () => {
+export const VrfView: FC = () => {
   const { show, handleToggleModal } = useModalLogic();
   const { open, handleToggle } = useToggle();
   const {

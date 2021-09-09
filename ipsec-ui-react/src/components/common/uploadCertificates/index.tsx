@@ -2,8 +2,8 @@ import React, { FC } from 'react';
 import { EndpointInput, UploadButton } from 'common';
 
 interface IUploadCertificates {
-  type?: string;
   name: string;
+  type?: string;
   label?: string;
   text?: string;
   references?: any;

@@ -1,5 +1,5 @@
-import React from 'react';
+import React, { FC } from 'react';
 
-export const DefaultView = () => {
+export const DefaultView: FC = () => {
   return <div>Please select VRF to view details</div>;
 };

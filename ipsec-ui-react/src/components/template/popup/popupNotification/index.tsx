@@ -5,7 +5,7 @@ import './styles.scss';
 interface IPopupNotification {
   open: boolean;
   handleToggle: () => void;
-  notifications: Array<string>;
+  notifications: string[];
 }
 
 export const PopupNotification: FC<IPopupNotification> = ({ open, handleToggle, notifications = [] }) => {

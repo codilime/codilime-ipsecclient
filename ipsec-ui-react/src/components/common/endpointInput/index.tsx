@@ -11,8 +11,8 @@ interface IEndpointInput {
   name: string;
   references: Ref<HTMLInputElement>;
   placeholder: string;
-  value?: string | number;
   edit: boolean;
+  value?: string | number;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   onClick?: (e: MouseEvent<HTMLInputElement>) => void;
   checked?: boolean;

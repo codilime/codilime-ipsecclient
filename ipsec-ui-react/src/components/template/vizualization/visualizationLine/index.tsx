@@ -6,7 +6,7 @@ interface IVisualizationLine {
   y: number;
   width: number;
   height: number;
-  points: Array<any>;
+  points: string[];
   color: string;
 }
 

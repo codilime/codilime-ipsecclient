@@ -1,4 +1,4 @@
-import React, { FC, Ref, ReactNode } from 'react';
+import React, { FC, Ref } from 'react';
 import classNames from 'classnames';
 import './styles.scss';
 
@@ -8,7 +8,6 @@ interface IWrapper {
   className?: string;
   headerAction?: string;
   onClick?: () => void;
-  children: ReactNode;
   small?: boolean;
 }
 

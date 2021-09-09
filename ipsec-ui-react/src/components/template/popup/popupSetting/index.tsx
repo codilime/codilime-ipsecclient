@@ -8,7 +8,7 @@ interface IPopupSetting {
   handleToggle: () => void;
   handleChangeActiveSetting: () => void;
   activeSetting: { profile: boolean; restConf: boolean; certificate: boolean };
-  logs: Array<string>;
+  logs: string[];
 }
 
 export const PopupSetting: FC<IPopupSetting> = ({ open, handleToggle, handleChangeActiveSetting, activeSetting }) => {

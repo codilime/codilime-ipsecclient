@@ -9,7 +9,7 @@ interface IVisualizationVrf {
   width: number;
   height: number;
   title: string;
-  endpoints: Array<any>;
+  endpoints: string[];
   dimensions: number;
 }
 

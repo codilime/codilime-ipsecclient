@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 import { Text, Rect, Group, Image } from 'react-konva';
 import { variable } from '../visualizationConstants';
 
@@ -8,7 +8,6 @@ interface IVisualizationBox {
   width: number;
   height: number;
   title: string;
-  children: ReactNode;
 }
 
 export const VisualizationBox: FC<IVisualizationBox> = ({ x, y, width, height, title, children }) => {
