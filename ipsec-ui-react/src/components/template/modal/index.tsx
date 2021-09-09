@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { createPortal } from 'react-dom';
-import PropTypes from 'prop-types';
 import { useModalLogic } from 'hooks';
 import { Button } from 'common';
 import classNames from 'classnames';
@@ -8,7 +7,7 @@ import './styles.scss';
 
 interface IModal {
   show: boolean;
-  header: PropTypes.string;
+  header: string;
   leftButton: string;
   rightButton: string;
   handleToggleModal: () => void;

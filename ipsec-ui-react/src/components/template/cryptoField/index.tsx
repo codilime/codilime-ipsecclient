@@ -5,8 +5,8 @@ interface ICryptoField {
   name: string;
   text: string;
   register: any;
-  value: [];
-  crypto: { encryption: Array<string>; integrity: Array<string>; key_exchange: Array<string> };
+  value: string[];
+  crypto: { encryption: string[]; integrity: string[]; key_exchange: string[] };
   error: { message: string; type: string; ref: any };
 }
 
