@@ -1,0 +1,56 @@
+@import 'style/settings.scss';
+
+.notifications {
+  overflow-y: scroll;
+  height: 100%;
+  border: $wrapper_border;
+  margin: 10px;
+  &__search {
+    margin: 10px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  &__input {
+    padding: 5px;
+    margin-left: 10px;
+    outline: none;
+  }
+  &__wrapper {
+    overflow-y: scroll;
+  }
+  &__header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: $wrapper_border;
+    border-bottom: $wrapper_border;
+    border: $wrapper_border;
+    font-weight: bold;
+  }
+  &__log {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: $wrapper_border;
+    border: $wrapper_border;
+  }
+  &__time,
+  &__response {
+    padding: $padding-md;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &__time {
+    width: 20%;
+    border-right: $wrapper_border;
+  }
+  &__response {
+    width: 80%;
+  }
+  &__error {
+    font-size: 12px;
+    color: red;
+  }
+}

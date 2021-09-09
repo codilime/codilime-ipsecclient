@@ -25,7 +25,10 @@ export const EachEndpoint = ({ data, active, handleActionVrfEndpoints, id }) => 
       <td className="table__column table__bool">
         {activeButton}
         <EndpointOption {...{ open, handleToggleModal, handleActiveEdit, handleToggle }} />
-        <Modal {...{ show, handleToggleModal }} handleDelete={() => handleActionVrfEndpoints('delete', {}, id)} header="Delete endpoint" leftButton="cancel" rightButton="delete " btnDelete>
+        <Modal
+          {...{ show, handleToggleModal, header: 'Delete endpoint', leftButton: 'cancel', rightButton: 'delete ', btnDelete: true }}
+          handleDelete={() => handleActionVrfEndpoints('delete', {}, id)}
+        >
           Are you sure you want to delete the endpoint? This action cannot be undone
         </Modal>
       </td>

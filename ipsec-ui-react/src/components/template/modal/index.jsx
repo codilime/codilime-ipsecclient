@@ -3,13 +3,14 @@ import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { useModalLogic } from 'hooks';
 import { Button } from 'common';
+import classNames from 'classnames';
 import './styles.scss';
 
 export const Modal = ({ show, header, children, btnDelete, leftButton, rightButton, handleToggleModal, handleDelete }) => {
   const { stopPropagation } = useModalLogic();
 
   return createPortal(
-    <div className={`modal ${show ? 'modal--active' : ''}`} onClick={handleToggleModal}>
+    <div className={classNames('modal', { modal__active: show })} onClick={handleToggleModal}>
       <div className="modal__content" onClick={stopPropagation}>
         <div className="modal__header">
           <h4 className="modal__title">{header}</h4>
@@ -23,9 +24,11 @@ export const Modal = ({ show, header, children, btnDelete, leftButton, rightButt
           </Button>
           <Button
             className="modal__btn"
-            {...{ btnDelete }}
-            onClick={() => {
-              handleDelete(), handleToggleModal();
+            {...{
+              btnDelete,
+              onClick: () => {
+                handleDelete(), handleToggleModal();
+              }
             }}
           >
             {rightButton}

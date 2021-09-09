@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { EndpointInput } from 'common';
-import { endpointInputSchema, endpointHardwareSchema } from 'db';
-import { useValidateEndpoint, useVrfLogic } from 'hooks';
+import { EndpointInput, ToolTipInfo } from 'common';
+import { endpointInputSchema, endpointHardwareSchema, emptyEndpointSchema, emptyHardwareSchema } from 'db';
+import { useValidateEndpoint, useVrfLogic, useChoiceCertyficate } from 'hooks';
 import classNames from 'classnames';
 
 export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints) => {
   const [edit, setEdit] = useState(active);
-  const [endpoints, setEndpoint] = useState(null);
   const { hardware } = useVrfLogic();
+  const emptyEndpoint = hardware ? emptyHardwareSchema : emptyEndpointSchema;
+  const [endpoints, setEndpoint] = useState(emptyEndpoint);
   const { error, validateEmptyEndpoint, setError } = useValidateEndpoint(endpoints);
+  const { handleGeneratePskField } = useChoiceCertyficate(edit, error, setEndpoint, endpoints);
   const handleActiveEdit = () => setEdit((prev) => !prev);
 
   const onChange = (e) => {
@@ -50,15 +52,23 @@ export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints)
       if (el.type === 'checkbox') {
         return (
           <td key={el.name} className={classNames('table__column', 'table__bool')}>
-            <EndpointInput {...{ ...el, onChange, edit, error }} checked={endpoints[el.name]} />
+            <EndpointInput {...{ ...el, onChange, edit, error, checked: endpoints[el.name] }} />
           </td>
         );
       }
-      return (
-        <td key={el.name} className={classNames('table__column', { table__psk: el.name === 'psk', table__bool: el.name === 'remote_as' })}>
-          <EndpointInput {...{ ...el, onChange, edit, error }} value={endpoints[el.name]} />
-        </td>
-      );
+      if (el.name === 'psk') {
+        return handleGeneratePskField(el);
+      } else
+        return (
+          <td key={el.name} className={classNames('table__column', { table__psk: el.name === 'psk', table__bool: el.name === 'remote_as' })}>
+            <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints[el.name] }} />
+            {edit && (
+              <ToolTipInfo {...{ error: error[el.name] }}>
+                <p>Max value 255.255.255.255</p> <p>Min value 0.0.0.0</p>
+              </ToolTipInfo>
+            )}
+          </td>
+        );
     });
 
   const handleAddNewEndpoint = () => {
@@ -66,7 +76,6 @@ export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints)
     if (!validate) {
       return;
     }
-
     if (id === null) {
       handleActionVrfEndpoints('add', endpoints);
       return setEdit(false);

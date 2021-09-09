@@ -1,0 +1,12 @@
+@import 'style/settings.scss';
+
+.action {
+  &__box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 $padding-md;
+    position: relative;
+    font-size: 20px;
+  }
+}

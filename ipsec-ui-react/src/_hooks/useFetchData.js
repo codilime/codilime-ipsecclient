@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { client } from 'api';
 import { VrfsContext } from 'context';
+import Timestamp from 'react-timestamp';
 
 export const useFetchData = () => {
   const { setVrf } = useContext(VrfsContext);
@@ -15,8 +16,9 @@ export const useFetchData = () => {
         setVrf((prev) => ({ ...prev, loading: false }));
         return id;
       }
-    } catch (error) {
-      setVrf((prev) => ({ ...prev, loading: false, error }));
+    } catch (err) {
+      const date = new Date();
+      setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { time: <Timestamp {...{ date }} />, description: err.error }] }));
     }
   };
 
@@ -24,13 +26,13 @@ export const useFetchData = () => {
     setVrf((prev) => ({ ...prev, loading: true }));
     try {
       const data = await client(`vrfs/${payload.id}`, { ...payload }, { method: 'PUT' });
-      console.log(data);
       if (data) {
         setVrf((prev) => ({ ...prev, loading: false }));
         return data;
       }
-    } catch (error) {
-      setVrf((prev) => ({ ...prev, loading: false, error }));
+    } catch (err) {
+      const date = new Date();
+      setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { time: <Timestamp {...{ date }} />, description: err.error }] }));
     }
   };
 

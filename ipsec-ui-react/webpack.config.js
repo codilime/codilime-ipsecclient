@@ -1,6 +1,11 @@
 const webpack = require('webpack');
 const path = require('path');
 
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin')
+
+const OUTPUT_PATH =  path.resolve(__dirname, './dist');
+
 module.exports = {
   entry: path.resolve(__dirname, './src/index.jsx'),
   module: {
@@ -17,15 +22,6 @@ module.exports = {
       {
         test: /\.(png|jpe?g|gif)$/i,
         use: ['file-loader']
-      },
-      {
-        test: /\.(ttf)([\?]?.*)$/,
-        use: {
-          loader: 'file-loader',
-          options: {
-            name: '[name].[ext]'
-          }
-        }
       },
       {
         test: /\.svg$/,
@@ -56,10 +52,15 @@ module.exports = {
     }
   },
   output: {
-    path: path.resolve(__dirname, './dist'),
-    filename: 'bundle.js'
+    path: OUTPUT_PATH,
+    filename: 'bundle.js',
+    publicPath: OUTPUT_PATH,
   },
-  plugins: [new webpack.HotModuleReplacementPlugin()],
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new HtmlWebpackPlugin({template: './src/index.html' }),
+    new CleanWebpackPlugin()
+  ],
   devServer: {
     proxy: {
       '/api': {
@@ -67,7 +68,10 @@ module.exports = {
         secure: false
       }
     },
-    contentBase: path.resolve(__dirname, './dist'),
+    historyApiFallback: {
+        index: OUTPUT_PATH,
+    },
+    contentBase: OUTPUT_PATH,
     hot: true
   }
 };
