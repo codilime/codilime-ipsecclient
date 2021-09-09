@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 
 interface IEachVlan {
-  ip: string;
   vlan: string;
-  onClick: () => void;
+  ip: string;
+  onClick: (name: string) => void;
 }
 
 export const EachVlan: FC<IEachVlan> = ({ vlan, ip, onClick }) => (
