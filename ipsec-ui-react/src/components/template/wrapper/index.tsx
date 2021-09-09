@@ -1,16 +1,17 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC, Ref, ReactNode } from 'react';
 import classNames from 'classnames';
 import './styles.scss';
 
 interface IWrapper {
   title: string;
-  references: any;
-  className: string;
-  headerAction: string;
-  onClick: () => void;
+  references?: Ref<HTMLDivElement>;
+  className?: string;
+  headerAction?: string;
+  onClick?: () => void;
   children: ReactNode;
-  small: boolean;
+  small?: boolean;
 }
+
 export const Wrapper: FC<IWrapper> = ({ title, children, className, references, headerAction, onClick, small }) => {
   const headerActionBtn = headerAction && (
     <button className="wrapper__btn" {...{ onClick }}>

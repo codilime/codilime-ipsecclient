@@ -1,19 +1,24 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Wrapper } from 'template';
 import { useVlanLogic } from 'hooks';
 import { EachVlan } from './eachVlan';
 import './styles.scss';
 
-export const Vlan = ({ setValue }) => {
+
+interface IVlan {
+  setValue: any;
+}
+
+export const Vlan: FC<IVlan> = ({ setValue }) => {
   const { options, select, vlan, handleAddNewVlan, handleDeleteVlan } = useVlanLogic(setValue);
-  console.log(vlan);
+
   const displayVlans =
     vlan === null || !vlan.length ? (
       <tr className="vlan__row__empty">
         <td>Add Vlans from dropdown</td>
       </tr>
     ) : (
-      vlan.map((el) => <EachVlan {...{ ...el, onClick: handleDeleteVlan }} />)
+      vlan.map((el: any) => <EachVlan {...{ ...el, onClick: handleDeleteVlan }} />)
     );
 
   return (
