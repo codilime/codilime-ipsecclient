@@ -5,7 +5,7 @@ import { Button } from 'common';
 interface IPopupLogs {
   open: boolean;
   handleToggle: () => void;
-  logs: Array<string>;
+  logs: string[];
 }
 
 export const PopupLogs: FC<IPopupLogs> = ({ logs = [], open, handleToggle }) => {
