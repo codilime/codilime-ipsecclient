@@ -1,15 +1,15 @@
-import React, { FC } from 'react';
+import React, { ChangeEvent, MouseEvent, FC } from 'react';
 import { EndpointInput, UploadButton } from 'common';
 
 interface IUploadCertificates {
-  type?: string;
   name: string;
+  type?: string;
   label?: string;
   text?: string;
   references?: any;
   edit?: boolean;
-  onChange?: () => void;
-  onClick?: () => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  onClick?: (e: MouseEvent<HTMLInputElement>) => void;
   value?: string;
   className?: string;
 }

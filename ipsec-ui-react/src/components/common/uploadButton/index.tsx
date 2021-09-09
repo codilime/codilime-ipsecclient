@@ -1,12 +1,12 @@
-import React, { FC } from 'react';
+import React, { FC, MouseEvent } from 'react';
 import classNames from 'classnames';
 import './styles.scss';
 
 interface IUploadButton {
-  onClick: () => void;
   name: string;
   className: string;
   edit: boolean;
+  onClick?: (e: MouseEvent<HTMLInputElement>) => void;
 }
 
 export const UploadButton: FC<IUploadButton> = ({ onClick, children, name, edit, className }) => {

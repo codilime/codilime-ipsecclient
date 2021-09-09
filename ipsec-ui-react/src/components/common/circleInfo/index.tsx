@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { FC } from 'react';
 import './styles.scss';
 
-export const CircleInfo = () => {
+export const CircleInfo: FC = () => {
   return <span className="circle"></span>;
 };

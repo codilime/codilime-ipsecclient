@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from 'common';
 import { useGetLocation, useGetVrfs } from 'hooks';
@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import { HardwareId } from 'constant';
 import './styles.scss';
 
-export const SideBar = () => {
+export const SideBar: FC = () => {
   const { vrfs } = useGetVrfs();
   const { currentLocation } = useGetLocation();
   const listContext = vrfs ? (

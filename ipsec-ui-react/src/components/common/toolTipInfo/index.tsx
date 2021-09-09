@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import classNames from 'classnames';
 import { BiInfoCircle } from 'react-icons/bi';
 import { useToggle } from 'hooks';

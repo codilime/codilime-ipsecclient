@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import './styles.scss';
 
 interface IButton {
-  children: ReactNode;
   onClick: () => void;
   className: string;
   btnDelete: boolean;
@@ -19,7 +18,6 @@ export const Button: FC<IButton> = ({ children, onClick, className, btnDelete, d
 interface IEndpointButton {
   onClick: () => void;
   secondary: boolean;
-  children: ReactNode;
   disabled: boolean;
   className: string;
 }
