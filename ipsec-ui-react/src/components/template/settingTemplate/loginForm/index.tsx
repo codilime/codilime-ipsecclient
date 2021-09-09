@@ -14,7 +14,7 @@ export const LoginForm: FC = () => {
     formState: { errors }
   } = useForm({ resolver: yupResolver(newLoginSchema) });
 
-  const submit = (data: string) => {
+  const submit = (data: any) => {
     console.log(data);
   };
 

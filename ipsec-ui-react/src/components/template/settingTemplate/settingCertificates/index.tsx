@@ -3,11 +3,11 @@ import { Wrapper, EachCertificate, UploadCertificates } from 'template';
 import { useCertificatesLogic } from 'hooks';
 import './styles.scss';
 
-interface ISettingCertificates {
+interface SettingCertificatesProps {
   certificates: Array<{ name: string; commonName: string; time: string; checked: boolean; onChange: () => void }>;
 }
 
-export const SettingCertificates: FC<ISettingCertificates> = () => {
+export const SettingCertificates: FC<SettingCertificatesProps> = () => {
   const { certificates = [{ name: 'testName', commonName: 'test', time: '12.10.2021 19:21', checked: true }], uploadBtn, handleAddCerts, handleSaveNewCerts } = useCertificatesLogic();
 
   const displayCertificates = certificates.map((certificate) => <EachCertificate key={certificate.name} {...certificate} />);
