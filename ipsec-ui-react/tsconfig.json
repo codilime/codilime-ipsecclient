@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "jsx": "react-jsx",
+    "paths": {
+      "components/*": ["components"],
+      "common/*": ["components/common"],
+      "template": ["components/template"],
+      "layout/*": ["components/layout"],
+      "pages/*": ["components/pages"],
+      "style/*": ["scss"],
+      "fonts/*": ["assets/fonts"],
+      "images/*": ["assets/images"],
+      "db/*": ["db"],
+      "hooks/*": ["_hooks"],
+      "helpers/*": ["_helpers"],
+      "context/*": ["_context"],
+      "api/*": ["_api"],
+      "schema/*": ["schema"],
+      "utils/*": ["utils"],
+      "constant/*": ["constants'"]
+    }
+  },
+  "include": ["src"]
+}
