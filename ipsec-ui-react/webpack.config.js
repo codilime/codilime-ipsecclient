@@ -36,7 +36,25 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx', '.ts', 'tsx']
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    alias: {
+      components: path.resolve(__dirname, 'src/components'),
+      common: path.resolve(__dirname, 'src/components/common'),
+      template: path.resolve(__dirname, 'src/components/template'),
+      layout: path.resolve(__dirname, 'src/components/layout'),
+      pages: path.resolve(__dirname, 'src/components/pages'),
+      style: path.resolve(__dirname, 'src/scss'),
+      fonts: path.resolve(__dirname, 'src/assets/fonts'),
+      images: path.resolve(__dirname, 'src/assets/images'),
+      db: path.resolve(__dirname, 'src/db'),
+      hooks: path.resolve(__dirname, 'src/hooks'),
+      helpers: path.resolve(__dirname, 'src/helpers'),
+      context: path.resolve(__dirname, 'src/context'),
+      api: path.resolve(__dirname, 'src/api'),
+      schema: path.resolve(__dirname, 'src/schema'),
+      utils: path.resolve(__dirname, 'src/utils'),
+      constant: path.resolve(__dirname, 'src/constants')
+    }
   },
   output: {
     path: OUTPUT_PATH,

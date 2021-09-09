@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["webpack-env"],
+    "checkJs": false,
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
     "moduleResolution": "node",
@@ -15,10 +18,25 @@
     "isolatedModules": true,
     "noEmit": false,
     "jsx": "react-jsx",
-    "baseUrl": "src",
     "paths": {
-      "db/*": ["db"]
+      "components/*": ["src/components"],
+      "common/*": ["src/components/common"],
+      "template": ["src/components/template"],
+      "layout/*": ["src/components/layout"],
+      "pages/*": ["src/components/pages"],
+      "style/*": ["src/scss"],
+      "fonts/*": ["src/assets/fonts"],
+      "images/*": ["src/assets/images"],
+      "db": ["src/db"],
+      "hooks/*": ["src/hooks"],
+      "helpers/*": ["src/helpers"],
+      "context": ["src/context"],
+      "api/*": ["src/api"],
+      "schema/*": ["src/schema"],
+      "utils/*": ["src/utils"],
+      "constant/*": ["src/constants'"]
     }
   },
-  "include": ["src"]
+  "include": ["src/**/*", "src/**/*"],
+  "exclude": ["*.js", "*.jsx"]
 }
