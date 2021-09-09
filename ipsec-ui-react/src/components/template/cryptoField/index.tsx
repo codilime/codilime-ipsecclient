@@ -1,16 +1,16 @@
-import React, { FC } from 'react';
+import React, { FC, Ref } from 'react';
 import './styles.scss';
 
-interface ICryptoField {
+interface CryptoFieldProps {
   name: string;
   text: string;
   register: any;
   value: string[];
   crypto: { encryption: string[]; integrity: string[]; key_exchange: string[] };
-  error: { message: string; type: string; ref: any };
+  error: { message: string; type: string; ref: Ref<any> };
 }
 
-export const CryptoField: FC<ICryptoField> = ({ text, name, crypto = { encryption: [''], integrity: [''], key_exchange: [''] }, register, error }) => {
+export const CryptoField: FC<CryptoFieldProps> = ({ text, name, crypto = { encryption: [''], integrity: [''], key_exchange: [''] }, register, error }) => {
   const encryptionOption = crypto['encryption'].map((el) => (
     <option key={el} value={el}>
       {el}

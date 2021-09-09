@@ -1,11 +1,10 @@
-import React, {FunctionComponent} from 'react';
+import React, { FunctionComponent } from 'react';
 import classNames from 'classnames';
 import './styles.scss';
 
-
 // TODO - type HOC
 interface SpinnerProps {
-  loading?: boolean
+  loading?: boolean;
 }
 export const Spinner: FunctionComponent<SpinnerProps> = ({ loading }) => {
   const spinner = Array.from({ length: 19 }).map((_, index) => (

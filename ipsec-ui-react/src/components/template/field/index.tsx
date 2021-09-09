@@ -3,7 +3,7 @@ import { Input } from 'common';
 import classNames from 'classnames';
 import './styles.scss';
 
-interface IField {
+interface FieldProps {
   type: string;
   name: string;
   placeholder: string;
@@ -16,7 +16,7 @@ interface IField {
   className: string;
 }
 
-export const Field: FC<IField> = ({ text, type, name, placeholder, register, value, error, setting, validate = true, className }) => (
+export const Field: FC<FieldProps> = ({ text, type, name, placeholder, register, value, error, setting, validate = true, className }) => (
   <div
     className={classNames('field', {
       field__checkbox: type === 'checkbox',

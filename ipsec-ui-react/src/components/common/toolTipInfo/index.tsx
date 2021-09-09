@@ -4,11 +4,11 @@ import { BiInfoCircle } from 'react-icons/bi';
 import { useToggle } from 'hooks';
 import './styles.scss';
 
-interface IToolTipInfo {
+interface ToolTipInfoProps {
   error: any;
 }
 
-export const ToolTipInfo: FC<IToolTipInfo> = ({ children, error }) => {
+export const ToolTipInfo: FC<ToolTipInfoProps> = ({ children, error }) => {
   const { open, handleToggle } = useToggle();
 
   useEffect(() => {

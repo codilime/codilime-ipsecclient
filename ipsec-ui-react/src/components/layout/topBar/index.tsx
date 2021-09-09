@@ -3,11 +3,11 @@ import Logo from 'images/cisco_logo.png';
 import { Notification, Logout, Setting } from 'template';
 import './styles.scss';
 
-interface ITopBar {
+interface TopBarProps {
   productName: string;
 }
 
-export const TopBar: FC<ITopBar> = ({ productName = 'IPsec User Interface' }) => {
+export const TopBar: FC<TopBarProps> = ({ productName = 'IPsec User Interface' }) => {
   const [openPopup, setOpenPopup] = useState({ setting: false, notice: false });
 
   const handleOpenAction = (name: string) => {

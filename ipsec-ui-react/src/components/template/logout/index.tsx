@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { FiLogOut } from 'react-icons/fi';
 
 import { TopSideIcon } from 'common';
 import { useLoginLogic } from 'hooks';
 
-export const Logout = () => {
+export const Logout: FC = () => {
   const { handleLogout } = useLoginLogic();
   return (
     <TopSideIcon>

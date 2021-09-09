@@ -1,7 +1,7 @@
 import React, { ChangeEvent, MouseEvent, FC } from 'react';
 import { EndpointInput, UploadButton } from 'common';
 
-interface IUploadCertificates {
+interface UploadCertificatesProps {
   name: string;
   type?: string;
   label?: string;
@@ -14,7 +14,7 @@ interface IUploadCertificates {
   className?: string;
 }
 
-export const UploadCertificates: FC<IUploadCertificates> = ({ type, name, onChange, edit, references, value, label, text, onClick, className }) => {
+export const UploadCertificates: FC<UploadCertificatesProps> = ({ type, name, onChange, edit, references, value, label, text, onClick, className }) => {
   return (
     <div className="table__certificates">
       <EndpointInput {...{ type, name, onChange, edit, references, value }} />

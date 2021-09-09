@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { FC } from 'react';
 
 import './styles.scss';
 
-export const Cube = () => {
+export const Cube: FC = () => {
   return (
     <div className="cube">
       <div className="cube__container">

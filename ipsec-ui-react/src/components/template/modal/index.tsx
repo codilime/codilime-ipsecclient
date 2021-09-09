@@ -5,7 +5,7 @@ import { Button } from 'common';
 import classNames from 'classnames';
 import './styles.scss';
 
-interface IModal {
+interface ModalProps {
   show: boolean;
   header: string;
   leftButton: string;
@@ -15,7 +15,7 @@ interface IModal {
   btnDelete: boolean;
 }
 
-export const Modal: FC<IModal> = ({ show, header, children, btnDelete, leftButton, rightButton, handleToggleModal, handleDelete }) => {
+export const Modal: FC<ModalProps> = ({ show, header, children, btnDelete, leftButton, rightButton, handleToggleModal, handleDelete }) => {
   const { stopPropagation } = useModalLogic();
 
   return createPortal(

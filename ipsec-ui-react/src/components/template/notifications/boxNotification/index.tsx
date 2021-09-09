@@ -1,17 +1,16 @@
 import React, { FC } from 'react';
 import { Wrapper, EachNotification } from 'template';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './styles.scss';
 
-interface IBoxNotification {
+interface BoxNotificationProps {
   open: boolean;
   handleToggle: () => void;
   handleOpenLogs: () => void;
-  notifications: Array<string>;
+  notifications: string[];
 }
 
-export const BoxNotification: FC<IBoxNotification> = ({ open, handleToggle, notifications, handleOpenLogs }) => {
+export const BoxNotification: FC<BoxNotificationProps> = ({ open, handleToggle, notifications = [''], handleOpenLogs }) => {
   const displayNotification = notifications.length ? (
     notifications.map((notice, index) => <EachNotification key={index} {...notice} />)
   ) : (
@@ -25,8 +24,4 @@ export const BoxNotification: FC<IBoxNotification> = ({ open, handleToggle, noti
       </Wrapper>
     </div>
   );
-};
-
-BoxNotification.defaultProps = {
-  notifications: []
 };

@@ -1,5 +1,4 @@
-import React from 'react';
-
+import React, { FC } from 'react';
 import { EndpointButton } from 'common';
 import { Wrapper } from 'template';
 import { useCreateEndpointTable } from 'hooks';
@@ -7,7 +6,7 @@ import { newVrf } from 'constant';
 
 import './styles.scss';
 
-export const Endpoints = () => {
+export const Endpoints: FC = () => {
   const { dynamicCreateEndpoint, dynamicHeader, createNewEndpoint, newEndpointButton, handleToggle, currentLocation } = useCreateEndpointTable();
 
   return (

@@ -1,12 +1,11 @@
-import React from 'react';
-
+import React, { FC } from 'react';
 import { useCreateVRFMainView } from 'hooks';
 import { Wrapper, Vlan } from 'template';
 import { Button } from 'common';
 
 import './styles.scss';
 
-export const FormDetail = () => {
+export const FormDetail: FC = () => {
   const { handleSubmit, submit, isDirty, displayDetails, setValue, hardware } = useCreateVRFMainView();
 
   return (

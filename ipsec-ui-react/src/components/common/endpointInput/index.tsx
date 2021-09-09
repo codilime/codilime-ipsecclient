@@ -6,7 +6,7 @@ import { useToggle } from '_hooks';
 import classNames from 'classnames';
 import './styles.scss';
 
-interface IEndpointInput {
+interface EndpointInputProps {
   type: string;
   name: string;
   references: Ref<HTMLInputElement>;
@@ -19,7 +19,7 @@ interface IEndpointInput {
   error?: any;
 }
 
-export const EndpointInput: FC<IEndpointInput> = ({ type, placeholder, name, value, edit, onChange, onClick, checked, error, references }) => {
+export const EndpointInput: FC<EndpointInputProps> = ({ type, placeholder, name, value, edit, onChange, onClick, checked, error, references }) => {
   const { open, handleToggle } = useToggle();
   const icon = open && edit ? <BsEyeSlashFill className="endpointInput__icon" onClick={handleToggle} /> : <IoEyeSharp className="endpointInput__icon" onClick={handleToggle} />;
 

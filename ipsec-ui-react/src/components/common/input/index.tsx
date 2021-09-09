@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { useVrfLogic } from 'hooks';
 import { validateDataInput } from 'utils/util.js';
 
-interface IInput {
+interface InputProps {
   name: string;
   type?: string;
   placeholder?: string;
@@ -12,7 +12,7 @@ interface IInput {
   validate?: boolean;
 }
 
-export const Input: FC<IInput> = ({ type, name, placeholder, register, setting, validate }) => {
+export const Input: FC<InputProps> = ({ type, name, placeholder, register, setting, validate }) => {
   const { hardware } = useVrfLogic();
   const readOnly = hardware && name === 'client_name';
   const validated = validate ? validateDataInput : null;

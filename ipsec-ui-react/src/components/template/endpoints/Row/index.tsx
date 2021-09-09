@@ -3,7 +3,7 @@ import { EndpointButton } from 'common';
 import { EndpointOption, Modal } from 'template';
 import { useEndpointLogic, useToggle, useModalLogic } from 'hooks';
 
-interface IEachEndpoint {
+interface EachEndpointProps {
   data: {
     id: string;
     remote_ip_sec: string;
@@ -19,7 +19,7 @@ interface IEachEndpoint {
   handleActionVrfEndpoints: () => void;
 }
 
-export const EachEndpoint: FC<IEachEndpoint> = ({ data, active = false, handleActionVrfEndpoints, id = null }) => {
+export const EachEndpoint: FC<EachEndpointProps> = ({ data, active = false, handleActionVrfEndpoints, id = null }) => {
   const { open, handleToggle } = useToggle();
   const { show, handleToggleModal } = useModalLogic();
   const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic(data, active, id, handleActionVrfEndpoints);
