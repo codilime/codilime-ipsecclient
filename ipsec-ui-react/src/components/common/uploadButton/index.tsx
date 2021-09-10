@@ -1,12 +1,11 @@
 import React, { FC, MouseEvent } from 'react';
 import classNames from 'classnames';
 import './styles.scss';
+import { ButtonTypeProps } from '../../../interface/components';
 
-interface UploadButtonProps {
-  name: string;
+interface UploadButtonProps extends ButtonTypeProps {
   className: string;
   edit: boolean;
-  onClick?: (e: MouseEvent<HTMLInputElement>) => void;
 }
 
 export const UploadButton: FC<UploadButtonProps> = ({ onClick, children, name, edit, className }) => {

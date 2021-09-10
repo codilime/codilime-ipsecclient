@@ -1,21 +1,14 @@
 import React, { ChangeEvent, MouseEvent, FC, Ref } from 'react';
 import { IoEyeSharp } from 'react-icons/io5';
 import { BsEyeSlashFill } from 'react-icons/bs';
-import { validateDataInput } from 'utils/util';
-import { useToggle } from '_hooks';
+import { validateDataInput } from 'utils/';
+import { useToggle } from 'hooks/';
 import classNames from 'classnames';
 import './styles.scss';
+import { InputTypeProps } from '../../../interface/components';
 
-interface EndpointInputProps {
-  type: string;
-  name: string;
-  references: Ref<HTMLInputElement>;
-  placeholder: string;
+interface EndpointInputProps extends InputTypeProps {
   edit: boolean;
-  value?: string | number;
-  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
-  onClick?: (e: MouseEvent<HTMLInputElement>) => void;
-  checked?: boolean;
   error?: any;
 }
 

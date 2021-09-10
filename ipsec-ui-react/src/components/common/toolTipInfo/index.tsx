@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import classNames from 'classnames';
 import { BiInfoCircle } from 'react-icons/bi';
-import { useToggle } from 'hooks';
+import { useToggle } from 'hooks/';
 import './styles.scss';
 
 interface ToolTipInfoProps {

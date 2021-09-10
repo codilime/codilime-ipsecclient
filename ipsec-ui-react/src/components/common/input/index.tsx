@@ -1,12 +1,10 @@
 import React, { FC } from 'react';
 import classNames from 'classnames';
-import { useVrfLogic } from 'hooks';
-import { validateDataInput } from 'src/utils/util.js';
+import { useVrfLogic } from 'hooks/';
+import { validateDataInput } from 'utils/';
+import { InputTypeProps } from '../../../interface/components';
 
-interface InputProps {
-  name: string;
-  type?: string;
-  placeholder?: string;
+interface InputProps extends InputTypeProps {
   register?: any;
   setting?: boolean;
   validate?: boolean;
