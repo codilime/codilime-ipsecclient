@@ -2,14 +2,11 @@ import React, { FC } from 'react';
 import { VisualizationOneLabel, VisualizationTwoLabel, VisualizationThreeLabel, VisualizationBox, VisualizationLine, VisualizationStatus } from 'template';
 import { variable } from '../visualizationConstants';
 import { Group } from 'react-konva';
+import { endpointProps, VisualizationBoxTypeProps } from '../../../../interface/components';
 
-interface VisualizationVrfProps {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+interface VisualizationVrfProps extends VisualizationBoxTypeProps {
   title: string;
-  endpoints: string[];
+  endpoints: endpointProps[];
   dimensions: number;
 }
 export const VisualizationVrf: FC<VisualizationVrfProps> = ({ x, y, width, height, title, endpoints, dimensions, physical_interface, vlan }) => {

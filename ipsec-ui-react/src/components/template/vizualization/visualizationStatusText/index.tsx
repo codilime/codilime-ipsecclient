@@ -1,11 +1,8 @@
 import React, { FC } from 'react';
 import { Circle, Group, Text } from 'react-konva';
+import { VisualizationBoxTypeProps } from '../../../../interface/components';
 
-interface VisualizationStatusTextProps {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+interface VisualizationStatusTextProps extends VisualizationBoxTypeProps {
   text: string;
   status: string;
 }

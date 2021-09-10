@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from 'common';
-import { useGetLocation, useGetVrfs } from 'hooks';
+import { Button } from 'common/';
+import { useGetLocation, useGetVrfs } from 'hooks/';
 import { IoHardwareChip } from 'react-icons/io5';
 import classNames from 'classnames';
-import { HardwareId } from 'constant';
+import { HardwareId } from 'constant/';
 import './styles.scss';
 
 export const SideBar: FC = () => {

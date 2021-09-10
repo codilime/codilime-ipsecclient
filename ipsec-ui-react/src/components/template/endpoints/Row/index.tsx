@@ -1,18 +1,11 @@
 import React, { FC } from 'react';
-import { EndpointButton } from 'common';
+import { EndpointButton } from 'common/';
 import { EndpointOption, Modal } from 'template';
-import { useEndpointLogic, useToggle, useModalLogic } from 'hooks';
+import { useEndpointLogic, useToggle, useModalLogic } from 'hooks/';
+import { endpointProps } from '../../../../interface/components';
 
 interface EachEndpointProps {
-  data: {
-    id: string;
-    remote_ip_sec: string;
-    local_ip: string;
-    peer_ip: string;
-    psk: string;
-    nat: boolean;
-    gp: boolean;
-  };
+  data: endpointProps;
   disabled: boolean;
   active: boolean;
   id: number;
@@ -25,11 +18,11 @@ export const EachEndpoint: FC<EachEndpointProps> = ({ data, active = false, hand
   const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic(data, active, id, handleActionVrfEndpoints);
 
   const activeButton = edit ? (
-    <EndpointButton {...{ onClick: handleAddNewEndpoint }} className="table__add">
+    <EndpointButton name="" {...{ onClick: handleAddNewEndpoint }} className="table__add">
       Add
     </EndpointButton>
   ) : (
-    <EndpointButton secondary onClick={handleToggle}>
+    <EndpointButton name="" secondary onClick={handleToggle}>
       ...
     </EndpointButton>
   );

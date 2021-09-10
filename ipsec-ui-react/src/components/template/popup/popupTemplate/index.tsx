@@ -3,10 +3,9 @@ import { MdClose } from 'react-icons/md';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import './styles.scss';
+import { NotificationTypeProps } from '../../../../interface/components';
 
-interface PopupProps {
-  open: boolean;
-  handleToggle: () => void;
+interface PopupProps extends NotificationTypeProps {
   title: string;
 }
 

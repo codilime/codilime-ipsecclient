@@ -4,14 +4,11 @@ import { variable } from '../visualizationConstants';
 import Router from 'images/router.png';
 import useImage from 'use-image';
 import { VisualizationChecked } from '../visualizationChecked';
+import { VisualizationBoxTypeProps } from '../../../../interface/components';
 const { labelColor, smWidthLabel } = variable;
 
-interface VisualizationOneLabelProps {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  text: string;
+interface VisualizationOneLabelProps extends VisualizationBoxTypeProps {
+  text?: string;
 }
 
 export const VisualizationOneLabel: FC<VisualizationOneLabelProps> = ({ x, y, width, height }) => {

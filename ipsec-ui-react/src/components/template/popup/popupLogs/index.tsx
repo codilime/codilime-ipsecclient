@@ -1,11 +1,10 @@
 import React, { FC } from 'react';
 import { Popup } from 'template';
-import { Button } from 'common';
+import { Button } from 'common/';
+import { NotificationTypeProps } from '../../../../interface/components';
 
-interface PopupLogsProps {
-  open: boolean;
-  handleToggle: () => void;
-  logs: string[];
+interface PopupLogsProps extends NotificationTypeProps {
+  logs?: string[];
 }
 
 export const PopupLogs: FC<PopupLogsProps> = ({ logs = [], open, handleToggle }) => {
@@ -15,7 +14,9 @@ export const PopupLogs: FC<PopupLogsProps> = ({ logs = [], open, handleToggle })
     <Popup {...{ open, handleToggle, title: 'Logs' }}>
       <div>{displayLogs}</div>
       <div className="popup__footer">
-        <Button className="popup__save">Save</Button>
+        <Button name="" className="popup__save">
+          Save
+        </Button>
       </div>
     </Popup>
   );

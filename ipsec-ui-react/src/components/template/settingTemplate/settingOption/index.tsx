@@ -1,8 +1,9 @@
 import React, { FC } from 'react';
 import classNames from 'classnames';
+import { activeSettingsProps } from '../../../../interface/components';
 
 interface SettingOptionProps {
-  activeSetting: { login: boolean; certificate: boolean; kredki: boolean; profile: boolean; restConf: boolean };
+  activeSetting: activeSettingsProps;
   handleChangeActiveSetting: () => void;
 }
 

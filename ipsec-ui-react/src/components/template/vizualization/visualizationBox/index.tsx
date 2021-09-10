@@ -1,16 +1,9 @@
 import React, { FC } from 'react';
 import { Text, Rect, Group, Image } from 'react-konva';
 import { variable } from '../visualizationConstants';
+import { VisualizationBoxTypeProps } from '../../../../interface/components';
 
-interface VisualizationBoxProps {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  title: string;
-}
-
-export const VisualizationBox: FC<VisualizationBoxProps> = ({ x, y, width, height, title, children }) => {
+export const VisualizationBox: FC<VisualizationBoxTypeProps> = ({ x, y, width, height, title, children }) => {
   return (
     <Group>
       <Rect {...{ x, y, width, height }} fill="white" stroke={variable.bgcColor} strokeWidth={1} />

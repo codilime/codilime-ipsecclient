@@ -4,7 +4,7 @@ import './styles.scss';
 import { ButtonTypeProps } from '../../../interface/components';
 
 interface ButtonProps extends ButtonTypeProps {
-  btnDelete: boolean;
+  btnDelete?: boolean;
 }
 
 export const Button: FC<ButtonProps> = ({ children, onClick, className = '', btnDelete, disabled }) => (
@@ -14,7 +14,7 @@ export const Button: FC<ButtonProps> = ({ children, onClick, className = '', btn
 );
 
 interface EndpointButtonProps extends ButtonTypeProps {
-  secondary: boolean;
+  secondary?: boolean;
 }
 
 export const EndpointButton: FC<EndpointButtonProps> = ({ onClick, secondary, children, disabled, className = '' }) => (

@@ -1,15 +1,10 @@
 import React, { FC } from 'react';
 import { Text, Rect, Group, Line } from 'react-konva';
 import { variable } from '../visualizationConstants';
+import { VisualizationBoxTypeProps } from '../../../../interface/components';
 
-interface VisualizationEndpointLabelProps {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  title: string;
-  value: string;
-  color: string;
+interface VisualizationEndpointLabelProps extends VisualizationBoxTypeProps {
+  color?: string;
 }
 
 export const VisualizationEndpointLabel: FC<VisualizationEndpointLabelProps> = ({ x, y, width, height, title, value, color = 'black' }) => (

@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
-import { EndpointButton } from 'common';
+import { EndpointButton } from 'common/';
 import { Wrapper } from 'template';
-import { useCreateEndpointTable } from 'hooks';
-import { newVrf } from 'constant';
+import { useCreateEndpointTable } from 'hooks/';
+import { newVrf } from 'constant/';
 
 import './styles.scss';
 
@@ -20,7 +20,7 @@ export const Endpoints: FC = () => {
           {createNewEndpoint}
           <tr className="table__addBtn">
             <td className="table__columnBtn">
-              <EndpointButton disabled={currentLocation === newVrf} onClick={handleToggle}>
+              <EndpointButton name="" disabled={currentLocation === newVrf} onClick={handleToggle}>
                 {newEndpointButton}
               </EndpointButton>
             </td>

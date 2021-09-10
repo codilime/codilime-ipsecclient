@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
 import { Endpoints, Modal, Visualization, FormDetail, PopupLogs, PopupStatus, Spinner } from 'template';
-import { useModalLogic, useVrfLogic } from 'hooks';
-import { Button } from 'common';
-import { useToggle } from 'hooks';
+import { useModalLogic, useVrfLogic, useToggle } from 'hooks/';
+import { Button } from 'common/';
 import './styles.scss';
 
 export const VrfView: FC = () => {
@@ -18,14 +17,14 @@ export const VrfView: FC = () => {
   const vrfName = client_name ? client_name : 'New VRF';
 
   const deleteBtn = !hardware && (
-    <Button btnDelete className="vrf__btn" onClick={handleToggleModal}>
+    <Button name="" btnDelete className="vrf__btn" onClick={handleToggleModal}>
       Delete VRF
     </Button>
   );
 
   const buttons = client_name && (
     <div className="vrf__box">
-      <Button className="vrf__btn" onClick={handleToggle}>
+      <Button name="" className="vrf__btn" onClick={handleToggle}>
         View logs
       </Button>
       {deleteBtn}

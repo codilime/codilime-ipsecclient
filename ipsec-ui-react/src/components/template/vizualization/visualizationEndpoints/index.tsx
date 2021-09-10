@@ -1,10 +1,16 @@
 import React, { FC } from 'react';
 import { Stage, Layer } from 'react-konva';
 import { VisualizationIcon, VisualizationLine, VisualizationVrf } from 'template';
+import { endpointProps } from '../../../../interface/components';
 
 interface VisualizationEndpointsProps {
   dimensions: number;
-  data: { endpoints: Object; client_name: string; physical_interface: string; vlan: number };
+  data: {
+    endpoints: endpointProps[];
+    client_name: string;
+    physical_interface: string;
+    vlan: number;
+  };
 }
 
 export const VisualizationEndpoints: FC<VisualizationEndpointsProps> = ({ data, dimensions }) => {
@@ -40,7 +46,7 @@ export const VisualizationEndpoints: FC<VisualizationEndpointsProps> = ({ data, 
   };
 
   if (!dimensions) {
-    return <div>ładowanie</div>;
+    return <div>Loading</div>;
   }
   return (
     <Stage width={dimensions} height={endpoints.length * 100 + 170}>

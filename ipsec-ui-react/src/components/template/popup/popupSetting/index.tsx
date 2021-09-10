@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 
 import { Popup, SettingOption, SettingContent } from 'template';
+import { NotificationTypeProps } from '../../../../interface/components';
+
 import './styles.scss';
 
-interface PopupSettingProps {
-  open: boolean;
-  handleToggle: () => void;
+interface PopupSettingProps extends NotificationTypeProps {
   handleChangeActiveSetting: () => void;
   activeSetting: { profile: boolean; restConf: boolean; certificate: boolean };
   logs: string[];

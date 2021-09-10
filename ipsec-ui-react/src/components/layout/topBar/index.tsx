@@ -4,10 +4,10 @@ import { Notification, Logout, Setting } from 'template';
 import './styles.scss';
 
 interface TopBarProps {
-  productName: string;
+  productName?: string;
 }
 
-export const TopBar: FC<TopBarProps> = ({ productName = 'IPsec User Interface' }) => {
+export const TopBar: FC<TopBarProps> = ({ productName }) => {
   const [openPopup, setOpenPopup] = useState({ setting: false, notice: false });
 
   const handleOpenAction = (name: string) => {

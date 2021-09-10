@@ -1,10 +1,9 @@
 import React, { FC } from 'react';
 import { Popup, EachError } from 'template';
 import './styles.scss';
+import { NotificationTypeProps } from '../../../../interface/components';
 
-interface PopupNotificationProps {
-  open: boolean;
-  handleToggle: () => void;
+interface PopupNotificationProps extends NotificationTypeProps {
   notifications: string[];
 }
 

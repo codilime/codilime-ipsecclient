@@ -1,11 +1,10 @@
 import React, { FC, Ref } from 'react';
 import './styles.scss';
+import { InputTypeProps } from '../../../interface/components';
 
-interface CryptoFieldProps {
-  name: string;
+interface CryptoFieldProps extends InputTypeProps {
   text: string;
   register: any;
-  value: string[];
   crypto: { encryption: string[]; integrity: string[]; key_exchange: string[] };
   error: { message: string; type: string; ref: Ref<any> };
 }

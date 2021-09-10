@@ -1,9 +1,8 @@
 import React, { FC } from 'react';
 import { Text, Rect, Group } from 'react-konva';
+import { VisualizationBoxTypeProps } from '../../../../interface/components';
 
-interface VisualizationCheckedProps {
-  x: number;
-  y: number;
+interface VisualizationCheckedProps extends VisualizationBoxTypeProps {
   status: boolean;
 }
 

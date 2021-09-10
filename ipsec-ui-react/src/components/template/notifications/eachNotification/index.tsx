@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 
 interface EachNotificationProps {
-  time: Date;
-  description: string;
+  time?: Date;
+  description?: string;
 }
 
 export const EachNotification: FC<EachNotificationProps> = ({ time, description = 'notification description appears here' }) => {

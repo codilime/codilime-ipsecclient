@@ -1,17 +1,9 @@
 import React, { FC } from 'react';
-import PropTypes from 'prop-types';
 import { VisualizationBox, VisualizationEndpointLabel, VisualizationOneLabel } from 'template';
 import { variable } from '../visualizationConstants';
+import { VisualizationBoxTypeProps } from '../../../../interface/components';
 
-interface VisualizationEndpointBoxProps {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  title: string;
-}
-
-export const VisualizationEndpointBox: FC<VisualizationEndpointBoxProps> = ({ x, y, width, height, title, value }) => {
+export const VisualizationEndpointBox: FC<VisualizationBoxTypeProps> = ({ x, y, width, height, title, value }) => {
   const { paddingBox, heightHeader } = variable;
 
   const firstLabel = {

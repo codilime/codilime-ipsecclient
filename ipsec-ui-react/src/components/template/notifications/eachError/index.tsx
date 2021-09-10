@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 
 interface EachErrorProps {
-  time: Date;
-  description: string;
+  time?: Date;
+  description?: string;
 }
 
 export const EachError: FC<EachErrorProps> = ({ time, description }) => {

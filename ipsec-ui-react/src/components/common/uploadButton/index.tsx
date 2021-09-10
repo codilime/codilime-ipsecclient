@@ -1,4 +1,4 @@
-import React, { FC, MouseEvent } from 'react';
+import React, { FC } from 'react';
 import classNames from 'classnames';
 import './styles.scss';
 import { ButtonTypeProps } from '../../../interface/components';
