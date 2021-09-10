@@ -11,6 +11,8 @@ interface VisualizationVrfProps {
   title: string;
   endpoints: string[];
   dimensions: number;
+  vlan: number;
+  physical_interface: string;
 }
 export const VisualizationVrf: FC<VisualizationVrfProps> = ({ x, y, width, height, title, endpoints, dimensions, physical_interface, vlan }) => {
   const { smHeightLabel, lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;

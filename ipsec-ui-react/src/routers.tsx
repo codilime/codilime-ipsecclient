@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { DefaultView, VrfView } from 'components/pages';
+import { DefaultView, VrfView } from 'pages';
 
 export const Routers: FC = () => {
   return (

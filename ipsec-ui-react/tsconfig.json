@@ -34,7 +34,8 @@
       "api/*": ["src/api"],
       "schema/*": ["src/schema"],
       "utils/*": ["src/utils"],
-      "constant/*": ["src/constants'"]
+      "constant/*": ["src/constants"],
+      "interface/*": ["src/interface"]
     }
   },
   "include": ["src/**/*", "src/**/*"],

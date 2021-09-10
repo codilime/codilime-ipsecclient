@@ -3,9 +3,8 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   entry: './src/index.tsx',
@@ -16,7 +15,8 @@ module.exports = {
   },
   output: {
     filename: '[name].[contenthash].js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: 'build'
   },
   module: {
     rules: [
@@ -36,19 +36,6 @@ module.exports = {
         use: ['babel-loader']
       },
       {
-        test: /\.(scss|css)$/,
-        use: [
-          process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
-          'css-loader',
-          {
-            loader: 'sass-loader',
-            options: {
-              sourceMap: true
-            }
-          }
-        ]
-      },
-      {
         test: /\.s[ac]ss$/i,
         use: ['style-loader', 'css-loader', 'sass-loader']
       },
@@ -64,23 +51,17 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['*', '.tsx', '.ts', '.js', '.jsx']
+    plugins: [new TsconfigPathsPlugin()],
+    extensions: ['*', '.js', '.jsx', '.tsx', '.ts']
   },
   plugins: [
-    new MiniCssExtractPlugin({
-      filename: '[name].[contenthash].css',
-      chunkFilename: '[id].css'
-    }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: './src/index.html'
     }),
     new ForkTsCheckerWebpackPlugin(),
-    new CopyPlugin({
-      patterns: [{ from: 'src/assets', to: 'assets' }]
-    }),
     new ESLintPlugin({
-      extensions: ['.tsx', '.ts', '.js','/jsx'],
+      extensions: ['.tsx', '.ts'],
       exclude: 'node_modules'
     })
   ],

@@ -17,7 +17,7 @@ export const Vlan: FC<VlanProps> = ({ setValue }) => {
         <td>Add Vlans from dropdown</td>
       </tr>
     ) : (
-      vlan.map((el) => <EachVlan {...{ ...el, onClick: handleDeleteVlan }} />)
+      vlan.map((el: any) => <EachVlan {...{ ...el, onClick: handleDeleteVlan }} />)
     );
 
   return (
