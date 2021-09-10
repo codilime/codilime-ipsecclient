@@ -1,6 +1,5 @@
 const webpack = require('webpack');
 const path = require('path');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
@@ -53,7 +52,8 @@ module.exports = {
       api: path.resolve(__dirname, 'src/api'),
       schema: path.resolve(__dirname, 'src/schema'),
       utils: path.resolve(__dirname, 'src/utils'),
-      constant: path.resolve(__dirname, 'src/constants')
+      constant: path.resolve(__dirname, 'src/constants'),
+      interface: path.resolve(__dirname, 'src/interface')
     }
   },
   output: {

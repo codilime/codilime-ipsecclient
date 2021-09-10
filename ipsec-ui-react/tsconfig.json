@@ -26,7 +26,7 @@
       "pages/*": ["src/components/pages"],
       "style/*": ["src/scss"],
       "fonts/*": ["src/assets/fonts"],
-      "images/*": ["src/assets/images"],
+      "images/*": ["src/assets/images/*"],
       "db": ["src/db"],
       "hooks/*": ["src/hooks"],
       "helpers/*": ["src/helpers"],
@@ -34,7 +34,8 @@
       "api/*": ["src/api"],
       "schema/*": ["src/schema"],
       "utils/*": ["src/utils"],
-      "constant/*": ["src/constants'"]
+      "constant/*": ["src/constants"],
+      "interface/*": ["src/interface/*"]
     }
   },
   "include": ["src/**/*", "src/**/*"],
