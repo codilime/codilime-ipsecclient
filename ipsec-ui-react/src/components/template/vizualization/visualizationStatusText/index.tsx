@@ -1,8 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 import { Circle, Group, Text } from 'react-konva';
 
-export const VisualizationStatusText = ({ x, y, width, height, status }) => {
+interface VisualizationStatusTextProps {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  text: string;
+  status: string;
+}
+
+export const VisualizationStatusText: FC<VisualizationStatusTextProps> = ({ x, y, width, height, status }) => {
   const statusIcon = status === 'ACTIVE' ? '✓' : 'X';
   const statusColor = status === 'ACTIVE' ? 'green' : 'red';
   const statusText = status === 'ACTIVE' ? 'Working' : 'Down';
@@ -29,13 +37,4 @@ export const VisualizationStatusText = ({ x, y, width, height, status }) => {
       <Text {...{ text: statusText, x: x + 15, y: y - 10, width: width - 15, height, align: 'center', verticalAlign: 'top', fill: statusColor, fontStyle: 'bold' }} />
     </Group>
   );
-};
-
-VisualizationStatusText.propTypes = {
-  x: PropTypes.number,
-  y: PropTypes.number,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  text: PropTypes.string,
-  status: PropTypes.string
 };

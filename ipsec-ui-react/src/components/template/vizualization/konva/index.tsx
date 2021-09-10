@@ -1,9 +1,9 @@
-import React, { useContext, useRef, useEffect, useState } from 'react';
+import React, { useContext, useRef, useEffect, useState, FC } from 'react';
 import { Wrapper, VisualizationEndpoints, Cube } from 'template';
 import { VrfsContext } from 'context';
 import './styles.scss';
 
-export const Visualization = () => {
+export const Visualization: FC = () => {
   const emptyEndpoint = <div className="visualization__empty">Add endpoints to vizualize them</div>;
   const [dimensions, setDimensions] = useState(0);
   const {

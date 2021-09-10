@@ -1,11 +1,20 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 import { Group } from 'react-konva';
 import { VisualizationEndpointLabel, VisualizationLine, VisualizationEndpointBox, VisualizationStatusText } from 'template';
 import { variable } from '../visualizationConstants';
 const { mdHeightLabel } = variable;
 
-export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWidth, title, endpoint, status }) => {
+interface VisualizationStatusProps {
+  x: number;
+  lineStartX: number;
+  lineStartY: number;
+  lineWidth: number;
+  height: number;
+  title: string;
+  endpoint: any;
+}
+
+export const VisualizationStatus: FC<VisualizationStatusProps> = ({ x, height, lineStartX, lineStartY, lineWidth, title, endpoint, status }) => {
   const firstLabel = {
     x: x + (lineWidth - 260) / 3 - 15,
     y: lineStartY - mdHeightLabel / 2,
@@ -66,14 +75,4 @@ export const VisualizationStatus = ({ x, height, lineStartX, lineStartY, lineWid
       <VisualizationEndpointBox {...remoteSite} />
     </Group>
   );
-};
-
-VisualizationStatus.propTypes = {
-  x: PropTypes.number,
-  lineStartX: PropTypes.number,
-  lineStartY: PropTypes.number,
-  lineWidth: PropTypes.number,
-  height: PropTypes.number,
-  title: PropTypes.string,
-  endpoint: PropTypes.any
 };

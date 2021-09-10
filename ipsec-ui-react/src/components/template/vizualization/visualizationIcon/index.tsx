@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Text, Rect, Group, Image } from 'react-konva';
-import PropTypes from 'prop-types';
 import useImage from 'use-image';
 import Spine from 'images/spine.png';
 import { variable } from '../visualizationConstants';
 
-export const VisualizationIcon = ({ x, y, width, height, text }) => {
+interface VisualizationIconProps {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  text: string;
+}
+
+export const VisualizationIcon: FC<VisualizationIconProps> = ({ x, y, width, height, text }) => {
   const [image] = useImage(Spine);
   return (
     <Group>
@@ -15,12 +22,4 @@ export const VisualizationIcon = ({ x, y, width, height, text }) => {
       <Text {...{ text, x: x / 2 - 5, y: height + y, width: width + x, height: 20, align: 'center', verticalAlign: 'middle', fontSize: 10, fill: 'black' }} />
     </Group>
   );
-};
-
-VisualizationIcon.propTypes = {
-  x: PropTypes.number,
-  y: PropTypes.number,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  text: PropTypes.string
 };

@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Stage, Layer } from 'react-konva';
 import { VisualizationIcon, VisualizationLine, VisualizationVrf } from 'template';
 
-export const VisualizationEndpoints = ({ data, dimensions }) => {
+interface VisualizationEndpointsProps {
+  dimensions: number;
+  data: { endpoints: Object; client_name: string; physical_interface: string; vlan: number };
+}
+
+export const VisualizationEndpoints: FC<VisualizationEndpointsProps> = ({ data, dimensions }) => {
   const { endpoints, client_name, physical_interface, vlan } = data;
 
   const icon = {

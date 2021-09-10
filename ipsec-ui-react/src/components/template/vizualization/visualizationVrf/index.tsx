@@ -1,10 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 import { VisualizationOneLabel, VisualizationTwoLabel, VisualizationThreeLabel, VisualizationBox, VisualizationLine, VisualizationStatus } from 'template';
 import { variable } from '../visualizationConstants';
 import { Group } from 'react-konva';
 
-export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimensions, physical_interface, vlan }) => {
+interface VisualizationVrfProps {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  title: string;
+  endpoints: string[];
+  dimensions: number;
+}
+export const VisualizationVrf: FC<VisualizationVrfProps> = ({ x, y, width, height, title, endpoints, dimensions, physical_interface, vlan }) => {
   const { smHeightLabel, lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
   const eachBreak = 25;
 
@@ -26,7 +34,7 @@ export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimens
     router: true
   };
 
-  const hightOfX = (height - 20) / 2 - (20 + mdHeightLabel / 2);
+  const heightOfX = (height - 20) / 2 - (20 + mdHeightLabel / 2);
 
   const endpointStatus = endpoints.map((endpoint, index) => {
     const textY = y + heightHeader + paddingBox + index * 80;
@@ -73,7 +81,7 @@ export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimens
     x: x + paddingBox + smWidthLabel,
     y: y + 40 + mdHeightLabel / 2,
     color: 'black',
-    points: [0, 0, eachBreak / 2, 0, eachBreak / 2, hightOfX, eachBreak, hightOfX]
+    points: [0, 0, eachBreak / 2, 0, eachBreak / 2, heightOfX, eachBreak, heightOfX]
   };
 
   return (
@@ -84,14 +92,4 @@ export const VisualizationVrf = ({ x, y, width, height, title, endpoints, dimens
       {endpointStatus}
     </VisualizationBox>
   );
-};
-
-VisualizationVrf.propTypes = {
-  x: PropTypes.number,
-  y: PropTypes.number,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  title: PropTypes.string,
-  endpoints: PropTypes.array,
-  dimensions: PropTypes.number
 };
