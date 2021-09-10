@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { Ref, MouseEvent, FC } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './styles.scss';
 
-export const Wrapper = ({ title, children, className, references, headerAction, onClick, small }) => {
+interface WrapperProps {
+  title: string;
+  references?: Ref<HTMLDivElement>;
+  className?: string;
+  headerAction?: string;
+  onClick?: (e: MouseEvent<HTMLInputElement>) => void;
+  small?: boolean;
+}
+
+export const Wrapper: FC<WrapperProps> = ({ title, children, className, references, headerAction, onClick, small }) => {
   const headerActionBtn = headerAction && (
     <button className="wrapper__btn" {...{ onClick }}>
       {headerAction}

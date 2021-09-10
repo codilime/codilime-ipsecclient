@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import classNames from 'classnames';
 import { useVrfLogic } from 'hooks';
-import { validateDataInput } from 'utils/util.js';
+import { validateDataInput } from 'src/utils/util.js';
 
 interface InputProps {
   name: string;

@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Wrapper } from 'template';
 import { useVlanLogic } from 'hooks';
 import { EachVlan } from './eachVlan';
 import './styles.scss';
 
-export const Vlan = ({ setValue }) => {
+interface VlanProps {
+  setValue: any;
+}
+
+export const Vlan: FC<VlanProps> = ({ setValue }) => {
   const { options, select, vlan, handleAddNewVlan, handleDeleteVlan } = useVlanLogic(setValue);
   console.log(vlan);
   const displayVlans =
