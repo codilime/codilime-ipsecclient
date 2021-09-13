@@ -6,7 +6,7 @@ import './styles.scss';
 
 export const Vlan = ({ setValue }) => {
   const { options, select, vlan, handleAddNewVlan, handleDeleteVlan } = useVlanLogic(setValue);
-  console.log(vlan);
+
   const displayVlans =
     vlan === null || !vlan.length ? (
       <tr className="vlan__row__empty">

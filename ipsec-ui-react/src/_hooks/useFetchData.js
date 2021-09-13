@@ -44,11 +44,11 @@ export const useFetchData = () => {
     }
   };
 
-  const fetchSoftwareAlgorithms = () => client('algorithms/software');
+  const fetchSoftwareAlgorithms = () => client('/algorithms/software');
 
-  const fetchHardwarePh1 = () => client('algorithms/hardware/ph1');
+  const fetchHardwarePh1 = () => client('/algorithms/hardware/ph1');
 
-  const fetchHardwarePh2 = () => client('algorithms/hardware/ph2');
+  const fetchHardwarePh2 = () => client('/algorithms/hardware/ph2');
 
   const fetchEndpointStatus = async (id) => {
     const data = await client(`metrics/${id}`);

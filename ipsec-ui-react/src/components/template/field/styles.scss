@@ -1,7 +1,7 @@
 @import 'style/settings.scss';
 
 .field {
-  margin: 15px 10px 5px;
+  margin: 15px 0px 5px;
   position: relative;
   width: 100%;
   &__detail {
@@ -34,7 +34,9 @@
     }
   }
   &__input__setting {
-    padding: $padding-sm $padding-lg $padding-md;
+    padding: $padding-sm 0px $padding-md;
+    margin: 0 10px;
+    width: calc(100% - 20px);
   }
   &__error {
     color: red;

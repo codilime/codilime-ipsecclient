@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { useFetchData } from 'hooks';
 import { VrfsContext } from 'context';
+import { client } from '../_api';
 
 export const useInitData = () => {
   const { fetchData, fetchHardwarePh1, fetchHardwarePh2, fetchSoftwareAlgorithms } = useFetchData();

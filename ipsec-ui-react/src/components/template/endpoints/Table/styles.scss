@@ -70,6 +70,7 @@
   }
   &__addBtn {
     display: flex;
+    justify-content: flex-start;
     border-top: $table-border;
     padding: $padding-md;
     background-color: white;
@@ -122,6 +123,7 @@
     background-color: $primary;
     color: white;
     padding: $padding-sm $padding-md !important;
+    min-width: 160px;
   }
   &__text {
     font-size: 16px;

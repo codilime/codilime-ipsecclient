@@ -38,7 +38,7 @@ export const useCreateEndpointTable = () => {
 
   const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, data: emptySchema, handleActionVrfEndpoints }} />;
 
-  const newEndpointButton = open ? 'Close a new endpoint' : 'Add a new endpoint';
+  const newEndpointButton = open ? 'Close' : 'Add a new endpoint';
 
   return {
     dynamicHeader,

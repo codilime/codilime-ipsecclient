@@ -2,9 +2,9 @@ const webpack = require('webpack');
 const path = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const {CleanWebpackPlugin} = require('clean-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-const OUTPUT_PATH =  path.resolve(__dirname, './dist');
+const OUTPUT_PATH = path.resolve(__dirname, './dist');
 
 module.exports = {
   entry: path.resolve(__dirname, './src/index.jsx'),
@@ -54,13 +54,9 @@ module.exports = {
   output: {
     path: OUTPUT_PATH,
     filename: 'bundle.js',
-    publicPath: OUTPUT_PATH,
+    publicPath: OUTPUT_PATH
   },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new HtmlWebpackPlugin({template: './src/index.html' }),
-    new CleanWebpackPlugin()
-  ],
+  plugins: [new webpack.HotModuleReplacementPlugin(), new HtmlWebpackPlugin({ template: './src/index.html' }), new CleanWebpackPlugin()],
   devServer: {
     proxy: {
       '/api': {
@@ -69,7 +65,7 @@ module.exports = {
       }
     },
     historyApiFallback: {
-        index: OUTPUT_PATH,
+      index: OUTPUT_PATH
     },
     contentBase: OUTPUT_PATH,
     hot: true
