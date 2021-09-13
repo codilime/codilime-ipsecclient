@@ -31,13 +31,3 @@ export const Wrapper: FC<WrapperProps> = ({ title, children, className, referenc
     </div>
   );
 };
-
-Wrapper.propTypes = {
-  title: PropTypes.string.isRequired,
-  references: PropTypes.any,
-  className: PropTypes.string,
-  headerAction: PropTypes.string,
-  onClick: PropTypes.func,
-  children: PropTypes.node,
-  small: PropTypes.bool
-};
