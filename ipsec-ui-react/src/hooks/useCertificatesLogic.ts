@@ -1,27 +1,25 @@
-import { useContext, useRef, useState } from 'react';
+import { ChangeEvent, useContext, useRef, useState } from 'react';
 import { VrfsContext } from 'context';
-import TimeStamp from 'react-timestamp';
 
 export const useCertificatesLogic = () => {
   const [loading, setLoading] = useState(false);
   const { vrf, setVrf } = useContext(VrfsContext);
   const { certificates } = vrf;
-  const uploadBtn = useRef(null);
+  const uploadBtn = useRef<HTMLInputElement>(null);
   const date = new Date();
   const handleAddCerts = () => {
     if (uploadBtn.current) return uploadBtn.current.click();
   };
 
-  const handleSaveNewCerts = (e) => {
-    if (uploadBtn.current.files) {
+  const handleSaveNewCerts = (e: ChangeEvent<HTMLInputElement>) => {
+    if (uploadBtn.current && uploadBtn.current.files) {
       setLoading(true);
-      const uploadedFiles = uploadBtn.current.files;
-      if (!uploadedFiles.length) return;
+      const uploadedFiles: any = uploadBtn.current.files;
       for (const file of uploadedFiles) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          if (e.target.result) {
-            const newCert = { name: file.name, commonName: '', value: e.target.result, time: <TimeStamp relative date={date} autoUpdate /> };
+          if (e.target && e.target.result) {
+            const newCert = { name: file.name, commonName: '', value: e.target.result, time: '' };
             setVrf((prev) => ({ ...prev, certificates: [...prev.certificates, newCert] }));
           }
         };
