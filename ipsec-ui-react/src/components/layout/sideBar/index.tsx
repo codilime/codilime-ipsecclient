@@ -7,6 +7,11 @@ import classNames from 'classnames';
 import { HardwareId } from 'constant/';
 import './styles.scss';
 
+interface Any {
+  client_name: string;
+  id: number;
+}
+
 export const SideBar: FC = () => {
   const { vrfs } = useGetVrfs();
   const { currentLocation } = useGetLocation();
@@ -26,7 +31,7 @@ export const SideBar: FC = () => {
     <div className="sideBar">
       <ul className="sideBar__list">{listContext}</ul>
       <div className="sideBar__addNew">
-        <Button className="sideBar__btn">
+        <Button name="" className="sideBar__btn">
           <Link to="/vrf/create" className="sideBar__btnLink">
             Add a new VRF
           </Link>

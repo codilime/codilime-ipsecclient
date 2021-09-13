@@ -10,7 +10,7 @@ interface TopBarProps {
 export const TopBar: FC<TopBarProps> = ({ productName }) => {
   const [openPopup, setOpenPopup] = useState({ setting: false, notice: false });
 
-  const handleOpenAction = (name: string) => {
+  const handleOpenAction = (name: any) => {
     if (name === 'setting') {
       return setOpenPopup((prev) => ({ setting: !prev.setting, notice: false }));
     }
