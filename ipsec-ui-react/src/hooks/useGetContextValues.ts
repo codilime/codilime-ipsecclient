@@ -4,5 +4,7 @@ import { VrfsContext } from 'context';
 export const useGetContextValues = () => {
   const ctx = useContext(VrfsContext);
 
-  return ctx !== null ? VrfsContext : null;
+  if (ctx === null) throw new Error('Got null, expected some kind of value');
+
+  return { ...ctx };
 };

@@ -1,12 +1,11 @@
-import { ChangeEvent, useContext, useRef, useState } from 'react';
-import { VrfsContext } from 'context';
+import { ChangeEvent, useRef, useState } from 'react';
+import { useGetContextValues } from './useGetContextValues';
 
 export const useCertificatesLogic = () => {
   const [loading, setLoading] = useState(false);
-  const { vrf, setVrf } = useContext(VrfsContext);
+  const { vrf, setVrf } = useGetContextValues();
   const { certificates } = vrf;
   const uploadBtn = useRef<HTMLInputElement>(null);
-  const date = new Date();
   const handleAddCerts = () => {
     if (uploadBtn.current) return uploadBtn.current.click();
   };

@@ -17,3 +17,4 @@ export * from './useSettingLogic';
 export * from './useNotificationLogic';
 export * from './useCertificatesLogic';
 export * from './useVlanLogic';
+export * from './useGetContextValues';

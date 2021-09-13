@@ -1,12 +1,12 @@
 import { useEffect, useContext } from 'react';
 import { useGetLocation } from 'hooks';
-import { VrfsContext } from 'context';
 import { HardwareId } from 'constant';
 import { defaultVrf } from 'db';
+import { useGetContextValues } from './useGetContextValues';
 
 export const useGetVrfs = () => {
   const { currentLocation, history } = useGetLocation();
-  const { vrf, setVrf } = useContext(VrfsContext);
+  const { vrf, setVrf } = useGetContextValues();
   const { vrfs } = vrf;
 
   const findActiveVrfPage = () => {

@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, Ref } from 'react';
+import { ChangeEvent, Dispatch, MouseEvent, Ref, SetStateAction } from 'react';
 
 export interface vrfDetail {
   client_name: string;
@@ -38,6 +38,27 @@ export interface endpointAuthentication {
 export interface cryptoTypes {
   crypto_ph1: cryptoPhTypes;
   crypto_ph2: cryptoPhTypes;
+}
+
+export interface VrfType {
+  data: vrfDetail;
+  softwareCrypto: cryptoTypes;
+  hardwareCrypto: cryptoTypes;
+  certificates: CertificatesType[];
+  vrfs: vrfDetail[];
+  notifications: any[];
+  vlans: vlanType[];
+  loading: boolean;
+  hardware: boolean;
+  error: any;
+  success: boolean;
+}
+
+export interface CertificatesType {
+  name: string;
+  commonName: string;
+  value: string | ArrayBuffer;
+  time: string;
 }
 
 export interface cryptoPhTypes {

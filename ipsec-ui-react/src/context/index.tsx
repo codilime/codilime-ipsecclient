@@ -1,22 +1,8 @@
 import React, { useState, createContext, FunctionComponent, Dispatch, SetStateAction } from 'react';
 import { defaultVrf } from 'db';
-import { cryptoTypes, vlanType, vrfDetail } from '../interface/components';
+import { VrfType } from '../interface/components';
 
-interface VrfType {
-  data: vrfDetail;
-  softwareCrypto: cryptoTypes;
-  hardwareCrypto: cryptoTypes;
-  certificates: string[];
-  vrfs: vrfDetail[];
-  notifications: any[];
-  vlans: vlanType[];
-  loading: boolean;
-  hardware: boolean;
-  error: any;
-  success: boolean;
-}
-
-interface contextType {
+export interface contextType {
   vrf: VrfType;
   setVrf: Dispatch<SetStateAction<VrfType>>;
 }
