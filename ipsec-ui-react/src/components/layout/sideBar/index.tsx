@@ -7,11 +7,6 @@ import classNames from 'classnames';
 import { HardwareId } from 'constant/';
 import './styles.scss';
 
-interface Any {
-  client_name: string;
-  id: number;
-}
-
 export const SideBar: FC = () => {
   const { vrfs } = useGetVrfs();
   const { currentLocation } = useGetLocation();
