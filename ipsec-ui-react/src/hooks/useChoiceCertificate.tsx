@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, Dispatch, SetStateAction, ChangeEvent, Ref } from 'react';
+import React, { useRef, useState, useEffect, Dispatch, SetStateAction, ChangeEvent, Ref, RefObject } from 'react';
 import { EndpointInput, Button, UploadCertificates } from 'common/';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
@@ -51,15 +51,10 @@ export const useChoiceCertificate = (...{ edit, error, setEndpoint, endpoints }:
     }
   };
 
-  // interface handleChangeValueFileTypes {
-  //   e: ChangeEvent<HTMLInputElement>;
-  //   setEndpoint: Dispatch<SetStateAction<endpointTypes>>;
-  //   ref: Ref<HTMLInputElement>;
-  // }
-
-  const handleChangeValueFile = (e: ChangeEvent<HTMLInputElement>, setEndpoint: Dispatch<SetStateAction<endpointTypes>>, ref: any) => {
+  const handleChangeValueFile = (e: ChangeEvent<HTMLInputElement>, setEndpoint: Dispatch<SetStateAction<endpointTypes>>, ref: RefObject<HTMLInputElement>) => {
     const { name } = e.target;
-    if (!ref.current.files) return;
+
+    if (!ref.current?.files) return;
     const reader = new FileReader();
 
     reader.onload = (e) => {
@@ -68,7 +63,7 @@ export const useChoiceCertificate = (...{ edit, error, setEndpoint, endpoints }:
         authentication: {
           ...prev.authentication,
           psk: '',
-          [name]: e.target.result
+          [name]: e.target?.result
         }
       }));
     };
@@ -115,7 +110,7 @@ export const useChoiceCertificate = (...{ edit, error, setEndpoint, endpoints }:
     }));
   };
 
-  const handleGeneratePskField = (el) => {
+  const handleGeneratePskField = (el: any) => {
     if (!type) {
       return (
         <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
