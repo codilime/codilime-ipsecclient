@@ -1,4 +1,4 @@
-import React, { ChangeEvent, MouseEvent, FC, Ref } from 'react';
+import React, { FC } from 'react';
 import { IoEyeSharp } from 'react-icons/io5';
 import { BsEyeSlashFill } from 'react-icons/bs';
 import { validateDataInput } from 'utils/';

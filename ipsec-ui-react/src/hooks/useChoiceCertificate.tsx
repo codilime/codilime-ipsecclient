@@ -1,9 +1,19 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { EndpointInput, Button, UploadCertificates } from 'common';
+import React, { useRef, useState, useEffect, Dispatch, SetStateAction, ChangeEvent, Ref } from 'react';
+import { EndpointInput, Button, UploadCertificates } from 'common/';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
+import { endpointAuthentication, endpointTypes } from '../interface/components';
 
-export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
+interface ChoiceCertificateProps {
+  edit: boolean;
+  error: any;
+  setEndpoint: Dispatch<SetStateAction<endpointTypes>>;
+  endpoints: {
+    authentication: endpointAuthentication;
+  };
+}
+
+export const useChoiceCertificate = (...{ edit, error, setEndpoint, endpoints }: ChoiceCertificateProps) => {
   const [fileName, setFileName] = useState({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' });
   const {
     authentication: { type, psk, private_key, local_cert, remote_cert }
@@ -21,11 +31,11 @@ export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
     }
   }, [endpoints]);
 
-  const key = useRef(null);
-  const certificate = useRef(null);
-  const peerCertificate = useRef(null);
+  const key = useRef<HTMLInputElement>(null);
+  const certificate = useRef<HTMLInputElement>(null);
+  const peerCertificate = useRef<HTMLInputElement>(null);
 
-  const handleUploadFile = (e) => {
+  const handleUploadFile = (e: ChangeEvent<HTMLInputElement>) => {
     const { name } = e.target;
     if (name === null) {
       return;
@@ -41,7 +51,13 @@ export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
     }
   };
 
-  const handleChangeValueFile = (e, setEndpoint, ref) => {
+  // interface handleChangeValueFileTypes {
+  //   e: ChangeEvent<HTMLInputElement>;
+  //   setEndpoint: Dispatch<SetStateAction<endpointTypes>>;
+  //   ref: Ref<HTMLInputElement>;
+  // }
+
+  const handleChangeValueFile = (e: ChangeEvent<HTMLInputElement>, setEndpoint: Dispatch<SetStateAction<endpointTypes>>, ref: any) => {
     const { name } = e.target;
     if (!ref.current.files) return;
     const reader = new FileReader();
@@ -59,7 +75,7 @@ export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
     reader.readAsText(ref.current.files[0]);
   };
 
-  const handleUpdateEndpoint = (e) => {
+  const handleUpdateEndpoint = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === 'psk') {
       setFileName({ key: '', certificate: '', peerCertificate: '' });
@@ -89,7 +105,7 @@ export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
     }
   };
 
-  const handleChooseAuthentication = (name) => {
+  const handleChooseAuthentication = (name: string) => {
     return setEndpoint((prev) => ({
       ...prev,
       authentication: {
@@ -108,7 +124,7 @@ export const useChoiceCertyficate = (edit, error, setEndpoint, endpoints) => {
           </div>
           <span className="table__text">or</span>
           <div className="table__center">
-            <Button className="table__btn" onClick={() => handleChooseAuthentication('certs')}>
+            <Button name="" className="table__btn" onClick={() => handleChooseAuthentication('certs')}>
               X509
             </Button>
           </div>

@@ -9,7 +9,7 @@ export * from './useVrfLogic';
 export * from './useEndpoint';
 export * from './useValidateEndpoint';
 export * from './useInitData';
-export * from './useChoiceCertyficate';
+export * from './useChoiceCertificate';
 export * from './useCreateEndpointTable';
 export * from './usePopupLogic';
 export * from './useLoginLogic';

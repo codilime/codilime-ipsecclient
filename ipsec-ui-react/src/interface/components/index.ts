@@ -9,6 +9,7 @@ export interface vrfDetail {
   active: boolean;
   local_as: number;
   endpoints: null | endpointTypes;
+  id?: number;
 }
 
 export interface vlanType {

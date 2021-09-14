@@ -10,7 +10,7 @@ export const useEndpointLogic = (endpoint, active, id, handleActionVrfEndpoints)
   const emptyEndpoint = hardware ? emptyHardwareSchema : emptyEndpointSchema;
   const [endpoints, setEndpoint] = useState(emptyEndpoint);
   const { error, validateEmptyEndpoint, setError } = useValidateEndpoint(endpoints);
-  const { handleGeneratePskField } = useChoiceCertyficate(edit, error, setEndpoint, endpoints);
+  const { handleGeneratePskField } = useChoiceCertyficate({ edit, error, setEndpoint, endpoints });
   const handleActiveEdit = () => setEdit((prev) => !prev);
 
   const onChange = (e) => {
