@@ -1,8 +1,8 @@
 import { useFetchData, useGetLocation, useAppContext } from 'hooks/';
 
 export const useVrfLogic = () => {
-  const { AppContext } = useAppContext();
-  const { vrf } = AppContext();
+  const { vrf } = useAppContext();
+
   const { deleteVrfData } = useFetchData();
   const { history } = useGetLocation();
   const {

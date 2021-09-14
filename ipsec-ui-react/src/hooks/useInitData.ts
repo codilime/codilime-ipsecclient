@@ -3,11 +3,10 @@ import { useFetchData, useAppContext } from 'hooks/';
 export const useInitData = () => {
   const { fetchData, fetchHardwarePh1, fetchHardwarePh2, fetchSoftwareAlgorithms } = useFetchData();
 
-  const { AppContext } = useAppContext();
   const {
     vrf: { loading },
     setVrf
-  } = AppContext();
+  } = useAppContext();
 
   const fetchVrfSettings = async () => {
     const hardware_ph1 = await fetchHardwarePh1();

@@ -1,17 +1,24 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { EndpointInput, ToolTipInfo } from 'common/';
 import { endpointInputSchema, endpointHardwareSchema, emptyEndpointSchema, emptyHardwareSchema } from 'db';
 import { useValidateEndpoint, useVrfLogic, useChoiceCertyficate } from 'hooks/';
 import classNames from 'classnames';
 import { endpointsType } from 'interface/index';
 
-export const useEndpointLogic = (endpoint: endpointsType, active: boolean, handleActionVrfEndpoints: (action: string, data: any, id?: number) => void, id?: number) => {
+interface EndpointLogicType {
+  endpoint: endpointsType;
+  active: boolean;
+  handleActionVrfEndpoints: (action: string, data: endpointsType, id?: number) => void;
+  id: number | null;
+}
+
+export const useEndpointLogic = ({ endpoint, active, handleActionVrfEndpoints, id }: EndpointLogicType) => {
   const [edit, setEdit] = useState(active);
   const { hardware } = useVrfLogic();
   const emptyEndpoint = hardware ? emptyHardwareSchema : emptyEndpointSchema;
   const [endpoints, setEndpoint] = useState<endpointsType>(emptyEndpoint);
   const { error, validateEmptyEndpoint, setError } = useValidateEndpoint();
-  const { handleGeneratePskField } = useChoiceCertyficate(edit, error, setEndpoint, endpoints);
+  const { handleGeneratePskField } = useChoiceCertyficate({ edit, error, setEndpoint, endpoints });
   const handleActiveEdit = () => setEdit((prev) => !prev);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -81,6 +88,7 @@ export const useEndpointLogic = (endpoint: endpointsType, active: boolean, handl
       handleActionVrfEndpoints('add', endpoints);
       return setEdit(false);
     }
+    console.log(id);
     handleActionVrfEndpoints('change', endpoints, id);
     return setEdit(false);
   };

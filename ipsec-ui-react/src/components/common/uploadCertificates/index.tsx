@@ -1,6 +1,5 @@
-import React, { FC, ChangeEvent } from 'react';
+import { FC } from 'react';
 import { EndpointInput, UploadButton } from 'common/';
-import PropTypes from 'prop-types';
 import { InputType } from 'interface/components';
 
 interface UploadCertificates extends InputType {

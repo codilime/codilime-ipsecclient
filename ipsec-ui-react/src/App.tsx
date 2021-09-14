@@ -1,11 +1,11 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import { FC, useEffect, useLayoutEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { MainLayout } from 'layout';
-import { useInitData, useAppContext } from 'hooks';
+import { MainLayout } from 'layout/';
+import { useInitData } from 'hooks/';
 import { Routers } from './routers';
 import 'style/global.scss';
 
-const App = () => {
+const App: FC = () => {
   const { fetchVrfData, fetchVrfSettings, loading } = useInitData();
 
   useLayoutEffect(() => {

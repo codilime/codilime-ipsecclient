@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { Wrapper } from 'template';
 import { useVlanLogic } from 'hooks/';
 import { EachVlan } from './eachVlan';
+import { VlanInput } from './vlanInput';
 import './styles.scss';
 
 interface vlanType {
@@ -9,33 +10,20 @@ interface vlanType {
 }
 
 export const Vlan: FC<vlanType> = ({ setValue }) => {
-  const { options, select, vlan, handleAddNewVlan, handleDeleteVlan } = useVlanLogic(setValue);
+  const { vlan, error, vlanInterface, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue } = useVlanLogic(setValue);
 
   const displayVlans =
     vlan === null || !vlan.length ? (
       <tr className="vlan__row__empty">
-        <td>Add Vlans from dropdown</td>
+        <td>There are no active Vlan and no Lan IP Mask</td>
       </tr>
     ) : (
-      vlan.map((el) => <EachVlan {...{ ...el, onClick: handleDeleteVlan }} />)
+      vlan.map((el) => <EachVlan key={el.vlan} {...{ ...el, onClick: handleDeleteVlan }} />)
     );
 
   return (
     <div className="vlan">
-      <Wrapper {...{ title: 'Attached L3 Vlan interfaces', small: true }}>
-        <div className="vlan__header">
-          <div className="vlan__select__box">
-            <select className="vlan__select" ref={select} defaultValue="Select Vlan">
-              <option value="Select Vlan" hidden>
-                Select Vlan
-              </option>
-              {options}
-            </select>
-          </div>
-          <p className="vlan__btn" onClick={handleAddNewVlan}>
-            Add
-          </p>
-        </div>
+      <Wrapper {...{ title: 'Attached L3 Vlan interfaces', small: true, className: 'vlan__wrapper' }}>
         <div>
           <table className="vlan__table">
             <thead className="vlan__head">
@@ -47,6 +35,13 @@ export const Vlan: FC<vlanType> = ({ setValue }) => {
             </thead>
             <tbody className="vlan__body">{displayVlans}</tbody>
           </table>
+          <div className="vlan__box">
+            <VlanInput {...{ name: 'vlan', text: 'Vlan', onChange: handleChangeInputValue, value: vlanInterface.vlan, error, tooltip: 'Provide value from 1 to 4094' }} />
+            <VlanInput {...{ name: 'lan_ip', text: 'IP', onChange: handleChangeInputValue, value: vlanInterface.lan_ip, error, tooltip: 'Provide correct IP, i.e. 10.1.1.1/32' }} />
+            <p className="vlan__btn" onClick={handleAddNewVlan}>
+              Add
+            </p>
+          </div>
         </div>
       </Wrapper>
     </div>

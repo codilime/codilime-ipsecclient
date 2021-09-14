@@ -5,10 +5,10 @@ import './styles.scss';
 
 export const Visualization: FC = () => {
   const emptyEndpoint = <div className="visualization__empty">Add endpoints to vizualize them</div>;
-  const { AppContext } = useAppContext();
   const {
-    vrf: { data, loading }
-  } = AppContext();
+    vrf: { data }
+  } = useAppContext();
+
   const [dimensions, setDimensions] = useState(0);
   const wrapper = useRef<HTMLDivElement>(null);
   const { endpoints } = data;
@@ -18,9 +18,8 @@ export const Visualization: FC = () => {
       setDimensions(wrapper.current.offsetWidth);
     }
   }, [wrapper]);
-
-  const context = endpoints === null || !endpoints.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions }} />;
-  const status = true;
+  const context = endpoints === null || !endpoints?.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions }} />;
+  const status = false;
   if (status) {
     return (
       <Wrapper title="Visualization">

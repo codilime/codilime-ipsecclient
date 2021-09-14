@@ -1,3 +1,5 @@
+import { RouteComponentProps } from 'react-router';
+
 interface authenticationType {
   type: string;
   psk: string;
@@ -19,7 +21,7 @@ export interface endpointsType {
 
 export interface vrfDataTypes {
   client_name: string;
-  vlans: Array<{ vlan: number; ip: string }>;
+  vlans: vlanInterface[];
   crypto_ph1: string[];
   crypto_ph2: string[];
   physical_interface: string;
@@ -83,4 +85,11 @@ export interface endpointSchemaType {
   type?: string;
   placeholder?: string;
   text?: string;
+}
+
+export interface MatchProps extends RouteComponentProps<{ id: string }> {}
+
+export interface vlanInterface {
+  vlan: number;
+  lan_ip: string;
 }

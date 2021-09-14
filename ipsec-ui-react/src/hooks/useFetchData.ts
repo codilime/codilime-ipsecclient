@@ -3,8 +3,7 @@ import { useAppContext } from 'hooks/';
 // import Timestamp from 'react-timestamp';
 
 export const useFetchData = () => {
-  const { AppContext } = useAppContext();
-  const { vrf, setVrf } = AppContext();
+  const { vrf, setVrf } = useAppContext();
 
   const fetchData = () => client('vrfs');
 

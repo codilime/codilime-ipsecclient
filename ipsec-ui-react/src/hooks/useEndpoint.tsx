@@ -1,11 +1,10 @@
-import { useState, useContext, useEffect, EventHandler, SyntheticEvent } from 'react';
-import { VrfsContext } from 'context';
+import { useState, useContext, useEffect } from 'react';
 import { useFetchData, useAppContext } from 'hooks/';
 import { endpointsType } from 'interface/index';
 
 export const useEndpoint = (handleToggle: () => void) => {
-  const { AppContext } = useAppContext();
-  const { vrf, setVrf } = AppContext();
+  const { vrf, setVrf } = useAppContext();
+
   const { data, loading } = vrf;
   const { endpoints } = data;
   const [send, setSend] = useState(false);
@@ -32,7 +31,8 @@ export const useEndpoint = (handleToggle: () => void) => {
     }, []);
   };
 
-  const handleActionVrfEndpoints = (action: string, data: any, id?: number) => {
+  const handleActionVrfEndpoints = (action: string, data: endpointsType, id?: number) => {
+    console.log(action, data, id);
     switch (action) {
       case 'add': {
         if (endpoints === null) {
@@ -47,9 +47,11 @@ export const useEndpoint = (handleToggle: () => void) => {
         break;
       }
       case 'change': {
-        const newArray = handleChangeVrfEndpoints(data, id!);
-        setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: newArray } }));
-        setSend(true);
+        if (id) {
+          const newArray = handleChangeVrfEndpoints(data, id);
+          setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: newArray } }));
+          setSend(true);
+        }
         break;
       }
       case 'delete': {

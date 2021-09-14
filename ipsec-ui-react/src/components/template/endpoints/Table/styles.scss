@@ -101,7 +101,7 @@
     position: absolute;
     right: 5px;
     font-size: 14px;
-    top: 45%;
+    top: 40%;
     transform: translate(-50%, -50%);
     color: $gray05;
     cursor: pointer;
@@ -122,6 +122,7 @@
     background-color: $primary;
     color: white;
     padding: $padding-sm $padding-md !important;
+    min-width: 160px;
   }
   &__text {
     font-size: 16px;

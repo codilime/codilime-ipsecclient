@@ -7,8 +7,8 @@ import { vrfSchema } from 'schema/';
 import { useFetchData, useGetLocation, useAppContext } from 'hooks/';
 
 export const useCreateVRFMainView = () => {
-  const { AppContext } = useAppContext();
-  const { vrf } = AppContext();
+  const { vrf } = useAppContext();
+
   const { history, currentLocation } = useGetLocation();
   const { postVrfData, putVrfData } = useFetchData();
   const { data, softwareCrypto, hardwareCrypto, hardware } = vrf;
@@ -19,13 +19,13 @@ export const useCreateVRFMainView = () => {
     handleSubmit,
     formState: { errors, isDirty, isValid },
     reset,
-    watch,
     setValue
   } = useForm({ resolver: yupResolver(vrfSchema) });
 
   useEffect(() => {
     if (endpoints === null) reset(data);
     else if (!endpoints.length) reset({ ...data, endpoints: null });
+    else reset(data);
   }, [reset, currentLocation, data]);
 
   const submit = async (data: any) => {

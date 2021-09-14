@@ -1,11 +1,17 @@
-import React, { useRef, useState, useEffect, ChangeEvent, Dispatch, SetStateAction, MouseEvent } from 'react';
+import { useRef, useState, useEffect, ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { EndpointInput, Button, UploadCertificates } from 'common/';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
 import { endpointsType } from 'interface/index';
-import { ChangeHandler } from 'react-hook-form';
 
-export const useChoiceCertyficate = (edit: boolean, error: any, setEndpoint: Dispatch<SetStateAction<endpointsType>>, endpoints: endpointsType) => {
+interface HookType {
+  edit: boolean;
+  error: any;
+  setEndpoint: Dispatch<SetStateAction<endpointsType>>;
+  endpoints: endpointsType;
+}
+
+export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: HookType) => {
   const [fileName, setFileName] = useState({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' });
   const {
     authentication: { type, psk, private_key, local_cert, remote_cert }

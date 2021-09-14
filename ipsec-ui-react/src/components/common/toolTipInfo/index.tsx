@@ -5,7 +5,7 @@ import { useToggle } from 'hooks/';
 import './styles.scss';
 
 interface ToolTipInfoType {
-  error: any;
+  error?: any;
 }
 
 export const ToolTipInfo: FC<ToolTipInfoType> = ({ children, error }) => {

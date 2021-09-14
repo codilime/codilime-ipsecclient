@@ -5,10 +5,9 @@ import { Button } from 'common/';
 import './styles.scss';
 
 export const PopupStatus: FC = () => {
-  const { AppContext } = useAppContext();
   const {
     vrf: { error }
-  } = AppContext();
+  } = useAppContext();
 
   const { stopPropagation, handleToggleModal, show } = useModalLogic();
 

@@ -19,7 +19,7 @@ export const Endpoints: FC = () => {
           {createNewEndpoint}
           <tr className="table__addBtn">
             <td className="table__columnBtn">
-              <EndpointButton disabled={currentLocation === newVrf} onClick={handleToggle}>
+              <EndpointButton disabled={currentLocation === newVrf} onClick={handleToggle} className="table__btn">
                 {newEndpointButton}
               </EndpointButton>
             </td>

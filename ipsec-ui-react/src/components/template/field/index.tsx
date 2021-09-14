@@ -6,14 +6,15 @@ import './styles.scss';
 
 interface FieldType extends InputType {
   text?: string;
-  register: any;
+  register?: any;
   error?: any;
   setting?: boolean;
+  vlan?: boolean;
   validate?: boolean;
   className?: string;
 }
 
-export const Field: FC<FieldType> = ({ text, type, name, placeholder, register, value, error, setting, validate = true, className = '' }) => (
+export const Field: FC<FieldType> = ({ text, type, name, placeholder, register, value, error, setting, validate = true, vlan, className = '' }) => (
   <div
     className={classNames('field', {
       field__checkbox: type === 'checkbox',
@@ -22,7 +23,7 @@ export const Field: FC<FieldType> = ({ text, type, name, placeholder, register, 
     })}
   >
     <label className={classNames('field__label', { field__label__checkbox: type === 'checkbox' })}>{text}</label>
-    <Input {...{ type, value, name, placeholder, register, setting, validate }} />
+    <Input {...{ type, name, placeholder, register, setting, validate, vlan }} />
     {error && <p className="field__error">{error.message}</p>}
   </div>
 );

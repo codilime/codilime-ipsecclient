@@ -1,12 +1,15 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Endpoints, Modal, Visualization, FormDetail, PopupLogs, PopupStatus, Spinner } from 'template';
-import { useModalLogic, useVrfLogic, useToggle } from 'hooks/';
+import { useModalLogic, useVrfLogic, useToggle, useGetVrfs } from 'hooks/';
 import { Button } from 'common/';
+import { MatchProps } from 'interface/index';
 import './styles.scss';
 
-export const VrfView: FC = () => {
+export const VrfView: FC<MatchProps> = ({ match }) => {
   const { show, handleToggleModal } = useModalLogic();
   const { open, handleToggle } = useToggle();
+  const {} = useGetVrfs(match.params.id);
+
   const {
     client_name,
     handleDelete,

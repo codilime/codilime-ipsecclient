@@ -1,14 +1,10 @@
-import { ChangeEvent, useContext, useRef, useState } from 'react';
-import { VrfsContext } from 'context';
+import { ChangeEvent, useRef, useState } from 'react';
 import { useAppContext } from 'hooks/';
 
 export const useCertificatesLogic = () => {
-  const [loading, setLoading] = useState(false);
-  const { AppContext } = useAppContext();
-  const { vrf, setVrf } = AppContext();
+  const { vrf, setVrf } = useAppContext();
   const { certificates } = vrf;
   const uploadBtn = useRef<HTMLInputElement>(null);
-  const date = new Date();
   const handleAddCerts = () => {
     if (uploadBtn.current) return uploadBtn.current.click();
   };
@@ -16,7 +12,6 @@ export const useCertificatesLogic = () => {
   const handleSaveNewCerts = (e: ChangeEvent<HTMLInputElement>) => {
     if (!uploadBtn.current) return;
     if (uploadBtn.current.files) {
-      setLoading(true);
       const uploadedFiles: any = uploadBtn.current.files;
       for (const file of uploadedFiles) {
         const reader = new FileReader();
@@ -28,7 +23,6 @@ export const useCertificatesLogic = () => {
           }
         };
       }
-      setLoading(false);
     }
   };
 

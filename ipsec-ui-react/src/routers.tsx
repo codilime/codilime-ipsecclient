@@ -1,8 +1,8 @@
-import React from 'react';
+import { FC } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { DefaultView, VrfView } from 'pages';
+import { DefaultView, VrfView } from 'pages/';
 
-export const Routers = () => {
+export const Routers: FC = () => {
   return (
     <Switch>
       <Route exact path="/vrf/create" component={VrfView} />
