@@ -45,6 +45,9 @@
   &__error {
     color: red;
     font-size: 10px;
+    &__setting {
+      margin: 0 10px;
+    }
   }
   &__label {
     font-weight: 500;

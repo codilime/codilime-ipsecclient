@@ -11,7 +11,7 @@ export const SettingCertificates: FC = () => {
   if (!certificates.length) {
     return (
       <>
-        <Wrapper {...{ title: 'Certificates' }}>
+        <Wrapper {...{ title: 'CA Certificates' }}>
           <div className="certificates__empty">The list of certificates is empty</div>
         </Wrapper>
         <UploadCertificates {...{ references: uploadBtn, onChange: handleSaveNewCerts, onClick: handleAddCerts }} />

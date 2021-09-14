@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useRef } from 'react';
 import { useAppContext } from 'hooks/';
 
 export const useCertificatesLogic = () => {

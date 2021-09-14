@@ -17,7 +17,7 @@ export const RestConfForm: FC = () => {
   const displayForm = DynamicRestConfForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register: register(input.name), validate: false }} />);
 
   return (
-    <Wrapper {...{ title: 'Restconf credentials' }}>
+    <Wrapper {...{ title: 'Cat 9300x Credentials' }}>
       <form className="loginForm" onSubmit={handleSubmit(handleSendRestCont)}>
         <fieldset className="loginForm__fieldset">
           {displayForm}

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, ChangeEvent, Dispatch, SetStateAction } from 'react';
+import { useRef, useState, useEffect, ChangeEvent, Dispatch, SetStateAction, RefObject } from 'react';
 import { EndpointInput, Button, UploadCertificates } from 'common/';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
@@ -48,9 +48,10 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
     }
   };
 
-  const handleChangeValueFile = (e: any, setEndpoint: any, ref: any) => {
+  const handleChangeValueFile = (e: ChangeEvent<HTMLInputElement>, setEndpoint: Dispatch<SetStateAction<endpointsType>>, ref: RefObject<HTMLInputElement>) => {
     const { name } = e.target;
-    if (!ref.current.files || !e.target.result) return;
+
+    if (!ref.current?.files) return;
     const reader = new FileReader();
 
     reader.onload = (e) => {

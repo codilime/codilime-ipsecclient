@@ -21,7 +21,7 @@ export const LoginForm: FC = () => {
   const displayForm = DynamicLoginForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register: register(input.name), validate: false }} />);
 
   return (
-    <Wrapper {...{ title: 'Change global password' }}>
+    <Wrapper {...{ title: 'UI/API change password' }}>
       <form className="loginForm" onSubmit={handleSubmit(submit)}>
         <fieldset className="loginForm__fieldset">
           {displayForm}

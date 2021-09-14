@@ -38,7 +38,6 @@
       "interface/*": ["src/interface/*"]
     }
   },
-  "files": ["src/custom.d.ts"],
   "include": ["src/**/*", "src/**/*"],
   "exclude": ["*.js", "*.jsx"]
 }
