@@ -30,7 +30,7 @@ export const Visualization: FC = () => {
 
   return (
     <Wrapper title="Visualization" references={wrapper}>
-      {context}
+      <div className="visualization__empty">Add endpoints to vizualize them</div>
     </Wrapper>
   );
 };
