@@ -5,14 +5,14 @@ import { Button } from 'common/';
 import './styles.scss';
 
 export const FormDetail: FC = () => {
-  const { handleSubmit, submit, isDirty, displayDetails, setValue, hardware } = useCreateVRFMainView();
+  const { handleSubmit, submit, setValue, isDirty, displayDetails, hardware, errors } = useCreateVRFMainView();
 
   return (
     <Wrapper title="VRF details">
       <form autoComplete="off" className="form" onSubmit={handleSubmit(submit)}>
         <fieldset className="form__fieldset">
           <div className="form__details">{displayDetails}</div>
-          {!hardware && <Vlan {...{ setValue }} />}
+          {!hardware && <Vlan {...{ setValue, errorSchema: errors['vlans'] }} />}
         </fieldset>
         <Button className="form__btn" disabled={!isDirty}>
           Save changes

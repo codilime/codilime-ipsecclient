@@ -32,7 +32,6 @@ export const useEndpoint = (handleToggle: () => void) => {
   };
 
   const handleActionVrfEndpoints = (action: string, data: endpointsType, id?: number) => {
-    console.log(action, data, id);
     switch (action) {
       case 'add': {
         if (endpoints === null) {
@@ -47,11 +46,10 @@ export const useEndpoint = (handleToggle: () => void) => {
         break;
       }
       case 'change': {
-        if (id) {
-          const newArray = handleChangeVrfEndpoints(data, id);
-          setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: newArray } }));
-          setSend(true);
-        }
+        const newArray = handleChangeVrfEndpoints(data, id!);
+        setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: newArray } }));
+        setSend(true);
+
         break;
       }
       case 'delete': {

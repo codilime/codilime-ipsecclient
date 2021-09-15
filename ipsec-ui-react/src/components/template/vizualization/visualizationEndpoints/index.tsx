@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { vrfDataTypes } from 'interface/index';
 import { Stage, Layer } from 'react-konva';
-import { VisualizationIcon, VisualizationLine, VisualizationVrf } from 'template';
+import { VisualizationIcon, VisualizationLine, VisualizationVrf, Cube } from 'template';
 
 interface visualizationEndpoints {
   dimensions: number;
@@ -23,7 +23,7 @@ export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimen
     x: icon.x + icon.width + 10,
     y: icon.y + icon.height + 40,
     width: 380,
-    height: 55 + endpoints!.length * 70,
+    height: 55 + endpoints!.length * 75,
     title: client_name,
     physical_interface,
     vlan: '100',
@@ -40,7 +40,7 @@ export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimen
   };
 
   if (!dimensions) {
-    return <div>ładowanie</div>;
+    return <Cube />;
   }
   return (
     <Stage width={dimensions} height={endpoints!.length * 100 + 170}>

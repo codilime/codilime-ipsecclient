@@ -4,7 +4,6 @@
   margin: 10px 0px 5px;
   position: relative;
   width: 65%;
-  padding: 4px 0px 12px;
   border-bottom: 2px solid $gray01;
   display: flex;
   justify-content: space-between;
@@ -21,6 +20,8 @@
     background-color: transparent;
     outline: none;
     font-weight: 300;
+    cursor: pointer;
+    padding: 8px 0px;
     background-color: white;
   }
 }

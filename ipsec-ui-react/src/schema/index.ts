@@ -4,7 +4,7 @@ import { maxValueForLocalAS } from '../constants';
 export const vrfSchema = yup.object().shape({
   client_name: yup.string().min(5, 'Name should consist of at least 5 characters').max(28, 'Name should consist of maximum 28 characters').required('Please provide valid name for VRF'),
   active: yup.boolean(),
-  vlans: yup.array(),
+  vlans: yup.array().min(1).required(),
   local_as: yup
     .number()
     .min(1, 'BGP Local AS must be greater than 1')

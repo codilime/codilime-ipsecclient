@@ -88,7 +88,6 @@ export const useEndpointLogic = ({ endpoint, active, handleActionVrfEndpoints, i
       handleActionVrfEndpoints('add', endpoints);
       return setEdit(false);
     }
-    console.log(id);
     handleActionVrfEndpoints('change', endpoints, id);
     return setEdit(false);
   };

@@ -7,15 +7,18 @@ import './styles.scss';
 
 interface vlanType {
   setValue: any;
+  errorSchema?: any;
 }
 
-export const Vlan: FC<vlanType> = ({ setValue }) => {
+export const Vlan: FC<vlanType> = ({ setValue, errorSchema }) => {
   const { vlan, error, vlanInterface, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue } = useVlanLogic(setValue);
+
+  const errorMessage = errorSchema ? <p className="vlan__cancel">{errorSchema.message}</p> : 'There are no active Vlan and no Lan IP Mask';
 
   const displayVlans =
     vlan === null || !vlan.length ? (
       <tr className="vlan__row__empty">
-        <td>There are no active Vlan and no Lan IP Mask</td>
+        <td>{errorMessage}</td>
       </tr>
     ) : (
       vlan.map((el) => <EachVlan key={el.vlan} {...{ ...el, onClick: handleDeleteVlan }} />)

@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import PropTypes from 'prop-types';
 import { VisualizationOneLabel, VisualizationTwoLabel, VisualizationThreeLabel, VisualizationBox, VisualizationLine, VisualizationStatus } from 'template';
 import { variable } from '../visualizationConstants';
 import { Group } from 'react-konva';
@@ -32,7 +31,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
 
   const secondLabel = {
     x: x + paddingBox + smWidthLabel + eachBreak,
-    y: y + height / 2,
+    y: y + height / 2 - 4,
     width: smWidthLabel,
     height: heightHeader,
     router: true
@@ -44,7 +43,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     const textY = y + heightHeader + paddingBox + index * 80;
     const textX = x + width - paddingBox - smWidthLabel;
     const centerX = textX - 25;
-    const centerY = y + height / 2 + smHeightLabel / 2 + 2.5;
+    const centerY = y + height / 2 + smHeightLabel / 2 ;
     const centerLabel = textY + lgHeightLabel / 2;
     const status = 'ACTIVE';
     const thirdLabel = {
@@ -83,7 +82,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
 
   const line = {
     x: x + paddingBox + smWidthLabel,
-    y: y + 40 + mdHeightLabel / 2,
+    y: y + 38 + mdHeightLabel / 2,
     color: 'black',
     points: [0, 0, eachBreak / 2, 0, eachBreak / 2, hightOfX, eachBreak, hightOfX]
   };

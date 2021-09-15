@@ -46,7 +46,7 @@ export const useValidateEndpoint = () => {
       return false;
     }
 
-    const checkPeer = checkIpValue(local_ip);
+    const checkPeer = checkIpValue(peer_ip);
     if (peer_ip === '' || peer_ip.length > 16 || checkPeer) {
       setError((prev) => ({ ...prev, peer_ip: true }));
       return false;
