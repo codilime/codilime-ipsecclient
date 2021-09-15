@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
@@ -234,6 +235,8 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 			log.Errorf("error while closing body: %v", err)
 		}
 	}()
+
+	spew.Dump(vrf)
 
 	if vrf.Active == nil {
 		vrf.Active = new(bool)
@@ -470,7 +473,7 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	respondWithJSON(w, code, map[string]string{"result": "error", "error": message})
-	log.Error("Error occurred: %s", message)
+	log.Error("Error occurred: ", message)
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {

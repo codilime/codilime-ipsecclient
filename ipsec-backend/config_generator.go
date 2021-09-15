@@ -187,7 +187,11 @@ func convertToVrfWithEndpoints(vrf Vrf) (*VrfWithEndpoints, error) {
 }
 
 func calculatePrefix(vrf Vrf) string {
-	return fmt.Sprintf("%d_%s", vrf.Vlan, vrf.ClientName)
+	vlans, err := vrf.getVlans()
+	if err != nil {
+		panic(err)
+	}
+	return fmt.Sprintf("%d_%s", vlans[0].Vlan, vrf.ClientName)
 }
 
 func generateStrongswanTemplate(vrf *VrfWithEndpoints) (string, error) {
@@ -206,14 +210,20 @@ func generateStrongswanTemplate(vrf *VrfWithEndpoints) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	vlans, err := vrf.getVlans()
+	if err != nil {
+		return "", err
+	}
 	if err = t.Execute(&builder, struct {
 		*VrfWithEndpoints
 		Crypto1 string
 		Crypto2 string
+		Vlan    int
 	}{
 		vrf,
 		crypto1,
 		crypto2,
+		vlans[0].Vlan,
 	}); err != nil {
 		return "", err
 	}
@@ -240,17 +250,23 @@ func generateSupervisorTemplate(vrf *VrfWithEndpoints) (string, error) {
 	}
 
 	builder := strings.Builder{}
+	vlans, err := vrf.getVlans()
+	if err != nil {
+		return "", err
+	}
 	if err = t.Execute(&builder, struct {
 		*VrfWithEndpoints
 		LocalIPs string
 		PeerIPs  string
 		LanIPs   string
 		Nats     string
+		Vlan     Vlan
 	}{
 		VrfWithEndpoints: vrf,
 		LocalIPs:         strings.Join(localIps, " "),
 		PeerIPs:          strings.Join(peerIps, " "),
 		Nats:             strings.Join(nats, " "),
+		Vlan:             vlans[0],
 	}); err != nil {
 		return "", err
 	}

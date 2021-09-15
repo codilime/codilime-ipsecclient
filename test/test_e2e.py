@@ -43,7 +43,12 @@ def test_post():
     post = {
         "id":1,
         "client_name":"test",
-        "vlan":123,
+        "vlans":[
+            {
+                "vlan": 123,
+                "lan_ip": "10.0.0.0/24"
+            }
+        ],
         "crypto_ph1":[
             "aes-cbc-128",
             "sha256",
@@ -72,7 +77,12 @@ def test_put():
     put = {
         "id":1,
         "client_name":"test",
-        "vlan":123,
+        "vlans":[
+            {
+                "vlan": 123,
+                "lan_ip": "10.0.0.0/24"
+            }
+        ],
         "crypto_ph1":[
             "aes128",
             "sha256",

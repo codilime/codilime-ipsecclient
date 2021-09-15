@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+
 	"gorm.io/datatypes"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -11,7 +13,7 @@ const hardwareVrfID = 65535
 type Vrf struct {
 	ID                int64          `json:"id"`
 	ClientName        string         `json:"client_name"`
-	Vlan              int            `json:"vlan"`
+	Vlans             datatypes.JSON `json:"vlans"`
 	CryptoPh1         datatypes.JSON `json:"crypto_ph1"`
 	CryptoPh2         datatypes.JSON `json:"crypto_ph2"`
 	PhysicalInterface string         `json:"physical_interface"`
@@ -21,10 +23,30 @@ type Vrf struct {
 	Endpoints         datatypes.JSON `json:"endpoints"`
 }
 
+type Vlan struct {
+	Vlan  int    `json:"vlan"`
+	LanIP string `json:"lan_ip"`
+}
+
 type Setting struct {
 	ID    int64
 	Name  string
 	Value string
+}
+
+func (v *Vrf) getVlans() ([]Vlan, error) {
+	ret := []Vlan{}
+	err := json.Unmarshal(v.Vlans, &ret)
+	return ret, err
+}
+
+func (v *Vrf) setVlans(vlans []Vlan) error {
+	vlansJson, err := json.Marshal(&vlans)
+	if err != nil {
+		return err
+	}
+	v.Vlans = vlansJson
+	return nil
 }
 
 func initializeDB(dbName string) (*gorm.DB, error) {
@@ -78,10 +100,5 @@ func (s *Setting) getSetting(db *gorm.DB) error {
 
 func (s *Setting) createSetting(db *gorm.DB) error {
 	res := db.Create(s)
-	return res.Error
-}
-
-func (s *Setting) updateSetting(db *gorm.DB) error {
-	res := db.Updates(s)
 	return res.Error
 }

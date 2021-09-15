@@ -142,9 +142,16 @@ func generateExampleVrf() *VrfWithEndpoints {
 	}
 	cryptoPh2Json, _ := json.Marshal(cryptoPh2)
 	data, _ := json.Marshal(endpoints)
+	vlans := []map[string]interface{}{
+		{
+			"vlan":   100,
+			"lan_ip": "10.0.0.0/24",
+		},
+	}
+	vlansJson, _ := json.Marshal(vlans)
 	vrf := Vrf{
 		ClientName:        "google",
-		Vlan:              1042,
+		Vlans:             vlansJson,
 		CryptoPh1:         cryptoPh1Json,
 		CryptoPh2:         cryptoPh2Json,
 		PhysicalInterface: "ens192",
