@@ -4,6 +4,7 @@ import { client } from 'api/';
 
 export const useSettingLogic = () => {
   const { open, handleToggle } = useToggle();
+  const [logged, setLogged] = useState<boolean>(false);
   const [activeSetting, setActiveSetting] = useState({ profile: true, restConf: false, certificate: false });
 
   const handleChangeActiveSetting = (name: string) => {
@@ -24,9 +25,16 @@ export const useSettingLogic = () => {
     }
   }, [open]);
 
-  const handleSendRestCont = async (data: any) => {
-    await client('/settings/restConf', { ...data }, { method: 'POST' });
+  const handleSendRestConf = async (data: any) => {
+    const res = await client('/settings/restConf', { ...data }, { method: 'POST' });
+    if (res.result === 'success') {
+      setLogged(true);
+    }
   };
 
-  return { activeSetting, open, handleToggle, handleChangeActiveSetting, handleSendRestCont };
+  const handleResetRestConf = () => {
+    setLogged(false);
+  };
+
+  return { activeSetting, open, handleToggle, handleChangeActiveSetting, handleSendRestConf, handleResetRestConf };
 };
