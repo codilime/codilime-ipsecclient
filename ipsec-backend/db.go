@@ -4,14 +4,15 @@ import (
 	"gorm.io/datatypes"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 const hardwareVrfID = 65535
 
 type Vrf struct {
+	gorm.Model
 	ID                int64          `json:"id"`
 	ClientName        string         `json:"client_name"`
-	Vlan              int            `json:"vlan"`
 	CryptoPh1         datatypes.JSON `json:"crypto_ph1"`
 	CryptoPh2         datatypes.JSON `json:"crypto_ph2"`
 	PhysicalInterface string         `json:"physical_interface"`
@@ -19,6 +20,15 @@ type Vrf struct {
 	LocalAs           int            `json:"local_as"`
 	LanIP             string         `json:"lan_ip"`
 	Endpoints         datatypes.JSON `json:"endpoints"`
+	Vlans             []Vlan         `json:"vlans"`
+}
+
+type Vlan struct {
+	gorm.Model
+	VlanID     int64  `json:"id"`
+	VrfID      int64  `json:"vrf_id"`
+	VlanNumber int    `json:"vlan"`
+	LanIP      string `json:"lan_ip"`
 }
 
 type Setting struct {
@@ -38,6 +48,9 @@ func initializeDB(dbName string) (*gorm.DB, error) {
 	if err = db.AutoMigrate(&Setting{}); err != nil {
 		return nil, err
 	}
+	if err = db.AutoMigrate(&Vlan{}); err != nil {
+		return nil, err
+	}
 	return db, nil
 }
 
@@ -46,7 +59,7 @@ func (Vrf) TableName() string {
 }
 
 func (v *Vrf) getVrf(db *gorm.DB) error {
-	res := db.First(v, v.ID)
+	res := db.Preload(clause.Associations).First(v, v.ID)
 	return res.Error
 }
 
@@ -67,7 +80,7 @@ func (v *Vrf) createVrf(db *gorm.DB) error {
 
 func getVrfs(db *gorm.DB) ([]Vrf, error) {
 	var vrfs []Vrf
-	res := db.Find(&vrfs)
+	res := db.Preload(clause.Associations).Find(&vrfs)
 	return vrfs, res.Error
 }
 
@@ -78,10 +91,5 @@ func (s *Setting) getSetting(db *gorm.DB) error {
 
 func (s *Setting) createSetting(db *gorm.DB) error {
 	res := db.Create(s)
-	return res.Error
-}
-
-func (s *Setting) updateSetting(db *gorm.DB) error {
-	res := db.Updates(s)
 	return res.Error
 }

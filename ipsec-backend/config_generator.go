@@ -187,7 +187,7 @@ func convertToVrfWithEndpoints(vrf Vrf) (*VrfWithEndpoints, error) {
 }
 
 func calculatePrefix(vrf Vrf) string {
-	return fmt.Sprintf("%d_%s", vrf.Vlan, vrf.ClientName)
+	return fmt.Sprintf("%d_%s", vrf.Vlans[0].VlanID, vrf.ClientName)
 }
 
 func generateStrongswanTemplate(vrf *VrfWithEndpoints) (string, error) {

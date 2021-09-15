@@ -246,7 +246,12 @@ func clearTable() {
 
 func addVrf(t *testing.T) {
 	active := false
-	vrf := Vrf{ClientName: "Vrf1", Vlan: 1000, Active: &active}
+	vrf := Vrf{ClientName: "Vrf1", Vlans: []Vlan{
+		{
+			VlanNumber: 123,
+			LanIP:      "10.0.0.0/24",
+		},
+	}, Active: &active}
 	res := a.DB.Create(&vrf)
 	if res.Error != nil {
 		t.Fatalf("Error while inserting: %v", res.Error)
