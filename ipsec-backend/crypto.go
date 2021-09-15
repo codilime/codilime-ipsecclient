@@ -6,12 +6,9 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
 	"math/rand"
-	"os"
+	"strings"
 )
-
-const masterPassPath = "/iox_data/sico_pass"
 
 func encrypt(key, data []byte) ([]byte, error) {
 	blockCipher, err := aes.NewCipher(key)
@@ -65,39 +62,56 @@ func randString(n int) string {
 	return string(b)
 }
 
-func ensureMasterPassFile(key string) error {
-	if _, err := os.Stat(masterPassPath); err == nil {
-		return nil // file exists
+func (a *App) ensureMasterPass(key string) error {
+	_, err := a.getSetting(key, "masterpass")
+	if err != nil {
+		if strings.Contains(err.Error(), "record not found") {
+			masterPass := randString(32)
+			return a.setSetting(key, "masterpass", masterPass)
+		}
 	}
-	keySha := sha256.Sum256([]byte(key))
-	masterPass := randString(32)
-	encryptedMasterPass, err := encrypt(keySha[:], []byte(masterPass))
+	return nil
+}
+
+func (a *App) setSetting(pass, name, value string) error {
+	s := Setting{}
+	s.Name = name
+	keySha := sha256.Sum256([]byte(pass))
+	encryptedValue, err := encrypt(keySha[:], []byte(value))
 	if err != nil {
 		return err
 	}
-	encryptedBasedMasterPass := make([]byte, base64.RawStdEncoding.EncodedLen(len(encryptedMasterPass)))
-	base64.RawStdEncoding.Encode(encryptedBasedMasterPass, encryptedMasterPass)
-	return ioutil.WriteFile(masterPassPath, encryptedBasedMasterPass, 0644)
+	encryptedBasedValue := make([]byte, base64.RawStdEncoding.EncodedLen(len(encryptedValue)))
+	base64.RawStdEncoding.Encode(encryptedBasedValue, encryptedValue)
+	s.Value = string(encryptedBasedValue)
+	if err := s.getSetting(a.DB); err != nil {
+		if !strings.Contains(err.Error(), "record not found") {
+			return err
+		}
+		return s.createSetting(a.DB)
+	}
+	return a.DB.Where("name = ?", name).Update("value", s.Value).Error
 }
 
-func decryptMasterPass(key string) ([]byte, error) {
-	if err := ensureMasterPassFile(key); err != nil {
-		return nil, err
+func (a *App) getSetting(pass, name string) (string, error) {
+	s := Setting{}
+	if err := a.DB.Where("name = ?", name).First(&s).Error; err != nil {
+		return "", err
 	}
-	keySha := sha256.Sum256([]byte(key))
-	encryptedBasedMasterPass, err := ioutil.ReadFile(masterPassPath)
+	encryptedValue, err := base64.RawStdEncoding.DecodeString(string(s.Value))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	encryptedMasterPass, err := base64.RawStdEncoding.DecodeString(string(encryptedBasedMasterPass))
-	if err != nil {
-		return nil, err
-	}
-	return decrypt(keySha[:], encryptedMasterPass)
+	keySha := sha256.Sum256([]byte(pass))
+	b, err := decrypt(keySha[:], encryptedValue)
+	return string(b), err
 }
 
-func encryptPSK(key string, v *Vrf) error {
-	masterPass, err := decryptMasterPass(key)
+func (a *App) encryptPSK(key string, v *Vrf) error {
+	if err := a.ensureMasterPass(key); err != nil {
+		return err
+	}
+	masterPass, err := a.getSetting(key, "masterpass")
 	if err != nil {
 		return err
 	}
@@ -109,7 +123,7 @@ func encryptPSK(key string, v *Vrf) error {
 		if e.Authentication.Type != "psk" {
 			continue
 		}
-		encPSK, err := encrypt(masterPass, []byte(e.Authentication.PSK))
+		encPSK, err := encrypt([]byte(masterPass), []byte(e.Authentication.PSK))
 		if err != nil {
 			return err
 		}
@@ -125,8 +139,11 @@ func encryptPSK(key string, v *Vrf) error {
 	return nil
 }
 
-func decryptPSK(key string, v *Vrf) error {
-	masterPass, err := decryptMasterPass(key)
+func (a *App) decryptPSK(key string, v *Vrf) error {
+	if err := a.ensureMasterPass(key); err != nil {
+		return err
+	}
+	masterPass, err := a.getSetting(key, "masterpass")
 	if err != nil {
 		return err
 	}
@@ -142,7 +159,7 @@ func decryptPSK(key string, v *Vrf) error {
 		if err != nil {
 			return err
 		}
-		decPSK, err := decrypt(masterPass, decBytes)
+		decPSK, err := decrypt([]byte(masterPass), decBytes)
 		if err != nil {
 			return err
 		}

@@ -1,0 +1,121 @@
+@import 'style/settings.scss';
+
+.vlan {
+  display: flex;
+  flex-direction: column;
+  width: 45%;
+  max-width: 500px;
+  padding: 0px $padding-md;
+  font-size: 14px;
+  &__wrapper {
+    overflow: visible;
+  }
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 5px;
+    border-bottom: $wrapper-border;
+  }
+  &__label {
+    position: absolute;
+    left: 5px;
+    top: 1px;
+  }
+  &__select {
+    &__box {
+      position: relative;
+      width: 100%;
+      border-bottom: 2px solid $gray01;
+      display: flex;
+      justify-content: flex-end;
+    }
+    color: $gray02;
+    font-size: 14px;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    padding: 0px 0px 2px;
+    outline: none;
+  }
+  &__btn {
+    color: $primary;
+    font-weight: bold;
+    cursor: pointer;
+    margin-right: 30px;
+  }
+  &__table {
+    color: $gray02;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  &__head {
+    background-color: $gray01;
+  }
+  &__body {
+    display: block;
+    overflow-y: scroll;
+    height: 60px;
+  }
+
+  &__row {
+    display: flex;
+    padding: 5px 10px;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: $wrapper-border;
+
+    &__header {
+      padding-right: 20px;
+    }
+    &__empty {
+      color: $gray02;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-bottom: $wrapper-border;
+      height: 100%;
+    }
+  }
+  &__cancel {
+    cursor: pointer;
+    color: red;
+    font-weight: 700;
+  }
+  &__box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: $wrapper-border;
+  }
+  &__field {
+    margin: 5px 15px 5px 5px;
+    position: relative;
+  }
+  &__label {
+    font-weight: 500;
+    order: 1;
+    padding: 3px 3px;
+    transform: translateY(-50%);
+    top: 40%;
+    border: none;
+    outline: none;
+    position: absolute;
+  }
+  &__input {
+    padding: $padding-sm 0px $padding-md 40px;
+    width: calc(100% - 10px);
+    border: none;
+    border-bottom: 2px solid $gray01;
+    &:focus {
+      border-bottom: 2px solid $primary;
+      color: $primary;
+      outline: none;
+    }
+  }
+  &__error {
+    color: red;
+    border-bottom: 2px solid red;
+  }
+}

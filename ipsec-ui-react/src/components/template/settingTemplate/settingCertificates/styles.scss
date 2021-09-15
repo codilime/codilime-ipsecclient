@@ -13,7 +13,9 @@
       border-right: none;
     }
   }
-
+  &__checkbox {
+    cursor: pointer;
+  }
   &__time {
     width: 40%;
   }
@@ -31,16 +33,30 @@
     width: 100%;
   }
 }
+
 .certificates {
   &__box {
-    padding: $padding-md 0 $padding-sm;
+    padding: 0 0 $padding-md;
     display: flex;
     justify-content: flex-end;
     align-items: center;
+  }
+  &__wrapper {
+    overflow-y: scroll;
+    max-height: 390px;
   }
   &__button {
     margin-left: $margin-md;
     background-color: $primary;
     color: white;
+  }
+  &__empty {
+    min-height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &__input {
+    display: none;
   }
 }
