@@ -4,9 +4,9 @@ import { useCertificatesLogic } from 'hooks/';
 import './styles.scss';
 
 export const SettingCertificates: FC = () => {
-  const { certificates, uploadBtn, handleAddCerts, handleSaveNewCerts } = useCertificatesLogic();
+  const { certificates, uploadBtn, handleAddCerts, handleSaveNewCerts, handleCheckCerts, handleDeleteCerts } = useCertificatesLogic();
 
-  const displayCertificates = certificates.map((certificate) => <EachCertificate key={certificate.name} {...certificate} />);
+  const displayCertificates = certificates.map((certificate, index) => <EachCertificate key={certificate.name} {...{ ...certificate, handleCheckCerts: handleCheckCerts }} />);
 
   if (!certificates.length) {
     return (
@@ -14,7 +14,7 @@ export const SettingCertificates: FC = () => {
         <Wrapper {...{ title: 'CA Certificates' }}>
           <div className="certificates__empty">The list of certificates is empty</div>
         </Wrapper>
-        <UploadCertificates {...{ references: uploadBtn, onChange: handleSaveNewCerts, onClick: handleAddCerts }} />
+        <UploadCertificates {...{ references: uploadBtn, onChange: handleSaveNewCerts, onClick: handleAddCerts, handleDeleteCerts }} />
       </>
     );
   }
@@ -34,7 +34,7 @@ export const SettingCertificates: FC = () => {
           <tbody className="table__body">{displayCertificates}</tbody>
         </table>
       </Wrapper>
-      <UploadCertificates {...{ references: uploadBtn, onChange: handleSaveNewCerts, onClick: handleAddCerts }} />
+      <UploadCertificates {...{ references: uploadBtn, onChange: handleSaveNewCerts, onClick: handleAddCerts, handleDeleteCerts }} />
     </div>
   );
 };

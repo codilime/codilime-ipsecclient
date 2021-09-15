@@ -48,5 +48,5 @@ export const useCreateVRFMainView = () => {
     return <Field {...{ ...el, key: el.name, value: data[el.name], register: register(el.name), error: errors[el.name], className: 'field__detail' }} />;
   });
 
-  return { isDirty, isValid, hardware, displayDetails, handleSubmit, submit, setValue };
+  return { isDirty, isValid, errors, hardware, displayDetails, handleSubmit, submit, setValue };
 };
