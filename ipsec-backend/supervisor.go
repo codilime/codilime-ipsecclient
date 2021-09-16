@@ -63,3 +63,27 @@ func GetProcessLog(name string, offset, length int) (string, error) {
 
 	return client.ReadProcessStdoutLog(name, offset, length)
 }
+
+func GetProcessNames() ([]string, error) {
+	client, err := supervisord.NewUnixSocketClient(supervisorSocketPath)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err := client.Close(); err != nil {
+			log.Errorf("Error during closing supervisor connection %v", err)
+		}
+	}()
+
+	infos, err := client.GetAllProcessInfo()
+	if err != nil {
+		return nil, err
+	}
+
+	ret := []string{}
+	for _, info := range infos {
+		ret = append(ret, info.Name)
+	}
+	return ret, nil
+}
