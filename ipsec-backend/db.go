@@ -80,8 +80,3 @@ func (s *Setting) createSetting(db *gorm.DB) error {
 	res := db.Create(s)
 	return res.Error
 }
-
-func (s *Setting) updateSetting(db *gorm.DB) error {
-	res := db.Updates(s)
-	return res.Error
-}

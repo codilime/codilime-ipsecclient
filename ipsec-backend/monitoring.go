@@ -2,12 +2,28 @@ package main
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 )
+
+func normalizeMetrics(metrics *map[string]interface{}) {
+	endpointStatuses := (*metrics)["endpoint_statuses"].([]map[string]interface{})
+	for i, endpoint := range endpointStatuses {
+		status := endpoint["sa-status"].(string)
+		if status == "ESTABLISHED" || status == "crypto-sa-status-active" {
+			endpoint["sa-status"] = "up"
+		} else {
+			endpoint["sa-status"] = "down"
+		}
+		endpointStatuses[i] = endpoint
+	}
+	(*metrics)["endpoint_statuses"] = endpointStatuses
+}
 
 func (a *App) metrics(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -28,21 +44,26 @@ func (a *App) metrics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var res map[string]interface{}
 	if vrf.ID != hardwareVrfID {
-		res, err := getSWMetrics(vrf)
+		res, err = getSWMetrics(vrf)
 		if err != nil {
 			respondWithError(w, 500, err.Error())
 			return
 		}
-		respondWithJSON(w, http.StatusOK, res)
 	} else {
-		res, err := a.getHWMetrics() // no arguments because there is only one vrf in hw
+		res, err = a.getHWMetrics() // no arguments because there is only one vrf in hw
 		if err != nil {
 			respondWithError(w, 500, err.Error())
 			return
 		}
-		respondWithJSON(w, http.StatusOK, res)
 	}
+	fmt.Println("before normalize")
+	spew.Dump(res)
+	normalizeMetrics(&res)
+	fmt.Println("after normalize")
+	spew.Dump(res)
+	respondWithJSON(w, http.StatusOK, res)
 }
 
 func getSWMetrics(vrf Vrf) (map[string]interface{}, error) {

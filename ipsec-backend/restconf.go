@@ -464,6 +464,7 @@ func (a *App) restconfGetData(path string, client *http.Client) (map[string]inte
 		return ret, errors.New("get on " + path + " failed (" + strconv.Itoa(resp.StatusCode) + "): " + string(body))
 	}
 	if err := json.Unmarshal(body, &ret); err != nil {
+		fmt.Println("failed to unmarshal:", string(body))
 		return ret, err
 	}
 	return ret, nil
