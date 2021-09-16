@@ -1,10 +1,9 @@
 @import 'style/settings.scss';
 
-
 .cube {
   width: 150px;
   height: 150px;
-  margin: 20px auto;
+  margin: 20% auto;
   transform-style: preserve-3d;
   &__half__first,
   &__half__second,
@@ -12,60 +11,60 @@
     transform-style: preserve-3d;
   }
   &__box {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     animation: cube 10s forwards infinite;
     transform-origin: center 50px;
     transform-style: preserve-3d;
   }
   &__half__first {
-    height: 40px;
+    height: 80px;
     top: 0;
     position: absolute;
     animation: half 10s forwards infinite;
     transform-origin: 50% 100%;
   }
   &__part {
-    width: 18px;
-    height: 18px;
+    width: 38px;
+    height: 38px;
     border: 1px solid #fff;
     background-color: $gray02;
     position: absolute;
-    &__one{
-        top: 0;
-        left: 40px;
-        transform-origin: 50% 100%;
-        animation: part1 10s forwards infinite;
+    &__one {
+      top: 0px;
+      left: 60px;
+      transform-origin: 50% 100%;
+      animation: part1 10s forwards infinite;
     }
     &__two {
-        top: 20px;
-        left: 40px;
-        transform-origin: 50% 0%;
-        animation: part2 10s forwards infinite;
+      top: 40px;
+      left: 60px;
+      transform-origin: 50% 0%;
+      animation: part2 10s forwards infinite;
     }
     &__three {
-        top: 40px;
-        left: 40px;
-        transform-origin: 50% 0%;
-        animation: part3 10s forwards infinite;
+      top: 80px;
+      left: 60px;
+      transform-origin: 50% 0%;
+      animation: part3 10s forwards infinite;
     }
     &__four {
-        top: 60px;
-        left: 40px;
-        transform-origin: 50% 0%;
-        animation: part4 10s forwards infinite;
+      top: 120px;
+      left: 60px;
+      transform-origin: 50% 0%;
+      animation: part4 10s forwards infinite;
     }
     &__five {
-        left: 20px;
-        top: 20px;
-        transform-origin: 100% 50%;
-        animation: part5 10s forwards infinite;
+      left: 20px;
+      top: 40px;
+      transform-origin: 100% 50%;
+      animation: part5 10s forwards infinite;
     }
     &__six {
-        left: 60px;
-        top: 40px;
-        transform-origin: 0% 50%;
-        animation: part6 10s forwards infinite;
+      left: 100px;
+      top: 80px;
+      transform-origin: 0% 50%;
+      animation: part6 10s forwards infinite;
     }
   }
   &__container {
@@ -77,10 +76,7 @@
     perspective: 300px;
     transform-style: preserve-3d;
   }
-
 }
-
-
 
 @keyframes cube {
   0% {
