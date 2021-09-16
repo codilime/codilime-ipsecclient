@@ -19,7 +19,7 @@
     margin-left: $margin-md;
   }
   &__disabled {
-    background-color: $bgc-disable;
+    background-color: $bgc-disable !important;
   }
 }
 
@@ -45,6 +45,6 @@
     font-size: 12px;
   }
   &__disabled {
-    background-color: $bgc-disable;
+    background-color: $bgc-disable !important;
   }
 }

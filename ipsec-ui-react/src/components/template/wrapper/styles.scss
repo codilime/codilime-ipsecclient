@@ -28,7 +28,8 @@
     overflow: hidden;
   }
   &__small {
-    margin:0;
+    margin: 0;
     font-size: 12px;
+    overflow: visible;
   }
 }

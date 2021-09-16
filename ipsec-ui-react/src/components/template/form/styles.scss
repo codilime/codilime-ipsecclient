@@ -3,9 +3,16 @@
 .form {
   &__fieldset {
     display: flex;
-    flex-wrap: wrap;
     border: none;
     border-bottom: $wrapper-border;
+    align-items: flex-start;
+    padding: 10px 0;
+  }
+  &__details {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 10px;
   }
   &__column {
     padding: 0 $padding-md $padding-xl;
