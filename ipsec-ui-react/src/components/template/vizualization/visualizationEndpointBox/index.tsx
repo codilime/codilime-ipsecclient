@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import PropTypes from 'prop-types';
 import { VisualizationBox, VisualizationEndpointLabel, VisualizationOneLabel } from 'template';
 import { variable } from '../visualizationConstants';
 import { visualization } from 'interface/components';
@@ -17,7 +16,6 @@ export const VisualizationEndpointBox: FC<visualizationEndpointBoxType> = ({ x, 
     y: y + heightHeader + paddingBox / 2,
     width: 60,
     height: heightHeader,
-    text: 'Ipsec'
   };
   const secondLabel = {
     x: x + paddingBox / 2 + 70,

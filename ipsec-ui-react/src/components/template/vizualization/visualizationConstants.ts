@@ -1,6 +1,6 @@
 const smHeightLabel = 20;
 const mdHeightLabel = 35;
-const lgHeightLabel = 50;
+const lgHeightLabel = 55;
 
 const smWidthLabel = 100;
 const mdWidthLabel = 150;

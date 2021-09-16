@@ -4,6 +4,8 @@ export const defaultVrf: ContextProps = {
   data: {
     client_name: '',
     vlans: [],
+    vlan: 0,
+    lan_ip: '',
     crypto_ph1: [],
     crypto_ph2: [],
     physical_interface: '',

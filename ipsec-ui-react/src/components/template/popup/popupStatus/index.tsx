@@ -14,7 +14,6 @@ export const PopupStatus: FC = () => {
   useEffect(() => {
     if (error) handleToggleModal();
   }, [error]);
-
   const errorStatus = error && error.error;
 
   return (

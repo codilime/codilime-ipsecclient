@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
@@ -26,6 +27,15 @@ module.exports = {
       {
         test: /\.(png|jpe?g|gif)$/i,
         use: ['file-loader']
+      },
+      {
+        test: /\.(ttf)([\?]?.*)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]'
+          }
+        }
       },
       {
         test: /\.svg$/,
@@ -57,6 +67,7 @@ module.exports = {
     }
   },
   output: {
+
     path: OUTPUT_PATH,
     filename: 'bundle.js',
     publicPath: OUTPUT_PATH
@@ -69,6 +80,7 @@ module.exports = {
         secure: false
       }
     },
+
     historyApiFallback: {
       index: OUTPUT_PATH
     },

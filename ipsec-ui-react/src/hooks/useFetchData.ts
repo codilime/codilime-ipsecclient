@@ -1,11 +1,18 @@
 import { client } from 'api/';
 import { useAppContext } from 'hooks/';
-// import Timestamp from 'react-timestamp';
 
 export const useFetchData = () => {
-  const { vrf, setVrf } = useAppContext();
+  const { setVrf } = useAppContext();
 
   const fetchData = () => client('vrfs');
+
+  function handleTakeTime() {
+    const today = new Date();
+    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    const time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
+    const dateTime = date + ' ' + time;
+    return dateTime;
+  }
 
   const postVrfData = async (payload: any) => {
     setVrf((prev) => ({ ...prev, loading: true }));
@@ -16,8 +23,7 @@ export const useFetchData = () => {
         return id;
       }
     } catch (err: any) {
-      const date = new Date();
-      setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { time: '', description: err.error }] }));
+      setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { time: handleTakeTime(), description: err.error }] }));
     }
   };
 
@@ -30,8 +36,7 @@ export const useFetchData = () => {
         return data;
       }
     } catch (err: any) {
-      const date = new Date();
-      setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { time: '', description: err.error }] }));
+      setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { time: handleTakeTime(), description: err.error }] }));
     }
   };
 

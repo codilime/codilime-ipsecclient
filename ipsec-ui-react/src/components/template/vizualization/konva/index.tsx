@@ -19,14 +19,6 @@ export const Visualization: FC = () => {
     }
   }, [wrapper]);
   const context = endpoints === null || !endpoints?.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions }} />;
-  const status = false;
-  if (status) {
-    return (
-      <Wrapper title="Visualization">
-        <Cube />
-      </Wrapper>
-    );
-  }
 
   return (
     <Wrapper title="Visualization" references={wrapper}>

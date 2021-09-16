@@ -13,10 +13,12 @@ interface VisualizationLabel extends visualization {
   firstText?: string;
   secondText?: string;
   vlan?: string;
+  lan_ip?: string;
 }
 
 export const VisualizationOneLabel: FC<VisualizationLabel> = ({ x, y, width, height }) => {
   const [image] = useImage(Router);
+  
   return (
     <Group>
       <Rect {...{ x, y, width, height, fill: labelColor }} />
@@ -25,12 +27,13 @@ export const VisualizationOneLabel: FC<VisualizationLabel> = ({ x, y, width, hei
   );
 };
 
-export const VisualizationTwoLabel: FC<VisualizationLabel> = ({ x, y, width, height, firstText, secondText, vlan }) => (
+export const VisualizationTwoLabel: FC<VisualizationLabel> = ({ x, y, width, height, vlan, lan_ip }) => (
   <Group>
-    <Rect {...{ x, y, width, height, fill: labelColor }} />
-    <Text {...{ text: firstText, x: x - 5, y: y + 2, height: height / 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold' }} />
-    <Text {...{ text: secondText, x: x + 5, y: y + height / 2, height: height / 2, width: width / 2, align: 'center', verticalAlign: 'middle', fontSize: 10 }} />
-    <Text {...{ text: vlan, x: x + width / 2 - 5, y: y + height / 2, height: height / 2, width: width / 2, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold' }} />
+    <Rect {...{ x, y, width, height: height + 15, fill: labelColor }} />
+    <Text {...{ text: 'Vlan', x, y: y, height: height / 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'normal' }} />
+    <Text {...{ text: vlan, x, y: y + height / 4 + 2.5, height: height / 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold' }} />
+    <Text {...{ text: 'Lan IP', x, y: y + height / 2 + 10, height: height / 4, width: width, align: 'center', verticalAlign: 'middle', fontSize: 10 }} />
+    <Text {...{ text: lan_ip, x, y: y + height - 2.5, height: height / 4, width: width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold' }} />
   </Group>
 );
 

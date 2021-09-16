@@ -22,6 +22,8 @@ export interface endpointsType {
 export interface vrfDataTypes {
   client_name: string;
   vlans: vlanInterface[];
+  vlan: number;
+  lan_ip: string;
   crypto_ph1: string[];
   crypto_ph2: string[];
   physical_interface: string;

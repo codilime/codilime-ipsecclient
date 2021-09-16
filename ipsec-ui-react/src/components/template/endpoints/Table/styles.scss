@@ -60,13 +60,16 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    &:hover .tooltip {
-      opacity: 1;
-      visibility: visible;
-    }
   }
   &__psk__choice {
     justify-content: space-around;
+  }
+  &__psk__btn {
+    height: 100%;
+    width: 100%;
+    color: $gray02;
+    border: none;
+    cursor: pointer;
   }
   &__addBtn {
     display: flex;
@@ -91,6 +94,8 @@
     justify-content: center;
     align-items: center;
     font-weight: 700;
+    width: 100%;
+    color: $gray02;
   }
   &__certificates {
     display: flex;
