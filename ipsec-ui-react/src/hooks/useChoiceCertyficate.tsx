@@ -111,8 +111,8 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
     if (!type) {
       return (
         <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
-          <div className="table__center" onClick={() => handleChooseAuthentication('psk')}>
-            <EndpointInput {...{ ...el, error }} />
+          <div className="table__center">
+            <EndpointInput {...{ ...el, error, edit }} onClick={() => handleChooseAuthentication('psk')} />
           </div>
           <span className="table__text">or</span>
           <div className="table__center">

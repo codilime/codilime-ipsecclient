@@ -39,12 +39,15 @@ export const useVlanLogic = (setValue: any) => {
   useEffect(() => {
     if (data.vlans) {
       setVlan(data.vlans);
-    }
-    setVlan([]);
+    } else if (data.vlan && data.lan_ip) setVlan([{ vlan: data.vlan, lan_ip: data.lan_ip }]);
   }, [data]);
 
   useEffect(() => {
     if (error) setError(false);
+    if (vlan.length) {
+      setValue('vlan', vlan[0].vlan);
+      setValue('lan_ip', vlan[0].lan_ip);
+    }
   }, [vlan]);
 
   const handleChangeInputValue = (e: ChangeEvent<HTMLInputElement>) => {

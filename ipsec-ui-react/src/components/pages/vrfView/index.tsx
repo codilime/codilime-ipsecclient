@@ -1,13 +1,12 @@
 import { FC } from 'react';
-import { Endpoints, Modal, Visualization, FormDetail, PopupLogs, PopupStatus, Spinner } from 'template';
-import { useModalLogic, useVrfLogic, useToggle, useGetVrfs } from 'hooks/';
+import { Endpoints, Modal, Visualization, FormDetail, PopupStatus, Cube } from 'template';
+import { useModalLogic, useVrfLogic, useGetVrfs } from 'hooks/';
 import { Button } from 'common/';
 import { MatchProps } from 'interface/index';
 import './styles.scss';
 
 export const VrfView: FC<MatchProps> = ({ match }) => {
   const { show, handleToggleModal } = useModalLogic();
-  const { open, handleToggle } = useToggle();
   const {} = useGetVrfs(match.params.id);
 
   const {
@@ -25,15 +24,6 @@ export const VrfView: FC<MatchProps> = ({ match }) => {
     </Button>
   );
 
-  const buttons = client_name && (
-    <div className="vrf__box">
-      <Button className="vrf__btn" onClick={handleToggle}>
-        View logs
-      </Button>
-      {deleteBtn}
-    </div>
-  );
-
   return (
     <>
       <section className="vrf">
@@ -41,7 +31,7 @@ export const VrfView: FC<MatchProps> = ({ match }) => {
           <span className="vrf__breadcrumb">
             VRFs / <span className="vrf__name">{vrfName}</span>
           </span>
-          {buttons}
+          {deleteBtn}
         </header>
         <article>
           <FormDetail />
@@ -52,8 +42,7 @@ export const VrfView: FC<MatchProps> = ({ match }) => {
           Are you sure you want to delete this VRF? this action cannot be undone
         </Modal>
       </section>
-      <Spinner {...{ loading }} />
-      <PopupLogs {...{ open, handleToggle }} />
+      <Cube {...{ loading }} />
       <PopupStatus />
     </>
   );

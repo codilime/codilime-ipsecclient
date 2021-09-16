@@ -2,7 +2,7 @@ import { client } from 'api/';
 import { useAppContext } from 'hooks/';
 
 export const useFetchData = () => {
-  const { vrf, setVrf } = useAppContext();
+  const { setVrf } = useAppContext();
 
   const fetchData = () => client('vrfs');
 

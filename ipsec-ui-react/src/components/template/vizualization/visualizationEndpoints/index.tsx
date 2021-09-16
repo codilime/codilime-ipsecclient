@@ -9,8 +9,7 @@ interface visualizationEndpoints {
 }
 
 export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimensions }) => {
-  const { endpoints, client_name, physical_interface } = data;
-
+  const { endpoints, client_name, vlan, lan_ip } = data;
   const icon = {
     x: 30,
     y: 30,
@@ -25,8 +24,8 @@ export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimen
     width: 380,
     height: 55 + endpoints!.length * 75,
     title: client_name,
-    physical_interface,
-    vlan: '100',
+    vlan: vlan.toString(),
+    lan_ip,
     size: 8,
     endpoints: endpoints!,
     dimensions
@@ -36,11 +35,11 @@ export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimen
     x: icon.x + icon.width / 2,
     y: icon.y + icon.height + 20,
     color: 'black',
-    points: [0, 0, 0, 77.5, 47.5, 77.5]
+    points: [0, 0, 0, 92.5, 47.5, 92.5]
   };
 
   if (!dimensions) {
-    return <Cube />;
+    return <Cube loading={false} />;
   }
   return (
     <Stage width={dimensions} height={endpoints!.length * 100 + 170}>
