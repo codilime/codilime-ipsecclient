@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
@@ -276,6 +277,8 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
+	fmt.Println("received vrf")
+	spew.Dump(vrf)
 	defer func() {
 		if err := r.Body.Close(); err != nil {
 			log.Errorf("error while closing body: %v", err)
