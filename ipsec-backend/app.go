@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
@@ -24,6 +25,7 @@ const (
 	hardwarePathPh1   = "/api/algorithms/hardware/ph1"
 	hardwarePathPh2   = "/api/algorithms/hardware/ph2"
 	settingsPath      = "/api/settings/{name:[a-zA-Z]+}"
+	listLogsPath      = "/api/listlogs"
 	logsPath          = "/api/logs/{name:[a-zA-Z0-9-_]+}"
 	nginxPasswordFile = "/etc/nginx/htpasswd"
 )
@@ -108,6 +110,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(settingsPath, a.apiGetSetting).Methods(http.MethodGet)
 	a.Router.HandleFunc(settingsPath, a.apiSetSetting).Methods(http.MethodPost)
 	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet).Queries("offset", "{offset:[-0-9]+}", "length", "{length:[-0-9]+}")
+	a.Router.HandleFunc(listLogsPath, a.listLogs).Methods(http.MethodGet)
 	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
 }
 
@@ -276,6 +279,8 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
+	fmt.Println("received vrf")
+	spew.Dump(vrf)
 	defer func() {
 		if err := r.Body.Close(); err != nil {
 			log.Errorf("error while closing body: %v", err)
@@ -461,6 +466,15 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 	}
 	name := vars["name"]
 	res, err := GetProcessLog(name, offset, length)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, res)
+}
+
+func (a *App) listLogs(w http.ResponseWriter, r *http.Request) {
+	res, err := GetProcessNames()
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return

@@ -5,10 +5,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const supervisorSocketPath = "/opt/super_net/supervisord.sock"
+const supervisorNetSocketPath = "/opt/super_net/supervisord.sock"
+const supervisorApiSocketPath = "/opt/super_api/supervisord.sock"
 
 func ReloadSupervisor() error {
-	client, err := supervisord.NewUnixSocketClient(supervisorSocketPath)
+	client, err := supervisord.NewUnixSocketClient(supervisorNetSocketPath)
 	if err != nil {
 		return err
 	}
@@ -27,7 +28,7 @@ func ReloadSupervisor() error {
 }
 
 func RestartSupervisorProcess(process string) error {
-	client, err := supervisord.NewUnixSocketClient(supervisorSocketPath)
+	client, err := supervisord.NewUnixSocketClient(supervisorNetSocketPath)
 	if err != nil {
 		return err
 	}
@@ -50,7 +51,7 @@ func RestartSupervisorProcess(process string) error {
 }
 
 func GetProcessLog(name string, offset, length int) (string, error) {
-	client, err := supervisord.NewUnixSocketClient(supervisorSocketPath)
+	client, err := supervisord.NewUnixSocketClient(supervisorNetSocketPath)
 	if err != nil {
 		return "", err
 	}
@@ -62,4 +63,43 @@ func GetProcessLog(name string, offset, length int) (string, error) {
 	}()
 
 	return client.ReadProcessStdoutLog(name, offset, length)
+}
+
+func getProcessNameForSocketPath(socketPath string) ([]string, error) {
+	client, err := supervisord.NewUnixSocketClient(socketPath)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err := client.Close(); err != nil {
+			log.Errorf("Error during closing supervisor connection %v", err)
+		}
+	}()
+
+	infos, err := client.GetAllProcessInfo()
+	if err != nil {
+		return nil, err
+	}
+
+	ret := []string{}
+	for _, info := range infos {
+		ret = append(ret, info.Name)
+	}
+	return ret, nil
+}
+
+func GetProcessNames() ([]string, error) {
+	netProcesses, err := getProcessNameForSocketPath(supervisorNetSocketPath)
+	if err != nil {
+		return nil, err
+	}
+	apiProcesses, err := getProcessNameForSocketPath(supervisorApiSocketPath)
+	if err != nil {
+		return nil, err
+	}
+	ret := []string{}
+	ret = append(ret, netProcesses...)
+	ret = append(ret, apiProcesses...)
+	return ret, nil
 }

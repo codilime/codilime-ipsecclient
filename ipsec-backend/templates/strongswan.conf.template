@@ -28,6 +28,7 @@ connections {
                 if_id_out = {{ calc $.Vlan $i }}
                 esp_proposals = {{ $.Crypto2 }}
                 start_action = start
+                updown=/usr/local/bin/status.sh {{ $.ClientName }}-{{ $i }}-{{ $val.RemoteIPSec }}
             }
         }
         version = 2
