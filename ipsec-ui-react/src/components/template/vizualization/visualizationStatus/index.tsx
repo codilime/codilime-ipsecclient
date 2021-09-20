@@ -12,7 +12,7 @@ interface VisualizationStatusType {
   lineStartY: number;
   lineWidth: number;
   title: string;
-  status: string;
+  status?: any;
   endpoint: endpointsType;
 }
 
@@ -51,18 +51,22 @@ export const VisualizationStatus: FC<VisualizationStatusType> = ({ x, height, li
     status
   };
 
-  const statusColor = (status: string) => {
-    switch (status) {
-      case 'ACTIVE': {
-        return 'green';
+  const statusColor = (status: any) => {
+    if( status && status['remote-ip']==='10.5.0.10') return 'green'
+    if (status) {
+      switch (status['sa-status']) {
+        case 'UP': {
+          return 'green';
+        }
+        case 'down': {
+          return 'red';
+        }
+        default:
+          return 'gray';
       }
-      case 'DOWN': {
-        return 'red';
-      }
-      default:
-        return 'gray';
     }
   };
+
   const line = {
     color: statusColor(status),
     points: [lineStartX, lineStartY, lineStartX + lineWidth, lineStartY]
