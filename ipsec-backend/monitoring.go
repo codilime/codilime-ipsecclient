@@ -85,6 +85,11 @@ func (a *App) getHWMetrics() (map[string]interface{}, error) {
 		return nil, err
 	}
 	endpoints := []map[string]interface{}{}
+	if res == nil {
+		return map[string]interface{}{
+			"endpoint_statuses": endpoints,
+		}, nil
+	}
 	sas := res["Cisco-IOS-XE-crypto-oper:crypto-ikev2-sa"].([]interface{})
 	for _, sa := range sas {
 		saData := sa.(map[string]interface{})["sa-data"].(map[string]interface{})
