@@ -36,7 +36,7 @@ COPY docker/api.ini /etc/supervisor.d/
 #Front
 RUN mkdir /run/nginx
 COPY ipsec-ui-react/nginx.conf /etc/nginx/conf.d/default.conf.template
-COPY --from=frontend-build /usr/src/app/dist /usr/share/nginx/html/
+COPY --from=frontend-build /usr/src/app/dist/ /usr/share/nginx/html
 COPY docker/front.ini /etc/supervisor.d/
 COPY docker/nginx.sh /usr/local/sbin/
 

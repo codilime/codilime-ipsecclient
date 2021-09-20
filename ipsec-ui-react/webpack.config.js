@@ -67,12 +67,10 @@ module.exports = {
     }
   },
   output: {
-
     path: OUTPUT_PATH,
-    filename: 'bundle.js',
-    publicPath: OUTPUT_PATH
+    filename: 'bundle.js'
   },
-  plugins: [new webpack.HotModuleReplacementPlugin(), new HtmlWebpackPlugin({ template: './src/index.html' }), new CleanWebpackPlugin()],
+  plugins: [new webpack.HotModuleReplacementPlugin(), new HtmlWebpackPlugin({ inject: false, template: './src/index.html' }), new CleanWebpackPlugin()],
   devServer: {
     proxy: {
       '/api': {
