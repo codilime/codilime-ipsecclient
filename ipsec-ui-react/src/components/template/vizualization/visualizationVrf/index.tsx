@@ -14,9 +14,10 @@ interface VisualizationVrf extends visualization {
   height: number;
   width: number;
   endpoints: endpointsType[];
+  metrics?: any;
 }
 
-export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, title, endpoints, dimensions, vlan = '', lan_ip = '' }) => {
+export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, title, endpoints, dimensions, vlan = '', lan_ip = '', metrics }) => {
   const { smHeightLabel, lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
   const eachBreak = 25;
 
@@ -44,13 +45,17 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
 
   const secondLabel = {
     x: x + paddingBox + smWidthLabel + eachBreak,
-    y: y + height / 2 - 4,
+    y: y + height / 2 - 8,
     width: smWidthLabel,
     height: heightHeader,
     router: true
   };
 
-  const hightOfX = (height - 45) / 2 - (20 + mdHeightLabel / 2);
+  const hightOfX = (height - 55) / 2 - (20 + mdHeightLabel / 2);
+
+  const findStatus = (remote: string) => {
+    return metrics?.endpoint_statuses.filter((status: any) => status['remote-ip'] === remote)[0];
+  };
 
   const endpointStatus = endpoints.map((endpoint, index) => {
     const textY = y + heightHeader + paddingBox + index * 80;
@@ -58,7 +63,8 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     const centerX = textX - 25;
     const centerY = y + height / 2 + smHeightLabel / 2;
     const centerLabel = textY + lgHeightLabel / 2;
-    const status = 'ACTIVE';
+
+    const status = findStatus(endpoint.remote_ip_sec);
     const thirdLabel = {
       x: textX,
       y: textY,
@@ -71,7 +77,8 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
 
     const line = {
       color: 'black',
-      points: [centerX, centerY, centerX + eachBreak / 2, centerY, centerX + eachBreak / 2, centerLabel, centerX + eachBreak + 10, centerLabel]
+
+      points: [centerX, centerY - 2.5, centerX + eachBreak / 2, centerY - 2.5, centerX + eachBreak / 2, centerLabel, centerX + eachBreak + 10, centerLabel]
     };
     const connectStatus = {
       x: x + width,

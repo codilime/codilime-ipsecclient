@@ -15,7 +15,7 @@ export const PopupLogs: FC<PopupLogsType> = ({ logs = [], open, handleToggle }) 
     const element = document.createElement('a');
     const file = new Blob(['hello test pliku tekstowego'], { type: 'text/plain;charset=utf-8' });
     element.href = URL.createObjectURL(file);
-    element.download = 'myFile.txt';
+    element.download = 'NewDocument.txt';
     document.body.appendChild(element);
     element.click();
   };

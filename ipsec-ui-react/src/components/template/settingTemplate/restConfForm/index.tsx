@@ -13,12 +13,14 @@ export const RestConfForm: FC = () => {
     handleSubmit,
     formState: { errors }
   } = useForm({ resolver: yupResolver(restConfSchema) });
-  const { handleSendRestCont } = useSettingLogic();
+
+  const { handleSendRestConf, handleResetRestConf } = useSettingLogic();
+
   const displayForm = DynamicRestConfForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register: register(input.name), validate: false }} />);
 
   return (
     <Wrapper {...{ title: 'Cat 9300x Credentials' }}>
-      <form className="loginForm" onSubmit={handleSubmit(handleSendRestCont)}>
+      <form className="loginForm" onSubmit={handleSubmit(handleSendRestConf)}>
         <fieldset className="loginForm__fieldset">
           {displayForm}
           <div className="loginForm__submit">
