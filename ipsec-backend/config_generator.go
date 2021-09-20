@@ -65,15 +65,15 @@ func saveCerts(v *VrfWithEndpoints) error {
 	for _, e := range v.Endpoints {
 		filename := fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.PeerIP)
 		if err := ioutil.WriteFile(filename, []byte(e.Authentication.RemoteCert), 0644); err != nil {
-			return err
+			return ReturnError(err)
 		}
 		filename = fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.LocalIP)
 		if err := ioutil.WriteFile(filename, []byte(e.Authentication.LocalCert), 0644); err != nil {
-			return err
+			return ReturnError(err)
 		}
 		filename = fmt.Sprintf("/opt/ipsec/rsa/%s-%s.key.pem", v.ClientName, e.PeerIP)
 		if err := ioutil.WriteFile(filename, []byte(e.Authentication.PrivateKey), 0644); err != nil {
-			return err
+			return ReturnError(err)
 		}
 	}
 	return nil
@@ -88,7 +88,7 @@ func deleteCerts(v *VrfWithEndpoints) error {
 		}
 		for _, f := range filenames {
 			if err := os.Remove(f); err != nil {
-				return err
+				return ReturnError(err)
 			}
 		}
 	}
@@ -99,41 +99,41 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 	log.Infof("generating templates for vrf %+v", v)
 	vrf, err := convertToVrfWithEndpoints(v)
 	if err != nil {
-		return err
+		return ReturnError(err)
 	}
 
 	if err := saveCerts(vrf); err != nil {
-		return err
+		return ReturnError(err)
 	}
 
 	prefix := calculatePrefix(v)
 
 	data, err := generateStrongswanTemplate(vrf)
 	if err != nil {
-		return err
+		return ReturnError(err)
 	}
 	if err := os.WriteFile(getStrongswanFileName(prefix), []byte(data), 0644); err != nil {
-		return err
+		return ReturnError(err)
 	}
 
 	data, err = generateSupervisorTemplate(vrf)
 	if err != nil {
-		return err
+		return ReturnError(err)
 	}
 	if err := os.WriteFile(getSupervisorFileName(prefix), []byte(data), 0644); err != nil {
-		return err
+		return ReturnError(err)
 	}
 
 	if err = generateFRRTemplate(v); err != nil {
-		return err
+		return ReturnError(err)
 	}
 
 	if err = ReloadSupervisor(); err != nil {
-		return err
+		return ReturnError(err)
 	}
 
 	if err = ReloadStrongSwan(); err != nil {
-		return err
+		return ReturnError(err)
 	}
 
 	return nil
@@ -143,26 +143,26 @@ func (FileGenerator) DeleteTemplates(v Vrf) error {
 	log.Infof("deleting templates for vrf %+v", v)
 	vrf, err := convertToVrfWithEndpoints(v)
 	if err != nil {
-		return err
+		return ReturnError(err)
 	}
 	prefix := calculatePrefix(v)
 	if err := os.RemoveAll(getSupervisorFileName(prefix)); err != nil {
-		return err
+		return ReturnError(err)
 	}
 	if err := os.RemoveAll(getStrongswanFileName(prefix)); err != nil {
-		return err
+		return ReturnError(err)
 	}
 	if err := deleteFRRTemplate(v); err != nil {
-		return err
+		return ReturnError(err)
 	}
 	if err := ReloadStrongSwan(); err != nil {
-		return err
+		return ReturnError(err)
 	}
 	if err := ReloadSupervisor(); err != nil {
-		return err
+		return ReturnError(err)
 	}
 	if err := deleteCerts(vrf); err != nil {
-		return err
+		return ReturnError(err)
 	}
 	return nil
 }
@@ -180,7 +180,7 @@ func convertToVrfWithEndpoints(vrf Vrf) (*VrfWithEndpoints, error) {
 	if vrf.Endpoints != nil {
 		val := vrf.Endpoints.String()
 		if err := json.Unmarshal([]byte(val), &endpoints); err != nil {
-			return nil, err
+			return nil, ReturnError(err)
 		}
 	}
 	return &VrfWithEndpoints{vrf, endpoints}, nil
@@ -195,16 +195,16 @@ func generateStrongswanTemplate(vrf *VrfWithEndpoints) (string, error) {
 		Funcs(template.FuncMap{"calc": calculateIndex, "inc": inc}).
 		ParseFiles(strongswanTemplatePath)
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	builder := strings.Builder{}
 	crypto1, err := convertToString(vrf.CryptoPh1)
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	crypto2, err := convertToString(vrf.CryptoPh2)
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	if err = t.Execute(&builder, struct {
 		*VrfWithEndpoints
@@ -215,7 +215,7 @@ func generateStrongswanTemplate(vrf *VrfWithEndpoints) (string, error) {
 		crypto1,
 		crypto2,
 	}); err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	return builder.String(), nil
 }
@@ -223,7 +223,7 @@ func generateStrongswanTemplate(vrf *VrfWithEndpoints) (string, error) {
 func generateSupervisorTemplate(vrf *VrfWithEndpoints) (string, error) {
 	t, err := template.New(supervisorTemplateFile).ParseFiles(supervisorTemplatePath)
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 
 	localIps := make([]string, 0, len(vrf.Endpoints))
@@ -252,7 +252,7 @@ func generateSupervisorTemplate(vrf *VrfWithEndpoints) (string, error) {
 		PeerIPs:          strings.Join(peerIps, " "),
 		Nats:             strings.Join(nats, " "),
 	}); err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	return builder.String(), nil
 
@@ -269,11 +269,11 @@ func calculateIndex(vlan, index int) int {
 func convertToString(s datatypes.JSON) (string, error) {
 	m, err := s.MarshalJSON()
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	var arr []string
 	if err = json.Unmarshal(m, &arr); err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	res := strings.Join(arr, "-")
 	return strings.ReplaceAll(res, "--", "-"), nil

@@ -1,9 +1,13 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"gorm.io/datatypes"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const hardwareVrfID = 65535
@@ -28,15 +32,23 @@ type Setting struct {
 }
 
 func initializeDB(dbName string) (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{})
+	newLogger := logger.New(
+		log.New(os.Stdout, "\n", log.LstdFlags),
+		logger.Config{
+			Colorful: false, // Disable color
+		},
+	)
+	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{
+		Logger: newLogger,
+	})
 	if err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 	if err = db.AutoMigrate(&Vrf{}); err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 	if err = db.AutoMigrate(&Setting{}); err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 	return db, nil
 }
@@ -47,41 +59,36 @@ func (Vrf) TableName() string {
 
 func (v *Vrf) getVrf(db *gorm.DB) error {
 	res := db.First(v, v.ID)
-	return res.Error
+	return ReturnError(res.Error)
 }
 
 func (v *Vrf) updateVrf(db *gorm.DB) error {
 	res := db.Updates(v)
-	return res.Error
+	return ReturnError(res.Error)
 }
 
 func (v *Vrf) deleteVrf(db *gorm.DB) error {
 	res := db.Delete(v)
-	return res.Error
+	return ReturnError(res.Error)
 }
 
 func (v *Vrf) createVrf(db *gorm.DB) error {
 	res := db.Create(v)
-	return res.Error
+	return ReturnError(res.Error)
 }
 
 func getVrfs(db *gorm.DB) ([]Vrf, error) {
 	var vrfs []Vrf
 	res := db.Find(&vrfs)
-	return vrfs, res.Error
+	return vrfs, ReturnError(res.Error)
 }
 
 func (s *Setting) getSetting(db *gorm.DB) error {
 	res := db.First(s, s.ID)
-	return res.Error
+	return ReturnError(res.Error)
 }
 
 func (s *Setting) createSetting(db *gorm.DB) error {
 	res := db.Create(s)
-	return res.Error
-}
-
-func (s *Setting) updateSetting(db *gorm.DB) error {
-	res := db.Updates(s)
-	return res.Error
+	return ReturnError(res.Error)
 }

@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
@@ -24,6 +25,7 @@ const (
 	hardwarePathPh1   = "/api/algorithms/hardware/ph1"
 	hardwarePathPh2   = "/api/algorithms/hardware/ph2"
 	settingsPath      = "/api/settings/{name:[a-zA-Z]+}"
+	listLogsPath      = "/api/listlogs"
 	logsPath          = "/api/logs/{name:[a-zA-Z0-9-_]+}"
 	nginxPasswordFile = "/etc/nginx/htpasswd"
 )
@@ -72,19 +74,19 @@ func (a *App) Initialize(dbName string) error {
 
 	if err := hwVrf.getVrf(a.DB); err != nil {
 		if strings.Contains(err.Error(), "record not found") {
-			return hwVrf.createVrf(a.DB)
+			return ReturnError(hwVrf.createVrf(a.DB))
 		}
-		return err
+		return ReturnError(err)
 	}
 
-	return ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644)
+	return ReturnError(ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644))
 }
 
 func (a *App) setDefaultPasswords() error {
 	name := "admin"
 	password := "cisco123"
 	if err := htpasswd.SetPassword(nginxPasswordFile, name, password, htpasswd.HashBCrypt); err != nil {
-		return err
+		return ReturnError(err)
 	}
 	a.setSetting(password, "switch_username", "admin")
 	a.setSetting(password, "switch_password", "cisco123")
@@ -107,20 +109,21 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(hardwarePathPh2, a.getHardwareAlgorithmsPh2).Methods(http.MethodGet)
 	a.Router.HandleFunc(settingsPath, a.apiGetSetting).Methods(http.MethodGet)
 	a.Router.HandleFunc(settingsPath, a.apiSetSetting).Methods(http.MethodPost)
-	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet).Queries("offset", "{offset:[-0-9]+}", "length", "{length:[-0-9]+}")
+	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet)
+	a.Router.HandleFunc(listLogsPath, a.listLogs).Methods(http.MethodGet)
 	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
 }
 
 func getPassFromHeader(header http.Header) (string, error) {
 	authHeader := header["Authorization"]
 	if len(authHeader) == 0 {
-		return "", fmt.Errorf("no basic auth")
+		return "", ReturnNewError("no basic auth")
 	}
 	prefixLen := len("Basic ")
 	based := strings.TrimRight(authHeader[0][prefixLen:], "=")
 	decodedBasicAuth, err := base64.RawStdEncoding.DecodeString(based)
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	return strings.Split(string(decodedBasicAuth), ":")[1], nil
 }
@@ -276,6 +279,8 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
+	fmt.Println("received vrf")
+	spew.Dump(vrf)
 	defer func() {
 		if err := r.Body.Close(); err != nil {
 			log.Errorf("error while closing body: %v", err)
@@ -345,11 +350,11 @@ func (a *App) getSwitchCreds(key string) error {
 	var err error
 	a.switchUsername, err = a.getSetting(key, "switch_username")
 	if err != nil {
-		return err
+		return ReturnError(err)
 	}
 	a.switchPassword, err = a.getSetting(key, "switch_password")
 	if err != nil {
-		return err
+		return ReturnError(err)
 	}
 	return nil
 }
@@ -449,18 +454,19 @@ func (a *App) getHardwareAlgorithmsPh2(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	offset, err := strconv.Atoi(vars["offset"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid offset")
-		return
-	}
-	length, err := strconv.Atoi(vars["length"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid length")
-		return
-	}
 	name := vars["name"]
-	res, err := GetProcessLog(name, offset, length)
+	offsetStr := r.URL.Query().Get("offset")
+	offset, _ := strconv.Atoi(offsetStr)
+	res, err := GetProcessLog(name, offset, 65536)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, res)
+}
+
+func (a *App) listLogs(w http.ResponseWriter, r *http.Request) {
+	res, err := GetProcessNames()
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -469,6 +475,7 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
+	returnErrorEx(2, fmt.Errorf(message))
 	respondWithJSON(w, code, map[string]string{"result": "error", "error": message})
 	log.Error("Error occurred: %s", message)
 }

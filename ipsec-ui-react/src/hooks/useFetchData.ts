@@ -54,10 +54,7 @@ export const useFetchData = () => {
 
   const fetchHardwarePh2 = () => client('algorithms/hardware/ph2');
 
-  const fetchEndpointStatus = async (id: number | string) => {
-    const data = await client(`metrics/${id}`);
-    console.log(data);
-  };
+  const fetchEndpointStatus = async (id: number | string) => await client(`metrics/${id}`);
 
   return { fetchData, postVrfData, deleteVrfData, putVrfData, fetchSoftwareAlgorithms, fetchHardwarePh1, fetchHardwarePh2, fetchEndpointStatus };
 };

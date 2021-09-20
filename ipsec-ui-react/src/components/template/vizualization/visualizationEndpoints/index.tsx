@@ -6,9 +6,10 @@ import { VisualizationIcon, VisualizationLine, VisualizationVrf, Cube } from 'te
 interface visualizationEndpoints {
   dimensions: number;
   data: vrfDataTypes;
+  metrics: any;
 }
 
-export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimensions }) => {
+export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimensions, metrics }) => {
   const { endpoints, client_name, vlan, lan_ip } = data;
   const icon = {
     x: 30,
@@ -28,7 +29,8 @@ export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimen
     lan_ip,
     size: 8,
     endpoints: endpoints!,
-    dimensions
+    dimensions,
+    metrics
   };
 
   const iconToVRfLine = {

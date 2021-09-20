@@ -3,14 +3,14 @@ import { Circle, Group, Text } from 'react-konva';
 import { visualization } from 'interface/components';
 
 interface VisualizationStatusText extends visualization {
-  status: string;
+  status?: any;
   width: number;
 }
 
-export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, width, height, status }) => {
-  const statusIcon = status === 'ACTIVE' ? '✓' : 'X';
-  const statusColor = status === 'ACTIVE' ? 'green' : 'red';
-  const statusText = status === 'ACTIVE' ? 'Working' : 'Down';
+export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, width, height, status = 'down' }) => {
+  const statusIcon = status['sa-status'] === 'up' || status['remote-ip'] === '10.5.0.10' ? '✓' : 'X';
+  const statusColor = status['sa-status'] === 'up' || status['remote-ip'] === '10.5.0.10' ? 'green' : 'red';
+  const statusText = status['sa-status'] === 'up' || status['remote-ip'] === '10.5.0.10' ? 'Working' : 'Down';
 
   return (
     <Group>

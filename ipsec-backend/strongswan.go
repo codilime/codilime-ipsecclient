@@ -10,7 +10,7 @@ const socketPath = "/opt/ipsec/conf/charon.vici"
 
 func ReloadStrongSwan() error {
 	if err := RestartSupervisorProcess("strongswan_reload"); err != nil {
-		return err
+		return ReturnError(err)
 	}
 	return nil
 }
@@ -25,18 +25,18 @@ func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
 	options := vici.WithSocketPath(socketPath)
 	session, err := vici.NewSession(options)
 	if err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 	defer session.Close()
 
 	m := vici.NewMessage()
 	err = m.Set("noblock", "yes")
 	if err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 	ms, err := session.StreamedCommandRequest("list-conns", "list-conn", m)
 	if err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 	endpoints := map[string]*monitoringEndpoint{}
 	for _, m = range ms.Messages() {
@@ -52,11 +52,11 @@ func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
 	m = vici.NewMessage()
 	err = m.Set("noblock", "yes")
 	if err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 	ms, err = session.StreamedCommandRequest("list-sas", "list-sa", m)
 	if err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 	for _, m = range ms.Messages() {
 		for _, key := range m.Keys() {
@@ -70,7 +70,7 @@ func GetStrongswanSingleState(n string) ([]map[string]interface{}, error) {
 	name := strings.Replace(n, "-", "_", 1)
 	statuses, err := GetStrongswanState()
 	if err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 
 	res := []map[string]interface{}{}
