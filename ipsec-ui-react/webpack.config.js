@@ -67,10 +67,9 @@ module.exports = {
     }
   },
   output: {
-
     path: OUTPUT_PATH,
     filename: 'bundle.js',
-    publicPath: OUTPUT_PATH
+    publicPath: `./`
   },
   plugins: [new webpack.HotModuleReplacementPlugin(), new HtmlWebpackPlugin({ template: './src/index.html' }), new CleanWebpackPlugin()],
   devServer: {

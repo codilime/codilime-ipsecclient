@@ -2,7 +2,7 @@
 FROM node:12.7-alpine AS frontend-build
 WORKDIR /usr/src/app
 COPY ipsec-ui-react/package.json ./
-RUN npm install -g webpack webpack-cli --loglevel verbose -ddd && npm install --loglevel verbose -ddd
+RUN npm install --loglevel verbose -ddd
 COPY ipsec-ui-react/src /usr/src/app/src/
 COPY ipsec-ui-react/webpack.config.js /usr/src/app/
 COPY ipsec-ui-react/tsconfig.json /usr/src/app/
