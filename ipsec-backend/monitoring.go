@@ -11,14 +11,20 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	saStatusStr = "sa_status"
+	localIpStr  = "local_ip"
+	remoteIpStr = "remote_ip"
+)
+
 func normalizeMetrics(metrics *map[string]interface{}) {
 	endpointStatuses := (*metrics)["endpoint_statuses"].([]map[string]interface{})
 	for i, endpoint := range endpointStatuses {
-		status := endpoint["sa-status"].(string)
+		status := endpoint[saStatusStr].(string)
 		if status == "ESTABLISHED" || status == "crypto-sa-status-active" {
-			endpoint["sa-status"] = "up"
+			endpoint[saStatusStr] = "up"
 		} else {
-			endpoint["sa-status"] = "down"
+			endpoint[saStatusStr] = "down"
 		}
 		endpointStatuses[i] = endpoint
 	}
@@ -97,9 +103,9 @@ func (a *App) getHWMetrics() (map[string]interface{}, error) {
 		remoteIp := saData["remote-ip-addr"]
 		saStatus := saData["sa-status"]
 		endpointData := map[string]interface{}{
-			"local-ip":  localIp,
-			"remote-ip": remoteIp,
-			"sa-status": saStatus,
+			localIpStr:  localIp,
+			remoteIpStr: remoteIp,
+			saStatusStr: saStatus,
 		}
 		endpoints = append(endpoints, endpointData)
 	}
