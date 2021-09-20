@@ -69,9 +69,9 @@ module.exports = {
   output: {
     path: OUTPUT_PATH,
     filename: 'bundle.js',
-    publicPath: OUTPUT_PATH
+    publicPath: '/'
   },
-  plugins: [new webpack.HotModuleReplacementPlugin(), new HtmlWebpackPlugin({ template: './src/index.html' }), new CleanWebpackPlugin()],
+  plugins: [new HtmlWebpackPlugin({ template: './src/index.html' }), new CleanWebpackPlugin()],
   devServer: {
     proxy: {
       '/api': {
@@ -79,7 +79,6 @@ module.exports = {
         secure: false
       }
     },
-
     historyApiFallback: {
       index: OUTPUT_PATH
     },
