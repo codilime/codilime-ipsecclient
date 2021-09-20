@@ -455,7 +455,9 @@ func (a *App) getHardwareAlgorithmsPh2(w http.ResponseWriter, r *http.Request) {
 func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["name"]
-	res, err := GetProcessLog(name, 0, 65536)
+	offsetStr := r.URL.Query().Get("offset")
+	offset, _ := strconv.Atoi(offsetStr)
+	res, err := GetProcessLog(name, offset, 65536)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
