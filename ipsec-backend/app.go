@@ -109,7 +109,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(hardwarePathPh2, a.getHardwareAlgorithmsPh2).Methods(http.MethodGet)
 	a.Router.HandleFunc(settingsPath, a.apiGetSetting).Methods(http.MethodGet)
 	a.Router.HandleFunc(settingsPath, a.apiSetSetting).Methods(http.MethodPost)
-	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet).Queries("offset", "{offset:[-0-9]+}", "length", "{length:[-0-9]+}")
+	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet)
 	a.Router.HandleFunc(listLogsPath, a.listLogs).Methods(http.MethodGet)
 	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
 }
@@ -454,18 +454,8 @@ func (a *App) getHardwareAlgorithmsPh2(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	offset, err := strconv.Atoi(vars["offset"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid offset")
-		return
-	}
-	length, err := strconv.Atoi(vars["length"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid length")
-		return
-	}
 	name := vars["name"]
-	res, err := GetProcessLog(name, offset, length)
+	res, err := GetProcessLog(name, 0, 65536)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -483,6 +473,7 @@ func (a *App) listLogs(w http.ResponseWriter, r *http.Request) {
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
+	returnErrorEx(2, fmt.Errorf(message))
 	respondWithJSON(w, code, map[string]string{"result": "error", "error": message})
 	log.Error("Error occurred: %s", message)
 }

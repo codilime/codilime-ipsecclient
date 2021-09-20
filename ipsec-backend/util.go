@@ -15,19 +15,19 @@ type ErrorFormatter struct{}
 func FieldToString(key string, value interface{}) string {
 	switch key {
 	case "err":
-		return fmt.Sprintf("\x1b[31m%s\x1b[0m\n", value)
+		return fmt.Sprintf("%s\n", value)
 	case "line":
-		return fmt.Sprintf("\x1b[33;1m:%d\x1b[0m\n", value)
+		return fmt.Sprintf(":%d\n", value)
 	case "file":
 		fullpath := value.(string)
 		folders := strings.Split(fullpath, "/")
 		parentpath := strings.Join(folders[:len(folders)-1], "/")
-		return parentpath + fmt.Sprintf("\x1b[32;1m/%s\x1b[0m", folders[len(folders)-1])
+		return parentpath + "/" + folders[len(folders)-1]
 	case "func":
 		fullpath := value.(string)
 		folders := strings.Split(fullpath, "/")
 		parentpath := strings.Join(folders[:len(folders)-1], "/")
-		return parentpath + fmt.Sprintf("\x1b[36;1m/%s\x1b[0m\n", folders[len(folders)-1])
+		return parentpath + fmt.Sprintf("/%s\n", folders[len(folders)-1])
 	}
 	return "LOGGER ERROR LOL"
 }
@@ -37,7 +37,7 @@ func (f *ErrorFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 		if len(entry.Data) != 0 {
 			fmt.Println("ENTRY HAS DATA")
 		}
-		return []byte(fmt.Sprintf("\x1b[0;94m%s\x1b[0m\n", ("INFO: " + entry.Message))), nil
+		return []byte(fmt.Sprintf("%s\n", ("INFO: " + entry.Message))), nil
 	}
 
 	if entry.Level == logrus.DebugLevel {
@@ -121,7 +121,7 @@ func returnErrorEx(caller int, errs ...error) error {
 		"line": line,
 		"func": f.Name(),
 		"file": file,
-	}).Error("RETURNING")
+	}).Error("")
 	if len(errs) == 1 {
 		return errs[0]
 	}

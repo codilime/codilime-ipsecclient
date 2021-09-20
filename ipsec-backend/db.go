@@ -1,9 +1,13 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"gorm.io/datatypes"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const hardwareVrfID = 65535
@@ -28,7 +32,15 @@ type Setting struct {
 }
 
 func initializeDB(dbName string) (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{})
+	newLogger := logger.New(
+		log.New(os.Stdout, "\n", log.LstdFlags),
+		logger.Config{
+			Colorful: false, // Disable color
+		},
+	)
+	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{
+		Logger: newLogger,
+	})
 	if err != nil {
 		return nil, ReturnError(err)
 	}
