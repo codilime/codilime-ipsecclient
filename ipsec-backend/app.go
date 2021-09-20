@@ -74,19 +74,19 @@ func (a *App) Initialize(dbName string) error {
 
 	if err := hwVrf.getVrf(a.DB); err != nil {
 		if strings.Contains(err.Error(), "record not found") {
-			return hwVrf.createVrf(a.DB)
+			return ReturnError(hwVrf.createVrf(a.DB))
 		}
-		return err
+		return ReturnError(err)
 	}
 
-	return ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644)
+	return ReturnError(ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644))
 }
 
 func (a *App) setDefaultPasswords() error {
 	name := "admin"
 	password := "cisco123"
 	if err := htpasswd.SetPassword(nginxPasswordFile, name, password, htpasswd.HashBCrypt); err != nil {
-		return err
+		return ReturnError(err)
 	}
 	a.setSetting(password, "switch_username", "admin")
 	a.setSetting(password, "switch_password", "cisco123")
@@ -117,13 +117,13 @@ func (a *App) initializeRoutes() {
 func getPassFromHeader(header http.Header) (string, error) {
 	authHeader := header["Authorization"]
 	if len(authHeader) == 0 {
-		return "", fmt.Errorf("no basic auth")
+		return "", ReturnNewError("no basic auth")
 	}
 	prefixLen := len("Basic ")
 	based := strings.TrimRight(authHeader[0][prefixLen:], "=")
 	decodedBasicAuth, err := base64.RawStdEncoding.DecodeString(based)
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	return strings.Split(string(decodedBasicAuth), ":")[1], nil
 }
@@ -350,11 +350,11 @@ func (a *App) getSwitchCreds(key string) error {
 	var err error
 	a.switchUsername, err = a.getSetting(key, "switch_username")
 	if err != nil {
-		return err
+		return ReturnError(err)
 	}
 	a.switchPassword, err = a.getSetting(key, "switch_password")
 	if err != nil {
-		return err
+		return ReturnError(err)
 	}
 	return nil
 }

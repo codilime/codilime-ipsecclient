@@ -30,13 +30,13 @@ type Setting struct {
 func initializeDB(dbName string) (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{})
 	if err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 	if err = db.AutoMigrate(&Vrf{}); err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 	if err = db.AutoMigrate(&Setting{}); err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 	return db, nil
 }
@@ -47,36 +47,36 @@ func (Vrf) TableName() string {
 
 func (v *Vrf) getVrf(db *gorm.DB) error {
 	res := db.First(v, v.ID)
-	return res.Error
+	return ReturnError(res.Error)
 }
 
 func (v *Vrf) updateVrf(db *gorm.DB) error {
 	res := db.Updates(v)
-	return res.Error
+	return ReturnError(res.Error)
 }
 
 func (v *Vrf) deleteVrf(db *gorm.DB) error {
 	res := db.Delete(v)
-	return res.Error
+	return ReturnError(res.Error)
 }
 
 func (v *Vrf) createVrf(db *gorm.DB) error {
 	res := db.Create(v)
-	return res.Error
+	return ReturnError(res.Error)
 }
 
 func getVrfs(db *gorm.DB) ([]Vrf, error) {
 	var vrfs []Vrf
 	res := db.Find(&vrfs)
-	return vrfs, res.Error
+	return vrfs, ReturnError(res.Error)
 }
 
 func (s *Setting) getSetting(db *gorm.DB) error {
 	res := db.First(s, s.ID)
-	return res.Error
+	return ReturnError(res.Error)
 }
 
 func (s *Setting) createSetting(db *gorm.DB) error {
 	res := db.Create(s)
-	return res.Error
+	return ReturnError(res.Error)
 }

@@ -71,7 +71,7 @@ func getSWMetrics(vrf Vrf) (map[string]interface{}, error) {
 	res := map[string]interface{}{
 		"endpoint_statuses": statuses,
 	}
-	return res, err
+	return res, ReturnError(err)
 }
 
 func (a *App) getHWMetrics() (map[string]interface{}, error) {
@@ -82,7 +82,7 @@ func (a *App) getHWMetrics() (map[string]interface{}, error) {
 	}
 	res, err := a.restconfGetData("Cisco-IOS-XE-crypto-oper:crypto-oper-data/crypto-ikev2-sa", client)
 	if err != nil {
-		return nil, err
+		return nil, ReturnError(err)
 	}
 	endpoints := []map[string]interface{}{}
 	if res == nil {
