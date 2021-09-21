@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { Button } from 'common/';
 import { useToggle, useLogsLogic } from 'hooks/';
 import classNames from 'classnames';
@@ -10,7 +10,7 @@ interface EachLogType {
 
 export const EachLog: FC<EachLogType> = ({ title }) => {
   const { open, handleToggle } = useToggle();
-  const { logData, handleFetchLogsData } = useLogsLogic();
+  const { logData, handleFetchLogsData, HandleDownloadTextFile } = useLogsLogic();
 
   useEffect(() => {
     if (open) {
@@ -29,14 +29,6 @@ export const EachLog: FC<EachLogType> = ({ title }) => {
     }
   }, [open]);
 
-  const HandleDownloadTextFile = () => {
-    const element = document.createElement('a');
-    const file = new Blob([logData], { type: 'text/plain;charset=utf-8' });
-    element.href = URL.createObjectURL(file);
-    element.download = `${title}.txt`;
-    document.body.appendChild(element);
-    element.click();
-  };
   const icon = open ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />;
   return (
     <li className="logs__each">
@@ -48,7 +40,7 @@ export const EachLog: FC<EachLogType> = ({ title }) => {
           <div className="logs__description">{logData}</div>
         </div>
         <div className="popup__footer">
-          <Button className="popup__save" onClick={HandleDownloadTextFile}>
+          <Button className="popup__save" onClick={() => HandleDownloadTextFile(title)}>
             Save
           </Button>
         </div>{' '}

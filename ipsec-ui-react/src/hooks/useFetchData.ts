@@ -1,18 +1,10 @@
 import { client } from 'api/';
 import { useAppContext } from 'hooks/';
-
+import { handleTakeTime } from 'utils/';
 export const useFetchData = () => {
   const { setVrf } = useAppContext();
 
   const fetchData = () => client('vrfs');
-
-  function handleTakeTime() {
-    const today = new Date();
-    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    const time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
-    const dateTime = date + ' ' + time;
-    return dateTime;
-  }
 
   const postVrfData = async (payload: any) => {
     setVrf((prev) => ({ ...prev, loading: true }));

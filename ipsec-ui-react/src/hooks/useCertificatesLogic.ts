@@ -1,5 +1,6 @@
 import { ChangeEvent, useRef, useState } from 'react';
 import { useAppContext } from 'hooks/';
+import { handleTakeTime } from 'utils/';
 
 interface dynamicObject {
   [key: string]: boolean;
@@ -10,14 +11,6 @@ export const useCertificatesLogic = () => {
   const { certificates } = vrf;
   const uploadBtn = useRef<HTMLInputElement>(null);
   const [checkedCa, setCheckedCa] = useState<dynamicObject>();
-
-  function handleTakeTime() {
-    const today = new Date();
-    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    const time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
-    const dateTime = date + ' ' + time;
-    return dateTime;
-  }
 
   const handleAddCerts = () => {
     if (uploadBtn.current) return uploadBtn.current.click();
