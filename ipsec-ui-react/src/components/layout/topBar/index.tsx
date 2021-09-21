@@ -11,7 +11,7 @@ interface TopBarTypes {
 
 export const TopBar: FC<TopBarTypes> = ({ productName }) => {
   const [openPopup, setOpenPopup] = useState({ setting: false, notice: false, logs: false });
-  const { open, handleToggle } = useToggle();
+ 
 
   const handleOpenAction = (name: string) => {
     if (name === 'setting') {
@@ -36,7 +36,7 @@ export const TopBar: FC<TopBarTypes> = ({ productName }) => {
         <Notification {...{ open: openPopup.notice, handleToggle: () => handleOpenAction('') }} />
         <Setting {...{ open: openPopup.setting, handleToggle: () => handleOpenAction('setting') }} />
         <Logout />
-        <PopupLogs {...{ open: true, handleToggle: () => handleOpenAction('logs') }} />
+        <PopupLogs {...{ open: openPopup.logs, handleToggle: () => handleOpenAction('logs') }} />
       </div>
     </header>
   );

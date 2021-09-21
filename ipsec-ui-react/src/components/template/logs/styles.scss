@@ -8,8 +8,8 @@
     margin: 10px 0;
     transition: $transition;
     height: 0px;
-    overflow-y: scroll;
     display: flex;
+    overflow: hidden;
     justify-content: space-between;
     flex-direction: column;
     opacity: 0;

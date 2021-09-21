@@ -24,7 +24,7 @@ export const Visualization: FC = () => {
   }, [wrapper]);
 
   const handleFetchStatus = async () => {
-    if (!data.id) return;
+    if (!data.id || endpoints === null || !endpoints.length) return;
     const status = await fetchEndpointStatus(data.id);
     setMetrics(status.endpoint_statuses);
   };
@@ -32,12 +32,13 @@ export const Visualization: FC = () => {
   useEffect(() => {
     handleFetchStatus();
   }, [data]);
+
   useEffect(() => {
     const interval = setInterval(async () => handleFetchStatus(), 5000);
     return () => {
       clearInterval(interval);
     };
-  }, [endpoints, data]);
+  }, [data]);
 
   const context = endpoints === null || !endpoints?.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions, metrics }} />;
 

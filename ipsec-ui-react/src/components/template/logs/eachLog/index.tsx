@@ -17,11 +17,12 @@ export const EachLog: FC<EachLogType> = ({ title }) => {
       handleFetchLogsData(title);
     }
   }, [open]);
+
   useEffect(() => {
     if (open) {
       const interval = setInterval(() => {
         handleFetchLogsData(title);
-      }, 5000);
+      }, 2000);
       return () => {
         clearInterval(interval);
       };
