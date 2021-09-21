@@ -1,16 +1,17 @@
 import { FC } from 'react';
 import { Circle, Group, Text } from 'react-konva';
 import { visualization } from 'interface/components';
+import { MetricsType } from 'interface/index';
 
 interface VisualizationStatusText extends visualization {
-  status?: any;
+  status?: MetricsType;
   width: number;
 }
 
-export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, width, height, status = 'down' }) => {
-  const statusIcon = status['sa-status'] === 'up' || status['remote-ip'] === '10.5.0.10' ? '✓' : 'X';
-  const statusColor = status['sa-status'] === 'up' || status['remote-ip'] === '10.5.0.10' ? 'green' : 'red';
-  const statusText = status['sa-status'] === 'up' || status['remote-ip'] === '10.5.0.10' ? 'Working' : 'Down';
+export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, width, height, status }) => {
+  const statusIcon = status?.sa_status === 'up' ? '✓' : 'X';
+  const statusColor = status?.sa_status === 'up' ? 'green' : 'red';
+  const statusText = status?.sa_status === 'up' ? 'Working' : 'Down';
 
   return (
     <Group>

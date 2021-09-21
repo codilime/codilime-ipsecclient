@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Group } from 'react-konva';
 import { VisualizationEndpointLabel, VisualizationLine, VisualizationEndpointBox, VisualizationStatusText } from 'template';
 import { variable } from '../visualizationConstants';
-import { endpointsType } from 'interface/index';
+import { endpointsType, MetricsType } from 'interface/index';
 const { mdHeightLabel } = variable;
 
 interface VisualizationStatusType {
@@ -12,7 +12,7 @@ interface VisualizationStatusType {
   lineStartY: number;
   lineWidth: number;
   title: string;
-  status?: any;
+  status: MetricsType;
   endpoint: endpointsType;
 }
 
@@ -51,11 +51,10 @@ export const VisualizationStatus: FC<VisualizationStatusType> = ({ x, height, li
     status
   };
 
-  const statusColor = (status: any) => {
-    if( status && status['remote-ip']==='10.5.0.10') return 'green'
+  const statusColor = (status: MetricsType) => {
     if (status) {
-      switch (status['sa-status']) {
-        case 'UP': {
+      switch (status.sa_status) {
+        case 'up': {
           return 'green';
         }
         case 'down': {

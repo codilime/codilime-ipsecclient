@@ -3,7 +3,7 @@ import { VisualizationOneLabel, VisualizationTwoLabel, VisualizationThreeLabel, 
 import { variable } from '../visualizationConstants';
 import { Group } from 'react-konva';
 import { visualization } from 'interface/components';
-import { endpointsType, vlanInterface } from 'interface/index';
+import { endpointsType, vlanInterface, MetricsType } from 'interface/index';
 
 interface VisualizationVrf extends visualization {
   title: string;
@@ -14,7 +14,7 @@ interface VisualizationVrf extends visualization {
   height: number;
   width: number;
   endpoints: endpointsType[];
-  metrics?: any;
+  metrics: MetricsType[];
 }
 
 export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, title, endpoints, dimensions, vlan = '', lan_ip = '', metrics }) => {
@@ -52,9 +52,9 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   };
 
   const hightOfX = (height - 55) / 2 - (20 + mdHeightLabel / 2);
-
+  console.log(metrics);
   const findStatus = (remote: string) => {
-    return metrics?.endpoint_statuses.filter((status: any) => status['remote-ip'] === remote)[0];
+    return metrics.filter((status: MetricsType) => status.remote_ip === remote)[0];
   };
 
   const endpointStatus = endpoints.map((endpoint, index) => {

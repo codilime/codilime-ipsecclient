@@ -95,3 +95,9 @@ export interface vlanInterface {
   vlan: number;
   lan_ip: string;
 }
+
+export interface MetricsType {
+  local_ip: string;
+  remote_ip: string;
+  sa_status: string;
+}

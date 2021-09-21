@@ -1,12 +1,13 @@
 import { FC } from 'react';
 import { vrfDataTypes } from 'interface/index';
 import { Stage, Layer } from 'react-konva';
+import { MetricsType } from 'interface/index';
 import { VisualizationIcon, VisualizationLine, VisualizationVrf, Cube } from 'template';
 
 interface visualizationEndpoints {
   dimensions: number;
   data: vrfDataTypes;
-  metrics: any;
+  metrics: MetricsType[];
 }
 
 export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimensions, metrics }) => {

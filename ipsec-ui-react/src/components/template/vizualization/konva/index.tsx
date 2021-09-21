@@ -1,5 +1,6 @@
 import { FC, useRef, useEffect, useState } from 'react';
-import { Wrapper, VisualizationEndpoints, Cube } from 'template';
+import { Wrapper, VisualizationEndpoints } from 'template';
+import { MetricsType } from 'interface/index';
 import { useAppContext, useFetchData } from 'hooks/';
 import './styles.scss';
 
@@ -9,7 +10,7 @@ export const Visualization: FC = () => {
     vrf: { data }
   } = useAppContext();
 
-  const [metrics, setMetrics] = useState<{ endpoint_statuses: any[] }>();
+  const [metrics, setMetrics] = useState<MetricsType[]>([]);
   const { fetchEndpointStatus } = useFetchData();
 
   const [dimensions, setDimensions] = useState(0);
@@ -21,18 +22,22 @@ export const Visualization: FC = () => {
       setDimensions(wrapper.current.offsetWidth);
     }
   }, [wrapper]);
-  useEffect(() => {}, []);
-  // useEffect(() => {
-  //   const interval = setInterval(async () => {
-  //     if (data.id) {
-  //       const status = await fetchEndpointStatus(data.id);
-  //       setMetrics(status);
-  //     }
-  //   }, 5000);
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, [endpoints]);
+
+  const handleFetchStatus = async () => {
+    if (!data.id) return;
+    const status = await fetchEndpointStatus(data.id);
+    setMetrics(status.endpoint_statuses);
+  };
+
+  useEffect(() => {
+    handleFetchStatus();
+  }, [data]);
+  useEffect(() => {
+    const interval = setInterval(async () => handleFetchStatus(), 5000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [endpoints]);
 
   const context = endpoints === null || !endpoints?.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions, metrics }} />;
 
