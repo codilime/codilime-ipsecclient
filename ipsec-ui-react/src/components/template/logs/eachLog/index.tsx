@@ -10,7 +10,7 @@ interface EachLogType {
 
 export const EachLog: FC<EachLogType> = ({ title }) => {
   const { open, handleToggle } = useToggle();
-  const { logData, handleFetchLogsData, HandleDownloadTextFile } = useLogsLogic();
+  const { displayData, handleFetchLogsData, HandleDownloadTextFile } = useLogsLogic();
 
   useEffect(() => {
     if (open) {
@@ -37,7 +37,7 @@ export const EachLog: FC<EachLogType> = ({ title }) => {
       </h3>
       <div className={classNames('logs__context', { logs__context__active: open })}>
         <div className="logs__panel">
-          <div className="logs__description">{logData}</div>
+          <div className="logs__description">{displayData}</div>
         </div>
         <div className="popup__footer">
           <Button className="popup__save" onClick={() => HandleDownloadTextFile(title)}>
