@@ -142,29 +142,16 @@ func (FileGenerator) GenerateTemplates(v Vrf) error {
 func (FileGenerator) DeleteTemplates(v Vrf) error {
 	log.Infof("deleting templates for vrf %+v", v)
 	vrf, err := convertToVrfWithEndpoints(v)
-	if err != nil {
-		return ReturnError(err)
-	}
 	prefix := calculatePrefix(v)
-	if err := os.RemoveAll(getSupervisorFileName(prefix)); err != nil {
-		return ReturnError(err)
-	}
-	if err := os.RemoveAll(getStrongswanFileName(prefix)); err != nil {
-		return ReturnError(err)
-	}
-	if err := deleteFRRTemplate(v); err != nil {
-		return ReturnError(err)
-	}
-	if err := ReloadStrongSwan(); err != nil {
-		return ReturnError(err)
-	}
-	if err := ReloadSupervisor(); err != nil {
-		return ReturnError(err)
-	}
-	if err := deleteCerts(vrf); err != nil {
-		return ReturnError(err)
-	}
-	return nil
+	return ReturnError(
+		err,
+		os.RemoveAll(getSupervisorFileName(prefix)),
+		os.RemoveAll(getStrongswanFileName(prefix)),
+		deleteFRRTemplate(v),
+		ReloadStrongSwan(),
+		ReloadSupervisor(),
+		deleteCerts(vrf),
+	)
 }
 
 func getStrongswanFileName(prefix string) string {
