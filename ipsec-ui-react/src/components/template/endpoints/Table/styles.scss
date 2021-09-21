@@ -41,6 +41,9 @@
     border-right: $table-border;
     border-top: $table-border;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     &:last-of-type {
       border-right: none;
     }
@@ -132,6 +135,7 @@
   }
   &__text {
     font-size: 16px;
+    margin:0 20px;
   }
   input[type='number']::-webkit-inner-spin-button,
   input[type='number']::-webkit-outer-spin-button {
