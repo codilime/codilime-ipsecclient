@@ -465,7 +465,7 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 	name := vars["name"]
 	offsetStr := r.URL.Query().Get("offset")
 	offset, _ := strconv.Atoi(offsetStr)
-	res, err := GetProcessLog(name, offset, 65536)
+	res, err := GetProcessLog(name, offset, 4294967296)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return

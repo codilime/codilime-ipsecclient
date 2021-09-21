@@ -1,0 +1,37 @@
+---
+- name: configure an example tunnel
+  hosts: localhost
+  tasks:
+
+  - name: delete a previous software vrf if exists
+    ignore_errors: yes
+    uri:
+      url: http://localhost/api/vrfs/2
+      method: DELETE
+      headers:
+        Authorization: Basic YWRtaW46Y2lzY28xMjM=
+
+  - name: create a software vrf
+    uri:
+      url: http://localhost/api/vrfs
+      method: POST
+      status_code: [200, 201]
+      headers:
+        Authorization: Basic YWRtaW46Y2lzY28xMjM=
+      src: sw_create.json
+
+  - name: configure the software vrf
+    uri:
+      url: http://localhost/api/vrfs/2
+      method: PUT
+      headers:
+        Authorization: Basic YWRtaW46Y2lzY28xMjM=
+      src: sw_configure.json
+
+  - name: configure the hardware
+    uri:
+      url: http://localhost/api/vrfs/1
+      method: PUT
+      headers:
+        Authorization: Basic YWRtaW46Y2lzY28xMjM=
+      src: hw.json
