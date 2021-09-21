@@ -22,6 +22,9 @@
       border-right: $table-border;
       font-size: $standard-text-size;
       text-align: left;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
       &:last-of-type {
         border-right: none;
       }
@@ -41,9 +44,6 @@
     border-right: $table-border;
     border-top: $table-border;
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     &:last-of-type {
       border-right: none;
     }
