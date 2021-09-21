@@ -78,9 +78,9 @@ func GetStrongswanSingleState(n string) ([]map[string]interface{}, error) {
 		if strings.Contains(k, name) {
 			res = append(res,
 				map[string]interface{}{
-					"local-ip":  v.localAddr,
-					"remote-ip": v.remoteAddr,
-					"sa-status": v.status,
+					localIpStr:  v.localAddr,
+					remoteIpStr: v.remoteAddr,
+					saStatusStr: v.status,
 				},
 			)
 		}
