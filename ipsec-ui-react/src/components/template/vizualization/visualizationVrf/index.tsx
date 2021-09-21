@@ -58,7 +58,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   };
 
   const endpointStatus = endpoints.map((endpoint, index) => {
-    const textY = y + heightHeader + paddingBox + index * 80;
+    const textY = y + heightHeader + paddingBox + index * 80 +5;
     const textX = x + width - paddingBox - smWidthLabel;
     const centerX = textX - 25;
     const centerY = y + height / 2 + smHeightLabel / 2;

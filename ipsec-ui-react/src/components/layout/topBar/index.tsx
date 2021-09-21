@@ -36,7 +36,7 @@ export const TopBar: FC<TopBarTypes> = ({ productName }) => {
         <Notification {...{ open: openPopup.notice, handleToggle: () => handleOpenAction('') }} />
         <Setting {...{ open: openPopup.setting, handleToggle: () => handleOpenAction('setting') }} />
         <Logout />
-        <PopupLogs {...{ open: openPopup.logs, handleToggle: () => handleOpenAction('logs') }} />
+        <PopupLogs {...{ open: true, handleToggle: () => handleOpenAction('logs') }} />
       </div>
     </header>
   );

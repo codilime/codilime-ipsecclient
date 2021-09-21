@@ -11,3 +11,4 @@ export * from './logout';
 export * from './settingTemplate';
 export * from './loading';
 export * from './vlan';
+export * from './logs';

@@ -37,7 +37,7 @@ export const Visualization: FC = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [endpoints]);
+  }, [endpoints, data]);
 
   const context = endpoints === null || !endpoints?.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions, metrics }} />;
 

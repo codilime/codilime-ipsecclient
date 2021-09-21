@@ -18,3 +18,4 @@ export * from './useNotificationLogic';
 export * from './useCertificatesLogic';
 export * from './useVlanLogic';
 export * from './useAppContext';
+export * from './useLogsLogic';
