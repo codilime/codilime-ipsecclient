@@ -9,10 +9,22 @@ export const validateDataInput = (event: any) => {
   }
 };
 
+function displayTime(time: number) {
+  if (time < 10) {
+    return '0' + time;
+  }
+  return time;
+}
+
 export function handleTakeTime() {
   const today = new Date();
-  const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-  const time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
-  const dateTime = date + ' ' + time;
+  const mounth = today.getMonth() + 1;
+  const date = today.getDate();
+  const hours = today.getHours();
+  const minutes = today.getMinutes();
+  const secound = today.getSeconds();
+  const currentData = today.getFullYear() + '-' + displayTime(mounth) + '-' + displayTime(date);
+  const time = displayTime(hours) + ':' + displayTime(minutes) + ':' + displayTime(secound);
+  const dateTime = currentData + ' ' + time;
   return dateTime;
 }

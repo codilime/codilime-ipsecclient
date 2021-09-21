@@ -26,27 +26,25 @@ export const Vlan: FC<vlanType> = ({ setValue, errorSchema }) => {
 
   return (
     <div className="vlan">
-      <Wrapper {...{ title: 'Attached L3 Vlan interfaces', small: true, className: 'vlan__wrapper' }}>
-        <div>
-          <table className="vlan__table">
-            <thead className="vlan__head">
-              <tr className="vlan__row vlan__row__header">
-                <th>VLAN</th>
-                <th>IP/MASK</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody className="vlan__body">{displayVlans}</tbody>
-          </table>
-          <div className="vlan__box">
-            <VlanInput {...{ name: 'vlan', text: 'Vlan', onChange: handleChangeInputValue, value: vlanInterface.vlan, error, tooltip: 'Provide value from 1 to 4094' }} />
-            <VlanInput {...{ name: 'lan_ip', text: 'IP', onChange: handleChangeInputValue, value: vlanInterface.lan_ip, error, tooltip: 'Provide correct IP, i.e. 10.1.1.1/32' }} />
-            <p className="vlan__btn" onClick={handleAddNewVlan}>
-              Add
-            </p>
-          </div>
+      <div className="vlan__wrapper">
+        <table className="vlan__table">
+          <thead className="vlan__head">
+            <tr className="vlan__row vlan__row__header">
+              <th>VLAN</th>
+              <th>IP/MASK</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody className="vlan__body">{displayVlans}</tbody>
+        </table>
+        <div className="vlan__box">
+          <VlanInput {...{ name: 'vlan', text: 'Vlan', onChange: handleChangeInputValue, value: vlanInterface.vlan, error, tooltip: 'Provide value from 1 to 4094' }} />
+          <VlanInput {...{ name: 'lan_ip', text: 'Lan IP', onChange: handleChangeInputValue, value: vlanInterface.lan_ip, error, tooltip: 'Provide correct IP, i.e. 10.1.1.1/32' }} />
+          <p className="vlan__btn" onClick={handleAddNewVlan}>
+            Add
+          </p>
         </div>
-      </Wrapper>
+      </div>
     </div>
   );
 };
