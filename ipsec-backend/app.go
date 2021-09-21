@@ -47,6 +47,26 @@ func boolPointer(b bool) *bool {
 	return &b
 }
 
+func (a *App) ensureHWVRF() error {
+	hwVrf := Vrf{
+		ID:         hardwareVrfID,
+		ClientName: "hardware",
+		CryptoPh1:  []byte("[\"aes-cbc-128\", \"sha256\", \"fourteen\"]"),
+		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
+		Active:     boolPointer(false),
+		Endpoints:  []byte("[]"),
+	}
+
+	if err := hwVrf.getVrf(a.DB); err != nil {
+		if strings.Contains(err.Error(), "record not found") {
+			return ReturnError(hwVrf.createVrf(a.DB))
+		}
+		return ReturnError(err)
+	}
+
+	return nil
+}
+
 func (a *App) Initialize(dbName string) error {
 	var err error
 	a.DB, err = initializeDB(dbName)
@@ -63,19 +83,7 @@ func (a *App) Initialize(dbName string) error {
 		log.Fatal(err)
 	}
 
-	hwVrf := Vrf{
-		ID:         hardwareVrfID,
-		ClientName: "hardware",
-		CryptoPh1:  []byte("[\"aes-cbc-128\", \"sha256\", \"fourteen\"]"),
-		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
-		Active:     boolPointer(false),
-		Endpoints:  []byte("[]"),
-	}
-
-	if err := hwVrf.getVrf(a.DB); err != nil {
-		if strings.Contains(err.Error(), "record not found") {
-			return ReturnError(hwVrf.createVrf(a.DB))
-		}
+	if err := a.ensureHWVRF(); err != nil {
 		return ReturnError(err)
 	}
 
@@ -381,11 +389,6 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if id == hardwareVrfID {
-		respondWithError(w, http.StatusBadRequest, "Cannot remove the hardware VRF")
-		return
-	}
-
 	vrf := Vrf{ID: id}
 	if err := vrf.getVrf(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -396,15 +399,22 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	var deleteError error
-	if *vrf.Active {
-		deleteError = deleteHandler(vrf)
-	}
-	if err := vrf.deleteVrf(a.DB); err != nil || deleteError != nil {
-		respondWithError(w, http.StatusInternalServerError, ReturnError(err, deleteError).Error())
-		return
-	}
 
+	err = ReturnError(
+		func() error {
+			return deleteHandler(vrf)
+		}(),
+		vrf.deleteVrf(a.DB),
+		func() error {
+			if id == hardwareVrfID {
+				return a.ensureHWVRF()
+			}
+			return nil
+		}(),
+	)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+	}
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
 
