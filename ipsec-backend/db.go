@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-const hardwareVrfID = 65535
+const hardwareVrfID = 1
 
 type Vrf struct {
 	ID                int64          `json:"id"`

@@ -3,7 +3,7 @@ export const maxValueForVlan = 4094;
 export const maxValueForRemoteAS = 4094;
 
 export const newVrf = 'create';
-export const HardwareId = '65535';
+export const HardwareId = '1';
 
 export enum endpointTableConst {
   nat = 'NAT',
