@@ -22,17 +22,17 @@ export const Visualization: FC = () => {
     }
   }, [wrapper]);
   useEffect(() => {}, []);
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      if (data.id) {
-        const status = await fetchEndpointStatus(data.id);
-        setMetrics(status);
-      }
-    }, 5000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [endpoints]);
+  // useEffect(() => {
+  //   const interval = setInterval(async () => {
+  //     if (data.id) {
+  //       const status = await fetchEndpointStatus(data.id);
+  //       setMetrics(status);
+  //     }
+  //   }, 5000);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, [endpoints]);
 
   const context = endpoints === null || !endpoints?.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions, metrics }} />;
 
