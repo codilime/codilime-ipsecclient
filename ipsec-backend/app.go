@@ -382,7 +382,7 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if id == hardwareVrfID {
-		respondWithError(w, http.StatusBadRequest, "Cannot remote the hardware VRF")
+		respondWithError(w, http.StatusBadRequest, "Cannot remove the hardware VRF")
 		return
 	}
 
@@ -396,14 +396,12 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	var deleteError error
 	if *vrf.Active {
-		if err := deleteHandler(vrf); err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		deleteError = deleteHandler(vrf)
 	}
-	if err := vrf.deleteVrf(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+	if err := vrf.deleteVrf(a.DB); err != nil || deleteError != nil {
+		respondWithError(w, http.StatusInternalServerError, ReturnError(err, deleteError).Error())
 		return
 	}
 

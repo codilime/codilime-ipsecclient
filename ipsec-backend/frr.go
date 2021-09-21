@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"strconv"
 
 	"github.com/davecgh/go-spew/spew"
 )
@@ -25,7 +26,7 @@ func generateFRRTemplate(vrf Vrf) error {
 	}
 	fmt.Println("unmarshalled endpoints")
 	spew.Dump(endpoints)
-	createTmpFile := fmt.Sprintf("router bgp %d vrf %s\n  no bgp ebgp-requires-policy\n", vrf.LocalAs, vrf.ClientName)
+	createTmpFile := fmt.Sprintf("router bgp %d vrf %s\n  no bgp ebgp-requires-policy\n", vrf.LocalAs, "vrf-"+strconv.Itoa(vrf.Vlan))
 	for _, endpoint := range endpoints {
 		createTmpFile += fmt.Sprintf("  neighbor %s remote-as external\n", endpoint.PeerIP)
 	}
@@ -35,6 +36,6 @@ func generateFRRTemplate(vrf Vrf) error {
 }
 
 func deleteFRRTemplate(vrf Vrf) error {
-	deleteTmpFile := fmt.Sprintf("no router bgp %d vrf %s\n", vrf.LocalAs, vrf.ClientName)
+	deleteTmpFile := fmt.Sprintf("no router bgp %d vrf %s\n", vrf.LocalAs, "vrf-"+strconv.Itoa(vrf.Vlan))
 	return ReturnError(runTmpVtyshFile(deleteTmpFile))
 }
