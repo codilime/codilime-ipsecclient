@@ -6,3 +6,4 @@ export * from './uploadButton';
 export * from './toolTipInfo';
 export * from './circleInfo';
 export * from './uploadCertificates';
+export * from './scrollToBottom';

@@ -4,8 +4,11 @@ import { handleTakeTime } from 'utils/';
 
 export const useLogsLogic = () => {
   const [logList, setLogList] = useState<string[]>([]);
-  const [logData, setLogData] = useState<string>('');
+  const [logData, setLogData] = useState<string[]>([]);
+  const [autoScroll, setAutoScroll] = useState(false);
   const { fetchLogsList, fetchLogsData } = useFetchData();
+
+  const handleActioveScroll = () => setAutoScroll((prev) => !prev);
 
   const handleFetchList = async () => {
     const list = await fetchLogsList();
@@ -14,17 +17,19 @@ export const useLogsLogic = () => {
 
   const handleFetchLogsData = async (logs: string) => {
     const data = await fetchLogsData(logs);
-    setLogData(data);
+
+    const firstLine = data.split('\n');
+    setLogData(firstLine);
   };
 
   const HandleDownloadTextFile = (title: string) => {
     const element = document.createElement('a');
-    const file = new Blob([logData], { type: 'text/plain;charset=utf-8' });
+    const file = new Blob([...logData], { type: 'text/plain;charset=utf-8' });
     element.href = URL.createObjectURL(file);
     element.download = `${handleTakeTime() + title}.txt`;
     document.body.appendChild(element);
     element.click();
   };
 
-  return { logList, logData, handleFetchLogsData, handleFetchList, HandleDownloadTextFile };
+  return { logList, logData, autoScroll, handleFetchLogsData, handleFetchList, HandleDownloadTextFile, handleActioveScroll };
 };

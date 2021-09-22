@@ -23,7 +23,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
 
   const label = {
     x: x + paddingBox,
-    y: y + heightHeader + paddingBox,
+    y: y + heightHeader + paddingBox - 5,
     width: smWidthLabel,
     height: lgHeightLabel,
     vlan,
@@ -52,13 +52,13 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   };
 
   const hightOfX = (height - 55) / 2 - (20 + mdHeightLabel / 2);
-  console.log(metrics);
+
   const findStatus = (remote: string) => {
     return metrics.filter((status: MetricsType) => status.remote_ip === remote)[0];
   };
 
   const endpointStatus = endpoints.map((endpoint, index) => {
-    const textY = y + heightHeader + paddingBox + index * 80 +5;
+    const textY = y + heightHeader + paddingBox + index * 80 + 5;
     const textX = x + width - paddingBox - smWidthLabel;
     const centerX = textX - 25;
     const centerY = y + height / 2 + smHeightLabel / 2;

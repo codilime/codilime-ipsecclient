@@ -45,8 +45,26 @@
     justify-content: space-between;
     align-items: center;
     transition: $transition;
+    font-size: 14px;
     &__active {
       border-bottom: 2px solid $primary;
     }
+  }
+
+  &__footer {
+    text-align: right;
+    padding: 10px 0;
+  }
+  &__save {
+    background-color: #049fd9;
+    color: white;
+  }
+  &__auto {
+    margin-right: 10px;
+    background-color: $gray01;
+    color:$gray03;
+  }
+  &__char {
+    font-size: 24px;
   }
 }

@@ -18,7 +18,7 @@ interface VisualizationLabel extends visualization {
 
 export const VisualizationOneLabel: FC<VisualizationLabel> = ({ x, y, width, height }) => {
   const [image] = useImage(Router);
-  
+
   return (
     <Group>
       <Rect {...{ x, y, width, height, fill: labelColor }} />
@@ -30,10 +30,10 @@ export const VisualizationOneLabel: FC<VisualizationLabel> = ({ x, y, width, hei
 export const VisualizationTwoLabel: FC<VisualizationLabel> = ({ x, y, width, height, vlan, lan_ip }) => (
   <Group>
     <Rect {...{ x, y, width, height: height + 15, fill: labelColor }} />
-    <Text {...{ text: 'Vlan', x, y: y, height: height / 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'normal' }} />
-    <Text {...{ text: vlan, x, y: y + height / 4 + 2.5, height: height / 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold' }} />
-    <Text {...{ text: 'Lan IP', x, y: y + height / 2 + 10, height: height / 4, width: width, align: 'center', verticalAlign: 'middle', fontSize: 10 }} />
-    <Text {...{ text: lan_ip, x, y: y + height - 2.5, height: height / 4, width: width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold' }} />
+    <Text {...{ text: 'Vlan', x, y: y, height: height / 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'normal', letterSpacing: 1 }} />
+    <Text {...{ text: vlan, x, y: y + height / 4 + 2.5, height: height / 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold', letterSpacing: 1 }} />
+    <Text {...{ text: 'Lan IP', x, y: y + height / 2 + 10, height: height / 4, width: width, align: 'center', verticalAlign: 'middle', fontSize: 10, letterSpacing: 1 }} />
+    <Text {...{ text: lan_ip, x, y: y + height - 2.5, height: height / 4, width: width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold', letterSpacing: 1 }} />
   </Group>
 );
 
@@ -51,7 +51,8 @@ export const VisualizationThreeLabel: FC<VisualizationThreeLabelType> = ({ x, y,
     height: height / 3,
     fontSize: 10,
     align: 'center',
-    verticalAlign: 'middle'
+    verticalAlign: 'middle',
+    letterSpacing: 1
   };
 
   const secondContent = {
@@ -62,7 +63,9 @@ export const VisualizationThreeLabel: FC<VisualizationThreeLabelType> = ({ x, y,
     height: height / 3,
     fontSize: 8,
     align: 'center',
-    verticalAlign: 'middle'
+    verticalAlign: 'middle',
+    letterSpacing: 1,
+    fontStyle: 'Bold'
   };
 
   const thirdContent = {
@@ -73,7 +76,9 @@ export const VisualizationThreeLabel: FC<VisualizationThreeLabelType> = ({ x, y,
     height: height / 3,
     fontSize: 8,
     align: 'center',
-    verticalAlign: 'middle'
+    verticalAlign: 'middle',
+    fontStyle: 'Bold',
+    letterSpacing: 1
   };
   const checkedBgp = {
     x: x + smWidthLabel / 2 + 10,
@@ -90,9 +95,9 @@ export const VisualizationThreeLabel: FC<VisualizationThreeLabelType> = ({ x, y,
     <Group>
       <Rect {...{ x, y, width, height, fill: labelColor }} />
       <Text {...firstContent} />
-      <Text {...{ ...secondContent, fontStyle: 'Bold' }} />
+      <Text {...{ ...secondContent }} />
       <VisualizationChecked {...checkedBgp} />
-      <Text {...{ ...thirdContent, fontStyle: 'Bold' }} />
+      <Text {...{ ...thirdContent }} />
       <VisualizationChecked {...checkedNat} />
     </Group>
   );
