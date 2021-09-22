@@ -23,11 +23,6 @@ func (a *App) restconfCreate(vrf Vrf) error {
 		},
 	}
 
-	dbEndpoints := make([]Endpoint, 0)
-	if err := json.Unmarshal([]byte(vrf.Endpoints.String()), &dbEndpoints); err != nil {
-		return ReturnError(err)
-	}
-
 	// Remove NAT-T as 9300X does not support it yet
 	if err := a.tryRestconfDelete("Cisco-IOS-XE-native:native/crypto/ipsec/nat-transparency", client); err != nil {
 		fmt.Println("NAT-T config already removed, skipping", err)
@@ -49,7 +44,7 @@ func (a *App) restconfCreate(vrf Vrf) error {
 	if err := a.restconfDoPolicy(vrf, client); err != nil {
 		return ReturnError(err)
 	}
-	if err := a.restconfDoEndpoints(vrf, client, dbEndpoints); err != nil {
+	if err := a.restconfDoEndpoints(vrf, client, vrf.Endpoints); err != nil {
 		return ReturnError(err)
 	}
 	if err := a.restconfDoProfile(vrf, client); err != nil {
@@ -61,10 +56,10 @@ func (a *App) restconfCreate(vrf Vrf) error {
 	if err := a.restconfDoIpsecProfile(vrf, client, cryptoPh2[len(cryptoPh2)-1]); err != nil {
 		return ReturnError(err)
 	}
-	if err := a.restconfDoTunnels(vrf, client, dbEndpoints); err != nil {
+	if err := a.restconfDoTunnels(vrf, client, vrf.Endpoints); err != nil {
 		return ReturnError(err)
 	}
-	if err := a.restconfDoBGP(vrf, client, dbEndpoints); err != nil {
+	if err := a.restconfDoBGP(vrf, client, vrf.Endpoints); err != nil {
 		return ReturnError(err)
 	}
 
@@ -77,16 +72,12 @@ func (a *App) restconfDelete(vrf Vrf) error {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	dbEndpoints := make([]Endpoint, 0)
-	if err := json.Unmarshal([]byte(vrf.Endpoints.String()), &dbEndpoints); err != nil {
-		return ReturnError(err)
-	}
 	// Ignore delete errors. Sometimes there is a leftover configuration left and some of the calls will return 404.
 	// We just want to make sure that nothing in the configuration will conflict with what we're inserting
 	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/router/bgp=%d", vrf.LocalAs), client); err != nil {
 		Error(err)
 	}
-	for i := range dbEndpoints {
+	for i := range vrf.Endpoints {
 		tunName := (hash(vrf.ClientName) + i) % 65536
 		if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/interface/Tunnel=%d", tunName), client); err != nil {
 			Error(err)

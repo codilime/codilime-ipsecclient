@@ -5,7 +5,6 @@ import (
 	"crypto/cipher"
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/json"
 	"math/rand"
 	"strings"
 )
@@ -115,11 +114,7 @@ func (a *App) encryptPSK(key string, v *Vrf) error {
 	if err != nil {
 		return ReturnError(err)
 	}
-	endpoints := []Endpoint{}
-	if err := json.Unmarshal(v.Endpoints, &endpoints); err != nil {
-		return ReturnError(err)
-	}
-	for i, e := range endpoints {
+	for i, e := range v.Endpoints {
 		if e.Authentication.Type != "psk" {
 			continue
 		}
@@ -129,13 +124,8 @@ func (a *App) encryptPSK(key string, v *Vrf) error {
 		}
 		encBytes := make([]byte, base64.RawStdEncoding.EncodedLen(len(encPSK)))
 		base64.RawStdEncoding.Encode(encBytes, encPSK)
-		endpoints[i].Authentication.PSK = string(encBytes)
+		v.Endpoints[i].Authentication.PSK = string(encBytes)
 	}
-	endpointsJSON, err := json.Marshal(&endpoints)
-	if err != nil {
-		return ReturnError(err)
-	}
-	v.Endpoints = endpointsJSON
 	return nil
 }
 
@@ -147,11 +137,7 @@ func (a *App) decryptPSK(key string, v *Vrf) error {
 	if err != nil {
 		return ReturnError(err)
 	}
-	endpoints := []Endpoint{}
-	if err := json.Unmarshal(v.Endpoints, &endpoints); err != nil {
-		return ReturnError(err)
-	}
-	for i, e := range endpoints {
+	for i, e := range v.Endpoints {
 		if e.Authentication.Type != "psk" {
 			continue
 		}
@@ -163,12 +149,7 @@ func (a *App) decryptPSK(key string, v *Vrf) error {
 		if err != nil {
 			return ReturnError(err)
 		}
-		endpoints[i].Authentication.PSK = string(decPSK)
+		v.Endpoints[i].Authentication.PSK = string(decPSK)
 	}
-	endpointsJSON, err := json.Marshal(&endpoints)
-	if err != nil {
-		return ReturnError(err)
-	}
-	v.Endpoints = endpointsJSON
 	return nil
 }

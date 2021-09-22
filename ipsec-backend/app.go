@@ -13,7 +13,6 @@ import (
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
-	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -54,24 +53,24 @@ func (a *App) ensureHWVRF() error {
 		CryptoPh1:  []byte("[\"aes-cbc-128\", \"sha256\", \"fourteen\"]"),
 		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
 		Active:     boolPointer(false),
-		Endpoints:  []byte("[]"),
+		Endpoints:  []Endpoint{},
 	}
-
-	if err := hwVrf.getVrf(a.DB); err != nil {
-		if strings.Contains(err.Error(), "record not found") {
-			return ReturnError(hwVrf.createVrf(a.DB))
-		}
-		return ReturnError(err)
+	err := hwVrf.createVrf(a.DB)
+	if err == nil {
+		return nil
 	}
-
-	return nil
+	if strings.Contains(err.Error(),
+		"UNIQUE constraint failed: vrfs.id") {
+		return nil
+	}
+	return ReturnError(err)
 }
 
 func (a *App) Initialize(dbName string) error {
 	var err error
 	a.DB, err = initializeDB(dbName)
 	if err != nil {
-		log.Fatal(err)
+		Fatal(err)
 	}
 
 	a.Generator = FileGenerator{}
@@ -80,7 +79,7 @@ func (a *App) Initialize(dbName string) error {
 
 	err = a.setDefaultPasswords()
 	if err != nil {
-		log.Fatal(err)
+		Fatal(err)
 	}
 
 	if err := a.ensureHWVRF(); err != nil {
@@ -96,13 +95,14 @@ func (a *App) setDefaultPasswords() error {
 	if err := htpasswd.SetPassword(nginxPasswordFile, name, password, htpasswd.HashBCrypt); err != nil {
 		return ReturnError(err)
 	}
-	a.setSetting(password, "switch_username", "admin")
-	a.setSetting(password, "switch_password", "cisco123")
-	return nil
+	return ReturnError(
+		a.setSetting(password, "switch_username", "admin"),
+		a.setSetting(password, "switch_password", "cisco123"),
+	)
 }
 
 func (a *App) Run(addr string) {
-	log.Fatal(http.ListenAndServe(addr, a.Router))
+	Fatal(http.ListenAndServe(addr, a.Router))
 }
 
 func (a *App) initializeRoutes() {
@@ -242,7 +242,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	}
 	defer func() {
 		if err := r.Body.Close(); err != nil {
-			log.Errorf("error while closing body: %v", err)
+			ReturnNewError("error while closing body: " + err.Error())
 		}
 	}()
 
@@ -254,17 +254,17 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
+	plaintextVrf := vrf
 	if err := a.encryptPSK(key, &vrf); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	if err := vrf.createVrf(a.DB); err != nil {
-		log.Infof("error %+v", err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusCreated, vrf)
+	respondWithJSON(w, http.StatusCreated, plaintextVrf)
 }
 
 type handler func(Vrf) error
@@ -291,7 +291,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	spew.Dump(vrf)
 	defer func() {
 		if err := r.Body.Close(); err != nil {
-			log.Errorf("error while closing body: %v", err)
+			ReturnNewError("error while closing body: " + err.Error())
 		}
 	}()
 
@@ -485,7 +485,6 @@ func (a *App) listLogs(w http.ResponseWriter, r *http.Request) {
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	returnErrorEx(2, fmt.Errorf(message))
 	respondWithJSON(w, code, map[string]string{"result": "error", "error": message})
-	log.Error("Error occurred: %s", message)
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
@@ -494,6 +493,6 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	if _, err := w.Write(response); err != nil {
-		log.Errorf("Error while writing the response: %v", err)
+		ReturnNewError("Error while writing the response: " + err.Error())
 	}
 }

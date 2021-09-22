@@ -1,12 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"strconv"
-
-	"github.com/davecgh/go-spew/spew"
 )
 
 func runTmpVtyshFile(tmpFile string) error {
@@ -20,14 +17,8 @@ func runTmpVtyshFile(tmpFile string) error {
 }
 
 func generateFRRTemplate(vrf Vrf) error {
-	endpoints := make([]Endpoint, 0)
-	if err := json.Unmarshal([]byte(vrf.Endpoints.String()), &endpoints); err != nil {
-		return ReturnError(err)
-	}
-	fmt.Println("unmarshalled endpoints")
-	spew.Dump(endpoints)
 	createTmpFile := fmt.Sprintf("router bgp %d vrf %s\n  no bgp ebgp-requires-policy\n", vrf.LocalAs, "vrf-"+strconv.Itoa(vrf.Vlan))
-	for _, endpoint := range endpoints {
+	for _, endpoint := range vrf.Endpoints {
 		createTmpFile += fmt.Sprintf("  neighbor %s remote-as external\n", endpoint.PeerIP)
 	}
 	fmt.Println("generating frr template:")
