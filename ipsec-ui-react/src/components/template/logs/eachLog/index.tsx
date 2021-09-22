@@ -6,9 +6,10 @@ import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 
 interface EachLogType {
   title: string;
+  activePopup: boolean;
 }
 
-export const EachLog: FC<EachLogType> = ({ title }) => {
+export const EachLog: FC<EachLogType> = ({ title, activePopup }) => {
   const { open, handleToggle } = useToggle();
   const { logData, autoScroll, handleFetchLogsData, HandleDownloadTextFile, handleActioveScroll } = useLogsLogic();
 
@@ -17,6 +18,11 @@ export const EachLog: FC<EachLogType> = ({ title }) => {
       handleFetchLogsData(title);
     }
   }, [open]);
+  useEffect(() => {
+    if (!activePopup && open) {
+      handleToggle();
+    }
+  }, [activePopup]);
 
   useEffect(() => {
     if (open) {
