@@ -58,7 +58,7 @@ export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, wid
           letterSpacing: 1
         }}
       />
-      <Text {...{ text: handleGetText(), x: x + 15, y: y - 10, width: width - 15, height, align: 'center', verticalAlign: 'top', fill: handleGetColor(), fontStyle: 'bold', letterSpacing: 1 }} />
+      <Text {...{ text: handleGetText(), x: x + 20, y: y - 10, width: width - 15, height, align: 'center', verticalAlign: 'top', fill: handleGetColor(), fontStyle: 'bold', letterSpacing: 1 }} />
     </Group>
   );
 };

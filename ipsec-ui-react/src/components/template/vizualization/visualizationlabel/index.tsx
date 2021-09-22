@@ -24,7 +24,7 @@ export const VisualizationOneLabel: FC<VisualizationLabel> = ({ x, y, width, hei
   ) : (
     <Image {...{ image, x: x + width / 2 - 17.5, y, width: 35, height: 25 }} />
   );
-  
+
   return (
     <Group>
       <Rect {...{ x, y, width, height, fill: labelColor }} />
@@ -51,7 +51,7 @@ interface VisualizationThreeLabelType extends VisualizationLabel {
 
 export const VisualizationThreeLabel: FC<VisualizationThreeLabelType> = ({ x, y, width, height, firstText, bgpActive, natActive, hardware }) => {
   const firstContent = {
-    x: x - 7.5,
+    x: x - 2.5,
     y,
     text: firstText,
     width: smWidthLabel,
