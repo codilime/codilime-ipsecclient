@@ -99,23 +99,25 @@ func ReturnError(errs ...error) error {
 }
 
 func returnErrorEx(caller int, errs ...error) error {
-	newErrs := make([]error, 0)
+	empty := true
 	for _, v := range errs {
 		if v != nil {
-			newErrs = append(newErrs, v)
+			empty = false
 		}
 	}
-	errs = newErrs
-	if len(errs) == 0 {
+	if empty {
 		return nil
 	}
 	pc, file, line, _ := runtime.Caller(caller)
 	f := runtime.FuncForPC(pc)
-	errStrs := make([]string, 0)
-	for _, err := range errs {
-		errStrs = append(errStrs, err.Error())
+	errStr := ""
+	if len(errs) == 1 {
+		errStr = errs[0].Error()
+	} else {
+		for i, err := range errs {
+			errStr = errStr + fmt.Sprintf("%d: %s\n", i, err.Error())
+		}
 	}
-	errStr := strings.Join(errStrs, ", ")
 	logrus.WithFields(logrus.Fields{
 		"err":  errStr,
 		"line": line,
