@@ -1,0 +1,20 @@
+{
+        "id": 2,
+        "client_name": "ansible_test",
+        "vlan": 123,
+        "crypto_ph1": [
+          "aes128",
+          "sha256",
+          "modp2048"
+        ],
+        "crypto_ph2": [
+          "aes128",
+          "sha256",
+          "modp2048"
+        ],
+        "physical_interface": "",
+        "active": false,
+        "local_as": 65001,
+        "lan_ip": "1.1.1.1/24",
+        "endpoints": []
+      }

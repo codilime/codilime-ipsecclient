@@ -1,0 +1,42 @@
+---
+- name: configure an example tunnel
+  hosts: localhost
+  vars_files: vars.yml
+  tasks:
+
+  - name: delete a previous software vrf if exists
+    ignore_errors: yes
+    uri:
+      url: http://localhost/api/vrfs/2
+      method: DELETE
+      force_basic_auth: yes
+      user: "{{ sico_username }}"
+      password: "{{ sico_password }}"
+
+  - name: create a software vrf
+    uri:
+      url: http://localhost/api/vrfs
+      method: POST
+      status_code: [200, 201]
+      force_basic_auth: yes
+      user: "{{ sico_username }}"
+      password: "{{ sico_password }}"
+      src: sw_create.json
+
+  - name: configure the software vrf
+    uri:
+      url: http://localhost/api/vrfs/2
+      method: PUT
+      force_basic_auth: yes
+      user: "{{ sico_username }}"
+      password: "{{ sico_password }}"
+      src: sw_configure.json
+
+  - name: configure the hardware
+    uri:
+      url: http://localhost/api/vrfs/1
+      method: PUT
+      force_basic_auth: yes
+      user: "{{ sico_username }}"
+      password: "{{ sico_password }}"
+      src: hw.json
