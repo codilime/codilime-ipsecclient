@@ -7,7 +7,7 @@ import './styles.scss';
 export const Visualization: FC = () => {
   const emptyEndpoint = <div className="visualization__empty">Add endpoints to vizualize them</div>;
   const {
-    vrf: { data }
+    vrf: { data, hardware }
   } = useAppContext();
 
   const [metrics, setMetrics] = useState<MetricsType[]>([]);
@@ -40,7 +40,7 @@ export const Visualization: FC = () => {
     };
   }, [data]);
 
-  const context = endpoints === null || !endpoints?.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions, metrics }} />;
+  const context = endpoints === null || !endpoints?.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions, metrics, hardware }} />;
 
   return (
     <Wrapper title="Visualization" references={wrapper}>

@@ -16,7 +16,7 @@ export const PopupLogs: FC<PopupLogsType> = ({ open, handleToggle }) => {
 
   return (
     <Popup {...{ open, handleToggle, title: 'Logs' }}>
-      <Logs {...{ logList }} />
+      <Logs {...{ logList,open }} />
     </Popup>
   );
 };

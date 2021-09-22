@@ -5,7 +5,12 @@ import { handleTakeTime } from 'utils/';
 export const useLogsLogic = () => {
   const [logList, setLogList] = useState<string[]>([]);
   const [logData, setLogData] = useState<string[]>([]);
+
+  const [autoScroll, setAutoScroll] = useState(false);
+
   const { fetchLogsList, fetchLogsData } = useFetchData();
+
+  const handleActioveScroll = () => setAutoScroll((prev) => !prev);
 
   const handleFetchList = async () => {
     const list = await fetchLogsList();
@@ -17,7 +22,6 @@ export const useLogsLogic = () => {
 
     const firstLine = data.split('\n');
     setLogData(firstLine);
-    console.log(firstLine);
   };
 
   const HandleDownloadTextFile = (title: string) => {
@@ -29,9 +33,5 @@ export const useLogsLogic = () => {
     element.click();
   };
 
-  const displayData: any = logData.map((log) => {
-    return <p>{log}</p>;
-  });
-
-  return { logList, displayData, handleFetchLogsData, handleFetchList, HandleDownloadTextFile };
+  return { logList, logData, autoScroll, handleFetchLogsData, handleFetchList, HandleDownloadTextFile, handleActioveScroll };
 };

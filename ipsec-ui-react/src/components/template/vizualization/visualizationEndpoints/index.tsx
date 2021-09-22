@@ -6,12 +6,14 @@ import { VisualizationIcon, VisualizationLine, VisualizationVrf, Cube } from 'te
 
 interface visualizationEndpoints {
   dimensions: number;
+  hardware: boolean;
   data: vrfDataTypes;
   metrics: MetricsType[];
 }
 
-export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimensions, metrics }) => {
+export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimensions, metrics, hardware }) => {
   const { endpoints, client_name, vlan, lan_ip } = data;
+
   const icon = {
     x: 30,
     y: 30,
@@ -21,10 +23,10 @@ export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimen
     text: 'Cat9300(X)'
   };
   const vrfBox = {
-    x: icon.x + icon.width + 10,
-    y: icon.y + icon.height + 40,
+    x: hardware ? 40 : icon.x + icon.width + 10,
+    y: hardware ? 40 : icon.y + icon.height + 40,
     width: 380,
-    height: 55 + endpoints!.length * 75,
+    height: 40 + endpoints!.length * 75,
     title: client_name,
     vlan: vlan.toString(),
     lan_ip,
@@ -38,17 +40,26 @@ export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimen
     x: icon.x + icon.width / 2,
     y: icon.y + icon.height + 20,
     color: 'black',
-    points: [0, 0, 0, 92.5, 47.5, 92.5]
+    points: [0, 0, 0, 87.5, 47.5, 87.5]
   };
 
   if (!dimensions) {
     return <Cube loading={false} />;
   }
+  if (hardware)
+    return (
+      <Stage width={dimensions} height={endpoints!.length * 90}>
+        <Layer>
+          <VisualizationVrf {...{ ...vrfBox, hardware }} />
+        </Layer>
+      </Stage>
+    );
+
   return (
     <Stage width={dimensions} height={endpoints!.length * 100 + 170}>
       <Layer>
-        <VisualizationIcon {...icon} />
-        <VisualizationVrf {...vrfBox} />
+        <VisualizationIcon {...{ ...icon, hardware }} />
+        <VisualizationVrf {...{ ...vrfBox, hardware }} />
         <VisualizationLine {...iconToVRfLine} />
       </Layer>
     </Stage>
