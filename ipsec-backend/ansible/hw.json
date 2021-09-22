@@ -18,7 +18,7 @@
     "lan_ip": "",
     "endpoints": [
       {
-        "remote_ip_sec": "10.69.0.4",
+        "remote_ip_sec": "10.69.0.3",
         "local_ip": "192.168.1.2",
         "peer_ip": "192.168.1.1",
         "remote_as": 65001,

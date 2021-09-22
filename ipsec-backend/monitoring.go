@@ -2,11 +2,9 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
 	"net/http"
 	"strconv"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 )
@@ -64,11 +62,7 @@ func (a *App) metrics(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	fmt.Println("before normalize")
-	spew.Dump(res)
 	normalizeMetrics(&res)
-	fmt.Println("after normalize")
-	spew.Dump(res)
 	respondWithJSON(w, http.StatusOK, res)
 }
 
