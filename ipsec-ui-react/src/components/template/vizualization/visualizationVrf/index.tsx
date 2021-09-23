@@ -110,14 +110,14 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   };
   const hardwareLine = {
     x: x + paddingBox + 60,
-    y: y + 53 + mdHeightLabel / 2,
+    y: y + 50 + mdHeightLabel / 2,
     color: 'black',
     points: [0, 0, 30, 0, 30, hightOfX, 70, hightOfX]
   };
 
   const icon = {
     x: x + paddingBox + 15,
-    y: y + heightHeader + paddingBox + 5,
+    y: y + heightHeader + paddingBox,
     width: 45,
     height: 45,
     color: '#c3d7df',
