@@ -115,7 +115,11 @@ func returnErrorEx(caller int, errs ...error) error {
 		errStr = errs[0].Error()
 	} else {
 		for i, err := range errs {
-			errStr = errStr + fmt.Sprintf("%d: %s\n", i, err.Error())
+			currentErr := "<nil>"
+			if err != nil {
+				currentErr = err.Error()
+			}
+			errStr = errStr + fmt.Sprintf("%d: %s\n", i, currentErr)
 		}
 	}
 	logrus.WithFields(logrus.Fields{
