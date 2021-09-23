@@ -8,6 +8,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/davecgh/go-spew/spew"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/datatypes"
 )
@@ -39,6 +40,9 @@ type FileGenerator struct {
 
 func saveCerts(v *Vrf) error {
 	for _, e := range v.Endpoints {
+		if e.Authentication.Type != "certs" {
+			continue
+		}
 		filename := fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.PeerIP)
 		if err := ioutil.WriteFile(filename, []byte(e.Authentication.RemoteCert), 0644); err != nil {
 			return ReturnError(err)
@@ -57,6 +61,9 @@ func saveCerts(v *Vrf) error {
 
 func deleteCerts(v Vrf) error {
 	for _, e := range v.Endpoints {
+		if e.Authentication.Type != "certs" {
+			continue
+		}
 		filenames := []string{
 			fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.PeerIP),
 			fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.LocalIP),
@@ -72,8 +79,6 @@ func deleteCerts(v Vrf) error {
 }
 
 func (FileGenerator) GenerateTemplates(vrf Vrf) error {
-	log.Infof("generating templates for vrf %+v", vrf)
-
 	if err := saveCerts(&vrf); err != nil {
 		return ReturnError(err)
 	}
@@ -151,6 +156,8 @@ func generateStrongswanTemplate(vrf Vrf) (string, error) {
 	if err != nil {
 		return "", ReturnError(err)
 	}
+	fmt.Println("generating for")
+	spew.Dump(vrf)
 	if err = t.Execute(&builder, struct {
 		Vrf
 		Crypto1 string

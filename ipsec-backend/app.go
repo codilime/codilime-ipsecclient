@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
@@ -287,8 +286,6 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	fmt.Println("received vrf")
-	spew.Dump(vrf)
 	defer func() {
 		if err := r.Body.Close(); err != nil {
 			ReturnNewError("error while closing body: " + err.Error())
@@ -319,6 +316,25 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// save and retrieve the vrf to update the endpoints ids
+	if err := a.encryptPSK(key, &vrf); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := vrf.updateVrf(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := vrf.getVrf(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := a.decryptPSK(key, &vrf); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// handle backends
 	if *oldVrf.Active != *vrf.Active {
 		if *vrf.Active {
 			if err := createHandler(vrf); err != nil {
@@ -341,17 +357,8 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	plaintextVrf := vrf
-	if err := a.encryptPSK(key, &vrf); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	if err := vrf.updateVrf(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
 
-	respondWithJSON(w, http.StatusOK, plaintextVrf)
+	respondWithJSON(w, http.StatusOK, vrf)
 }
 
 func (a *App) getSwitchCreds(key string) error {
