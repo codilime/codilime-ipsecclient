@@ -3,6 +3,7 @@ package main
 import (
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/strongswan/govici/vici"
 )
 
@@ -40,6 +41,7 @@ func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
 	}
 	endpoints := map[string]*monitoringEndpoint{}
 	for _, m = range ms.Messages() {
+		spew.Dump(m)
 		for _, key := range m.Keys() {
 			e := &monitoringEndpoint{
 				status: "DOWN",
@@ -59,6 +61,7 @@ func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
 		return nil, ReturnError(err)
 	}
 	for _, m = range ms.Messages() {
+		spew.Dump(m)
 		for _, key := range m.Keys() {
 			endpoints[key].status = m.Get(key).(*vici.Message).Get("state").(string)
 		}

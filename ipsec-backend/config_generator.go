@@ -133,12 +133,11 @@ func getSupervisorFileName(prefix string) string {
 }
 
 func calculatePrefix(vrf Vrf) string {
-	return fmt.Sprintf("%d_%s", vrf.Vlan, vrf.ClientName)
+	return fmt.Sprintf("vrf%d", vrf.ID)
 }
 
 func generateStrongswanTemplate(vrf Vrf) (string, error) {
 	t, err := template.New(strongswanTemplateFile).
-		Funcs(template.FuncMap{"calc": calculateIndex, "inc": inc}).
 		ParseFiles(strongswanTemplatePath)
 	if err != nil {
 		return "", ReturnError(err)
@@ -202,14 +201,6 @@ func generateSupervisorTemplate(vrf Vrf) (string, error) {
 	}
 	return builder.String(), nil
 
-}
-
-func inc(i int) int {
-	return i + 1
-}
-
-func calculateIndex(vlan, index int) int {
-	return vlan*100 + index
 }
 
 func convertToString(s datatypes.JSON) (string, error) {
