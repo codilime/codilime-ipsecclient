@@ -13,6 +13,7 @@ const (
 	saStatusStr = "sa_status"
 	localIpStr  = "local_ip"
 	remoteIpStr = "remote_ip"
+	idStr       = "id"
 )
 
 func normalizeMetrics(metrics *map[string]interface{}) {
