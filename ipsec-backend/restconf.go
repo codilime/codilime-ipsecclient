@@ -77,9 +77,8 @@ func (a *App) restconfDelete(vrf Vrf) error {
 	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/router/bgp=%d", vrf.LocalAs), client); err != nil {
 		Error(err)
 	}
-	for i := range vrf.Endpoints {
-		tunName := (hash(vrf.ClientName) + i) % 65536
-		if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/interface/Tunnel=%d", tunName), client); err != nil {
+	for _, e := range vrf.Endpoints {
+		if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/interface/Tunnel=%d", e.ID), client); err != nil {
 			Error(err)
 		}
 	}
@@ -306,7 +305,6 @@ func (a *App) restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName st
 
 func (a *App) restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
 	for i, Endpoint := range dbEndpoints {
-		tunName := (hash(vrf.ClientName) + i) % 65536
 		tunnel := `{
 			"interface": {
 			  "Tunnel": {
@@ -341,7 +339,7 @@ func (a *App) restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []Endp
 			  }
 			}
 			}`
-		tunnelData := fmt.Sprintf(tunnel, tunName, vrf.ClientName+strconv.Itoa(i),
+		tunnelData := fmt.Sprintf(tunnel, Endpoint.ID, vrf.ClientName+strconv.Itoa(i),
 			Endpoint.LocalIP, Endpoint.SourceInterface, Endpoint.RemoteIPSec, vrf.ClientName)
 		if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/interface", tunnelData, client); err != nil {
 			return ReturnError(err)
