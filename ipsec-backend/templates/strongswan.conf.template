@@ -8,7 +8,7 @@ connections {
                 id = {{ $val.RemoteIPSec }}
             {{ else if $val.IsCerts }}
                 auth = pubkey
-                certs = {{$.ClientName}}-{{$val.PeerIP}}.pem
+                certs = {{$.ClientName}}-{{$val.LocalIP}}.pem
             {{ end }}
         }
         remote {
@@ -17,7 +17,7 @@ connections {
                 id = {{ $val.RemoteIPSec }}
             {{ else if $val.IsCerts }}
                 auth = pubkey
-                certs = {{$.ClientName}}-{{$val.LocalIP}}.pem
+                certs = {{$.ClientName}}-{{$val.PeerIP}}.pem
             {{ end }}
         }
         children {
