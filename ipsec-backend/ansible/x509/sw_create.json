@@ -1,7 +1,7 @@
 {
-        "id": 2,
-        "client_name": "ansible_test",
-        "vlan": 123,
+        "id": 3,
+        "client_name": "ansible_x509",
+        "vlan": 321,
         "crypto_ph1": [
           "aes128",
           "sha256",
