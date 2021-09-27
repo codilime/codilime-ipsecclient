@@ -26,7 +26,6 @@ export const useCertificatesLogic = () => {
         reader.onload = (e) => {
           if (e.target?.result) {
             const cert = e.target.result;
-            console.log(cert);
             if (typeof cert === 'string') {
               const CN = decodeX509(cert);
               const newCert: any = { name: file.name, commonName: CN, value: e.target.result, time: handleTakeTime() };

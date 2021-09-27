@@ -36,5 +36,5 @@ export const decodeX509 = (x509: string) => {
     const subject = cert.subject.attributes.filter((attr) => attr.shortName === 'CN')[0];
     return subject.value;
   }
-  return 'Private Key';
+  return '';
 };
