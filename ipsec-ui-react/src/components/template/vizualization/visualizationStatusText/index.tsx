@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { Circle, Group, Text } from 'react-konva';
 import { visualization } from 'interface/components';
 import { MetricsType } from 'interface/index';
-import { AiOutlineReload } from 'react-icons/ai';
 
 interface VisualizationStatusText extends visualization {
   status?: MetricsType;
@@ -29,7 +28,7 @@ export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, wid
     }
   };
   const handleGetText = () => {
-    if (!status) return 'Check';
+    if (!status) return 'Checking';
     switch (status?.sa_status) {
       case 'up':
         return 'Working';

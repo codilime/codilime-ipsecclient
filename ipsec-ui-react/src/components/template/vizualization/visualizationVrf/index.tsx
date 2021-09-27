@@ -28,7 +28,8 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     width: smWidthLabel,
     height: lgHeightLabel,
     vlan,
-    lan_ip
+    lan_ip,
+    hardware
   };
 
   // const vlansLabel = vlans.map((vlans, index) => {
@@ -45,13 +46,16 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   // });
 
   const hardwareXLabel = hardware ? x + paddingBox + smWidthLabel + 10 : x + paddingBox + smWidthLabel + eachBreak;
+  const hardwareSecoundLabel = hardware ? lgHeightLabel + 10 : heightHeader;
+  const hadwareYLabel = hardware ? y + height / 2 - hardwareSecoundLabel / 2 + paddingBox : y + height / 2 - hardwareSecoundLabel / 2 + paddingBox - 5;
 
   const secondLabel = {
     x: hardwareXLabel,
-    y: y + height / 2 - 3,
+    y: hadwareYLabel,
     width: smWidthLabel,
-    height: heightHeader,
-    left: true
+    height: hardwareSecoundLabel,
+    left: true,
+    hardware
   };
 
   const hightOfX = (height - 55) / 2 - (20 + mdHeightLabel / 2) + 7.5;
@@ -61,6 +65,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   };
 
   const endpointStatus = endpoints.map((endpoint, index) => {
+    const hardwareLabel = hardware ? mdHeightLabel : lgHeightLabel;
     const textY = y + heightHeader + paddingBox + index * 75;
     const textX = x + width - paddingBox - smWidthLabel;
     const centerX = hardware ? textX - 40 : textX - 25;
@@ -68,11 +73,13 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     const centerLabel = textY + lgHeightLabel / 2;
 
     const status = findStatus(endpoint.remote_ip_sec);
+    const hardwareYLabel = hardware ? textY + 10 : textY;
+
     const thirdLabel = {
       x: textX,
-      y: textY,
+      y: hardwareYLabel,
       width: smWidthLabel,
-      height: lgHeightLabel,
+      height: hardwareLabel,
       firstText: `Endpoint ${index + 1}`,
       bgpActive: endpoint.bgp,
       natActive: endpoint.nat!,
