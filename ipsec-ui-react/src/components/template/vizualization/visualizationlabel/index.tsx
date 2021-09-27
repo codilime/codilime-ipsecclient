@@ -15,15 +15,34 @@ interface VisualizationLabel extends visualization {
   vlan?: string;
   lan_ip?: string;
   left?: boolean;
+  hardware?: boolean;
 }
 
-export const VisualizationOneLabel: FC<VisualizationLabel> = ({ x, y, width, height, left }) => {
+export const VisualizationOneLabel: FC<VisualizationLabel> = ({ x, y, width, height, left, hardware = false }) => {
   const [image] = useImage(Router);
-  const Icon = left ? (
-    <Text {...{ text: 'PFE', x, y, height, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'normal', letterSpacing: 1 }} />
-  ) : (
-    <Image {...{ image, x: x + width / 2 - 17.5, y, width: 35, height: 25 }} />
-  );
+  const Icon =
+    left && hardware ? (
+      <Group>
+        <Text {...{ text: 'PFE', x, y, height: height / 3 + 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold', letterSpacing: 1 }} />
+        <Text
+          {...{
+            text: 'Packet Forwarding Engine',
+            x: x + 2.5,
+            y: y + height / 3 - 2,
+            height,
+            width: width - 5,
+            align: 'center',
+            verticalAlign: 'top',
+            fontSize: 10,
+            fontStyle: 'normal',
+            letterSpacing: 1,
+            lineHeight: 1.4
+          }}
+        />
+      </Group>
+    ) : (
+      <Image {...{ image, x: x + width / 2 - 17.5, y, width: 35, height: 25 }} />
+    );
 
   return (
     <Group>
@@ -50,12 +69,13 @@ interface VisualizationThreeLabelType extends VisualizationLabel {
 }
 
 export const VisualizationThreeLabel: FC<VisualizationThreeLabelType> = ({ x, y, width, height, firstText, bgpActive, natActive, hardware }) => {
+  const hardwareTitleHight = hardware ? height / 2 : height / 3;
   const firstContent = {
     x: x - 2.5,
     y,
     text: firstText,
     width: smWidthLabel,
-    height: height / 3,
+    height: hardwareTitleHight,
     fontSize: 10,
     align: 'center',
     verticalAlign: 'middle',
@@ -69,7 +89,7 @@ export const VisualizationThreeLabel: FC<VisualizationThreeLabelType> = ({ x, y,
     y: hardwareYChecked,
     text: 'BGP',
     width: smWidthLabel / 2,
-    height: height / 3,
+    height: height / 2,
     fontSize: 8,
     align: 'center',
     verticalAlign: 'middle',

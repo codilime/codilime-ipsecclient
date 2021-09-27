@@ -51,7 +51,6 @@ export interface ContextProps {
   certificates: Array<any>;
   vrfs: Array<any>;
   notifications: Array<any>;
-  vlans: Array<any>;
   loading: boolean;
   hardware: boolean;
   error: any;

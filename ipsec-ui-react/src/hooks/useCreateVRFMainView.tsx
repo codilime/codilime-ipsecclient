@@ -23,9 +23,9 @@ export const useCreateVRFMainView = () => {
   } = useForm({ resolver: yupResolver(vrfSchema) });
 
   useEffect(() => {
-    if (endpoints === null) reset(data);
-    else if (!endpoints.length) reset({ ...data, endpoints: null });
-    else reset(data);
+    if (endpoints === null) reset({ ...data, vlans: [{ vlan: data.vlan, lan_ip: data.lan_ip }] });
+    else if (!endpoints.length) reset({ ...data, endpoints: null, vlans: [{ vlan: data.vlan, lan_ip: data.lan_ip }] });
+    else reset({ ...data, vlans: [{ vlan: data.vlan, lan_ip: data.lan_ip }] });
   }, [reset, currentLocation, data]);
 
   const submit = async (data: any) => {
