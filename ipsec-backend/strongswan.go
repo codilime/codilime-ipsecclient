@@ -10,7 +10,7 @@ import (
 const socketPath = "/opt/ipsec/conf/charon.vici"
 
 func ReloadStrongSwan() error {
-	if err := RestartSupervisorProcess("strongswan_reload"); err != nil {
+	if err := RestartSupervisorProcess(supervisorNetSocketPath, "strongswan_reload"); err != nil {
 		return ReturnError(err)
 	}
 	return nil

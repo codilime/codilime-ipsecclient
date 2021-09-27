@@ -10,7 +10,7 @@ func runTmpVtyshFile(tmpFile string) error {
 	if err := ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(tmpFile), 0644); err != nil {
 		return ReturnError(err)
 	}
-	if err := RestartSupervisorProcess("reload_vtysh"); err != nil {
+	if err := RestartSupervisorProcess(supervisorNetSocketPath, "reload_vtysh"); err != nil {
 		return ReturnError(err)
 	}
 	return nil

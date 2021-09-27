@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -25,7 +26,9 @@ const (
 	listLogsPath      = "/api/listlogs"
 	settingsPath      = "/api/settings/{name:[a-zA-Z0-9-_]+}"
 	logsPath          = "/api/logs/{name:[a-zA-Z0-9-_]+}"
+	changePassPath    = "/api/changepass"
 	nginxPasswordFile = "/etc/nginx/htpasswd"
+	username          = "admin"
 )
 
 type Generator interface {
@@ -89,15 +92,34 @@ func (a *App) Initialize(dbName string) error {
 }
 
 func (a *App) setDefaultPasswords() error {
-	name := "admin"
 	password := "cisco123"
-	if err := htpasswd.SetPassword(nginxPasswordFile, name, password, htpasswd.HashBCrypt); err != nil {
+	if err := htpasswd.SetPassword(nginxPasswordFile, username, password, htpasswd.HashBCrypt); err != nil {
 		return ReturnError(err)
 	}
 	return ReturnError(
-		a.ensureMasterPass(password),
+		a.ensureMasterPass(password, randString(32)),
 		a.setSetting(password, "switch_username", "admin"),
 		a.setSetting(password, "switch_password", "cisco123"),
+	)
+}
+
+func (a *App) _changePassword(oldPass, newPass string) error {
+	fmt.Println("changing pass from", oldPass, "to", newPass)
+	if err := htpasswd.SetPassword(nginxPasswordFile, username, newPass, htpasswd.HashBCrypt); err != nil {
+		return ReturnError(err)
+	}
+	cmd := exec.Command("nginx", "-s", "reload")
+	if _, err := cmd.Output(); err != nil {
+		return ReturnError(err)
+	}
+	masterpass, err := a.getMasterpass(oldPass)
+	if err != nil {
+		return ReturnError(err)
+	}
+	fmt.Println("masterpass", masterpass)
+	return ReturnError(
+		a.DB.Where("1 = 1").Delete(&Masterpass{}).Error,
+		a.ensureMasterPass(newPass, masterpass),
 	)
 }
 
@@ -119,6 +141,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(settingsPath, a.apiSetSetting).Methods(http.MethodPost)
 	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet)
 	a.Router.HandleFunc(listLogsPath, a.listLogs).Methods(http.MethodGet)
+	a.Router.HandleFunc(changePassPath, a.changePassword).Methods(http.MethodPost)
 	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
 }
 
@@ -134,6 +157,24 @@ func getPassFromHeader(header http.Header) (string, error) {
 		return "", ReturnError(err)
 	}
 	return strings.Split(string(decodedBasicAuth), ":")[1], nil
+}
+
+func (a *App) changePassword(w http.ResponseWriter, r *http.Request) {
+	oldPass, err := getPassFromHeader(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	newPass, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := a._changePassword(oldPass, string(newPass)); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, map[string]interface{}{"status": "ok"})
 }
 
 func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
