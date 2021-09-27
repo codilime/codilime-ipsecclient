@@ -1,7 +1,7 @@
 {
     "id": 1,
     "client_name": "hardware",
-    "vlan": 0,
+    "vlan": 321,
     "crypto_ph1": [
       "aes-cbc-128",
       "sha256",
@@ -12,7 +12,7 @@
       "esp-sha256-hmac",
       "group14"
     ],
-    "physical_interface": "",
+    "physical_interface": "eth0",
     "active": true,
     "local_as": 65002,
     "lan_ip": "",
