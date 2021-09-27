@@ -22,8 +22,8 @@ const (
 	softwarePath      = "/api/algorithms/software"
 	hardwarePathPh1   = "/api/algorithms/hardware/ph1"
 	hardwarePathPh2   = "/api/algorithms/hardware/ph2"
-	settingsPath      = "/api/settings/{name:[a-zA-Z]+}"
 	listLogsPath      = "/api/listlogs"
+	settingsPath      = "/api/settings/{name:[a-zA-Z0-9-_]+}"
 	logsPath          = "/api/logs/{name:[a-zA-Z0-9-_]+}"
 	nginxPasswordFile = "/etc/nginx/htpasswd"
 )
@@ -95,6 +95,7 @@ func (a *App) setDefaultPasswords() error {
 		return ReturnError(err)
 	}
 	return ReturnError(
+		a.ensureMasterPass(password),
 		a.setSetting(password, "switch_username", "admin"),
 		a.setSetting(password, "switch_password", "cisco123"),
 	)

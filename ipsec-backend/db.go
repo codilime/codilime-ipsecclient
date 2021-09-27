@@ -74,6 +74,11 @@ type Setting struct {
 	Value string
 }
 
+type Masterpass struct {
+	ID         int64
+	Masterpass string
+}
+
 func initializeDB(dbName string) (*gorm.DB, error) {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\n", log.LstdFlags),
@@ -95,6 +100,9 @@ func initializeDB(dbName string) (*gorm.DB, error) {
 		return nil, ReturnError(err)
 	}
 	if err = db.AutoMigrate(&Endpoint{}); err != nil {
+		return nil, ReturnError(err)
+	}
+	if err = db.AutoMigrate(&Masterpass{}); err != nil {
 		return nil, ReturnError(err)
 	}
 	return db, nil
