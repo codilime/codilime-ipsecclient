@@ -8,7 +8,7 @@ export const defaultVrf: ContextProps = {
     lan_ip: '',
     crypto_ph1: [],
     crypto_ph2: [],
-    physical_interface: '',
+    physical_interface: 'eth0',
     active: false,
     local_as: 0,
     endpoints: null
@@ -18,11 +18,6 @@ export const defaultVrf: ContextProps = {
   certificates: [],
   vrfs: [],
   notifications: [],
-  vlans: [
-    { vlan: 110, ip: '10.10.10.10/32' },
-    { vlan: 100, ip: '10.10.10.10/16' },
-    { vlan: 130, ip: '10.10.10.10/8' }
-  ],
   loading: false,
   hardware: false,
   error: null,
