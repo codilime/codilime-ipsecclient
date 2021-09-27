@@ -8,6 +8,7 @@ const OUTPUT_PATH = path.resolve(__dirname, './dist');
 
 module.exports = {
   entry: path.resolve(__dirname, './src/index.tsx'),
+  devtool: 'inline-source-map',
   module: {
     rules: [
       {

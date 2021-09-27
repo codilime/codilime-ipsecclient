@@ -3,11 +3,7 @@ import { EndpointInput, Button, UploadCertificates } from 'common/';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
 import { endpointsType } from 'interface/index';
-
-// import keyutil from 'js-crypto-key-utils';
-
-// import rsa from 'js-x509-utils';
-
+import { decodeX509 } from 'utils/';
 import { v4 as uuidv4 } from 'uuid';
 
 interface HookType {
@@ -22,18 +18,6 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
   const {
     authentication: { type, psk, private_key, local_cert, remote_cert }
   } = endpoints;
-
-  useEffect(() => {
-    if (private_key) {
-      setFileName((prev) => ({ ...prev, key: 'Complete' }));
-    }
-    if (local_cert) {
-      setFileName((prev) => ({ ...prev, certificate: 'Complete' }));
-    }
-    if (remote_cert) {
-      setFileName((prev) => ({ ...prev, peerCertificate: 'Complete' }));
-    }
-  }, [endpoints]);
 
   const key = useRef<HTMLInputElement>(null);
   const certificate = useRef<HTMLInputElement>(null);
@@ -72,23 +56,6 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
     };
     reader.readAsText(ref.current.files[0]);
   };
-
-  const decodeX509 = async () => {
-    if (private_key !== '') {
-      console.log(private_key, '------------------------------------------------------------------');
-      // const keyObjFromPem = new keyutil.Key('pem', private_key);
-      // console.log(keyObjFromPem);
-      // const yourBinaryDerKey = keyObjFromPem['_der'];
-      // const keyObjFromDer = new keyutil.Key('der', yourBinaryDerKey);
- 
-      // // const cert = rsa.parse(private_key, 'pem');
-      // // console.log(cert);
-    }
-  };
-
-  // useEffect(() => {
-  //   decodeX509();
-  // }, [private_key]);
 
   const handleUpdateEndpoint = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -129,6 +96,20 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       }
     }));
   };
+
+  useEffect(() => {
+    if (private_key) {
+      setFileName((prev) => ({ ...prev, key: 'Complete' }));
+    }
+    if (local_cert) {
+      const CN = decodeX509(local_cert);
+      if (CN) setFileName((prev) => ({ ...prev, certificate: CN }));
+    }
+    if (remote_cert) {
+      const CN = decodeX509(remote_cert);
+      setFileName((prev) => ({ ...prev, peerCertificate: CN }));
+    }
+  }, [private_key, local_cert, remote_cert]);
 
   const UploadCaSchema = [
     {

@@ -1,3 +1,4 @@
+import { pki } from 'node-forge';
 export const validateDataInput = (event: any) => {
   const { name } = event.target;
   if (name === 'client_name' || name === 'physical_interface' || name === 'psk' || name === 'source_interface') {
@@ -28,3 +29,12 @@ export function handleTakeTime() {
   const dateTime = currentData + ' ' + time;
   return dateTime;
 }
+
+export const decodeX509 = (x509: string) => {
+  if (x509 !== '' && x509.includes('CERTIFICATE')) {
+    const cert = pki.certificateFromPem(x509);
+    const subject = cert.subject.attributes.filter((attr) => attr.shortName === 'CN')[0];
+    return subject.value;
+  }
+  return 'Private Key';
+};
