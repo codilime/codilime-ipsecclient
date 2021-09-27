@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { Wrapper } from 'template';
 import { useVlanLogic } from 'hooks/';
 import { EachVlan } from './eachVlan';
 import { VlanInput } from './vlanInput';

@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 import { Popup, Logs } from 'template';
-import { useLogsLogic } from 'hooks/';
+import { useAppContext, useLogsLogic } from 'hooks/';
 
 interface PopupLogsType {
   open: boolean;
@@ -9,14 +9,17 @@ interface PopupLogsType {
 
 export const PopupLogs: FC<PopupLogsType> = ({ open, handleToggle }) => {
   const { logList, handleFetchList } = useLogsLogic();
+  const {
+    vrf: { loading }
+  } = useAppContext();
 
   useEffect(() => {
     handleFetchList();
-  }, []);
+  }, [loading]);
 
   return (
     <Popup {...{ open, handleToggle, title: 'Logs' }}>
-      <Logs {...{ logList,open }} />
+      <Logs {...{ logList, open }} />
     </Popup>
   );
 };

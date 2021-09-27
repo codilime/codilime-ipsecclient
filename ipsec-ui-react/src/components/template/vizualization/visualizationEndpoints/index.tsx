@@ -23,7 +23,7 @@ export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimen
     text: 'Cat9300(X)'
   };
   const vrfBox = {
-    x: hardware ? 40 : icon.x + icon.width + 10,
+    x: hardware ? 60 : icon.x + icon.width + 10,
     y: hardware ? 40 : icon.y + icon.height + 40,
     width: 380,
     height: 40 + endpoints!.length * 75,

@@ -15,7 +15,7 @@ export const VisualizationEndpointBox: FC<visualizationEndpointBoxType> = ({ x, 
     x: x + paddingBox / 2,
     y: y + heightHeader + paddingBox / 2,
     width: 60,
-    height: heightHeader,
+    height: heightHeader
   };
   const secondLabel = {
     x: x + paddingBox / 2 + 70,

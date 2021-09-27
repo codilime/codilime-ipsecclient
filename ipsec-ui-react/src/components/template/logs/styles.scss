@@ -33,7 +33,7 @@
     font-size: 14px;
     color: $gray02;
     word-wrap: break-word;
-    letter-spacing: 1px;
+    letter-spacing: normal;
   }
   &__title {
     text-transform: capitalize;
@@ -62,7 +62,7 @@
   &__auto {
     margin-right: 10px;
     background-color: $gray01;
-    color:$gray03;
+    color: $gray03;
   }
   &__char {
     font-size: 16px;

@@ -14,12 +14,15 @@ export const EachLog: FC<EachLogType> = ({ title, activePopup }) => {
 
   const { logData, autoScroll, handleFetchLogsData, HandleDownloadTextFile, handleActioveScroll } = useLogsLogic();
 
-
   useEffect(() => {
     if (open) {
       handleFetchLogsData(title);
     }
+    if (!open && autoScroll) {
+      handleActioveScroll();
+    }
   }, [open]);
+
   useEffect(() => {
     if (!activePopup && open) {
       handleToggle();
