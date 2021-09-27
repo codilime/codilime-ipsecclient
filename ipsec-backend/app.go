@@ -233,6 +233,10 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, vrf)
 }
 
+func vrfValid(vrf Vrf) bool {
+	return vrf.Vlan > 0 && vrf.PhysicalInterface != ""
+}
+
 func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	var vrf Vrf
 	decoder := json.NewDecoder(r.Body)
@@ -245,6 +249,11 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 			log.Errorf("error while closing body: %v", err)
 		}
 	}()
+
+	if !vrfValid(vrf) {
+		respondWithError(w, http.StatusBadRequest, "vrf invalid")
+		return
+	}
 
 	if vrf.Active == nil {
 		vrf.Active = new(bool)
@@ -294,6 +303,11 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 			log.Errorf("error while closing body: %v", err)
 		}
 	}()
+
+	if !vrfValid(vrf) {
+		respondWithError(w, http.StatusBadRequest, "vrf invalid")
+		return
+	}
 
 	vrf.ID = id
 	oldVrf.ID = id
