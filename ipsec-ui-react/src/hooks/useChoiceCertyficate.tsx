@@ -3,6 +3,9 @@ import { EndpointInput, Button, UploadCertificates } from 'common/';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
 import { endpointsType } from 'interface/index';
+// import keyutil from 'js-crypto-key-utils';
+
+// import rsa from 'js-x509-utils';
 
 interface HookType {
   edit: boolean;
@@ -66,6 +69,23 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
     };
     reader.readAsText(ref.current.files[0]);
   };
+
+  const decodeX509 = async () => {
+    if (private_key !== '') {
+      console.log(private_key, '------------------------------------------------------------------');
+      // const keyObjFromPem = new keyutil.Key('pem', private_key);
+      // console.log(keyObjFromPem);
+      // const yourBinaryDerKey = keyObjFromPem['_der'];
+      // const keyObjFromDer = new keyutil.Key('der', yourBinaryDerKey);
+ 
+      // // const cert = rsa.parse(private_key, 'pem');
+      // // console.log(cert);
+    }
+  };
+
+  // useEffect(() => {
+  //   decodeX509();
+  // }, [private_key]);
 
   const handleUpdateEndpoint = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
