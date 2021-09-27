@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useFetchData, useAppContext } from 'hooks/';
 import { endpointsType } from 'interface/index';
 
@@ -73,5 +73,6 @@ export const useEndpoint = (handleToggle: () => void) => {
       setSend(false);
     }
   }, [send]);
+
   return { vrfEndpoints, loading, handleChangeVrfEndpoints, handleActionVrfEndpoints };
 };

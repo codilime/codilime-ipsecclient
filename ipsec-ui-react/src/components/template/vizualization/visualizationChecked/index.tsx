@@ -3,7 +3,7 @@ import { Text, Rect, Group } from 'react-konva';
 import { visualization } from 'interface/components';
 
 interface visualizationCheckedType extends visualization {
-  status: boolean;
+  status?: boolean;
 }
 
 export const VisualizationChecked: FC<visualizationCheckedType> = ({ x, y, status }) => {

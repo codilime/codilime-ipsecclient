@@ -21,6 +21,10 @@ func generateFRRTemplate(vrf Vrf) error {
 	for _, endpoint := range vrf.Endpoints {
 		createTmpFile += fmt.Sprintf("  neighbor %s remote-as external\n", endpoint.PeerIP)
 	}
+	createTmpFile +=
+		`  address-family ipv4 unicast
+    redistribute connected
+  exit-address-family`
 	fmt.Println("generating frr template:")
 	fmt.Println(createTmpFile)
 	return ReturnError(runTmpVtyshFile(createTmpFile))

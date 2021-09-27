@@ -4,6 +4,7 @@ import { endpointInputSchema, endpointHardwareSchema, emptyEndpointSchema, empty
 import { useValidateEndpoint, useVrfLogic, useChoiceCertyficate } from 'hooks/';
 import classNames from 'classnames';
 import { endpointsType } from 'interface/index';
+import { v4 as uuidv4 } from 'uuid';
 
 interface EndpointLogicType {
   endpoint: endpointsType;
@@ -62,13 +63,13 @@ export const useEndpointLogic = ({ endpoint, active, handleActionVrfEndpoints, i
       }
       if (el.name === 'nat' || el.name === 'bgp') {
         return (
-          <td key={el.name} className={classNames('table__column', 'table__bool')}>
+          <td key={uuidv4()} className={classNames('table__column', 'table__bool')}>
             <EndpointInput {...{ ...el, onChange, edit, error, checked: endpoints[el.name] }} />
           </td>
         );
       }
       return (
-        <td key={el.name} className={classNames('table__column', { table__bool: el.name === 'remote_as' })}>
+        <td key={uuidv4()} className={classNames('table__column', { table__bool: el.name === 'remote_as' })}>
           <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints[el.name] }} />
           {edit && (
             <ToolTipInfo {...{ error: error[el.name] }}>
