@@ -20,9 +20,15 @@ interface VisualizationLabel extends visualization {
 
 export const VisualizationOneLabel: FC<VisualizationLabel> = ({ x, y, width, height, left, hardware = false }) => {
   const [image] = useImage(Router);
+
+  const leftWidth = left ? 55 : 35;
+  const leftHight = left ? 45 : 35;
+  const leftY = left ? 10 : 5;
+  const leftX = left ? x + width / 4 : x + width / 2 - 17.5;
   const Icon =
     left && hardware ? (
       <Group>
+        <Rect {...{ x, y, width, height, fill: 'white' }} />
         <Text {...{ text: 'PFE', x, y, height: height / 3 + 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold', letterSpacing: 1 }} />
         <Text
           {...{
@@ -41,20 +47,15 @@ export const VisualizationOneLabel: FC<VisualizationLabel> = ({ x, y, width, hei
         />
       </Group>
     ) : (
-      <Image {...{ image, x: x + width / 2 - 17.5, y, width: 35, height: 25 }} />
+      <Image {...{ image, x: leftX, y: y - leftY, width: leftWidth, height: leftHight }} />
     );
 
-  return (
-    <Group>
-      <Rect {...{ x, y, width, height, fill: labelColor }} />
-      {Icon}
-    </Group>
-  );
+  return Icon;
 };
 
 export const VisualizationTwoLabel: FC<VisualizationLabel> = ({ x, y, width, height, vlan, lan_ip }) => (
   <Group>
-    <Rect {...{ x, y, width, height: height + 15, fill: labelColor }} />
+    <Rect {...{ x, y, width, height: height + 15, fill: 'white' }} />
     <Text {...{ text: 'Vlan', x, y, height: height / 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'normal', letterSpacing: 1 }} />
     <Text {...{ text: vlan, x, y: y + height / 4 + 2.5, height: height / 2, width, align: 'center', verticalAlign: 'middle', fontSize: 10, fontStyle: 'bold', letterSpacing: 1 }} />
     <Text {...{ text: 'Lan IP', x, y: y + height / 2 + 10, height: height / 4, width: width, align: 'center', verticalAlign: 'middle', fontSize: 10, letterSpacing: 1 }} />
@@ -86,7 +87,7 @@ export const VisualizationThreeLabel: FC<VisualizationThreeLabelType> = ({ x, y,
 
   const secondContent = {
     x: x + 3,
-    y: hardwareYChecked,
+    y: hardware ? hardwareYChecked : hardwareYChecked - 6,
     text: 'BGP',
     width: smWidthLabel / 2,
     height: height / 2,
@@ -130,7 +131,7 @@ export const VisualizationThreeLabel: FC<VisualizationThreeLabelType> = ({ x, y,
 
   return (
     <Group>
-      <Rect {...{ x, y, width, height, fill: labelColor }} />
+      <Rect {...{ x, y, width, height, fill: 'white' }} />
       <Text {...firstContent} />
       <Text {...secondContent} />
       <VisualizationChecked {...checkedBgp} />

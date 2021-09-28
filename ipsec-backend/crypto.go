@@ -110,21 +110,22 @@ func (a *App) setSetting(pass, name, value string) error {
 	}
 	encryptedBasedValue := make([]byte, base64.RawStdEncoding.EncodedLen(len(encryptedValue)))
 	base64.RawStdEncoding.Encode(encryptedBasedValue, encryptedValue)
+	err = s.getSetting(a.DB)
 	s.Value = string(encryptedBasedValue)
-	if err := s.getSetting(a.DB); err != nil {
+	if err != nil {
 		if !strings.Contains(err.Error(), "record not found") {
 			return ReturnError(err)
 		}
 		return ReturnError(s.createSetting(a.DB))
 	}
-	return ReturnError(a.DB.Where("name = ?", name).Update("value", s.Value).Error)
+	return ReturnError(a.DB.Save(&s).Error)
 }
 
 func (a *App) getSetting(pass, name string) (string, error) {
 	s := Setting{}
 	masterpass, err := a.getMasterpass(pass)
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	if err := a.DB.Where("name = ?", name).First(&s).Error; err != nil {
 		return "", ReturnError(err)

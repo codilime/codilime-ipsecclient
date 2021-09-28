@@ -2,6 +2,7 @@ const path = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 const OUTPUT_PATH = path.resolve(__dirname, './dist');
 
@@ -71,7 +72,7 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/'
   },
-  plugins: [new HtmlWebpackPlugin({ template: './src/index.html' }), new CleanWebpackPlugin()],
+  plugins: [new HtmlWebpackPlugin({ template: './src/index.html' }), new CleanWebpackPlugin(), new NodePolyfillPlugin()],
   devServer: {
     proxy: {
       '/api': {

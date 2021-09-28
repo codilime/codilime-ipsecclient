@@ -3,7 +3,9 @@ import { EndpointInput, Button, UploadCertificates } from 'common/';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
 import { endpointsType } from 'interface/index';
+import { decodeX509 } from 'utils/';
 import { v4 as uuidv4 } from 'uuid';
+
 interface HookType {
   edit: boolean;
   error: any;
@@ -16,18 +18,6 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
   const {
     authentication: { type, psk, private_key, local_cert, remote_cert }
   } = endpoints;
-
-  useEffect(() => {
-    if (private_key) {
-      setFileName((prev) => ({ ...prev, key: 'Complete' }));
-    }
-    if (local_cert) {
-      setFileName((prev) => ({ ...prev, certificate: 'Complete' }));
-    }
-    if (remote_cert) {
-      setFileName((prev) => ({ ...prev, peerCertificate: 'Complete' }));
-    }
-  }, [endpoints]);
 
   const key = useRef<HTMLInputElement>(null);
   const certificate = useRef<HTMLInputElement>(null);
@@ -107,6 +97,20 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
     }));
   };
 
+  useEffect(() => {
+    if (private_key) {
+      setFileName((prev) => ({ ...prev, key: 'Private Key' }));
+    }
+    if (local_cert) {
+      const CN = decodeX509(local_cert);
+      if (CN) setFileName((prev) => ({ ...prev, certificate: CN }));
+    }
+    if (remote_cert) {
+      const CN = decodeX509(remote_cert);
+      setFileName((prev) => ({ ...prev, peerCertificate: CN }));
+    }
+  }, [private_key, local_cert, remote_cert]);
+
   const UploadCaSchema = [
     {
       type: 'file',
@@ -144,7 +148,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
   const handleGeneratePskField = (el: any) => {
     if (!type) {
       return (
-        <td key={uuidv4()} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
+        <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
           <div className="table__center">
             <button className="table__psk__btn" onClick={() => handleChooseAuthentication('psk')}>
               Enter PSK
@@ -161,7 +165,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
     }
     if (type === 'psk') {
       return (
-        <td key={uuidv4()} className={classNames('table__column', 'table__psk')}>
+        <td key={el.name} className={classNames('table__column', 'table__psk')}>
           <EndpointInput {...{ ...el, onChange: handleUpdateEndpoint, edit, error, value: psk }} />
           <div className="table__iconBox">{edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}</div>
         </td>
@@ -169,7 +173,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
     }
     if (type === 'certs') {
       return (
-        <td key={uuidv4()} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
+        <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
           {displayCerts}
           {edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}
         </td>

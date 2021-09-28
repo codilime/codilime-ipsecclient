@@ -12,18 +12,19 @@ export const VisualizationEndpointBox: FC<visualizationEndpointBoxType> = ({ x, 
   const { paddingBox, heightHeader } = variable;
 
   const firstLabel = {
-    x: x + paddingBox / 2,
-    y: y + heightHeader + paddingBox / 2,
+    x,
+    y: y + heightHeader + paddingBox / 2 + 2.5,
     width: 60,
     height: heightHeader
   };
   const secondLabel = {
-    x: x + paddingBox / 2 + 70,
-    y: y + heightHeader + paddingBox / 2,
+    x: x + 65,
+    y: y + heightHeader + paddingBox / 2 - 2.5,
     width: 150,
-    height: heightHeader,
+    height: 35,
     title: 'Remote IP',
-    value
+    value,
+    color: 'white'
   };
 
   return (

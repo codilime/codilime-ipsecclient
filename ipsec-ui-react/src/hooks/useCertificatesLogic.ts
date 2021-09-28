@@ -1,6 +1,6 @@
 import { ChangeEvent, useRef, useState } from 'react';
 import { useAppContext } from 'hooks/';
-import { handleTakeTime } from 'utils/';
+import { handleTakeTime, decodeX509 } from 'utils/';
 
 interface dynamicObject {
   [key: string]: boolean;
@@ -25,9 +25,13 @@ export const useCertificatesLogic = () => {
         reader.readAsText(file);
         reader.onload = (e) => {
           if (e.target?.result) {
-            const newCert: any = { name: file.name, commonName: '', value: e.target.result, time: handleTakeTime() };
-            setCheckedCa((prev) => ({ ...prev, [file.name]: false }));
-            setVrf((prev) => ({ ...prev, certificates: [...prev.certificates, newCert] }));
+            const cert = e.target.result;
+            if (typeof cert === 'string') {
+              const CN = decodeX509(cert);
+              const newCert: any = { name: file.name, commonName: CN, value: e.target.result, time: handleTakeTime() };
+              setCheckedCa((prev) => ({ ...prev, [file.name]: false }));
+              setVrf((prev) => ({ ...prev, certificates: [...prev.certificates, newCert] }));
+            }
           }
         };
       }

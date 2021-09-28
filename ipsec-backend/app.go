@@ -299,7 +299,7 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 }
 
 func vrfValid(vrf Vrf) bool {
-	return vrf.Vlan > 0 && vrf.PhysicalInterface != ""
+	return vrf.ID == hardwareVrfID || (vrf.Vlan > 0 && vrf.PhysicalInterface != "")
 }
 
 func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
