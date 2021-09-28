@@ -1,7 +1,7 @@
 import { useFetchData, useAppContext } from 'hooks/';
 
 export const useInitData = () => {
-  const { fetchData, fetchHardwarePh1, fetchHardwarePh2, fetchSoftwareAlgorithms } = useFetchData();
+  const { fetchData, fetchHardwarePh1, fetchHardwarePh2, fetchSoftwareAlgorithms, fetchRestConfData } = useFetchData();
 
   const {
     vrf: { loading },
@@ -34,5 +34,11 @@ export const useInitData = () => {
     setVrf((prev) => ({ ...prev, vrfs }));
   };
 
-  return { fetchVrfData, fetchVrfSettings, loading };
+  const fetchRestConf = async () => {
+    const restConf = await fetchRestConfData();
+    console.log(restConf.result);
+    if (restConf) setVrf((prev) => ({ ...prev }));
+  };
+
+  return { fetchVrfData, fetchVrfSettings, loading, fetchRestConf };
 };

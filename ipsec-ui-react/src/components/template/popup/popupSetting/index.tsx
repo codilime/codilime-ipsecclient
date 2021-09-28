@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import PropTypes from 'prop-types';
 import { Popup, SettingOption, SettingContent } from 'template';
 import './styles.scss';
 

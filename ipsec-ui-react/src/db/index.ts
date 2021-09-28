@@ -21,7 +21,8 @@ export const defaultVrf: ContextProps = {
   loading: false,
   hardware: false,
   error: null,
-  success: false
+  success: false,
+  restConf:false,
 };
 
 export const tableSoftwareHeaderSchema = [

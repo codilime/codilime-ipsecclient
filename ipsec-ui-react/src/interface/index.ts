@@ -55,6 +55,7 @@ export interface ContextProps {
   hardware: boolean;
   error: any;
   success: boolean;
+  restConf: boolean;
 }
 
 type nameProps = {
