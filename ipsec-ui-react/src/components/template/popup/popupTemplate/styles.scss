@@ -1,10 +1,10 @@
 @import 'style/settings.scss';
 
 .popup {
-  position: absolute;
+  position: fixed;
   left: 212px;
   right: 0;
-  top: 54px;
+  top: 50px;
   bottom: 0;
   background-color: rgba($color: #000000, $alpha: 0.3);
   display: flex;
@@ -13,7 +13,7 @@
   opacity: 0;
   visibility: hidden;
   transition: $transition;
-  z-index: 99999;
+  z-index: 99;
   &__active {
     opacity: 1;
     visibility: visible;

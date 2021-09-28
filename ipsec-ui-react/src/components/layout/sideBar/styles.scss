@@ -35,6 +35,7 @@
     text-decoration: none;
     display: flex;
     justify-content: space-between;
+    text-transform: capitalize;
   }
   &__btnLink {
     padding: 12px $padding-md;

@@ -1,14 +1,17 @@
 @import 'style/settings.scss';
 
 .field {
-  margin: 15px 0 5px 5px;
+  margin: 15px 0px 5px;
   position: relative;
   width: 100%;
+  &__detail {
+    width: 35%;
+  }
   &__checkbox {
     display: flex;
     flex-direction: row;
     align-items: center;
-    max-width: 45%;
+    width: 15%;
     &__active {
       color: $vrf-active;
     }
@@ -32,10 +35,19 @@
   }
   &__input__setting {
     padding: $padding-sm $padding-lg $padding-md;
+    margin: 0 10px;
+    width: calc(100% - 20px);
+  }
+  &__vlan {
+    padding: $padding-sm 40px $padding-md;
+    width: calc(100% - 20px);
   }
   &__error {
     color: red;
     font-size: 10px;
+    &__setting {
+      margin: 0 10px;
+    }
   }
   &__label {
     font-weight: 500;
@@ -55,7 +67,7 @@
 }
 .input {
   &__checkbox {
-    width: 10%;
+    width: 14px;
     bottom: 2px;
   }
 }

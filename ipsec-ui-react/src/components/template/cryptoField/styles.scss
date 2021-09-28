@@ -1,10 +1,9 @@
 @import 'style/settings.scss';
 
 .crypto {
-  margin: 10px 10px 5px 5px;
+  margin: 10px 0px 5px;
   position: relative;
-  width: 100%;
-  padding: 4px 0px 12px;
+  width: 65%;
   border-bottom: 2px solid $gray01;
   display: flex;
   justify-content: space-between;
@@ -12,15 +11,18 @@
 
   &__label {
     margin-right: $margin-xl;
+    min-width: 115px;
   }
   &__select {
-    width: 20%;
+    width: 100%;
     font-family: 'ciscoSansRegular', monospace;
     margin: 0 $margin-md;
     border: none;
     background-color: transparent;
     outline: none;
     font-weight: 300;
+    cursor: pointer;
+    padding: 8px 0px;
     background-color: white;
   }
 }

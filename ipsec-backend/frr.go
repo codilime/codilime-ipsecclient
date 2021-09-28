@@ -1,34 +1,36 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"strconv"
 )
 
 func runTmpVtyshFile(tmpFile string) error {
 	if err := ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(tmpFile), 0644); err != nil {
-		return err
+		return ReturnError(err)
 	}
-	if err := RestartSupervisorProcess("reload_vtysh"); err != nil {
-		return err
+	if err := RestartSupervisorProcess(supervisorNetSocketPath, "reload_vtysh"); err != nil {
+		return ReturnError(err)
 	}
 	return nil
 }
 
 func generateFRRTemplate(vrf Vrf) error {
-	endpoints := make([]Endpoint, 0)
-	if err := json.Unmarshal([]byte(vrf.Endpoints.String()), &endpoints); err != nil {
-		return err
-	}
-	createTmpFile := fmt.Sprintf("router bgp %d vrf %s\n  no bgp ebgp-requires-policy", vrf.LocalAs, vrf.ClientName)
-	for _, endpoint := range endpoints {
+	createTmpFile := fmt.Sprintf("router bgp %d vrf %s\n  no bgp ebgp-requires-policy\n", vrf.LocalAs, "vrf-"+strconv.Itoa(int(vrf.ID)))
+	for _, endpoint := range vrf.Endpoints {
 		createTmpFile += fmt.Sprintf("  neighbor %s remote-as external\n", endpoint.PeerIP)
 	}
-	return runTmpVtyshFile(createTmpFile)
+	createTmpFile +=
+		`  address-family ipv4 unicast
+    redistribute connected
+  exit-address-family`
+	fmt.Println("generating frr template:")
+	fmt.Println(createTmpFile)
+	return ReturnError(runTmpVtyshFile(createTmpFile))
 }
 
 func deleteFRRTemplate(vrf Vrf) error {
-	deleteTmpFile := fmt.Sprintf("no router bgp %d vrf %s\n", vrf.LocalAs, vrf.ClientName)
-	return runTmpVtyshFile(deleteTmpFile)
+	deleteTmpFile := fmt.Sprintf("no router bgp %d vrf %s\n", vrf.LocalAs, "vrf-"+strconv.Itoa(int(vrf.ID)))
+	return ReturnError(runTmpVtyshFile(deleteTmpFile))
 }

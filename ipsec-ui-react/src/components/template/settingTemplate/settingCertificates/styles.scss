@@ -13,6 +13,9 @@
       border-right: none;
     }
   }
+  &__checkbox {
+    cursor: pointer;
+  }
   &__time {
     width: 40%;
   }
@@ -30,9 +33,10 @@
     width: 100%;
   }
 }
+
 .certificates {
   &__box {
-    padding: $padding-md 0 $padding-sm;
+    padding: 0 0 $padding-md;
     display: flex;
     justify-content: flex-end;
     align-items: center;

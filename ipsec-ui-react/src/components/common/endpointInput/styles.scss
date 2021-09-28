@@ -9,6 +9,7 @@
   outline: none;
   background-color: transparent;
   padding: $padding-sm 0;
+  padding-right: 20px;
   cursor: pointer;
   &::placeholder {
     font-style: italic;
@@ -21,7 +22,6 @@
     border-bottom: $endpoint-input;
   }
   &__checkbox {
-    margin: 0 auto;
     width: auto;
   }
   &__file {
