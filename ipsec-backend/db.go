@@ -92,7 +92,7 @@ func getVrfs(db *gorm.DB) ([]Vrf, error) {
 }
 
 func (s *Setting) getSetting(db *gorm.DB) error {
-	res := db.First(s, s.ID)
+	res := db.Where("name = ?", s.Name).First(s)
 	return ReturnError(res.Error)
 }
 
