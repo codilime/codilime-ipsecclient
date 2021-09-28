@@ -126,7 +126,7 @@ func (a *App) getSetting(pass, name string) (string, error) {
 	s := Setting{}
 	masterpass, err := a.getMasterpass(pass)
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	if err := a.DB.Where("name = ?", name).First(&s).Error; err != nil {
 		return "", ReturnError(err)

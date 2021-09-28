@@ -87,7 +87,7 @@ export const VisualizationThreeLabel: FC<VisualizationThreeLabelType> = ({ x, y,
 
   const secondContent = {
     x: x + 3,
-    y: hardwareYChecked,
+    y: hardware ? hardwareYChecked : hardwareYChecked - 6,
     text: 'BGP',
     width: smWidthLabel / 2,
     height: height / 2,
