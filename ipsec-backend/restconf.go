@@ -369,11 +369,29 @@ func (a *App) restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []Endpoint
 		    },
 		    "neighbor": [
 		      %s
-		    ]
+		    ],
+		    "address-family":{
+			"no-vrf":{
+			   "ipv4":[
+			      {
+				 "af-name":"unicast",
+				 "ipv4-unicast":{
+				    "neighbor":[
+					    %s
+				    ],
+				    "redistribute":{
+				       "connected":{}
+				    }
+				 }
+			      }
+			   ]
+			}
+		     }
 		  }
 		]
 	      }`
 	neighbors := []string{}
+	neighbors2 := []string{}
 	for _, Endpoint := range dbEndpoints {
 		if !Endpoint.BGP {
 			continue
@@ -382,9 +400,16 @@ func (a *App) restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []Endpoint
 			"id": "%s",
 			"remote-as": %d
 		      }`
+		neighbor2 := `{
+			"id":"%s",
+			"activate":[
+			   null
+			]
+		     }`
 		neighbors = append(neighbors, fmt.Sprintf(neighbor, Endpoint.PeerIP, Endpoint.RemoteAS))
+		neighbors2 = append(neighbors2, fmt.Sprintf(neighbor2, Endpoint.PeerIP))
 	}
-	bgpData := fmt.Sprintf(bgp, vrf.LocalAs, strings.Join(neighbors, ","))
+	bgpData := fmt.Sprintf(bgp, vrf.LocalAs, strings.Join(neighbors, ","), strings.Join(neighbors2, ","))
 	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/router/bgp", bgpData, client); err != nil {
 		return ReturnError(err)
 	}
