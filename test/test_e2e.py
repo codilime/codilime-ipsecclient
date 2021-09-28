@@ -2,7 +2,11 @@ from typing import cast
 import requests, time, json, logging, os
 from requests.auth import HTTPBasicAuth
 
-VRFS_URL = "http://sico_api/api/vrfs"
+BASE_URL = "http://sico_api"
+
+VRFS_URL = BASE_URL + "/api/vrfs"
+SETTINGS_URL = BASE_URL + "/api/settings/test_setting"
+CHANGE_PASS_URL = BASE_URL + "/api/changepass"
 
 basicAuth=HTTPBasicAuth("admin", "cisco123")
 
@@ -155,4 +159,33 @@ def test_delete():
     r = requests.delete(VRFS_URL+"/2", auth=basicAuth)
     if r.status_code >= 400:
         print(r.text)
+        assert r.status_code < 400
+
+def test_setting():
+    r = requests.post(SETTINGS_URL, auth=basicAuth, data="test_value")
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+    
+    r = requests.post(SETTINGS_URL, auth=basicAuth, data="other_test_value")
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+    
+    r = requests.get(SETTINGS_URL, auth=basicAuth)
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+    j = json.loads(r.text)
+    assert j["value"] == "other_test_value"
+
+def test_change_pass():
+    r = requests.post(CHANGE_PASS_URL, auth=basicAuth, data="innehaslo")
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+
+    r = requests.post(CHANGE_PASS_URL, auth=HTTPBasicAuth("admin", "innehaslo"), data="cisco123")
+    if r.status_code >= 400:
+        log.error(r.text)
         assert r.status_code < 400
