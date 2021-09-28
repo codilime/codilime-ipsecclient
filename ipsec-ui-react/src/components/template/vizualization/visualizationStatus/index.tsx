@@ -38,7 +38,7 @@ export const VisualizationStatus: FC<VisualizationStatusType> = ({ x, height, li
   const remoteSite = {
     x: x + lineWidth - 35,
     y: lineStartY - 25 / 2 - height / 2,
-    width: 235,
+    width: 225,
     height,
     title,
     value: endpoint.remote_ip_sec
