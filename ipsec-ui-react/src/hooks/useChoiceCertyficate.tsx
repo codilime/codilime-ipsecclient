@@ -99,7 +99,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
 
   useEffect(() => {
     if (private_key) {
-      setFileName((prev) => ({ ...prev, key: 'Complete' }));
+      setFileName((prev) => ({ ...prev, key: 'Private Key' }));
     }
     if (local_cert) {
       const CN = decodeX509(local_cert);

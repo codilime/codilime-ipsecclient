@@ -45,9 +45,9 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   //   return <VisualizationTwoLabel {...label} />;
   // });
 
-  const hardwareXLabel = hardware ? x + paddingBox + smWidthLabel + 10 : x + paddingBox + smWidthLabel + eachBreak;
+  const hardwareXLabel = hardware ? x + paddingBox + smWidthLabel + 10 : x + paddingBox + smWidthLabel + 20;
   const hardwareSecoundLabel = hardware ? lgHeightLabel + 10 : heightHeader;
-  const hadwareYLabel = hardware ? y + height / 2 - hardwareSecoundLabel / 2 + paddingBox : y + height / 2 - hardwareSecoundLabel / 2 + paddingBox - 5;
+  const hadwareYLabel = hardware ? y + height / 2 - hardwareSecoundLabel / 2 + paddingBox - 5 : y + height / 2 - hardwareSecoundLabel / 2 + paddingBox - 5;
 
   const secondLabel = {
     x: hardwareXLabel,
@@ -66,9 +66,9 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
 
   const endpointStatus = endpoints.map((endpoint, index) => {
     const hardwareLabel = hardware ? mdHeightLabel : lgHeightLabel;
-    const textY = y + heightHeader + paddingBox + index * 75;
+    const textY = y + heightHeader + paddingBox + index * 80;
     const textX = x + width - paddingBox - smWidthLabel;
-    const centerX = hardware ? textX - 40 : textX - 25;
+    const centerX = hardware ? textX - 40 : textX - 50;
     const centerY = y + height / 2 + smHeightLabel / 2;
     const centerLabel = textY + lgHeightLabel / 2;
 
@@ -88,11 +88,11 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
 
     const line = {
       color: 'black',
-      points: [centerX, centerY, centerX + eachBreak / 2, centerY, centerX + eachBreak / 2, centerLabel, centerX + eachBreak + 10, centerLabel]
+      points: [centerX, centerY, centerX + eachBreak, centerY, centerX + eachBreak, centerLabel, centerX + eachBreak * 2, centerLabel]
     };
     const connectStatus = {
       x: x + width,
-      height: 65,
+      height: 70,
       lineStartX: textX + smWidthLabel,
       lineStartY: centerLabel,
       title: `Remote Site ${index + 1}`,
@@ -113,7 +113,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   const line = {
     x: x + paddingBox + smWidthLabel,
     y: y + 50 + mdHeightLabel / 2,
-    points: [0, 0, eachBreak / 2, 0, eachBreak / 2, hightOfX, eachBreak, hightOfX]
+    points: [0, 0, eachBreak / 2, 0, eachBreak / 2, hightOfX, eachBreak + 32.5, hightOfX]
   };
   const hardwareLine = {
     x: x + paddingBox + 60,
