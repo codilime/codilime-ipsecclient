@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Rect, Group, Text, Image } from 'react-konva';
 import { variable } from '../visualizationConstants';
-import Router from 'images/Router.png';
+import Router from 'images/router.png';
 import useImage from 'use-image';
 import { VisualizationChecked } from '../visualizationChecked';
 import { visualization } from 'interface/components';
