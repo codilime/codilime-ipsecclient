@@ -79,6 +79,11 @@ type Masterpass struct {
 	Masterpass string
 }
 
+type CertificateAuthority struct {
+	ID int64
+	CA string
+}
+
 func initializeDB(dbName string) (*gorm.DB, error) {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\n", log.LstdFlags),
@@ -104,6 +109,9 @@ func initializeDB(dbName string) (*gorm.DB, error) {
 	}
 	if err = db.AutoMigrate(&Masterpass{}); err != nil {
 		return nil, ReturnError(err)
+	}
+	if err = db.AutoMigrate(&CertificateAuthority{}); err != nil {
+		return nil, err
 	}
 	return db, nil
 }

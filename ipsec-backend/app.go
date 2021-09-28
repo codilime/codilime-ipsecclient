@@ -24,6 +24,7 @@ const (
 	hardwarePathPh1   = "/api/algorithms/hardware/ph1"
 	hardwarePathPh2   = "/api/algorithms/hardware/ph2"
 	listLogsPath      = "/api/listlogs"
+	setCAsPath        = "/api/setcas"
 	settingsPath      = "/api/settings/{name:[a-zA-Z0-9-_]+}"
 	logsPath          = "/api/logs/{name:[a-zA-Z0-9-_]+}"
 	changePassPath    = "/api/changepass"
@@ -142,6 +143,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet)
 	a.Router.HandleFunc(listLogsPath, a.listLogs).Methods(http.MethodGet)
 	a.Router.HandleFunc(changePassPath, a.changePassword).Methods(http.MethodPost)
+	a.Router.HandleFunc(setCAsPath, a.setCAs).Methods(http.MethodPost)
 	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
 }
 
@@ -175,6 +177,28 @@ func (a *App) changePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJSON(w, http.StatusOK, map[string]interface{}{"status": "ok"})
+}
+
+func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
+	cas := []CertificateAuthority{}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := json.Unmarshal(body, &cas); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := a.DB.Where("1=1").Delete(&CertificateAuthority{}).Error; err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := a.DB.Create(&cas).Error; err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	// todo: actually write the CAs into strongswan or somewhere
 }
 
 func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
