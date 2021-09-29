@@ -18,7 +18,7 @@ export const ScrollToBottom: FC<ScrollToBottomType> = ({ change, auto }) => {
     if (auto) {
       scrollToBottom();
     }
-  }, [change]);
+  }, [auto, change]);
 
   return <div ref={scroll} />;
 };

@@ -55,6 +55,7 @@ export interface ContextProps {
   hardware: boolean;
   error: any;
   success: boolean;
+  restConf: boolean;
 }
 
 type nameProps = {
@@ -99,4 +100,23 @@ export interface MetricsType {
   local_ip: string;
   remote_ip: string;
   sa_status: string;
+}
+export interface restConfType {
+  switch_username: string;
+  switch_password: string;
+}
+
+type resultType = {
+  default: 'default';
+  success: 'success';
+  error: 'error';
+};
+
+export interface descriptionType {
+  result: keyof resultType;
+  message: string;
+}
+export interface ChangePasswordType {
+  newPassword: string;
+  newPasswordConfirmation: string;
 }

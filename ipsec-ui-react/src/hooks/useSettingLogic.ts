@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useToggle } from './useToggle';
-import { client } from 'api/';
 
-export const useSettingLogic = () => {
-  const { open, handleToggle } = useToggle();
-  const [logged, setLogged] = useState<boolean>(false);
+export const useSettingLogic = (open?: boolean) => {
   const [activeSetting, setActiveSetting] = useState({ profile: true, restConf: false, certificate: false });
 
   const handleChangeActiveSetting = (name: string) => {
@@ -20,21 +16,15 @@ export const useSettingLogic = () => {
   };
 
   useEffect(() => {
-    if (!open) {
-      setActiveSetting({ profile: true, restConf: false, certificate: false });
-    }
+    const timeout = setTimeout(() => {
+      if (!open) {
+        setActiveSetting({ profile: true, restConf: false, certificate: false });
+      }
+    }, 300);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [open]);
 
-  const handleSendRestConf = async (data: any) => {
-    const res = await client('/settings/restConf', { ...data }, { method: 'POST' });
-    if (res.result === 'success') {
-      setLogged(true);
-    }
-  };
-
-  const handleResetRestConf = () => {
-    setLogged(false);
-  };
-
-  return { activeSetting, open, handleToggle, handleChangeActiveSetting, handleSendRestConf, handleResetRestConf };
+  return { activeSetting, handleChangeActiveSetting };
 };

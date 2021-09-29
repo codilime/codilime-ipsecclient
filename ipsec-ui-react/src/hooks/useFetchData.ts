@@ -1,6 +1,7 @@
 import { client } from 'api/';
 import { useAppContext } from 'hooks/';
 import { handleTakeTime } from 'utils/';
+
 export const useFetchData = () => {
   const { setVrf } = useAppContext();
 
@@ -52,5 +53,7 @@ export const useFetchData = () => {
 
   const fetchLogsData = async (log: string) => await client(`logs/${log}`);
 
-  return { fetchData, postVrfData, deleteVrfData, putVrfData, fetchSoftwareAlgorithms, fetchHardwarePh1, fetchHardwarePh2, fetchEndpointStatus, fetchLogsList, fetchLogsData };
+  const fetchRestConfData = async () => await client(`settings/restConf`);
+
+  return { fetchData, postVrfData, deleteVrfData, putVrfData, fetchSoftwareAlgorithms, fetchHardwarePh1, fetchHardwarePh2, fetchEndpointStatus, fetchLogsList, fetchLogsData, fetchRestConfData };
 };

@@ -21,7 +21,8 @@ export const defaultVrf: ContextProps = {
   loading: false,
   hardware: false,
   error: null,
-  success: false
+  success: false,
+  restConf: false
 };
 
 export const tableSoftwareHeaderSchema = [
@@ -116,7 +117,6 @@ export const DynamicVrfHardwareDetails: DetailsTypes[] = [
 ];
 
 export const DynamicLoginForm = [
-  { type: 'password', name: 'currentPassword', placeholder: 'Current password' },
   { type: 'password', name: 'newPassword', placeholder: 'New password' },
   { type: 'password', name: 'newPasswordConfirmation', placeholder: 'Repeat new password' }
 ];

@@ -1,7 +1,7 @@
 import { useFetchData, useAppContext } from 'hooks/';
 
 export const useInitData = () => {
-  const { fetchData, fetchHardwarePh1, fetchHardwarePh2, fetchSoftwareAlgorithms } = useFetchData();
+  const { fetchData, fetchHardwarePh1, fetchHardwarePh2, fetchSoftwareAlgorithms, fetchRestConfData } = useFetchData();
 
   const {
     vrf: { loading },
