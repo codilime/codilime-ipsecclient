@@ -116,3 +116,7 @@ export interface descriptionType {
   result: keyof resultType;
   message: string;
 }
+export interface ChangePasswordType {
+  newPassword: string;
+  newPasswordConfirmation: string;
+}

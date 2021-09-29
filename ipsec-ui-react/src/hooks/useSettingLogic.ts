@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { client } from 'api/';
-import { restConfType, descriptionType } from 'interface/index';
+import { restConfType, descriptionType, ChangePasswordType } from 'interface/index';
 
 export const useSettingLogic = (open?: boolean) => {
   const [logged, setLogged] = useState<boolean>(true);
@@ -56,6 +56,18 @@ export const useSettingLogic = (open?: boolean) => {
   const handleResetRestConf = () => {
     setLogged(false);
   };
+
+  // const handleChangeGlobalPassword = async (data: ChangePasswordType) => {
+  //   const { status } = await client('changepass', {}, { method: 'POST', body: data.newPassword });
+  //   if (status === 'ok') {
+  //     setLogged(true);
+  //     setDescription({ result: 'success', message: 'Successful change. New variables saved' });
+  //   }
+  //   if (!status) {
+  //     setLogged(true);
+  //     setDescription({ result: 'error', message: 'Error change, something is wrong' });
+  //   }
+  // };
 
   return { activeSetting, logged, description, handleChangeActiveSetting, handleSendRestConf, handleResetRestConf, setLogged };
 };

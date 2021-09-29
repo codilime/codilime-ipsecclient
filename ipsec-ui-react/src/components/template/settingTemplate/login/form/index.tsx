@@ -1,26 +1,22 @@
 import { FC } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { newLoginSchema } from 'schema/';
 import { Field } from 'template';
 import { Button } from 'common/';
 import { DynamicLoginForm } from 'db';
+import { ChangePasswordType } from 'interface/index';
+import { DeepMap, FieldErrors, FieldValues, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
 
-export const LoginForm: FC = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm({ resolver: yupResolver(newLoginSchema) });
+interface LoginFormType {
+  handleChangeGlobalPassword: (data: ChangePasswordType) => Promise<void>;
+  errors: DeepMap<FieldValues, FieldErrors>;
+  register: UseFormRegister<FieldValues>;
+  handleSubmit: UseFormHandleSubmit<FieldValues>;
+}
 
-  const submit = (data: any) => {
-    console.log(data);
-  };
-
+export const LoginForm: FC<LoginFormType> = ({ handleChangeGlobalPassword, errors, register, handleSubmit }) => {
   const displayForm = DynamicLoginForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register: register(input.name), validate: false }} />);
 
   return (
-    <form className="loginForm" onSubmit={handleSubmit(submit)}>
+    <form className="loginForm" onSubmit={handleSubmit(handleChangeGlobalPassword)}>
       <fieldset className="loginForm__fieldset">
         {displayForm}
         <div className="loginForm__submit">

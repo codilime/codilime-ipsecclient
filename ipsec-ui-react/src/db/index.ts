@@ -22,7 +22,7 @@ export const defaultVrf: ContextProps = {
   hardware: false,
   error: null,
   success: false,
-  restConf:false,
+  restConf: false
 };
 
 export const tableSoftwareHeaderSchema = [
