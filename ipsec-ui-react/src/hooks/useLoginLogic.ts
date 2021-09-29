@@ -43,8 +43,9 @@ export const useLoginLogic = () => {
   }, [description]);
 
   const handleLogout = () => {
-    window.location.reload();
+ 
     client('vrfs', {}, { method: 'POST', headers: { Authorization: '' } });
+    window.location.reload();
   };
 
   return { description, logged, errors, register, handleSubmit, handleLogout, handleChangeGlobalPassword };
