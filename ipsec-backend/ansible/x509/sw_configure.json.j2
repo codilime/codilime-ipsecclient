@@ -1,7 +1,14 @@
 {
         "id": 3,
         "client_name": "ansible_x509",
-        "vlan": 321,
+        "vlans": [{
+          "vlan": 321,
+          "lan_ip": "1.1.1.1/24"
+        },
+        {
+          "vlan": 456,
+          "lan_ip": "2.2.2.2/24"
+        }],
         "crypto_ph1": [
           "aes128",
           "sha256",
@@ -15,7 +22,6 @@
         "physical_interface": "eth0",
         "active": true,
         "local_as": 65001,
-        "lan_ip": "1.1.1.1/24",
         "endpoints": [
           {
             "remote_ip_sec": "10.69.0.101",
