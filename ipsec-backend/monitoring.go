@@ -13,6 +13,7 @@ const (
 	saStatusStr = "sa_status"
 	localIpStr  = "local_ip"
 	remoteIpStr = "remote_ip"
+	idStr       = "id"
 )
 
 func normalizeMetrics(metrics *map[string]interface{}) {
@@ -80,7 +81,7 @@ func (a *App) getHWMetrics() (map[string]interface{}, error) {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	res, err := a.restconfGetData("Cisco-IOS-XE-crypto-oper:crypto-oper-data/crypto-ikev2-sa", client)
+	res, err := a.restconfGetData("Cisco-IOS-XE-crypto-oper:crypto-oper-data/crypto-ipsec-ident", client)
 	if err != nil {
 		return nil, ReturnError(err)
 	}
@@ -90,16 +91,20 @@ func (a *App) getHWMetrics() (map[string]interface{}, error) {
 			"endpoint_statuses": endpoints,
 		}, nil
 	}
-	sas := res["Cisco-IOS-XE-crypto-oper:crypto-ikev2-sa"].([]interface{})
-	for _, sa := range sas {
-		saData := sa.(map[string]interface{})["sa-data"].(map[string]interface{})
-		localIp := saData["local-ip-addr"]
-		remoteIp := saData["remote-ip-addr"]
-		saStatus := saData["sa-status"]
+	idents := res["Cisco-IOS-XE-crypto-oper:crypto-ipsec-ident"].([]interface{})
+	for _, ident_ := range idents {
+		ident := ident_.(map[string]interface{})
+		endpointIDStr := ident["interface"].(string)[len("Tunnel"):]
+		endpointID, _ := strconv.Atoi(endpointIDStr)
+		identData := ident["ident-data"].(map[string]interface{})
+		localIp := identData["local-endpt-addr"]
+		remoteIp := identData["remote-endpt-addr"]
+		saStatus := identData["inbound-esp-sa"].(map[string]interface{})["sa-status"]
 		endpointData := map[string]interface{}{
 			localIpStr:  localIp,
 			remoteIpStr: remoteIp,
 			saStatusStr: saStatus,
+			idStr:       endpointID,
 		}
 		endpoints = append(endpoints, endpointData)
 	}

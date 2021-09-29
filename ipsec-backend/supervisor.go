@@ -29,8 +29,8 @@ func ReloadSupervisor() error {
 	return nil
 }
 
-func RestartSupervisorProcess(process string) error {
-	client, err := supervisord.NewUnixSocketClient(supervisorNetSocketPath)
+func RestartSupervisorProcess(socketPath, process string) error {
+	client, err := supervisord.NewUnixSocketClient(socketPath)
 	if err != nil {
 		return ReturnError(err)
 	}

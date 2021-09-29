@@ -1,6 +1,6 @@
 connections {
-{{ range $index, $val := .Endpoints }}{{ $i := inc $index }}
-    {{ $.Vlan }}_{{ $.ClientName }}_{{ $i }} {
+{{ range $index, $val := .Endpoints }}
+    {{ $.ClientName }}_{{ $val.ID }} {
         remote_addrs = {{ $val.RemoteIPSec }}
         local {
             {{ if $val.IsPSK }}
@@ -21,14 +21,14 @@ connections {
             {{ end }}
         }
         children {
-            site-cisco_{{ $i }} {
+            site-cisco_{{ $val.ID }} {
                 remote_ts = 0.0.0.0/0
                 local_ts = 0.0.0.0/0
-                if_id_in = {{ calc $.Vlan $i }}
-                if_id_out = {{ calc $.Vlan $i }}
+                if_id_in = {{ $val.ID }}
+                if_id_out = {{ $val.ID }}
                 esp_proposals = {{ $.Crypto2 }}
                 start_action = start
-                updown=/usr/local/bin/status.sh {{ $.ClientName }}-{{ $i }}-{{ $val.RemoteIPSec }}
+                updown=/usr/local/bin/status.sh {{ $.ClientName }}-{{ $val.ID }}-{{ $val.RemoteIPSec }}
             }
         }
         version = 2
@@ -37,8 +37,8 @@ connections {
 {{ end }}
 }
 secrets {
-{{ range $index, $val := .Endpoints }}{{ $i := inc $index }}
-    ike-{{ $.Vlan }}_{{ $.ClientName }}_{{ $i }} {
+{{ range $index, $val := .Endpoints }}
+    ike-{{ $.ClientName }}_{{ $val.ID }} {
         {{ if $val.IsPSK }}
             id = {{ $val.RemoteIPSec }}
             secret = {{ $val.Authentication.PSK }}

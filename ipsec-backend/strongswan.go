@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/strongswan/govici/vici"
@@ -9,7 +10,7 @@ import (
 const socketPath = "/opt/ipsec/conf/charon.vici"
 
 func ReloadStrongSwan() error {
-	if err := RestartSupervisorProcess("strongswan_reload"); err != nil {
+	if err := RestartSupervisorProcess(supervisorNetSocketPath, "strongswan_reload"); err != nil {
 		return ReturnError(err)
 	}
 	return nil
@@ -19,6 +20,12 @@ type monitoringEndpoint struct {
 	localAddr  string
 	remoteAddr string
 	status     string
+	ID         int
+}
+
+func endpointIDFromKey(key string) (int, error) {
+	l := strings.Split(key, "_")
+	return strconv.Atoi(l[len(l)-1])
 }
 
 func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
@@ -41,8 +48,13 @@ func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
 	endpoints := map[string]*monitoringEndpoint{}
 	for _, m = range ms.Messages() {
 		for _, key := range m.Keys() {
+			id, err := endpointIDFromKey(key)
+			if err != nil {
+				return nil, ReturnError(err)
+			}
 			e := &monitoringEndpoint{
 				status: "DOWN",
+				ID:     id,
 			}
 			e.localAddr = m.Get(key).(*vici.Message).Get("local_addrs").([]string)[0]
 			e.remoteAddr = m.Get(key).(*vici.Message).Get("remote_addrs").([]string)[0]
@@ -81,6 +93,7 @@ func GetStrongswanSingleState(n string) ([]map[string]interface{}, error) {
 					localIpStr:  v.localAddr,
 					remoteIpStr: v.remoteAddr,
 					saStatusStr: v.status,
+					idStr:       v.ID,
 				},
 			)
 		}

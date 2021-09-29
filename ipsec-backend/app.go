@@ -6,14 +6,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os/exec"
 	"strconv"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
-	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -27,7 +26,9 @@ const (
 	listLogsPath      = "/api/listlogs"
 	settingsPath      = "/api/settings/{name:[a-zA-Z0-9-_]+}"
 	logsPath          = "/api/logs/{name:[a-zA-Z0-9-_]+}"
+	changePassPath    = "/api/changepass"
 	nginxPasswordFile = "/etc/nginx/htpasswd"
+	username          = "admin"
 )
 
 type Generator interface {
@@ -54,24 +55,24 @@ func (a *App) ensureHWVRF() error {
 		CryptoPh1:  []byte("[\"aes-cbc-128\", \"sha256\", \"fourteen\"]"),
 		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
 		Active:     boolPointer(false),
-		Endpoints:  []byte("[]"),
+		Endpoints:  []Endpoint{},
 	}
-
-	if err := hwVrf.getVrf(a.DB); err != nil {
-		if strings.Contains(err.Error(), "record not found") {
-			return ReturnError(hwVrf.createVrf(a.DB))
-		}
-		return ReturnError(err)
+	err := hwVrf.createVrf(a.DB)
+	if err == nil {
+		return nil
 	}
-
-	return nil
+	if strings.Contains(err.Error(),
+		"UNIQUE constraint failed: vrfs.id") {
+		return nil
+	}
+	return ReturnError(err)
 }
 
 func (a *App) Initialize(dbName string) error {
 	var err error
 	a.DB, err = initializeDB(dbName)
 	if err != nil {
-		log.Fatal(err)
+		Fatal(err)
 	}
 
 	a.Generator = FileGenerator{}
@@ -80,7 +81,7 @@ func (a *App) Initialize(dbName string) error {
 
 	err = a.setDefaultPasswords()
 	if err != nil {
-		log.Fatal(err)
+		Fatal(err)
 	}
 
 	if err := a.ensureHWVRF(); err != nil {
@@ -91,19 +92,39 @@ func (a *App) Initialize(dbName string) error {
 }
 
 func (a *App) setDefaultPasswords() error {
-	name := "admin"
 	password := "cisco123"
-	if err := htpasswd.SetPassword(nginxPasswordFile, name, password, htpasswd.HashBCrypt); err != nil {
+	if err := htpasswd.SetPassword(nginxPasswordFile, username, password, htpasswd.HashBCrypt); err != nil {
 		return ReturnError(err)
 	}
-	a.ensureMasterPass(password)
-	a.setSetting(password, "switch_username", "admin")
-	a.setSetting(password, "switch_password", "cisco123")
-	return nil
+	return ReturnError(
+		a.ensureMasterPass(password, randString(32)),
+		a.setSetting(password, "switch_username", "admin"),
+		a.setSetting(password, "switch_password", "cisco123"),
+	)
+}
+
+func (a *App) _changePassword(oldPass, newPass string) error {
+	fmt.Println("changing pass from", oldPass, "to", newPass)
+	if err := htpasswd.SetPassword(nginxPasswordFile, username, newPass, htpasswd.HashBCrypt); err != nil {
+		return ReturnError(err)
+	}
+	cmd := exec.Command("nginx", "-s", "reload")
+	if _, err := cmd.Output(); err != nil {
+		return ReturnError(err)
+	}
+	masterpass, err := a.getMasterpass(oldPass)
+	if err != nil {
+		return ReturnError(err)
+	}
+	fmt.Println("masterpass", masterpass)
+	return ReturnError(
+		a.DB.Where("1 = 1").Delete(&Masterpass{}).Error,
+		a.ensureMasterPass(newPass, masterpass),
+	)
 }
 
 func (a *App) Run(addr string) {
-	log.Fatal(http.ListenAndServe(addr, a.Router))
+	Fatal(http.ListenAndServe(addr, a.Router))
 }
 
 func (a *App) initializeRoutes() {
@@ -120,6 +141,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(settingsPath, a.apiSetSetting).Methods(http.MethodPost)
 	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet)
 	a.Router.HandleFunc(listLogsPath, a.listLogs).Methods(http.MethodGet)
+	a.Router.HandleFunc(changePassPath, a.changePassword).Methods(http.MethodPost)
 	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
 }
 
@@ -135,6 +157,24 @@ func getPassFromHeader(header http.Header) (string, error) {
 		return "", ReturnError(err)
 	}
 	return strings.Split(string(decodedBasicAuth), ":")[1], nil
+}
+
+func (a *App) changePassword(w http.ResponseWriter, r *http.Request) {
+	oldPass, err := getPassFromHeader(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	newPass, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := a._changePassword(oldPass, string(newPass)); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, map[string]interface{}{"status": "ok"})
 }
 
 func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
@@ -247,7 +287,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	}
 	defer func() {
 		if err := r.Body.Close(); err != nil {
-			log.Errorf("error while closing body: %v", err)
+			ReturnNewError("error while closing body: " + err.Error())
 		}
 	}()
 
@@ -264,17 +304,17 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
+	plaintextVrf := vrf
 	if err := a.encryptPSK(key, &vrf); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	if err := vrf.createVrf(a.DB); err != nil {
-		log.Infof("error %+v", err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusCreated, vrf)
+	respondWithJSON(w, http.StatusCreated, plaintextVrf)
 }
 
 type handler func(Vrf) error
@@ -297,11 +337,9 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	fmt.Println("received vrf")
-	spew.Dump(vrf)
 	defer func() {
 		if err := r.Body.Close(); err != nil {
-			log.Errorf("error while closing body: %v", err)
+			ReturnNewError("error while closing body: " + err.Error())
 		}
 	}()
 
@@ -334,6 +372,25 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// save and retrieve the vrf to update the endpoints ids
+	if err := a.encryptPSK(key, &vrf); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := vrf.updateVrf(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := vrf.getVrf(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := a.decryptPSK(key, &vrf); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// handle backends
 	if *oldVrf.Active != *vrf.Active {
 		if *vrf.Active {
 			if err := createHandler(vrf); err != nil {
@@ -356,17 +413,8 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	plaintextVrf := vrf
-	if err := a.encryptPSK(key, &vrf); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	if err := vrf.updateVrf(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
 
-	respondWithJSON(w, http.StatusOK, plaintextVrf)
+	respondWithJSON(w, http.StatusOK, vrf)
 }
 
 func (a *App) getSwitchCreds(key string) error {
@@ -500,7 +548,6 @@ func (a *App) listLogs(w http.ResponseWriter, r *http.Request) {
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	returnErrorEx(2, fmt.Errorf(message))
 	respondWithJSON(w, code, map[string]string{"result": "error", "error": message})
-	log.Error("Error occurred: %s", message)
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
@@ -509,6 +556,6 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	if _, err := w.Write(response); err != nil {
-		log.Errorf("Error while writing the response: %v", err)
+		ReturnNewError("Error while writing the response: " + err.Error())
 	}
 }
