@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"os/exec"
+	"path"
 	"strconv"
 	"strings"
 
@@ -24,12 +26,13 @@ const (
 	hardwarePathPh1   = "/api/algorithms/hardware/ph1"
 	hardwarePathPh2   = "/api/algorithms/hardware/ph2"
 	listLogsPath      = "/api/listlogs"
-	setCAsPath        = "/api/setcas"
+	CAsPath           = "/api/cas"
 	settingsPath      = "/api/settings/{name:[a-zA-Z0-9-_]+}"
 	logsPath          = "/api/logs/{name:[a-zA-Z0-9-_]+}"
 	changePassPath    = "/api/changepass"
 	nginxPasswordFile = "/etc/nginx/htpasswd"
 	username          = "admin"
+	CAsDir            = "/opt/ipsec/x509ca"
 )
 
 type Generator interface {
@@ -143,7 +146,8 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet)
 	a.Router.HandleFunc(listLogsPath, a.listLogs).Methods(http.MethodGet)
 	a.Router.HandleFunc(changePassPath, a.changePassword).Methods(http.MethodPost)
-	a.Router.HandleFunc(setCAsPath, a.setCAs).Methods(http.MethodPost)
+	a.Router.HandleFunc(CAsPath, a.setCAs).Methods(http.MethodPost)
+	a.Router.HandleFunc(CAsPath, a.getCAs).Methods(http.MethodGet)
 	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
 }
 
@@ -179,6 +183,29 @@ func (a *App) changePassword(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, map[string]interface{}{"status": "ok"})
 }
 
+func ClearCAs() error {
+	dir, err := ioutil.ReadDir(CAsDir)
+	if err != nil {
+		return ReturnError(err)
+	}
+	errs := []error{}
+	for _, d := range dir {
+		errs = append(errs, os.RemoveAll(path.Join([]string{CAsDir, d.Name()}...)))
+	}
+	return ReturnError(errs...)
+}
+
+func writeCAs(cas []CertificateAuthority) error {
+	if err := ClearCAs(); err != nil {
+		return ReturnError(err)
+	}
+	errs := []error{}
+	for _, ca := range cas {
+		errs = append(errs, ioutil.WriteFile(fmt.Sprintf("%s/%d.pem", CAsDir, ca.ID), []byte(ca.CA), 0644))
+	}
+	return ReturnError(errs...)
+}
+
 func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 	cas := []CertificateAuthority{}
 	body, err := ioutil.ReadAll(r.Body)
@@ -194,11 +221,25 @@ func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	if err := a.DB.Create(&cas).Error; err != nil {
+	if len(cas) > 0 {
+		if err := a.DB.Create(&cas).Error; err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+	}
+	if err := writeCAs(cas); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	// todo: actually write the CAs into strongswan or somewhere
+}
+
+func (a *App) getCAs(w http.ResponseWriter, r *http.Request) {
+	cas := []CertificateAuthority{}
+	if err := a.DB.Find(&cas).Error; err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, cas)
 }
 
 func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {

@@ -7,6 +7,7 @@ BASE_URL = "http://sico_api"
 VRFS_URL = BASE_URL + "/api/vrfs"
 SETTINGS_URL = BASE_URL + "/api/settings/test_setting"
 CHANGE_PASS_URL = BASE_URL + "/api/changepass"
+CAS_URL = BASE_URL + "/api/cas"
 
 basicAuth=HTTPBasicAuth("admin", "cisco123")
 
@@ -189,3 +190,39 @@ def test_change_pass():
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
+
+
+def test_cas():
+    r = requests.post(CAS_URL, auth=basicAuth, json=[
+        {"CA": "123"},
+        {"CA": "456"},
+        {"CA": "789"},
+    ])
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+    
+    r = requests.get(CAS_URL, auth=basicAuth)
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+
+    j = json.loads(r.text)
+    assert ordered(j) == ordered([
+        {"CA": "123", "ID": 1},
+        {"CA": "456", "ID": 2},
+        {"CA": "789", "ID": 3}
+    ])
+
+    r = requests.post(CAS_URL, auth=basicAuth, json=[])
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+    
+    r = requests.get(CAS_URL, auth=basicAuth)
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+
+    j = json.loads(r.text)
+    assert ordered(j) == ordered([])
