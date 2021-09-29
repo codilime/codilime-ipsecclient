@@ -28,6 +28,7 @@ export const useLoginLogic = () => {
     }
     setTimeout(() => {
       reset();
+      client('vrfs', {}, { method: 'POST', headers: { Authorization: '' } });
     }, 500);
   };
 

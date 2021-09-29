@@ -27,13 +27,14 @@
     padding: 10px;
     height: 100%;
     overflow-y: scroll;
+    position: relative;
   }
   &__description {
     max-width: 100ch;
     font-size: 14px;
     color: $gray02;
-    word-wrap: break-word;
-    letter-spacing: normal;
+    white-space: pre-wrap;
+    font-family: monospace;
   }
   &__title {
     text-transform: capitalize;

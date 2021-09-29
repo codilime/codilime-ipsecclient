@@ -1,10 +1,14 @@
 import { FC } from 'react';
 import { RestConfForm } from './form';
 import { Wrapper, HoverPanel } from 'template';
-import { useSettingLogic } from 'hooks/';
+import { UseRestConfLogic } from 'hooks/';
 
-export const RestConf: FC = () => {
-  const { handleSendRestConf, handleResetRestConf, logged, description } = useSettingLogic();
+interface restConfType {
+  open: boolean;
+}
+
+export const RestConf: FC<restConfType> = ({ open }) => {
+  const { handleSendRestConf, handleResetRestConf, logged, description } = UseRestConfLogic(open);
 
   return (
     <Wrapper {...{ title: 'Cat 9300x Credentials', className: 'loginForm__wrapper' }}>

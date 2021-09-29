@@ -1,5 +1,6 @@
 import { FC, useEffect } from 'react';
 import { Button, ScrollToBottom } from 'common/';
+import { Dotted } from 'template';
 import { useToggle, useLogsLogic } from 'hooks/';
 import classNames from 'classnames';
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
@@ -12,7 +13,7 @@ interface EachLogType {
 export const EachLog: FC<EachLogType> = ({ title, activePopup }) => {
   const { open, handleToggle } = useToggle();
 
-  const { logData, autoScroll, handleFetchLogsData, HandleDownloadTextFile, handleActioveScroll } = useLogsLogic();
+  const { logData, autoScroll, loading, handleFetchLogsData, HandleDownloadTextFile, handleActioveScroll } = useLogsLogic();
 
   useEffect(() => {
     if (open) {
@@ -45,10 +46,6 @@ export const EachLog: FC<EachLogType> = ({ title, activePopup }) => {
     }
   }, [open]);
 
-  const displayData: any = logData.map((log, index) => {
-    return <p key={index}>{log}</p>;
-  });
-
   const icon = open ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />;
 
   const active = autoScroll && '✓';
@@ -60,7 +57,10 @@ export const EachLog: FC<EachLogType> = ({ title, activePopup }) => {
       </h3>
       <div className={classNames('logs__context', { logs__context__active: open })}>
         <div className="logs__panel">
-          <div className="logs__description">{displayData}</div>
+          <Dotted loading={loading} />
+          <div className="logs__description">
+            <p>{logData}</p>
+          </div>
           <ScrollToBottom {...{ change: logData, auto: autoScroll }} />
         </div>
         <div className="popup__footer">
