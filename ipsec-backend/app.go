@@ -339,8 +339,23 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, vrf)
 }
 
-func vrfValid(vrf Vrf) bool {
-	return vrf.ID == hardwareVrfID || (vrf.Vlan > 0 && vrf.PhysicalInterface != "")
+func vrfValid(vrf Vrf) (bool, error) {
+	if vrf.ID == hardwareVrfID {
+		return true, nil
+	}
+	if vrf.PhysicalInterface == "" {
+		return false, nil
+	}
+	vlans, err := vrf.getVlans()
+	if err != nil {
+		return false, ReturnError(err)
+	}
+	for _, v := range vlans {
+		if v.Vlan <= 0 {
+			return false, nil
+		}
+	}
+	return true, nil
 }
 
 func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
@@ -356,7 +371,12 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	if !vrfValid(vrf) {
+	valid, err := vrfValid(vrf)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if !valid {
 		respondWithError(w, http.StatusBadRequest, "vrf invalid")
 		return
 	}
@@ -408,7 +428,12 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	if !vrfValid(vrf) {
+	valid, err := vrfValid(vrf)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if !valid {
 		respondWithError(w, http.StatusBadRequest, "vrf invalid")
 		return
 	}

@@ -58,20 +58,39 @@ type Endpoint struct {
 type Vrf struct {
 	ID                int64          `json:"id"`
 	ClientName        string         `json:"client_name"`
-	Vlan              int            `json:"vlan"`
+	Vlans             datatypes.JSON `json:"vlans"`
 	CryptoPh1         datatypes.JSON `json:"crypto_ph1"`
 	CryptoPh2         datatypes.JSON `json:"crypto_ph2"`
 	PhysicalInterface string         `json:"physical_interface"`
 	Active            *bool          `json:"active"` // pointer, otherwise it is impossible to set value to false
 	LocalAs           int            `json:"local_as"`
-	LanIP             string         `json:"lan_ip"`
 	Endpoints         []Endpoint     `json:"endpoints"`
+}
+
+type Vlan struct {
+	Vlan  int    `json:"vlan"`
+	LanIP string `json:"lan_ip"`
 }
 
 type Setting struct {
 	ID    int64
 	Name  string
 	Value string
+}
+
+func (v *Vrf) getVlans() ([]Vlan, error) {
+	ret := []Vlan{}
+	err := json.Unmarshal(v.Vlans, &ret)
+	return ret, ReturnError(err)
+}
+
+func (v *Vrf) setVlans(vlans []Vlan) error {
+	vlansJson, err := json.Marshal(&vlans)
+	if err != nil {
+		return ReturnError(err)
+	}
+	v.Vlans = vlansJson
+	return nil
 }
 
 type Masterpass struct {

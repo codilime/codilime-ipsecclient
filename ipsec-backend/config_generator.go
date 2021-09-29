@@ -198,6 +198,7 @@ func generateSupervisorTemplate(vrf Vrf) (string, error) {
 		PeerIPs  string
 		LanIPs   string
 		Nats     string
+		Vlan     Vlan
 	}{
 		Vrf:      vrf,
 		LocalIPs: strings.Join(localIps, " "),
