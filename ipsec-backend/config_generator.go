@@ -181,6 +181,14 @@ func generateSupervisorTemplate(vrf Vrf) (string, error) {
 	localIps := make([]string, 0, len(vrf.Endpoints))
 	peerIps := make([]string, 0, len(vrf.Endpoints))
 	nats := make([]string, 0, len(vrf.Endpoints))
+	vlans, err := vrf.getVlans()
+	if err != nil {
+		return "", ReturnError(err)
+	}
+	vlansStr := ""
+	for _, vlan := range vlans {
+		vlansStr += fmt.Sprintf("%d %s ", vlan.Vlan, vlan.LanIP)
+	}
 	for _, endpoint := range vrf.Endpoints {
 		localIps = append(localIps, endpoint.LocalIP)
 		peerIps = append(peerIps, endpoint.PeerIP)
@@ -198,12 +206,13 @@ func generateSupervisorTemplate(vrf Vrf) (string, error) {
 		PeerIPs  string
 		LanIPs   string
 		Nats     string
-		Vlan     Vlan
+		Vlans    string
 	}{
 		Vrf:      vrf,
 		LocalIPs: strings.Join(localIps, " "),
 		PeerIPs:  strings.Join(peerIps, " "),
 		Nats:     strings.Join(nats, " "),
+		Vlans:    vlansStr,
 	}); err != nil {
 		return "", ReturnError(err)
 	}
