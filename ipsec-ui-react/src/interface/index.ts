@@ -101,3 +101,18 @@ export interface MetricsType {
   remote_ip: string;
   sa_status: string;
 }
+export interface restConfType {
+  switch_username: string;
+  switch_password: string;
+}
+
+type resultType = {
+  default: 'default';
+  success: 'success';
+  error: 'error';
+};
+
+export interface descriptionType {
+  result: keyof resultType;
+  message: string;
+}

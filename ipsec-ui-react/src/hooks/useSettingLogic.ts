@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useToggle } from './useToggle';
 import { client } from 'api/';
+import { restConfType, descriptionType } from 'interface/index';
 
-export const useSettingLogic = () => {
-  const { open, handleToggle } = useToggle();
-  const [logged, setLogged] = useState<boolean>(false);
+export const useSettingLogic = (open?: boolean) => {
+  const [logged, setLogged] = useState<boolean>(true);
+  const [description, setDescription] = useState<descriptionType>({ result: 'default', message: 'The variables are set. If you want to change them, please click reset' });
   const [activeSetting, setActiveSetting] = useState({ profile: true, restConf: false, certificate: false });
 
   const handleChangeActiveSetting = (name: string) => {
@@ -20,15 +20,36 @@ export const useSettingLogic = () => {
   };
 
   useEffect(() => {
-    if (!open) {
-      setActiveSetting({ profile: true, restConf: false, certificate: false });
-    }
+    const timeout = setTimeout(() => {
+      if (!open) {
+        setActiveSetting({ profile: true, restConf: false, certificate: false });
+        setLogged(true);
+      }
+    }, 300);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [open]);
 
-  const handleSendRestConf = async (data: any) => {
-    const res = await client('/settings/restConf', { ...data }, { method: 'POST' });
-    if (res.result === 'success') {
+  useEffect(() => {
+    const timeOut = setTimeout(() => {
+      setDescription({ result: 'default', message: 'The variables are set. If you want to change them, please click reset' });
+    }, 2000);
+    return () => {
+      clearTimeout(timeOut);
+    };
+  }, [description]);
+
+  const handleSendRestConf = async (data: restConfType) => {
+    const username = await client('settings/switch_username', {}, { method: 'POST', body: data.switch_username });
+    const password = await client('settings/switch_password', {}, { method: 'POST', body: data.switch_password });
+    if (!username || !password) {
       setLogged(true);
+      setDescription({ result: 'error', message: 'Error change, something is wrong' });
+    }
+    if (username && password) {
+      setLogged(true);
+      setDescription({ result: 'success', message: 'Successful change. New variables saved' });
     }
   };
 
@@ -36,5 +57,5 @@ export const useSettingLogic = () => {
     setLogged(false);
   };
 
-  return { activeSetting, open, handleToggle, handleChangeActiveSetting, handleSendRestConf, handleResetRestConf };
+  return { activeSetting, logged, description, handleChangeActiveSetting, handleSendRestConf, handleResetRestConf, setLogged };
 };

@@ -24,9 +24,14 @@ export const EachLog: FC<EachLogType> = ({ title, activePopup }) => {
   }, [open]);
 
   useEffect(() => {
-    if (!activePopup && open) {
-      handleToggle();
-    }
+    const timeOut = setTimeout(() => {
+      if (!activePopup && open) {
+        handleToggle();
+      }
+    }, 200);
+    return () => {
+      clearTimeout(timeOut);
+    };
   }, [activePopup]);
 
   useEffect(() => {

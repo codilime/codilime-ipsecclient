@@ -34,11 +34,5 @@ export const useInitData = () => {
     setVrf((prev) => ({ ...prev, vrfs }));
   };
 
-  const fetchRestConf = async () => {
-    const restConf = await fetchRestConfData();
-    console.log(restConf.result);
-    if (restConf) setVrf((prev) => ({ ...prev }));
-  };
-
-  return { fetchVrfData, fetchVrfSettings, loading, fetchRestConf };
+  return { fetchVrfData, fetchVrfSettings, loading };
 };

@@ -17,12 +17,11 @@ export const vrfSchema = yup.object().shape({
 });
 
 export const newLoginSchema = yup.object().shape({
-  currentPassword: yup.string().min(5).required(),
-  newPassword: yup.string().min(8, '').required(''),
+  newPassword: yup.string().min(8, 'Your new password have to at least 8 chars').required(),
   newPasswordConfirmation: yup
     .string()
-    .required('')
-    .oneOf([yup.ref('newPassword'), null], '')
+    .required()
+    .oneOf([yup.ref('newPassword'), null], 'Password and Confirm must be the same')
 });
 
 export const restConfSchema = yup.object().shape({
