@@ -53,6 +53,7 @@ _term() {
   # remove iptable rules
   logs "Removing iptables rules in raw table... "
   iptables -w -t raw -D PREROUTING -j VRF${VRF_ID}-raw 2>&1 | logs_err
+  iptables -w -t raw -F VRF${VRF_ID}-raw 2>&1 | logs_err
   iptables -w -t raw -X VRF${VRF_ID}-raw 2>&1 | logs_err
   logs " ...done"
   logs "Removing iptables rules in nat table... "
