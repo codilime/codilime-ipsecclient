@@ -61,6 +61,7 @@ func (a *App) ensureHWVRF() error {
 		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
 		Active:     boolPointer(false),
 		Endpoints:  []Endpoint{},
+		Vlans:      []byte("[]"),
 	}
 	err := hwVrf.createVrf(a.DB)
 	if err == nil {
@@ -134,6 +135,7 @@ func (a *App) Run(addr string) {
 
 func (a *App) initializeRoutes() {
 	a.Router = mux.NewRouter()
+	a.initializeRestconfRouter()
 	a.Router.HandleFunc(vrfsPath, a.getVrfs).Methods(http.MethodGet)
 	a.Router.HandleFunc(vrfsPath, a.createVrf).Methods(http.MethodPost)
 	a.Router.HandleFunc(vrfsIDPath, a.getVrf).Methods(http.MethodGet)
