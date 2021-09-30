@@ -1,16 +1,16 @@
 #!/bin/bash
 
-declare -a vlans
+declare -a vlans_ips
 i=0
 
-for v in $VLANS; do
-    vlans[i]=$v
+for v in $VLANS_IPS; do
+    vlans_ips[i]=$v
     i=$((i+1))
 done
 
-# for (( i=0; i<${#vlans[@]}; i+=2 ));
+# for (( i=0; i<${#vlans_ips[@]}; i+=2 ));
 # do
-#   echo "${vlans[$i]} ${vlans[$i+1]}"
+#   echo "${vlans_ips[$i]} ${vlans_ips[$i+1]}"
 # done
 
 logs()
@@ -42,13 +42,13 @@ _term() {
   done
   logs " ...done"
   logs "Removing other interfaces:"
-  for (( i=0; i<${#vlans[@]}; i+=2 ));
+  for (( i=0; i<${#vlans_ips[@]}; i+=2 ));
   do
-    logs "vlan: ${vlans[$i]}, lan ip: ${vlans[$i+1]}"
-    ip link del $PHYS_IF.$VRF_ID.${vlans[$i]} 2>&1 | logs_err
-    logs " vrf-$VRF_ID"
-    ip link del vrf-$VRF_ID 2>&1 | logs_err
+    logs "vlan: ${vlans_ips[$i]}, lan ip: ${vlans_ips[$i+1]}"
+    ip link del $PHYS_IF.${vlans_ips[$i]} 2>&1 | logs_err
   done
+  logs " vrf-$VRF_ID"
+  ip link del vrf-$VRF_ID 2>&1 | logs_err
   logs " ...done"
   # remove iptable rules
   logs "Removing iptables rules in raw table... "
@@ -56,6 +56,7 @@ _term() {
   iptables -w -t raw -X VRF${VRF_ID}-raw 2>&1 | logs_err
   logs " ...done"
   logs "Removing iptables rules in nat table... "
+  # todo: check if fails when nat was not enabled
   iptables -w -t nat -D POSTROUTING -j VRF${VRF_ID}-nat 2>&1 | logs_err
   iptables -w -t nat -X VRF${VRF_ID}-nat 2>&1 | logs_err
   logs " ...done"
@@ -74,15 +75,15 @@ logs "Creating VRF..."
 ip link add vrf-$VRF_ID type vrf table $VRF_ID 2>&1 | logs_err
 ip link set dev vrf-$VRF_ID up 2>&1 | logs_err
 logs " ...done"
-for (( i=0; i<${#vlans[@]}; i+=2 ));
+for (( i=0; i<${#vlans_ips[@]}; i+=2 ));
 do
   #Create and add tagged interface to VRF
-  logs "Creating SVI interface, vlan: ${vlans[$i]} lan ip: ${vlans[$i+1]}"
-  ip link add link $PHYS_IF name $PHYS_IF.$VRF_ID.${vlans[$i]} type vlan id ${vlans[$i]} 2>&1 | logs_err
-  ip link set dev $PHYS_IF.$VRF_ID.${vlans[$i]} master vrf-$VRF_ID 2>&1 | logs_err
-  ip link set dev $PHYS_IF.$VRF_ID.${vlans[$i]} up 2>&1 | logs_err
+  logs "Creating SVI interface, vlan: ${vlans_ips[$i]} lan ip: ${vlans_ips[$i+1]}"
+  ip link add link $PHYS_IF name $PHYS_IF.${vlans_ips[$i]} type vlan id ${vlans_ips[$i]} 2>&1 | logs_err
+  ip link set dev $PHYS_IF.${vlans_ips[$i]} master vrf-$VRF_ID 2>&1 | logs_err
+  ip link set dev $PHYS_IF.${vlans_ips[$i]} up 2>&1 | logs_err
   #Assign IP
-  ip address add ${vlans[$i+1]} dev $PHYS_IF.$VRF_ID.${vlans[$i]} 2>&1 | logs_err
+  ip address add ${vlans_ips[$i+1]} dev $PHYS_IF.${vlans_ips[$i]} 2>&1 | logs_err
   logs " ...done"
 done
 logs "Creating iptables rules in raw table... "
@@ -91,7 +92,10 @@ iptables -w -t raw -N VRF${VRF_ID}-raw 2>&1 | logs_err
 iptables -w -t raw -A PREROUTING -j VRF${VRF_ID}-raw 2>&1 | logs_err
 
 iptables -w -t raw -A VRF${VRF_ID}-raw -i ipsec-${VRF_ID}+ -j CT --zone ${VRF_ID} 2>&1 | logs_err
-iptables -w -t raw -A VRF${VRF_ID}-raw -i $PHYS_IF.$VRF_ID.${vlans[$i]} -j CT --zone ${VRF_ID} 2>&1 | logs_err
+for (( i=0; i<${#vlans_ips[@]}; i+=2 ));
+do
+  iptables -w -t raw -A VRF${VRF_ID}-raw -i $PHYS_IF.${vlans_ips[$i]} -j CT --zone ${VRF_ID} 2>&1 | logs_err
+done
 logs " ...done"
 logs "Creating iptables rules in nat table... "
 iptables -w -t nat -N VRF${VRF_ID}-nat 2>&1 | logs_err

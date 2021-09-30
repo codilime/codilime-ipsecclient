@@ -187,6 +187,9 @@ func generateSupervisorTemplate(vrf Vrf) (string, error) {
 	}
 	vlansStr := ""
 	for _, vlan := range vlans {
+		if strings.TrimSpace(vlan.LanIP) == "" {
+			return "", ReturnNewError("vlan.LanIP was empty")
+		}
 		vlansStr += fmt.Sprintf("%d %s ", vlan.Vlan, vlan.LanIP)
 	}
 	for _, endpoint := range vrf.Endpoints {
