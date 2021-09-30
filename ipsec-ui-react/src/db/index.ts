@@ -78,20 +78,20 @@ export const emptyHardwareSchema: endpointsType = {
 };
 
 export const endpointInputSchema: endpointSchemaType[] = [
-  { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP' },
-  { type: 'text', name: 'local_ip', placeholder: 'Enter local IP' },
-  { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP' },
+  { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
+  { type: 'text', name: 'local_ip', placeholder: 'Enter local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
+  { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor. ' },
   { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
   { type: 'checkbox', name: 'nat' },
   { type: 'checkbox', name: 'bgp' }
 ];
 export const endpointHardwareSchema: endpointSchemaType[] = [
-  { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP' },
-  { type: 'text', name: 'local_ip', placeholder: 'Enter local IP' },
-  { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP' },
+  { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
+  { type: 'text', name: 'local_ip', placeholder: 'Enter local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
+  { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor.' },
   { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
-  { type: 'number', name: 'remote_as', placeholder: '0' },
-  { type: 'text', name: 'source_interface', placeholder: 'Enter source interface' },
+  { type: 'number', name: 'remote_as', placeholder: '0', tooltip: 'Remote BGP AS' },
+  { type: 'text', name: 'source_interface', placeholder: 'Enter source interface', tooltip: 'Cisco physical interfaces to which IPSEC tunnel is attached (i.e. Vlan100 , GigabitEthernet1/1)' },
   { type: 'checkbox', name: 'bgp' }
 ];
 

@@ -14,8 +14,6 @@ export const VlanInput: FC<VlanInput> = ({ text, type, name, placeholder, value,
   <div className="vlan__field">
     <label className="vlan__label">{text}</label>
     <input {...{ type, name, placeholder, className: classNames('vlan__input', { vlan__error: error, vlan__input__vlan: name === 'vlan' }), onKeyPress: validateDataInput, value, onChange }} />
-    <ToolTipInfo {...{ error }}>
-      <p>{tooltip}</p>
-    </ToolTipInfo>
+    <ToolTipInfo {...{ error }}>{tooltip}</ToolTipInfo>
   </div>
 );

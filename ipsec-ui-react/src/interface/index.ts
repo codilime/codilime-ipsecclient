@@ -87,6 +87,7 @@ export interface endpointSchemaType {
   type?: string;
   placeholder?: string;
   text?: string;
+  tooltip?: string;
 }
 
 export interface MatchProps extends RouteComponentProps<{ id: string }> {}

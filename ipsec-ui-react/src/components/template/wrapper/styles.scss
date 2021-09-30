@@ -2,7 +2,7 @@
 
 .wrapper {
   margin: $margin-lg 0;
-  overflow: hidden;
+ // overflow: hidden;
   font-size: 14px;
   &__header {
     font-weight: 600;
@@ -25,7 +25,7 @@
     margin: 0 auto;
     border: $wrapper-border;
     border-top: none;
-    overflow: hidden;
+    //overflow: hidden;
   }
   &__small {
     margin: 0;

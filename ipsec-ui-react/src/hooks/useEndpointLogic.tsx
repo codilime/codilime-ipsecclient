@@ -71,11 +71,7 @@ export const useEndpointLogic = ({ endpoint, active, handleActionVrfEndpoints, i
       return (
         <td key={el.name} className={classNames('table__column', { table__bool: el.name === 'remote_as' })}>
           <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints[el.name] }} />
-          {edit && (
-            <ToolTipInfo {...{ error: error[el.name] }}>
-              <p>Max value 255.255.255.255</p> <p>Min value 0.0.0.0</p>
-            </ToolTipInfo>
-          )}
+          {edit && <ToolTipInfo {...{ error: error[el.name] }}>{el.tooltip}</ToolTipInfo>}
         </td>
       );
     });

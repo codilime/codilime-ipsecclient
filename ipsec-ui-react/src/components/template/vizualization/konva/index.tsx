@@ -43,7 +43,7 @@ export const Visualization: FC = () => {
   const context = endpoints === null || !endpoints?.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions, metrics, hardware }} />;
 
   return (
-    <Wrapper title="Visualization" references={wrapper}>
+    <Wrapper {...{className:'visualization__wrapper'}} title="Visualization" references={wrapper}>
       {context}
     </Wrapper>
   );

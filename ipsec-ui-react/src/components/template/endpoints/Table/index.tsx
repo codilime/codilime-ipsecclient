@@ -9,7 +9,7 @@ export const Endpoints: FC = () => {
   const { dynamicCreateEndpoint, dynamicHeader, createNewEndpoint, newEndpointButton, handleToggle, currentLocation } = useCreateEndpointTable();
 
   return (
-    <Wrapper title="Endpoints">
+    <Wrapper {...{ wrapperClass: 'table__wrapper', className: 'table__wrapper', title: 'Endpoints' }}>
       <table className="table">
         <thead className="table__header">
           <tr className="table__row--header">{dynamicHeader}</tr>
