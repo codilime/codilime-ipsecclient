@@ -99,7 +99,6 @@ def test_put():
         "active":True,
         "hardware_support":False,
         "local_as":123,
-        "lan_ip":"10.0.0.1",
         "endpoints":[
             {
                 "remote_ip_sec":"10.1.0.1",

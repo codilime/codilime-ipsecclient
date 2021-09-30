@@ -34,6 +34,13 @@ module sico-ipsec {
         description "the type of endpoint authentication available within the system";
     }
 
+    typedef monitoring-status {
+        type string {
+            pattern 'up|down';
+        }
+        description "the type of tunnel status as seen in monitoring";
+    }
+
     container api {
         list vrf {
             key "id";
@@ -181,6 +188,22 @@ module sico-ipsec {
             leaf log {
                 type string;
                 mandatory "true";
+            }
+        }
+        list monitoring {
+            config false;
+            key "id";
+             leaf id {
+                type int64;
+            }
+            leaf remote_ip {
+                type dotted-quad;
+            }
+            leaf peer_ip {
+                type dotted-quad;
+            }
+            leaf status {
+                type monitoring-status;
             }
         }
         list ca {
