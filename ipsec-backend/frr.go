@@ -17,7 +17,7 @@ func runTmpVtyshFile(tmpFile string) error {
 }
 
 func generateFRRTemplate(vrf Vrf) error {
-	createTmpFile := fmt.Sprintf("router bgp %d vrf %s\n  no bgp ebgp-requires-policy\n", vrf.LocalAs, "vrf-"+strconv.Itoa(vrf.Vlan))
+	createTmpFile := fmt.Sprintf("router bgp %d vrf %s\n  no bgp ebgp-requires-policy\n", vrf.LocalAs, "vrf-"+strconv.Itoa(int(vrf.ID)))
 	for _, endpoint := range vrf.Endpoints {
 		createTmpFile += fmt.Sprintf("  neighbor %s remote-as external\n", endpoint.PeerIP)
 	}
@@ -31,6 +31,6 @@ func generateFRRTemplate(vrf Vrf) error {
 }
 
 func deleteFRRTemplate(vrf Vrf) error {
-	deleteTmpFile := fmt.Sprintf("no router bgp %d vrf %s\n", vrf.LocalAs, "vrf-"+strconv.Itoa(vrf.Vlan))
+	deleteTmpFile := fmt.Sprintf("no router bgp %d vrf %s\n", vrf.LocalAs, "vrf-"+strconv.Itoa(int(vrf.ID)))
 	return ReturnError(runTmpVtyshFile(deleteTmpFile))
 }

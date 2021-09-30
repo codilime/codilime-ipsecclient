@@ -2,7 +2,12 @@ from typing import cast
 import requests, time, json, logging, os
 from requests.auth import HTTPBasicAuth
 
-VRFS_URL = "http://sico_api/api/vrfs"
+BASE_URL = "http://sico_api"
+
+VRFS_URL = BASE_URL + "/api/vrfs"
+SETTINGS_URL = BASE_URL + "/api/settings/test_setting"
+CHANGE_PASS_URL = BASE_URL + "/api/changepass"
+CAS_URL = BASE_URL + "/api/cas"
 
 basicAuth=HTTPBasicAuth("admin", "cisco123")
 
@@ -43,7 +48,12 @@ def test_post():
     post = {
         "id":2,
         "client_name":"test",
-        "vlan":123,
+        "vlans":[
+            {
+                "vlan": 123,
+                "lan_ip": "10.0.0.0/24"
+            }
+        ],
         "crypto_ph1":[
             "aes-cbc-128",
             "sha256",
@@ -69,7 +79,12 @@ def test_put():
     put = {
         "id":2,
         "client_name":"test",
-        "vlan":123,
+        "vlans":[
+            {
+                "vlan": 123,
+                "lan_ip": "10.0.0.0/24"
+            }
+        ],
         "crypto_ph1":[
             "aes128",
             "sha256",
@@ -110,13 +125,17 @@ def test_put():
 get_template = {
     "id": 2,
     "client_name": "test",
-    "vlan": 123,
+    'vlans': [
+        {
+            'vlan': 123,
+            'lan_ip': '10.0.0.0/24'
+        }
+    ],
     "crypto_ph1": ["aes128", "sha256", "modp1024"],
     "crypto_ph2": ["aes128", "sha1", "modp1024"],
     "physical_interface": "eth0",
     "active": True,
     "local_as": 123,
-    "lan_ip": "10.0.0.1",
     "endpoints": [
         {
             "id": 1,
@@ -156,3 +175,68 @@ def test_delete():
     if r.status_code >= 400:
         print(r.text)
         assert r.status_code < 400
+
+def test_setting():
+    r = requests.post(SETTINGS_URL, auth=basicAuth, data="test_value")
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+    
+    r = requests.post(SETTINGS_URL, auth=basicAuth, data="other_test_value")
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+    
+    r = requests.get(SETTINGS_URL, auth=basicAuth)
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+    j = json.loads(r.text)
+    assert j["value"] == "other_test_value"
+
+def test_change_pass():
+    r = requests.post(CHANGE_PASS_URL, auth=basicAuth, data="innehaslo")
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+
+    r = requests.post(CHANGE_PASS_URL, auth=HTTPBasicAuth("admin", "innehaslo"), data="cisco123")
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+
+
+def test_cas():
+    r = requests.post(CAS_URL, auth=basicAuth, json=[
+        {"CA": "123"},
+        {"CA": "456"},
+        {"CA": "789"},
+    ])
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+    
+    r = requests.get(CAS_URL, auth=basicAuth)
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+
+    j = json.loads(r.text)
+    assert ordered(j) == ordered([
+        {"CA": "123", "ID": 1},
+        {"CA": "456", "ID": 2},
+        {"CA": "789", "ID": 3}
+    ])
+
+    r = requests.post(CAS_URL, auth=basicAuth, json=[])
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+    
+    r = requests.get(CAS_URL, auth=basicAuth)
+    if r.status_code >= 400:
+        log.error(r.text)
+        assert r.status_code < 400
+
+    j = json.loads(r.text)
+    assert ordered(j) == ordered([])
