@@ -8,6 +8,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/davecgh/go-spew/spew"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/datatypes"
 )
@@ -19,25 +20,6 @@ const (
 	supervisorTemplateFile = "supervisor.ini.template"
 	supervisorTemplatePath = templatesFolder + supervisorTemplateFile
 )
-
-type EndpointAuth struct {
-	Type       string `json:"type"`
-	PSK        string `json:"psk"`
-	LocalCert  string `json:"local_cert"`
-	RemoteCert string `json:"remote_cert"`
-	PrivateKey string `json:"private_key"`
-}
-
-type Endpoint struct {
-	RemoteIPSec     string       `json:"remote_ip_sec"`
-	LocalIP         string       `json:"local_ip"`
-	PeerIP          string       `json:"peer_ip"`
-	RemoteAS        int          `json:"remote_as"`
-	NAT             bool         `json:"nat"`
-	BGP             bool         `json:"bgp"`
-	SourceInterface string       `json:"source_interface"`
-	Authentication  EndpointAuth `json:"authentication"`
-}
 
 func (e *Endpoint) IsPSK() string {
 	if e.Authentication.Type == "psk" {
@@ -53,34 +35,35 @@ func (e *Endpoint) IsCerts() string {
 	return ""
 }
 
-type VrfWithEndpoints struct {
-	Vrf
-	Endpoints []Endpoint
-}
-
 type FileGenerator struct {
 }
 
-func saveCerts(v *VrfWithEndpoints) error {
+func saveCerts(v *Vrf) error {
 	for _, e := range v.Endpoints {
+		if e.Authentication.Type != "certs" {
+			continue
+		}
 		filename := fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.PeerIP)
 		if err := ioutil.WriteFile(filename, []byte(e.Authentication.RemoteCert), 0644); err != nil {
-			return err
+			return ReturnError(err)
 		}
 		filename = fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.LocalIP)
 		if err := ioutil.WriteFile(filename, []byte(e.Authentication.LocalCert), 0644); err != nil {
-			return err
+			return ReturnError(err)
 		}
 		filename = fmt.Sprintf("/opt/ipsec/rsa/%s-%s.key.pem", v.ClientName, e.PeerIP)
 		if err := ioutil.WriteFile(filename, []byte(e.Authentication.PrivateKey), 0644); err != nil {
-			return err
+			return ReturnError(err)
 		}
 	}
 	return nil
 }
 
-func deleteCerts(v *VrfWithEndpoints) error {
+func deleteCerts(v Vrf) error {
 	for _, e := range v.Endpoints {
+		if e.Authentication.Type != "certs" {
+			continue
+		}
 		filenames := []string{
 			fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.PeerIP),
 			fmt.Sprintf("/opt/ipsec/x509/%s-%s.pem", v.ClientName, e.LocalIP),
@@ -88,83 +71,62 @@ func deleteCerts(v *VrfWithEndpoints) error {
 		}
 		for _, f := range filenames {
 			if err := os.Remove(f); err != nil {
-				return err
+				return ReturnError(err)
 			}
 		}
 	}
 	return nil
 }
 
-func (FileGenerator) GenerateTemplates(v Vrf) error {
-	log.Infof("generating templates for vrf %+v", v)
-	vrf, err := convertToVrfWithEndpoints(v)
-	if err != nil {
-		return err
+func (FileGenerator) GenerateTemplates(vrf Vrf) error {
+	if err := saveCerts(&vrf); err != nil {
+		return ReturnError(err)
 	}
 
-	if err := saveCerts(vrf); err != nil {
-		return err
-	}
-
-	prefix := calculatePrefix(v)
+	prefix := calculatePrefix(vrf)
 
 	data, err := generateStrongswanTemplate(vrf)
 	if err != nil {
-		return err
+		return ReturnError(err)
 	}
 	if err := os.WriteFile(getStrongswanFileName(prefix), []byte(data), 0644); err != nil {
-		return err
+		return ReturnError(err)
 	}
 
 	data, err = generateSupervisorTemplate(vrf)
 	if err != nil {
-		return err
+		return ReturnError(err)
 	}
 	if err := os.WriteFile(getSupervisorFileName(prefix), []byte(data), 0644); err != nil {
-		return err
+		return ReturnError(err)
 	}
 
-	if err = generateFRRTemplate(v); err != nil {
-		return err
+	if err = generateFRRTemplate(vrf); err != nil {
+		return ReturnError(err)
 	}
 
 	if err = ReloadSupervisor(); err != nil {
-		return err
+		return ReturnError(err)
 	}
 
 	if err = ReloadStrongSwan(); err != nil {
-		return err
+		return ReturnError(err)
 	}
 
 	return nil
 }
 
-func (FileGenerator) DeleteTemplates(v Vrf) error {
-	log.Infof("deleting templates for vrf %+v", v)
-	vrf, err := convertToVrfWithEndpoints(v)
-	if err != nil {
-		return err
-	}
-	prefix := calculatePrefix(v)
-	if err := os.RemoveAll(getSupervisorFileName(prefix)); err != nil {
-		return err
-	}
-	if err := os.RemoveAll(getStrongswanFileName(prefix)); err != nil {
-		return err
-	}
-	if err := deleteFRRTemplate(v); err != nil {
-		return err
-	}
-	if err := ReloadStrongSwan(); err != nil {
-		return err
-	}
-	if err := ReloadSupervisor(); err != nil {
-		return err
-	}
-	if err := deleteCerts(vrf); err != nil {
-		return err
-	}
-	return nil
+func (FileGenerator) DeleteTemplates(vrf Vrf) error {
+	log.Infof("deleting templates for vrf %+v", vrf)
+	prefix := calculatePrefix(vrf)
+	return ReturnError(
+		os.RemoveAll(getSupervisorFileName(prefix)),
+		os.RemoveAll(getStrongswanFileName(prefix)),
+		deleteFRRTemplate(vrf),
+		ReloadStrongSwan(),
+		ReloadSupervisor(),
+		deleteCerts(vrf),
+	)
 }
 
 func getStrongswanFileName(prefix string) string {
@@ -175,39 +137,29 @@ func getSupervisorFileName(prefix string) string {
 	return "/opt/super_net/" + prefix + ".ini"
 }
 
-func convertToVrfWithEndpoints(vrf Vrf) (*VrfWithEndpoints, error) {
-	var endpoints []Endpoint
-	if vrf.Endpoints != nil {
-		val := vrf.Endpoints.String()
-		if err := json.Unmarshal([]byte(val), &endpoints); err != nil {
-			return nil, err
-		}
-	}
-	return &VrfWithEndpoints{vrf, endpoints}, nil
-}
-
 func calculatePrefix(vrf Vrf) string {
-	return fmt.Sprintf("%d_%s", vrf.Vlan, vrf.ClientName)
+	return fmt.Sprintf("vrf%d", vrf.ID)
 }
 
-func generateStrongswanTemplate(vrf *VrfWithEndpoints) (string, error) {
+func generateStrongswanTemplate(vrf Vrf) (string, error) {
 	t, err := template.New(strongswanTemplateFile).
-		Funcs(template.FuncMap{"calc": calculateIndex, "inc": inc}).
 		ParseFiles(strongswanTemplatePath)
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	builder := strings.Builder{}
 	crypto1, err := convertToString(vrf.CryptoPh1)
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	crypto2, err := convertToString(vrf.CryptoPh2)
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
+	fmt.Println("generating for")
+	spew.Dump(vrf)
 	if err = t.Execute(&builder, struct {
-		*VrfWithEndpoints
+		Vrf
 		Crypto1 string
 		Crypto2 string
 	}{
@@ -215,15 +167,15 @@ func generateStrongswanTemplate(vrf *VrfWithEndpoints) (string, error) {
 		crypto1,
 		crypto2,
 	}); err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	return builder.String(), nil
 }
 
-func generateSupervisorTemplate(vrf *VrfWithEndpoints) (string, error) {
+func generateSupervisorTemplate(vrf Vrf) (string, error) {
 	t, err := template.New(supervisorTemplateFile).ParseFiles(supervisorTemplatePath)
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 
 	localIps := make([]string, 0, len(vrf.Endpoints))
@@ -241,39 +193,31 @@ func generateSupervisorTemplate(vrf *VrfWithEndpoints) (string, error) {
 
 	builder := strings.Builder{}
 	if err = t.Execute(&builder, struct {
-		*VrfWithEndpoints
+		Vrf
 		LocalIPs string
 		PeerIPs  string
 		LanIPs   string
 		Nats     string
 	}{
-		VrfWithEndpoints: vrf,
-		LocalIPs:         strings.Join(localIps, " "),
-		PeerIPs:          strings.Join(peerIps, " "),
-		Nats:             strings.Join(nats, " "),
+		Vrf:      vrf,
+		LocalIPs: strings.Join(localIps, " "),
+		PeerIPs:  strings.Join(peerIps, " "),
+		Nats:     strings.Join(nats, " "),
 	}); err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	return builder.String(), nil
 
 }
 
-func inc(i int) int {
-	return i + 1
-}
-
-func calculateIndex(vlan, index int) int {
-	return vlan*100 + index
-}
-
 func convertToString(s datatypes.JSON) (string, error) {
 	m, err := s.MarshalJSON()
 	if err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	var arr []string
 	if err = json.Unmarshal(m, &arr); err != nil {
-		return "", err
+		return "", ReturnError(err)
 	}
 	res := strings.Join(arr, "-")
 	return strings.ReplaceAll(res, "--", "-"), nil

@@ -3,12 +3,15 @@
 .vlan {
   display: flex;
   flex-direction: column;
-  width: calc(30%);
-  padding: 0px $padding-lg $padding-sm;
-  height: 180px;
+  width: 45%;
+  max-width: 500px;
+  padding: 0px $padding-md;
   font-size: 14px;
-  overflow: hidden;
 
+  &__wrapper {
+    overflow: visible;
+    border: $wrapper-border;
+  }
   &__header {
     display: flex;
     justify-content: space-between;
@@ -29,7 +32,7 @@
       display: flex;
       justify-content: flex-end;
     }
-    color:$gray02;
+    color: $gray02;
     font-size: 14px;
     width: 100%;
     border: none;
@@ -38,13 +41,10 @@
     outline: none;
   }
   &__btn {
-    padding: 5px 10px;
-    margin: 5px 0px 5px 10px;
-    color: white;
-    background-color: $primary;
-    border: none;
-    border-radius: $button-radius;
+    color: $primary;
+    font-weight: bold;
     cursor: pointer;
+    margin-right: 30px;
   }
   &__table {
     color: $gray02;
@@ -58,22 +58,25 @@
   &__body {
     display: block;
     overflow-y: scroll;
-    height: 60px;
+    height: 89px;
   }
 
   &__row {
     display: flex;
     padding: 5px 10px;
     justify-content: space-between;
+    align-items: center;
     border-bottom: $wrapper-border;
+
     &__header {
       padding-right: 20px;
     }
     &__empty {
-      color:black;
+      color: $gray02;
       display: flex;
       justify-content: center;
       align-items: center;
+      border-bottom: $wrapper-border;
       height: 100%;
     }
   }
@@ -81,5 +84,43 @@
     cursor: pointer;
     color: red;
     font-weight: 700;
+  }
+  &__box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: $wrapper-border;
+  }
+  &__field {
+    margin: 5px 15px 5px 5px;
+    position: relative;
+  }
+  &__label {
+    font-weight: 500;
+    order: 1;
+    padding: 3px 3px;
+    transform: translateY(-50%);
+    top: 45%;
+    border: none;
+    outline: none;
+    position: absolute;
+  }
+  &__input {
+    padding: $padding-sm 20px $padding-sm 60px;
+    width: calc(100% - 10px);
+    border: none;
+    border-bottom: 2px solid $gray01;
+    &__vlan {
+      padding-left: 45px;
+    }
+    &:focus {
+      border-bottom: 2px solid $primary;
+      color: $primary;
+      outline: none;
+    }
+  }
+  &__error {
+    color: red;
+    border-bottom: 2px solid red;
   }
 }

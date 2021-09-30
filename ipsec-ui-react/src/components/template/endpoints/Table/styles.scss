@@ -5,7 +5,9 @@
   text-align: center;
   border-collapse: collapse;
   font-size: 12px;
-
+  &__wrapper {
+    overflow: visible;
+  }
   &__row--header {
     display: flex;
     background-color: white;
@@ -22,6 +24,9 @@
       border-right: $table-border;
       font-size: $standard-text-size;
       text-align: left;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
       &:last-of-type {
         border-right: none;
       }
@@ -48,7 +53,7 @@
 
   &__bool {
     min-width: 80px;
-    width: 30%;
+    width: 35%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -60,13 +65,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    &:hover .tooltip {
-      opacity: 1;
-      visibility: visible;
-    }
   }
   &__psk__choice {
     justify-content: space-around;
+  }
+  &__psk__btn {
+    height: 100%;
+    width: 100%;
+    color: $gray02;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
   }
   &__addBtn {
     display: flex;
@@ -92,6 +101,8 @@
     justify-content: center;
     align-items: center;
     font-weight: 700;
+    width: 100%;
+    color: $gray02;
   }
   &__certificates {
     display: flex;
@@ -102,7 +113,7 @@
     position: absolute;
     right: 5px;
     font-size: 14px;
-    top: 45%;
+    top: 40%;
     transform: translate(-50%, -50%);
     color: $gray05;
     cursor: pointer;
@@ -127,5 +138,13 @@
   }
   &__text {
     font-size: 16px;
+    margin:0 20px;
+  }
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
   }
 }

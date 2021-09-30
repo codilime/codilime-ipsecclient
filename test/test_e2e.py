@@ -41,7 +41,7 @@ def ordered(obj):
 
 def test_post():
     post = {
-        "id":1,
+        "id":2,
         "client_name":"test",
         "vlan":123,
         "crypto_ph1":[
@@ -58,9 +58,6 @@ def test_post():
         "hardware_support":False,
         "local_as":123,
         "lan_ip":"10.0.0.1",
-        "endpoints":[
-            
-        ]
     }
 
     r = requests.post(VRFS_URL, json=post, auth=basicAuth)
@@ -70,7 +67,7 @@ def test_post():
 
 def test_put():
     put = {
-        "id":1,
+        "id":2,
         "client_name":"test",
         "vlan":123,
         "crypto_ph1":[
@@ -105,27 +102,57 @@ def test_put():
         ]
     }
 
-    r = requests.put(VRFS_URL+"/1", json=put, auth=basicAuth)
+    r = requests.put(VRFS_URL+"/2", json=put, auth=basicAuth)
     if r.status_code >= 400:
         print(r.text)
         assert r.status_code < 400
 
-get_template="""{"id":1,"client_name":"test","vlan":123,"crypto_ph1":["aes128","sha256","modp1024"],"crypto_ph2":["aes128","sha1","modp1024"],"physical_interface":"eth0","active":true,"local_as":123,"lan_ip":"10.0.0.1","endpoints":[{"remote_ip_sec":"10.1.0.1","local_ip":"10.2.0.1","peer_ip":"10.3.0.1","authentication":{"type":"psk","psk":"asdasdasdasd","local_cert":"","remote_cert":"","private_key":""},"nat":true,"bgp":true,"remote_as":321,"source_interface":""}]}"""
+get_template = {
+    "id": 2,
+    "client_name": "test",
+    "vlan": 123,
+    "crypto_ph1": ["aes128", "sha256", "modp1024"],
+    "crypto_ph2": ["aes128", "sha1", "modp1024"],
+    "physical_interface": "eth0",
+    "active": True,
+    "local_as": 123,
+    "lan_ip": "10.0.0.1",
+    "endpoints": [
+        {
+            "id": 1,
+            "vrf_id": 2,
+            "remote_ip_sec": "10.1.0.1",
+            "local_ip": "10.2.0.1",
+            "peer_ip": "10.3.0.1",
+            "authentication": {
+                "type": "psk",
+                "psk": "asdasdasdasd",
+                "local_cert": "",
+                "remote_cert": "",
+                "private_key": "",
+            },
+            "nat": True,
+            "bgp": True,
+            "remote_as": 321,
+            "source_interface": "",
+        }
+    ],
+}
+
 
 def test_get():
-    r = requests.get(VRFS_URL+"/1", auth=basicAuth)
+    r = requests.get(VRFS_URL+"/2", auth=basicAuth)
     if r.status_code >= 400:
         print(r.text)
         assert r.status_code < 400
-    template = json.loads(get_template)
     result = json.loads(r.text)
-    if ordered(result) != ordered(template):
-        print("template", template)
-        print("result", result)
+    if ordered(result) != ordered(get_template):
+        log.error(get_template)
+        log.error(result)
         assert False
 
 def test_delete():
-    r = requests.delete(VRFS_URL+"/1", auth=basicAuth)
+    r = requests.delete(VRFS_URL+"/2", auth=basicAuth)
     if r.status_code >= 400:
         print(r.text)
         assert r.status_code < 400

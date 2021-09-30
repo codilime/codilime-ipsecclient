@@ -34,13 +34,20 @@
     }
   }
   &__input__setting {
-    padding: $padding-sm 0px $padding-md;
+    padding: $padding-sm $padding-lg $padding-md;
     margin: 0 10px;
+    width: calc(100% - 20px);
+  }
+  &__vlan {
+    padding: $padding-sm 40px $padding-md;
     width: calc(100% - 20px);
   }
   &__error {
     color: red;
     font-size: 10px;
+    &__setting {
+      margin: 0 10px;
+    }
   }
   &__label {
     font-weight: 500;
@@ -60,7 +67,7 @@
 }
 .input {
   &__checkbox {
-    width: 10%;
+    width: 14px;
     bottom: 2px;
   }
 }

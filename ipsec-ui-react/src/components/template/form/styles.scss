@@ -6,13 +6,29 @@
     border: none;
     border-bottom: $wrapper-border;
     align-items: flex-start;
-    padding: 5px 0;
+
+    padding: 10px 0;
   }
   &__details {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    margin:0 10px;
+    margin: 0 10px;
+  }
+  &__column {
+    padding: 0 $padding-md $padding-xl;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+    width: 25%;
+    flex-wrap: wrap;
+  }
+  &__column:nth-child(2) {
+    width: 25%;
+  }
+  &__column:nth-child(3) {
+    width: 50%;
   }
   &__btn {
     background-color: $primary;
