@@ -6,13 +6,14 @@ import './styles.scss';
 interface WrapperType {
   title: string;
   className?: string;
+  wrapperClass?: string;
   references?: Ref<HTMLDivElement>;
   headerAction?: string;
   onClick?: () => void;
   small?: boolean;
 }
 
-export const Wrapper: FC<WrapperType> = ({ title, children, className = '', references, headerAction, onClick, small }) => {
+export const Wrapper: FC<WrapperType> = ({ title, children, className = '', wrapperClass = '', references, headerAction, onClick, small }) => {
   const headerActionBtn = headerAction && (
     <button className="wrapper__btn" {...{ onClick }}>
       {headerAction}
@@ -20,7 +21,7 @@ export const Wrapper: FC<WrapperType> = ({ title, children, className = '', refe
   );
 
   return (
-    <div className={classNames('wrapper', { wrapper__small: small })}>
+    <div className={classNames('wrapper', { wrapper__small: small, [wrapperClass]: wrapperClass })}>
       <div className="wrapper__header">
         <h3 className="wrapper__title">{title}</h3>
         {headerActionBtn}

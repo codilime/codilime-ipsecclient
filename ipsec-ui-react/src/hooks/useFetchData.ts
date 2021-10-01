@@ -1,9 +1,10 @@
 import { client } from 'api/';
 import { useAppContext } from 'hooks/';
 import { handleTakeTime } from 'utils/';
+
 export const useFetchData = () => {
   const { setVrf } = useAppContext();
-
+  
   const fetchData = () => client('vrfs');
 
   const postVrfData = async (payload: any) => {
@@ -40,11 +41,11 @@ export const useFetchData = () => {
     }
   };
 
-  const fetchSoftwareAlgorithms = () => client('algorithms/software');
+  const fetchSoftwareAlgorithms = () => client('/algorithms/software');
 
-  const fetchHardwarePh1 = () => client('algorithms/hardware/ph1');
+  const fetchHardwarePh1 = () => client('/algorithms/hardware/ph1');
 
-  const fetchHardwarePh2 = () => client('algorithms/hardware/ph2');
+  const fetchHardwarePh2 = () => client('/algorithms/hardware/ph2');
 
   const fetchEndpointStatus = async (id: number | string) => await client(`metrics/${id}`);
 
@@ -52,5 +53,7 @@ export const useFetchData = () => {
 
   const fetchLogsData = async (log: string) => await client(`logs/${log}`);
 
-  return { fetchData, postVrfData, deleteVrfData, putVrfData, fetchSoftwareAlgorithms, fetchHardwarePh1, fetchHardwarePh2, fetchEndpointStatus, fetchLogsList, fetchLogsData };
+  const fetchRestConfData = async () => await client(`settings/restConf`);
+
+  return { fetchData, postVrfData, deleteVrfData, putVrfData, fetchSoftwareAlgorithms, fetchHardwarePh1, fetchHardwarePh2, fetchEndpointStatus, fetchLogsList, fetchLogsData, fetchRestConfData };
 };

@@ -1,4 +1,5 @@
 import { useState, useEffect, ChangeEvent } from 'react';
+import { FieldValues, UseFormReset, UseFormSetValue } from 'react-hook-form';
 import { useAppContext } from 'hooks/';
 
 interface vlanInterface {
@@ -6,10 +7,11 @@ interface vlanInterface {
   lan_ip: string;
 }
 
-export const useVlanLogic = (setValue: any) => {
+export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>, reset: UseFormReset<FieldValues>) => {
   const {
     vrf: { data }
   } = useAppContext();
+
   const [error, setError] = useState(false);
   const [vlan, setVlan] = useState<vlanInterface[] | []>([]);
   const [vlanInterface, setVlanInterface] = useState<vlanInterface>({ vlan: 0, lan_ip: '' });
@@ -39,19 +41,18 @@ export const useVlanLogic = (setValue: any) => {
   useEffect(() => {
     if (data.vlans) {
       setVlan(data.vlans);
-    } else if (data.vlan && data.lan_ip) setVlan([{ vlan: data.vlan, lan_ip: data.lan_ip }]);
+    }
   }, [data]);
 
   useEffect(() => {
     if (error) setError(false);
-    if (vlan.length) {
-      setValue('vlan', vlan[0].vlan);
-      setValue('lan_ip', vlan[0].lan_ip);
-    }
   }, [vlan]);
 
   const handleChangeInputValue = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    if (name === 'vlan') {
+      return setVlanInterface((prev) => ({ ...prev, vlan: parseInt(value) }));
+    }
     setVlanInterface((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -59,6 +60,7 @@ export const useVlanLogic = (setValue: any) => {
     const validate = checkLanIpValue(vlanInterface.lan_ip);
     if (validate || vlanInterface.vlan <= 1) return setError(true);
     setVlanInterface({ vlan: 0, lan_ip: '' });
+    reset({ ...data, vlans: [] });
     setVlan((prev) => [...prev, vlanInterface]);
     setValue('vlans', [...vlan, vlanInterface]);
   };
@@ -66,6 +68,8 @@ export const useVlanLogic = (setValue: any) => {
   const handleDeleteVlan = (value: number) => {
     const newVlan = vlan.filter((el) => el.vlan !== value);
     setVlan(newVlan);
+    reset({ ...data, vlans: [] });
+    setValue('vlans', [...newVlan]);
   };
 
   return { vlan, vlanInterface, error, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue };

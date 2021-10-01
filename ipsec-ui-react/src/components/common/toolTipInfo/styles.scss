@@ -13,6 +13,8 @@
   opacity: 0;
   visibility: hidden;
   transition: $transition;
+  line-height: 15px;
+  text-align: center;
   &__active {
     opacity: 1;
     visibility: visible;

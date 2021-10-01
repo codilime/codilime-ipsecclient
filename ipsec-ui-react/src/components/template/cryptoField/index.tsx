@@ -10,17 +10,18 @@ interface CryptoFieldType {
 }
 
 export const CryptoField: FC<CryptoFieldType> = ({ text, name, crypto, register, error }) => {
-  const encryptionOption = crypto['encryption'].map((el) => (
+  
+  const encryptionOption = crypto.encryption.map((el) => (
     <option key={el} value={el}>
       {el}
     </option>
   ));
-  const integrityOption = crypto['integrity'].map((el) => (
+  const integrityOption = crypto.integrity.map((el) => (
     <option key={el} value={el}>
       {el}
     </option>
   ));
-  const keyExchangeOption = crypto['key_exchange'].map((el) => (
+  const keyExchangeOption = crypto.key_exchange.map((el) => (
     <option key={el} value={el}>
       {el}
     </option>

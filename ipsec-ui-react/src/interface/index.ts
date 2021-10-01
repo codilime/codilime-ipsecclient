@@ -9,6 +9,7 @@ interface authenticationType {
 }
 
 export interface endpointsType {
+  id?: string;
   remote_ip_sec: string;
   local_ip: string;
   peer_ip: string;
@@ -21,9 +22,7 @@ export interface endpointsType {
 
 export interface vrfDataTypes {
   client_name: string;
-  vlans?: vlanInterface[];
-  vlan: number;
-  lan_ip: string;
+  vlans: vlanInterface[] | null;
   crypto_ph1: string[];
   crypto_ph2: string[];
   physical_interface: string;
@@ -55,6 +54,7 @@ export interface ContextProps {
   hardware: boolean;
   error: any;
   success: boolean;
+  restConf: boolean;
 }
 
 type nameProps = {
@@ -86,6 +86,7 @@ export interface endpointSchemaType {
   type?: string;
   placeholder?: string;
   text?: string;
+  tooltip?: string;
 }
 
 export interface MatchProps extends RouteComponentProps<{ id: string }> {}
@@ -96,7 +97,27 @@ export interface vlanInterface {
 }
 
 export interface MetricsType {
+  id: string;
   local_ip: string;
   remote_ip: string;
   sa_status: string;
+}
+export interface restConfType {
+  switch_username: string;
+  switch_password: string;
+}
+
+type resultType = {
+  default: 'default';
+  success: 'success';
+  error: 'error';
+};
+
+export interface descriptionType {
+  result: keyof resultType;
+  message: string;
+}
+export interface ChangePasswordType {
+  newPassword: string;
+  newPasswordConfirmation: string;
 }

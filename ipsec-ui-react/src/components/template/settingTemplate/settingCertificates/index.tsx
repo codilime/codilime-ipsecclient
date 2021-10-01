@@ -6,7 +6,7 @@ import './styles.scss';
 export const SettingCertificates: FC = () => {
   const { certificates, uploadBtn, handleAddCerts, handleSaveNewCerts, handleCheckCerts, handleDeleteCerts } = useCertificatesLogic();
 
-  const displayCertificates = certificates.map((certificate, index) => <EachCertificate key={certificate.name} {...{ ...certificate, handleCheckCerts: handleCheckCerts }} />);
+  const displayCertificates = certificates.map((certificate) => <EachCertificate key={certificate.name} {...{ ...certificate, handleCheckCerts: handleCheckCerts }} />);
 
   if (!certificates.length) {
     return (

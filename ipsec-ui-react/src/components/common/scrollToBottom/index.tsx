@@ -1,7 +1,7 @@
 import { useEffect, useRef, FC } from 'react';
 
 interface ScrollToBottomType {
-  change: any;
+  change: string | null;
   auto: boolean;
 }
 
@@ -18,7 +18,7 @@ export const ScrollToBottom: FC<ScrollToBottomType> = ({ change, auto }) => {
     if (auto) {
       scrollToBottom();
     }
-  }, [change]);
+  }, [auto, change]);
 
   return <div ref={scroll} />;
 };

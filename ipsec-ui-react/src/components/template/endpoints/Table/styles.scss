@@ -5,7 +5,9 @@
   text-align: center;
   border-collapse: collapse;
   font-size: 12px;
-
+  &__wrapper {
+    overflow: visible;
+  }
   &__row--header {
     display: flex;
     background-color: white;
@@ -77,6 +79,7 @@
   }
   &__addBtn {
     display: flex;
+    justify-content: flex-start;
     border-top: $table-border;
     padding: $padding-md;
     background-color: white;

@@ -4,7 +4,7 @@ import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
 import { endpointsType } from 'interface/index';
 import { decodeX509 } from 'utils/';
-import { v4 as uuidv4 } from 'uuid';
+
 
 interface HookType {
   edit: boolean;

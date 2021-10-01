@@ -7,10 +7,11 @@ import './styles.scss';
 interface vlanType {
   setValue: any;
   errorSchema?: any;
+  reset: any;
 }
 
-export const Vlan: FC<vlanType> = ({ setValue, errorSchema }) => {
-  const { vlan, error, vlanInterface, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue } = useVlanLogic(setValue);
+export const Vlan: FC<vlanType> = ({ setValue, reset, errorSchema }) => {
+  const { vlan, error, vlanInterface, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue } = useVlanLogic(setValue, reset);
 
   const errorMessage = errorSchema ? <p className="vlan__cancel">{errorSchema.message}</p> : 'There are no active Vlan and no Lan IP Mask';
 
@@ -37,8 +38,19 @@ export const Vlan: FC<vlanType> = ({ setValue, errorSchema }) => {
           <tbody className="vlan__body">{displayVlans}</tbody>
         </table>
         <div className="vlan__box">
-          <VlanInput {...{ name: 'vlan', text: 'Vlan', onChange: handleChangeInputValue, value: vlanInterface.vlan, error, tooltip: 'Provide value from 1 to 4094' }} />
-          <VlanInput {...{ name: 'lan_ip', text: 'Lan IP', onChange: handleChangeInputValue, value: vlanInterface.lan_ip, error, tooltip: 'Provide correct IP, i.e. 10.1.1.1/32' }} />
+          <VlanInput
+            {...{ name: 'vlan', text: 'Vlan', type: 'number', onChange: handleChangeInputValue, value: vlanInterface.vlan, error, tooltip: 'VLAN number (1-4094) that will be terminated inside APP' }}
+          />
+          <VlanInput
+            {...{
+              name: 'lan_ip',
+              text: 'Lan IP',
+              onChange: handleChangeInputValue,
+              value: vlanInterface.lan_ip,
+              error,
+              tooltip: 'Local address (IPv4/IPv6) and mask for VLAN interface inside application (i.e 10.0.0.1/24 or fc00::c0d1:1/64)'
+            }}
+          />
           <p className="vlan__btn" onClick={handleAddNewVlan}>
             Add
           </p>

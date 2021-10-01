@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import { createPortal } from 'react-dom';
-import PropTypes from 'prop-types';
 import { useModalLogic } from 'hooks/';
 import { Button } from 'common/';
 import classNames from 'classnames';

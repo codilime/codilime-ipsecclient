@@ -4,9 +4,6 @@ import { maxValueForLocalAS } from '../constants';
 export const vrfSchema = yup.object().shape({
   client_name: yup.string().min(5, 'Name should consist of at least 5 characters').max(28, 'Name should consist of maximum 28 characters').required('Please provide valid name for VRF'),
   active: yup.boolean(),
-  vlans: yup.array().min(1).required(''),
-  vlan: yup.number(),
-  lan_ip: yup.string(),
   local_as: yup
     .number()
     .min(1, 'BGP Local AS must be greater than 1')
@@ -17,12 +14,11 @@ export const vrfSchema = yup.object().shape({
 });
 
 export const newLoginSchema = yup.object().shape({
-  currentPassword: yup.string().min(5).required(),
-  newPassword: yup.string().min(8, '').required(''),
+  newPassword: yup.string().min(8, 'Your new password have to at least 8 chars').required(),
   newPasswordConfirmation: yup
     .string()
-    .required('')
-    .oneOf([yup.ref('newPassword'), null], '')
+    .required()
+    .oneOf([yup.ref('newPassword'), null], 'Password and Confirm must be the same')
 });
 
 export const restConfSchema = yup.object().shape({

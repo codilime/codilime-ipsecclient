@@ -8,7 +8,6 @@ import { useFetchData, useGetLocation, useAppContext } from 'hooks/';
 
 export const useCreateVRFMainView = () => {
   const { vrf } = useAppContext();
-
   const { history, currentLocation } = useGetLocation();
   const { postVrfData, putVrfData } = useFetchData();
   const { data, softwareCrypto, hardwareCrypto, hardware } = vrf;
@@ -23,9 +22,9 @@ export const useCreateVRFMainView = () => {
   } = useForm({ resolver: yupResolver(vrfSchema) });
 
   useEffect(() => {
-    if (endpoints === null) reset({ ...data, vlans: [{ vlan: data.vlan, lan_ip: data.lan_ip }] });
-    else if (!endpoints.length) reset({ ...data, endpoints: null, vlans: [{ vlan: data.vlan, lan_ip: data.lan_ip }] });
-    else reset({ ...data, vlans: [{ vlan: data.vlan, lan_ip: data.lan_ip }] });
+    if (endpoints === null) reset(data);
+    else if (!endpoints.length) reset({ ...data, endpoints: null });
+    else reset({ ...data });
   }, [reset, currentLocation, data]);
 
   const submit = async (data: any) => {
@@ -48,5 +47,5 @@ export const useCreateVRFMainView = () => {
     return <Field {...{ ...el, key: el.name, value: data[el.name], register: register(el.name), error: errors[el.name], className: 'field__detail' }} />;
   });
 
-  return { isDirty, isValid, errors, hardware, displayDetails, handleSubmit, submit, setValue };
+  return { isDirty, isValid, errors, hardware, displayDetails, handleSubmit, submit, setValue, reset };
 };

@@ -12,6 +12,9 @@
     overflow: visible;
     border: $wrapper-border;
   }
+  &__column {
+    min-width: 38px;
+  }
   &__header {
     display: flex;
     justify-content: space-between;
