@@ -8,7 +8,6 @@ import { useFetchData, useGetLocation, useAppContext } from 'hooks/';
 
 export const useCreateVRFMainView = () => {
   const { vrf } = useAppContext();
-
   const { history, currentLocation } = useGetLocation();
   const { postVrfData, putVrfData } = useFetchData();
   const { data, softwareCrypto, hardwareCrypto, hardware } = vrf;
@@ -27,8 +26,6 @@ export const useCreateVRFMainView = () => {
     else if (!endpoints.length) reset({ ...data, endpoints: null });
     else reset({ ...data });
   }, [reset, currentLocation, data]);
-
-  console.log(data);
 
   const submit = async (data: any) => {
     if (data.id) {

@@ -1,10 +1,11 @@
 import { FC, useRef, useEffect, useState } from 'react';
 import { Wrapper, VisualizationEndpoints } from 'template';
 import { MetricsType } from 'interface/index';
-import { useAppContext, useFetchData } from 'hooks/';
+import { useAppContext, useFetchData, useWindowDimensions } from 'hooks/';
 import './styles.scss';
 
 export const Visualization: FC = () => {
+  const { width } = useWindowDimensions();
   const emptyEndpoint = <div className="visualization__empty">Add endpoints to vizualize them</div>;
   const {
     vrf: { data, hardware }
@@ -21,7 +22,7 @@ export const Visualization: FC = () => {
     if (wrapper.current) {
       setDimensions(wrapper.current.offsetWidth);
     }
-  }, [wrapper]);
+  }, [wrapper, width]);
 
   const handleFetchStatus = async () => {
     if (!data.id || endpoints === null || !endpoints.length) return;

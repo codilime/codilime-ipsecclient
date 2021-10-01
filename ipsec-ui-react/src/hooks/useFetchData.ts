@@ -4,7 +4,7 @@ import { handleTakeTime } from 'utils/';
 
 export const useFetchData = () => {
   const { setVrf } = useAppContext();
-
+  
   const fetchData = () => client('vrfs');
 
   const postVrfData = async (payload: any) => {

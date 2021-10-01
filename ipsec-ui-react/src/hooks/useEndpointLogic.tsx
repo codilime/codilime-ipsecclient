@@ -4,7 +4,7 @@ import { endpointInputSchema, endpointHardwareSchema, emptyEndpointSchema, empty
 import { useValidateEndpoint, useVrfLogic, useChoiceCertyficate } from 'hooks/';
 import classNames from 'classnames';
 import { endpointsType } from 'interface/index';
-import { v4 as uuidv4 } from 'uuid';
+
 
 interface EndpointLogicType {
   endpoint: endpointsType;

@@ -1,7 +1,7 @@
 import { useEffect, useRef, FC } from 'react';
 
 interface ScrollToBottomType {
-  change: any;
+  change: string | null;
   auto: boolean;
 }
 

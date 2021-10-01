@@ -6,6 +6,7 @@ import './styles.scss';
 
 export const Login: FC = () => {
   const { description, logged, handleChangeGlobalPassword, errors, handleSubmit, register } = useLoginLogic();
+
   return (
     <Wrapper {...{ title: 'UI/API change password', className: 'loginForm__wrapper' }}>
       <LoginForm {...{ handleChangeGlobalPassword, errors, handleSubmit, register }} />
@@ -17,4 +18,5 @@ export const Login: FC = () => {
       />
     </Wrapper>
   );
+  
 };

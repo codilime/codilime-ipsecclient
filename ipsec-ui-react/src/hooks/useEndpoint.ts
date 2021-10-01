@@ -4,7 +4,6 @@ import { endpointsType } from 'interface/index';
 
 export const useEndpoint = (handleToggle: () => void) => {
   const { vrf, setVrf } = useAppContext();
-
   const { data, loading } = vrf;
   const { endpoints } = data;
   const [send, setSend] = useState(false);

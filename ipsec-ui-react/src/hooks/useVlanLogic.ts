@@ -1,4 +1,5 @@
 import { useState, useEffect, ChangeEvent } from 'react';
+import { FieldValues, UseFormReset, UseFormSetValue } from 'react-hook-form';
 import { useAppContext } from 'hooks/';
 
 interface vlanInterface {
@@ -6,7 +7,7 @@ interface vlanInterface {
   lan_ip: string;
 }
 
-export const useVlanLogic = (setValue: any, reset: any) => {
+export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>, reset: UseFormReset<FieldValues>) => {
   const {
     vrf: { data }
   } = useAppContext();

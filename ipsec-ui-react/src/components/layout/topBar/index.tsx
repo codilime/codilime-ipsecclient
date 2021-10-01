@@ -2,7 +2,6 @@ import { useState, FC } from 'react';
 import Logo from 'images/cisco_logo.png';
 import { Button } from 'common/';
 import { Notification, Logout, Setting, PopupLogs } from 'template';
-import { useToggle } from 'hooks/';
 import './styles.scss';
 
 interface TopBarTypes {
@@ -11,7 +10,6 @@ interface TopBarTypes {
 
 export const TopBar: FC<TopBarTypes> = ({ productName }) => {
   const [openPopup, setOpenPopup] = useState({ setting: false, notice: false, logs: false });
- 
 
   const handleOpenAction = (name: string) => {
     if (name === 'setting') {

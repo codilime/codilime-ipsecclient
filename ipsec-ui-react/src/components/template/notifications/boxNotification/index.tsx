@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import { Wrapper, EachNotification } from 'template';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './styles.scss';
 

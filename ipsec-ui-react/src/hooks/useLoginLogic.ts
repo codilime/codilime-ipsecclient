@@ -4,6 +4,7 @@ import { ChangePasswordType, descriptionType } from 'interface/index';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { newLoginSchema } from 'schema/';
+
 export const useLoginLogic = () => {
   const [logged, setLogged] = useState<boolean>(false);
   const [description, setDescription] = useState<descriptionType>({ result: 'default', message: '' });

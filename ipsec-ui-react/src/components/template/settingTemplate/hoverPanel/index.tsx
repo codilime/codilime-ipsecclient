@@ -12,11 +12,13 @@ interface HoverPanelType {
 
 export const HoverPanel: FC<HoverPanelType> = ({ description, button, active, handleReset }) => {
   const { message, result } = description;
+
   const footer = button && (
     <div className="loginForm__panel__footer">
       <Button {...{ className: 'loginForm__btn', onClick: handleReset }}>{button}</Button>
     </div>
   );
+  
   return (
     <div className={classNames('loginForm__panel', { loginForm__panel__active: active })}>
       <div
