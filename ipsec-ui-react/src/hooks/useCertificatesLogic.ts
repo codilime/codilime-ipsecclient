@@ -1,6 +1,7 @@
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState, useEffect } from 'react';
 import { useAppContext } from 'hooks/';
 import { handleTakeTime, decodeX509 } from 'utils/';
+import { client } from 'api/';
 
 interface dynamicObject {
   [key: string]: boolean;
@@ -38,12 +39,25 @@ export const useCertificatesLogic = () => {
     }
   };
 
-  const handleDeleteCerts = () => {
+  useEffect(() => {
+    if (certificates.length) {
+      const timeOut = setTimeout(async () => {
+        const res = await client('cas', [...certificates], { method: 'POST' });
+        console.log(res);
+      }, 300);
+      return () => {
+        clearTimeout(timeOut);
+      };
+    }
+  }, [certificates]);
+
+  const handleDeleteCerts = async () => {
     if (!checkedCa) return;
     const newCert = certificates.filter((Cert) => {
       if (!checkedCa[Cert.name]) return Cert;
     });
     setVrf((prev) => ({ ...prev, certificates: [...newCert] }));
+    await client('cas', { newCert }, { method: 'POST' });
   };
 
   const handleCheckCerts = (e: ChangeEvent<HTMLInputElement>, name: string) => {

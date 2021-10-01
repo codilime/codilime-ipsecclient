@@ -35,8 +35,8 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
 
   const hightOfX = (height - 55) / 2 - (20 + mdHeightLabel / 2) + 7.5;
 
-  const findStatus = (remote: string) => {
-    return metrics.filter((status: MetricsType) => status.remote_ip === remote)[0];
+  const findStatus = (id: string) => {
+    return metrics.filter((status: MetricsType) => status.id === id)[0];
   };
 
   const getCenterEndpoints = () => {
@@ -55,7 +55,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     const centerY = y + height / 2 + smHeightLabel / 2 - 2.5;
     const centerLabel = textY + lgHeightLabel / 2;
 
-    const status = findStatus(endpoint.remote_ip_sec);
+    const status = findStatus(endpoint.id!);
     const hardwareYLabel = hardware ? textY + 10 : textY;
 
     const thirdLabel = {
@@ -96,7 +96,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   const vlansLabel =
     !hardware &&
     vlans &&
-    vlans.map((vlans, index) => {
+    vlans.map(({ vlan, lan_ip }, index) => {
       const centerX = x - 32.5;
       const centerY = y + 50 + mdHeightLabel / 2 + index * 80 + 4;
       const label = {
@@ -104,8 +104,8 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
         y: y + heightHeader + paddingBox / 2 + index * 80 + 4,
         width: smWidthLabel,
         height: lgHeightLabel,
-        vlan: vlans.vlan.toString(),
-        lan_ip: vlans.lan_ip
+        vlan: vlan.toString(),
+        lan_ip: lan_ip
       };
       const firstBreak = +paddingBox + smWidthLabel + eachBreak + 42.5;
       const line = {
@@ -122,9 +122,9 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
 
   const hardwareLine = {
     x: x + paddingBox + 60,
-    y: y + 50 + mdHeightLabel / 2 + 1.5,
+    y: y + 50 + mdHeightLabel / 2,
     color: 'black',
-    points: [0, 0, 30, 0, 30, hightOfX - 1.5, 70, hightOfX - 1.5]
+    points: [0, 0, 30, 0, 30, hightOfX - 2.5, 70, hightOfX - 2.5]
   };
 
   const icon = {

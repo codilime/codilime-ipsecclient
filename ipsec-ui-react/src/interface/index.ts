@@ -9,6 +9,7 @@ interface authenticationType {
 }
 
 export interface endpointsType {
+  id?: string;
   remote_ip_sec: string;
   local_ip: string;
   peer_ip: string;
@@ -96,6 +97,7 @@ export interface vlanInterface {
 }
 
 export interface MetricsType {
+  id: string;
   local_ip: string;
   remote_ip: string;
   sa_status: string;
