@@ -15,6 +15,8 @@ const restconfBasePath = "/restconf/data/sico-ipsec:api"
 func (a *App) initializeRestconfRouter() {
 	a.Router.HandleFunc(restconfBasePath+"/vrf", a.restconfGetVrf).Methods(http.MethodGet)
 	a.Router.HandleFunc(restconfBasePath+"/vrf", a.restconfPostVrf).Methods(http.MethodPost)
+	a.Router.HandleFunc(restconfBasePath+"/vrf={id:[0-9]+}", a.restconfGetSingleVrf).Methods(http.MethodGet)
+	a.Router.HandleFunc(restconfBasePath+"/vrf={id:[0-9]+}", a.restconfPatchVrf).Methods(http.MethodPatch)
 }
 
 func int64Pointer(i int64) *int64 {
@@ -203,6 +205,23 @@ func (a *App) restconfPostVrf(w http.ResponseWriter, r *http.Request) {
 	vrf := Vrf{}
 	vrf.FromYang(&yangVrf)
 	a._createVrf(w, r, vrf)
+}
+
+func (a *App) restconfGetSingleVrf(w http.ResponseWriter, r *http.Request) {
+	vrf, err := a._getVrf(r)
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	vrfYang, err := vrf.ToYang()
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, 200, vrfYang)
+}
+
+func (a *App) restconfPatchVrf(w http.ResponseWriter, r *http.Request) {
 }
 
 func respondWithMarshalledJSON(w http.ResponseWriter, code int, response string) {

@@ -314,30 +314,30 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, vrfs)
 }
 
-func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
+func (a *App) _getVrf(r *http.Request) (Vrf, error) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		a.respondWithError(w, http.StatusBadRequest, "Invalid vrf ID")
-		return
+		return Vrf{}, ReturnError(err)
 	}
 
 	vrf := Vrf{ID: id}
 	if err := vrf.getVrf(a.DB); err != nil {
-		switch err {
-		case gorm.ErrRecordNotFound:
-			a.respondWithError(w, http.StatusNotFound, "Vrf not found")
-		default:
-			a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		}
-		return
+		return vrf, ReturnError(err)
 	}
 	key, err := getPassFromHeader(r.Header)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error())
-		return
+		return vrf, ReturnError(err)
 	}
 	if err := a.decryptPSK(key, &vrf); err != nil {
+		return vrf, ReturnError(err)
+	}
+	return vrf, nil
+}
+
+func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
+	vrf, err := a._getVrf(r)
+	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
