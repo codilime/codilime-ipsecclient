@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"ipsec_backend/sico_yang"
 	"net/http"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/openconfig/ygot/ygot"
 )
 
@@ -14,7 +14,19 @@ const restconfBasePath = "/restconf/data/sico-ipsec:api"
 
 func (a *App) initializeRestconfRouter() {
 	a.Router.HandleFunc(restconfBasePath+"/vrf", a.restconfGetVrf).Methods(http.MethodGet)
-	a.Router.HandleFunc(restconfBasePath+"/vrf", a.restconfPatchVrf).Methods(http.MethodPatch)
+	a.Router.HandleFunc(restconfBasePath+"/vrf", a.restconfPostVrf).Methods(http.MethodPost)
+}
+
+func int64Pointer(i int64) *int64 {
+	return &i
+}
+
+func boolPointer(b bool) *bool {
+	return &b
+}
+
+func stringPointer(s string) *string {
+	return &s
 }
 
 func (e *Endpoint) ToYang() *sico_yang.SicoIpsec_Api_Vrf_Endpoints {
@@ -22,25 +34,21 @@ func (e *Endpoint) ToYang() *sico_yang.SicoIpsec_Api_Vrf_Endpoints {
 	return &sico_yang.SicoIpsec_Api_Vrf_Endpoints{
 		Id:              int64Pointer(e.ID),
 		VrfId:           int64Pointer(e.VrfID),
-		Bgp:             &e.BGP,
-		LocalIp:         &e.LocalIP,
-		Nat:             &e.NAT,
-		PeerIp:          &e.PeerIP,
-		RemoteAs:        &as,
-		RemoteIpSec:     &e.RemoteIPSec,
-		SourceInterface: &e.SourceInterface,
+		Bgp:             boolPointer(e.BGP),
+		LocalIp:         stringPointer(e.LocalIP),
+		Nat:             boolPointer(e.NAT),
+		PeerIp:          stringPointer(e.PeerIP),
+		RemoteAs:        int64Pointer(as),
+		RemoteIpSec:     stringPointer(e.RemoteIPSec),
+		SourceInterface: stringPointer(e.SourceInterface),
 		Authentication: &sico_yang.SicoIpsec_Api_Vrf_Endpoints_Authentication{
-			LocalCert:  &e.Authentication.LocalCert,
-			PrivateKey: &e.Authentication.PrivateKey,
-			Psk:        &e.Authentication.PSK,
-			RemoteCert: &e.Authentication.RemoteCert,
-			Type:       &e.Authentication.Type,
+			LocalCert:  stringPointer(e.Authentication.LocalCert),
+			PrivateKey: stringPointer(e.Authentication.PrivateKey),
+			Psk:        stringPointer(e.Authentication.PSK),
+			RemoteCert: stringPointer(e.Authentication.RemoteCert),
+			Type:       stringPointer(e.Authentication.Type),
 		},
 	}
-}
-
-func int64Pointer(i int64) *int64 {
-	return &i
 }
 
 func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
@@ -68,20 +76,24 @@ func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 		vlanID := int64(v.Vlan)
 		vlansMap[vlanID] = &sico_yang.SicoIpsec_Api_Vrf_Vlans{
 			Vlan:  int64Pointer(vlanID),
-			LanIp: &v.LanIP,
+			LanIp: stringPointer(v.LanIP),
 		}
 	}
 	return &sico_yang.SicoIpsec_Api_Vrf{
 		Id:                int64Pointer(v.ID),
-		Active:            v.Active,
-		ClientName:        &v.ClientName,
-		CryptoPh1:         &ph1,
-		CryptoPh2:         &ph2,
-		LocalAs:           &as,
-		PhysicalInterface: &v.PhysicalInterface,
+		Active:            boolPointer(*v.Active),
+		ClientName:        stringPointer(v.ClientName),
+		CryptoPh1:         stringPointer(ph1),
+		CryptoPh2:         stringPointer(ph2),
+		LocalAs:           int64Pointer(as),
+		PhysicalInterface: stringPointer(v.PhysicalInterface),
 		Endpoints:         endpoints,
 		Vlans:             vlansMap,
 	}, nil
+}
+
+func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
+	return nil
 }
 
 func (a *App) restconfGetVrf(w http.ResponseWriter, r *http.Request) {
@@ -102,7 +114,6 @@ func (a *App) restconfGetVrf(w http.ResponseWriter, r *http.Request) {
 	api := sico_yang.SicoIpsec_Api{
 		Vrf: vrfsMap,
 	}
-	spew.Dump(api)
 	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
 		Format: ygot.RFC7951,
 		Indent: "  ",
@@ -117,7 +128,29 @@ func (a *App) restconfGetVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithMarshalledJSON(w, http.StatusOK, json)
 }
 
-func (a *App) restconfPatchVrf(w http.ResponseWriter, r *http.Request) {
+func (a *App) restconfPostVrf(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	j := map[string]interface{}{}
+	if err := json.Unmarshal(body, &j); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	vrfJson, err := json.Marshal(j["sico-ipsec:vrf"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	yangVrf := sico_yang.SicoIpsec_Api_Vrf{}
+	if err := sico_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	vrf := Vrf{}
+	vrf.FromYang(&yangVrf)
 }
 
 func respondWithMarshalledJSON(w http.ResponseWriter, code int, response string) {

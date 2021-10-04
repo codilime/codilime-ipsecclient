@@ -49,10 +49,6 @@ type App struct {
 	switchPassword string
 }
 
-func boolPointer(b bool) *bool {
-	return &b
-}
-
 func (a *App) ensureHWVRF() error {
 	hwVrf := Vrf{
 		ID:         hardwareVrfID,
