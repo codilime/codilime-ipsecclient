@@ -2,22 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"ipsec_backend/sico_yang"
 	"net/http"
 	"strings"
-
-	"github.com/openconfig/ygot/ygot"
 )
-
-const restconfBasePath = "/restconf/data/sico-ipsec:api"
-
-func (a *App) initializeRestconfRouter() {
-	a.Router.HandleFunc(restconfBasePath+"/vrf", a.restconfGetVrf).Methods(http.MethodGet)
-	a.Router.HandleFunc(restconfBasePath+"/vrf", a.restconfPostVrf).Methods(http.MethodPost)
-	a.Router.HandleFunc(restconfBasePath+"/vrf={id:[0-9]+}", a.restconfGetSingleVrf).Methods(http.MethodGet)
-	a.Router.HandleFunc(restconfBasePath+"/vrf={id:[0-9]+}", a.restconfPatchVrf).Methods(http.MethodPatch)
-}
 
 func int64Pointer(i int64) *int64 {
 	return &i
@@ -147,81 +135,6 @@ func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
 		v.Endpoints = append(v.Endpoints, end)
 	}
 	return nil
-}
-
-func (a *App) restconfGetVrf(w http.ResponseWriter, r *http.Request) {
-	vrfsMap := map[int64]*sico_yang.SicoIpsec_Api_Vrf{}
-	vrfs, err := getVrfs(a.DB)
-	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	for _, v := range vrfs {
-		vrfYang, err := v.ToYang()
-		if err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		vrfsMap[v.ID] = vrfYang
-	}
-	api := sico_yang.SicoIpsec_Api{
-		Vrf: vrfsMap,
-	}
-	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
-		Format: ygot.RFC7951,
-		Indent: "  ",
-		RFC7951Config: &ygot.RFC7951JSONConfig{
-			AppendModuleName: true,
-		},
-	})
-	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondWithMarshalledJSON(w, http.StatusOK, json)
-}
-
-func (a *App) restconfPostVrf(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	j := map[string]interface{}{}
-	if err := json.Unmarshal(body, &j); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	vrfJson, err := json.Marshal(j["sico-ipsec:vrf"])
-	if err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	yangVrf := sico_yang.SicoIpsec_Api_Vrf{}
-	if err := sico_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	vrf := Vrf{}
-	vrf.FromYang(&yangVrf)
-	a._createVrf(w, r, vrf)
-}
-
-func (a *App) restconfGetSingleVrf(w http.ResponseWriter, r *http.Request) {
-	vrf, err := a._getVrf(r)
-	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	vrfYang, err := vrf.ToYang()
-	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondWithJSON(w, 200, vrfYang)
-}
-
-func (a *App) restconfPatchVrf(w http.ResponseWriter, r *http.Request) {
 }
 
 func respondWithMarshalledJSON(w http.ResponseWriter, code int, response string) {

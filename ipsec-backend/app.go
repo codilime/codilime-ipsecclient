@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"ipsec_backend/sico_yang"
 	"net/http"
 	"os"
 	"os/exec"
@@ -16,22 +17,24 @@ import (
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/openconfig/ygot/ygot"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 const (
-	vrfsPath        = "/api/vrfs"
-	vrfsIDPath      = vrfsPath + "/{id:[0-9]+}"
-	metricsPath     = "/api/metrics"
-	softwarePath    = "/api/algorithms/software"
-	hardwarePathPh1 = "/api/algorithms/hardware/ph1"
-	hardwarePathPh2 = "/api/algorithms/hardware/ph2"
-	listLogsPath    = "/api/listlogs"
-	CAsPath         = "/api/cas"
-	settingsPath    = "/api/settings/{name:[a-zA-Z0-9-_]+}"
-	logsPath        = "/api/logs/{name:[a-zA-Z0-9-_]+}"
-	changePassPath  = "/api/changepass"
+	restconfBasePath = "/restconf/data/sico-ipsec:api"
+	vrfPath          = restconfBasePath + "/vrf"
+	vrfIDPath        = vrfPath + "={id:[0-9]+}"
+	metricsPath      = "/api/metrics"
+	softwarePath     = "/api/algorithms/software"
+	hardwarePathPh1  = "/api/algorithms/hardware/ph1"
+	hardwarePathPh2  = "/api/algorithms/hardware/ph2"
+	listLogsPath     = "/api/listlogs"
+	CAsPath          = "/api/cas"
+	settingsPath     = "/api/settings/{name:[a-zA-Z0-9-_]+}"
+	logsPath         = "/api/logs/{name:[a-zA-Z0-9-_]+}"
+	changePassPath   = "/api/changepass"
 
 	nginxPasswordFile = "/etc/nginx/htpasswd"
 	username          = "admin"
@@ -133,12 +136,11 @@ func (a *App) Run(addr string) {
 
 func (a *App) initializeRoutes() {
 	a.Router = mux.NewRouter()
-	a.initializeRestconfRouter()
-	a.Router.HandleFunc(vrfsPath, a.getVrfs).Methods(http.MethodGet)
-	a.Router.HandleFunc(vrfsPath, a.createVrf).Methods(http.MethodPost)
-	a.Router.HandleFunc(vrfsIDPath, a.getVrf).Methods(http.MethodGet)
-	a.Router.HandleFunc(vrfsIDPath, a.updateVrf).Methods(http.MethodPut)
-	a.Router.HandleFunc(vrfsIDPath, a.deleteVrf).Methods(http.MethodDelete)
+	a.Router.HandleFunc(vrfPath, a.getVrfs).Methods(http.MethodGet)
+	a.Router.HandleFunc(vrfPath, a.createVrf).Methods(http.MethodPost)
+	a.Router.HandleFunc(vrfIDPath, a.getVrf).Methods(http.MethodGet)
+	a.Router.HandleFunc(vrfIDPath, a.updateVrf).Methods(http.MethodPatch)
+	a.Router.HandleFunc(vrfIDPath, a.deleteVrf).Methods(http.MethodDelete)
 	a.Router.HandleFunc(softwarePath, a.getSoftwareAlgorithms).Methods(http.MethodGet)
 	a.Router.HandleFunc(hardwarePathPh1, a.getHardwareAlgorithmsPh1).Methods(http.MethodGet)
 	a.Router.HandleFunc(hardwarePathPh2, a.getHardwareAlgorithmsPh2).Methods(http.MethodGet)
@@ -292,6 +294,7 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
+	vrfsMap := map[int64]*sico_yang.SicoIpsec_Api_Vrf{}
 	vrfs, err := getVrfs(a.DB)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -302,47 +305,71 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	for i, v := range vrfs {
-		err = a.decryptPSK(key, &v)
-		if err != nil {
-			a.respondWithError(w, http.StatusUnauthorized, err.Error())
+	for _, v := range vrfs {
+		if err := a.decryptPSK(key, &v); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		vrfs[i] = v
+		vrfYang, err := v.ToYang()
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		vrfsMap[v.ID] = vrfYang
+	}
+	api := sico_yang.SicoIpsec_Api{
+		Vrf: vrfsMap,
+	}
+	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+		RFC7951Config: &ygot.RFC7951JSONConfig{
+			AppendModuleName: true,
+		},
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 	log.Debugf("Get vrfs: %v", vrfs)
-	respondWithJSON(w, http.StatusOK, vrfs)
+	respondWithMarshalledJSON(w, http.StatusOK, json)
 }
 
-func (a *App) _getVrf(r *http.Request) (Vrf, error) {
+func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		return Vrf{}, ReturnError(err)
+		respondWithError(w, http.StatusBadRequest, "Invalid vrf ID")
+		return
 	}
 
 	vrf := Vrf{ID: id}
 	if err := vrf.getVrf(a.DB); err != nil {
-		return vrf, ReturnError(err)
+		switch err {
+		case gorm.ErrRecordNotFound:
+			respondWithError(w, http.StatusNotFound, "Vrf not found")
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
 	}
 	key, err := getPassFromHeader(r.Header)
 	if err != nil {
-		return vrf, ReturnError(err)
+		respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
 	}
 	if err := a.decryptPSK(key, &vrf); err != nil {
-		return vrf, ReturnError(err)
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
-	return vrf, nil
-}
 
-func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
-	vrf, err := a._getVrf(r)
+	vrfYang, err := vrf.ToYang()
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	log.Debugf("Get vrf: %v", vrf)
-	respondWithJSON(w, http.StatusOK, vrf)
+	respondWithJSON(w, 200, vrfYang)
 }
 
 func vrfValid(vrf Vrf) (bool, error) {
@@ -364,7 +391,29 @@ func vrfValid(vrf Vrf) (bool, error) {
 	return true, nil
 }
 
-func (a *App) _createVrf(w http.ResponseWriter, r *http.Request, vrf Vrf) {
+func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	j := map[string]interface{}{}
+	if err := json.Unmarshal(body, &j); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	vrfJson, err := json.Marshal(j["sico-ipsec:vrf"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	yangVrf := sico_yang.SicoIpsec_Api_Vrf{}
+	if err := sico_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	vrf := Vrf{}
+	vrf.FromYang(&yangVrf)
 	valid, err := vrfValid(vrf)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -383,7 +432,6 @@ func (a *App) _createVrf(w http.ResponseWriter, r *http.Request, vrf Vrf) {
 		a.respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	plaintextVrf := vrf
 	if err := a.encryptPSK(key, &vrf); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -392,24 +440,8 @@ func (a *App) _createVrf(w http.ResponseWriter, r *http.Request, vrf Vrf) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	InfoDebug("Create vrf completed", fmt.Sprintf("Create vrf completed|vrf: %v", plaintextVrf))
-	respondWithJSON(w, http.StatusCreated, plaintextVrf)
-}
-
-func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
-	var vrf Vrf
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&vrf); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	defer func() {
-		if err := r.Body.Close(); err != nil {
-			ReturnNewError("error while closing body: " + err.Error())
-		}
-	}()
-
-	a._createVrf(w, r, vrf)
+	InfoDebug("Create vrf completed", fmt.Sprintf("Create vrf completed|vrf: %v", vrf))
+	respondWithJSON(w, http.StatusCreated, nil)
 }
 
 type handler func(Vrf) error
@@ -421,22 +453,33 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, "Invalid vrf ID")
 		return
 	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	j := map[string]interface{}{}
+	if err := json.Unmarshal(body, &j); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	vrfJson, err := json.Marshal(j["sico-ipsec:vrf"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	yangVrf := sico_yang.SicoIpsec_Api_Vrf{}
+	if err := sico_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 	key, err := getPassFromHeader(r.Header)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error())
+		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	var vrf, oldVrf Vrf
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&vrf); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-	defer func() {
-		if err := r.Body.Close(); err != nil {
-			ReturnNewError("error while closing body: " + err.Error())
-		}
-	}()
+	vrf := Vrf{}
+	vrf.FromYang(&yangVrf)
 
 	valid, err := vrfValid(vrf)
 	if err != nil {
@@ -447,7 +490,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, "vrf invalid")
 		return
 	}
-
+	var oldVrf Vrf
 	vrf.ID = id
 	oldVrf.ID = id
 
