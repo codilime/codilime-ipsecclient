@@ -357,19 +357,7 @@ func vrfValid(vrf Vrf) (bool, error) {
 	return true, nil
 }
 
-func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
-	var vrf Vrf
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&vrf); err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	defer func() {
-		if err := r.Body.Close(); err != nil {
-			ReturnNewError("error while closing body: " + err.Error())
-		}
-	}()
-
+func (a *App) _createVrf(w http.ResponseWriter, r *http.Request, vrf Vrf) {
 	valid, err := vrfValid(vrf)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -399,6 +387,22 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusCreated, plaintextVrf)
+}
+
+func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
+	var vrf Vrf
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&vrf); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			ReturnNewError("error while closing body: " + err.Error())
+		}
+	}()
+
+	a._createVrf(w, r, vrf)
 }
 
 type handler func(Vrf) error

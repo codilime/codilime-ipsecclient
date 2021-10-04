@@ -51,6 +51,25 @@ func (e *Endpoint) ToYang() *sico_yang.SicoIpsec_Api_Vrf_Endpoints {
 	}
 }
 
+func (e *Endpoint) FromYang(endVrf *sico_yang.SicoIpsec_Api_Vrf_Endpoints) {
+	e.ID = *endVrf.Id
+	e.VrfID = *endVrf.VrfId
+	e.RemoteIPSec = *endVrf.RemoteIpSec
+	e.LocalIP = *endVrf.LocalIp
+	e.PeerIP = *endVrf.PeerIp
+	e.RemoteAS = int(*endVrf.RemoteAs)
+	e.NAT = *endVrf.Nat
+	e.BGP = *endVrf.Bgp
+	e.SourceInterface = *endVrf.SourceInterface
+	e.Authentication = EndpointAuth{
+		Type:       *endVrf.Authentication.Type,
+		PSK:        *endVrf.Authentication.Psk,
+		LocalCert:  *endVrf.Authentication.LocalCert,
+		RemoteCert: *endVrf.Authentication.RemoteCert,
+		PrivateKey: *endVrf.Authentication.PrivateKey,
+	}
+}
+
 func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 	cryptoPh1 := []string{}
 	if err := json.Unmarshal(v.CryptoPh1, &cryptoPh1); err != nil {
@@ -93,6 +112,38 @@ func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 }
 
 func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
+	v.ID = *vrfYang.Id
+	v.ClientName = *vrfYang.ClientName
+	vlans := []interface{}{}
+	for _, v := range vrfYang.Vlans {
+		vlans = append(vlans, Vlan{
+			Vlan:  int(*v.Vlan),
+			LanIP: *v.LanIp,
+		})
+	}
+	var err error
+	v.Vlans, err = json.Marshal(&vlans)
+	if err != nil {
+		return ReturnError(err)
+	}
+	cryptoPh1 := strings.Split(*vrfYang.CryptoPh1, "-")
+	v.CryptoPh1, err = json.Marshal(&cryptoPh1)
+	if err != nil {
+		return ReturnError(err)
+	}
+	cryptoPh2 := strings.Split(*vrfYang.CryptoPh2, "-")
+	v.CryptoPh2, err = json.Marshal(&cryptoPh2)
+	if err != nil {
+		return ReturnError(err)
+	}
+	v.PhysicalInterface = *vrfYang.PhysicalInterface
+	v.Active = vrfYang.Active
+	v.LocalAs = int(*vrfYang.LocalAs)
+	for _, e := range vrfYang.Endpoints {
+		end := Endpoint{}
+		end.FromYang(e)
+		v.Endpoints = append(v.Endpoints, end)
+	}
 	return nil
 }
 
@@ -151,6 +202,7 @@ func (a *App) restconfPostVrf(w http.ResponseWriter, r *http.Request) {
 	}
 	vrf := Vrf{}
 	vrf.FromYang(&yangVrf)
+	a._createVrf(w, r, vrf)
 }
 
 func respondWithMarshalledJSON(w http.ResponseWriter, code int, response string) {
