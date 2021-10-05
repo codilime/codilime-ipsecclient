@@ -523,6 +523,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vrf := Vrf{}
+	spew.Dump(yangVrf)
 	vrf.FromYang(&yangVrf)
 
 	valid, err := vrfValid(vrf)

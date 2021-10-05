@@ -88,7 +88,9 @@ func (a *App) getHWMetrics() (*sico_yang.SicoIpsec_Api_Monitoring, error) {
 		return &sico_yang.SicoIpsec_Api_Monitoring{}, nil
 	}
 	idents := res["Cisco-IOS-XE-crypto-oper:crypto-ipsec-ident"].([]interface{})
-	ret := sico_yang.SicoIpsec_Api_Monitoring{}
+	ret := sico_yang.SicoIpsec_Api_Monitoring{
+		Endpoint: map[int64]*sico_yang.SicoIpsec_Api_Monitoring_Endpoint{},
+	}
 	for _, ident_ := range idents {
 		ident := ident_.(map[string]interface{})
 		endpointIDStr := ident["interface"].(string)[len("Tunnel"):]
