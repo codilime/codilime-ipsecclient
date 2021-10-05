@@ -484,6 +484,10 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	if err := a.decryptPSK(key, &vrf); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	if err := a._updateBackends(key, &vrf, &Vrf{
 		ID:     vrf.ID,
