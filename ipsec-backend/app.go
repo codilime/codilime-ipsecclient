@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
@@ -24,7 +25,7 @@ const (
 	restconfBasePath = "/restconf/data/sico-ipsec:api"
 	vrfPath          = restconfBasePath + "/vrf"
 	vrfIDPath        = vrfPath + "={id:[0-9]+}"
-	metricsPath      = "/api/metrics"
+	monitoringPath   = restconfBasePath + "/monitoring={id:[0-9]+}"
 	softwarePath     = "/api/algorithms/software"
 	hardwarePathPh1  = "/api/algorithms/hardware/ph1"
 	hardwarePathPh2  = "/api/algorithms/hardware/ph2"
@@ -149,7 +150,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(changePassPath, a.changePassword).Methods(http.MethodPost)
 	a.Router.HandleFunc(CAsPath, a.setCAs).Methods(http.MethodPost)
 	a.Router.HandleFunc(CAsPath, a.getCAs).Methods(http.MethodGet)
-	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
+	a.Router.HandleFunc(monitoringPath, a.monitoring).Methods(http.MethodGet)
 }
 
 func getPassFromHeader(header http.Header) (string, error) {
@@ -383,6 +384,48 @@ func vrfValid(vrf Vrf) (bool, error) {
 	return true, nil
 }
 
+func (a *App) _updateBackends(key string, vrf, oldVrf *Vrf) error {
+	createHandler, deleteHandler, err := a.getHandlers(key, *vrf)
+	if err != nil {
+		return ReturnError(err)
+	}
+
+	// save and retrieve the vrf to update the endpoints ids
+	if err := a.encryptPSK(key, vrf); err != nil {
+		return ReturnError(err)
+	}
+	if err := vrf.updateVrf(a.DB); err != nil {
+		return ReturnError(err)
+	}
+	if err := vrf.getVrf(a.DB); err != nil {
+		return ReturnError(err)
+	}
+	if err := a.decryptPSK(key, vrf); err != nil {
+		return ReturnError(err)
+	}
+
+	// handle backends
+	if *oldVrf.Active != *vrf.Active {
+		if *vrf.Active {
+			if err := createHandler(*vrf); err != nil {
+				return ReturnError(err)
+			}
+		} else {
+			if err := deleteHandler(*oldVrf); err != nil {
+				return ReturnError(err)
+			}
+		}
+	} else if *vrf.Active {
+		if err := deleteHandler(*oldVrf); err != nil {
+			return ReturnError(err)
+		}
+		if err := createHandler(*vrf); err != nil {
+			return ReturnError(err)
+		}
+	}
+	return nil
+}
+
 func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -405,6 +448,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vrf := Vrf{}
+	spew.Dump(yangVrf)
 	vrf.FromYang(&yangVrf)
 	valid, err := vrfValid(vrf)
 	if err != nil {
@@ -429,6 +473,14 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := vrf.createVrf(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if err := a._updateBackends(key, &vrf, &Vrf{
+		ID:     vrf.ID,
+		Active: boolPointer(false),
+	}); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -501,52 +553,9 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		vrf.Active = oldVrf.Active
 	}
 
-	createHandler, deleteHandler, err := a.getHandlers(key, vrf)
-	if err != nil {
+	if err := a._updateBackends(key, &vrf, &oldVrf); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
-	}
-
-	// save and retrieve the vrf to update the endpoints ids
-	if err := a.encryptPSK(key, &vrf); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	if err := vrf.updateVrf(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	if err := vrf.getVrf(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	if err := a.decryptPSK(key, &vrf); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	// handle backends
-	if *oldVrf.Active != *vrf.Active {
-		if *vrf.Active {
-			if err := createHandler(vrf); err != nil {
-				respondWithError(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-		} else {
-			if err := deleteHandler(oldVrf); err != nil {
-				respondWithError(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-		}
-	} else if *vrf.Active {
-		if err := deleteHandler(oldVrf); err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		if err := createHandler(vrf); err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
 	}
 
 	respondWithJSON(w, http.StatusOK, vrf)
