@@ -6,7 +6,7 @@ curl -v -XPOST http://localhost/restconf/data/sico-ipsec:api/vrf -u "admin:cisco
       "client_name": "ansible_test",
       "crypto_ph1": "aes128-sha256-modp2048",
       "crypto_ph2": "aes128-sha256-modp2048",
-      "endpoints": [
+      "endpoint": [
         {
           "authentication": {
             "local_cert": "",

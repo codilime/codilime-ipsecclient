@@ -2,35 +2,25 @@ package main
 
 import (
 	"crypto/tls"
+	"ipsec_backend/sico_yang"
 	"net/http"
 	"strconv"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
+	"github.com/openconfig/ygot/ygot"
 	"gorm.io/gorm"
 )
 
-const (
-	saStatusStr = "sa_status"
-	localIpStr  = "local_ip"
-	remoteIpStr = "remote_ip"
-	idStr       = "id"
-)
-
-func normalizeMetrics(metrics *map[string]interface{}) {
-	endpointStatuses := (*metrics)["endpoint_statuses"].([]map[string]interface{})
-	for i, endpoint := range endpointStatuses {
-		status := endpoint[saStatusStr].(string)
-		if status == "ESTABLISHED" || status == "crypto-sa-status-active" {
-			endpoint[saStatusStr] = "up"
-		} else {
-			endpoint[saStatusStr] = "down"
-		}
-		endpointStatuses[i] = endpoint
+func normalizeStatus(status string) string {
+	if status == "ESTABLISHED" || status == "crypto-sa-status-active" {
+		return "up"
+	} else {
+		return "down"
 	}
-	(*metrics)["endpoint_statuses"] = endpointStatuses
 }
 
-func (a *App) metrics(w http.ResponseWriter, r *http.Request) {
+func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
@@ -49,33 +39,42 @@ func (a *App) metrics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var res map[string]interface{}
+	var monitoring *sico_yang.SicoIpsec_Api_Monitoring
 	if vrf.ID != hardwareVrfID {
-		res, err = getSWMetrics(vrf)
+		monitoring, err = GetStrongswanSingleState(vrf.ClientName)
 		if err != nil {
 			a.respondWithError(w, 500, err.Error())
 			return
 		}
 	} else {
-		res, err = a.getHWMetrics() // no arguments because there is only one vrf in hw
+		monitoring, err = a.getHWMetrics() // no arguments because there is only one vrf in hw
 		if err != nil {
 			a.respondWithError(w, 500, err.Error())
 			return
 		}
 	}
-	normalizeMetrics(&res)
-	respondWithJSON(w, http.StatusOK, res)
-}
-
-func getSWMetrics(vrf Vrf) (map[string]interface{}, error) {
-	statuses, err := GetStrongswanSingleState(vrf.ClientName)
-	res := map[string]interface{}{
-		"endpoint_statuses": statuses,
+	monitoring.Id = int64Pointer(int64(id))
+	ret := sico_yang.SicoIpsec_Api{
+		Monitoring: map[int64]*sico_yang.SicoIpsec_Api_Monitoring{
+			int64(id): monitoring,
+		},
 	}
-	return res, ReturnError(err)
+	spew.Dump(ret)
+	json, err := ygot.EmitJSON(&ret, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+		RFC7951Config: &ygot.RFC7951JSONConfig{
+			AppendModuleName: true,
+		},
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, json)
 }
 
-func (a *App) getHWMetrics() (map[string]interface{}, error) {
+func (a *App) getHWMetrics() (*sico_yang.SicoIpsec_Api_Monitoring, error) {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -85,31 +84,25 @@ func (a *App) getHWMetrics() (map[string]interface{}, error) {
 	if err != nil {
 		return nil, ReturnError(err)
 	}
-	endpoints := []map[string]interface{}{}
 	if res == nil {
-		return map[string]interface{}{
-			"endpoint_statuses": endpoints,
-		}, nil
+		return &sico_yang.SicoIpsec_Api_Monitoring{}, nil
 	}
 	idents := res["Cisco-IOS-XE-crypto-oper:crypto-ipsec-ident"].([]interface{})
+	ret := sico_yang.SicoIpsec_Api_Monitoring{}
 	for _, ident_ := range idents {
 		ident := ident_.(map[string]interface{})
 		endpointIDStr := ident["interface"].(string)[len("Tunnel"):]
 		endpointID, _ := strconv.Atoi(endpointIDStr)
 		identData := ident["ident-data"].(map[string]interface{})
-		localIp := identData["local-endpt-addr"]
-		remoteIp := identData["remote-endpt-addr"]
-		saStatus := identData["inbound-esp-sa"].(map[string]interface{})["sa-status"]
-		endpointData := map[string]interface{}{
-			localIpStr:  localIp,
-			remoteIpStr: remoteIp,
-			saStatusStr: saStatus,
-			idStr:       endpointID,
+		localIp := identData["local-endpt-addr"].(string)
+		remoteIp := identData["remote-endpt-addr"].(string)
+		saStatus := identData["inbound-esp-sa"].(map[string]interface{})["sa-status"].(string)
+		ret.Endpoint[int64(endpointID)] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
+			LocalIp: stringPointer(localIp),
+			PeerIp:  stringPointer(remoteIp),
+			Status:  stringPointer(normalizeStatus(saStatus)),
+			Id:      int64Pointer(int64(endpointID)),
 		}
-		endpoints = append(endpoints, endpointData)
 	}
-	ret := map[string]interface{}{
-		"endpoint_statuses": endpoints,
-	}
-	return ret, nil
+	return &ret, nil
 }

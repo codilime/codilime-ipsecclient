@@ -27,16 +27,20 @@ module sico-ipsec {
 
     typedef authentication-type {
         type string {
-            pattern 'certs|psk';
+            pattern
+              'certs|psk';
         }
-        description "the type of endpoint authentication available within the system";
+        description
+          "the type of endpoint authentication available within the system";
     }
 
     typedef monitoring-status {
         type string {
-            pattern 'up|down';
+            pattern
+              'up|down';
         }
-        description "the type of tunnel status as seen in monitoring";
+        description
+          "the type of tunnel status as seen in monitoring";
     }
 
     container api {
@@ -51,7 +55,7 @@ module sico-ipsec {
                 description
                   "name of the vrf as it will appear in the configuration";
             }
-            list vlans {
+            list vlan {
                 key "vlan";
                 leaf vlan {
                     type int64;
@@ -98,33 +102,38 @@ module sico-ipsec {
                 description
                   "local autonomous system number for the bgp session";
             }
-            list endpoints {
+            list endpoint {
                 key "id";
                 leaf id {
                     type int64;
                 }
                 leaf vrf_id {
                     type int64;
-                    description "id of the vrf that this endpoint belongs to";
+                    description
+                      "id of the vrf that this endpoint belongs to";
                 }
                 leaf remote_ip_sec {
                     type dotted-quad;
                     mandatory "true";
-                    description "the ip of the remote endpoint that we're connecting to";
+                    description
+                      "the ip of the remote endpoint that we're connecting to";
                 }
                 leaf local_ip {
                     type dotted-quad;
                     mandatory "true";
-                    description "local ip of the tunnel interface";
+                    description
+                      "local ip of the tunnel interface";
                 }
                 leaf peer_ip {
                     type dotted-quad;
                     mandatory "true";
-                    description "peer ip of the tunnel interface";
+                    description
+                      "peer ip of the tunnel interface";
                 }
                 leaf remote_as {
                     type int64;
-                    description "autonomous system number of the remote endpoint";
+                    description
+                      "autonomous system number of the remote endpoint";
                 }
                 leaf nat {
                     type boolean;
@@ -133,36 +142,43 @@ module sico-ipsec {
                 leaf bgp {
                     type boolean;
                     mandatory "true";
-                    description "a flag whether a bgp session will attempt to
-                        connect on this endpoint";
+                    description
+                      "a flag whether a bgp session will attempt to
+                       connect on this endpoint";
                 }
                 leaf source_interface {
                     type string;
-                    description "the name of the interface in the hardware that the tunnel
-                        will be established on";
+                    description
+                      "the name of the interface in the hardware that the tunnel
+                       will be established on";
                 }
                 container authentication {
                     leaf type {
                         type authentication-type;
                         mandatory "true";
-                        description "type of the authentication for this endpoint, can be
-                            either 'certs' or 'psk'.";
+                        description
+                          "type of the authentication for this endpoint, can be
+                           either 'certs' or 'psk'.";
                     }
                     leaf psk {
                         type string;
-                        description "in case of 'psk' authentication, this holds the password";
+                        description
+                          "in case of 'psk' authentication, this holds the password";
                     }
                     leaf local_cert {
                         type string;
-                        description "in case of 'certs' authentication, this holds the local certificate";
+                        description
+                          "in case of 'certs' authentication, this holds the local certificate";
                     }
                     leaf remote_cert {
                         type string;
-                        description "in case of 'certs' authentication, this holds the remote certificate";
+                        description
+                          "in case of 'certs' authentication, this holds the remote certificate";
                     }
                     leaf private_key {
                         type string;
-                        description "in case of 'certs' authentication, this holds the private key";
+                        description
+                          "in case of 'certs' authentication, this holds the private key";
                     }
                 }
             }
@@ -180,7 +196,7 @@ module sico-ipsec {
         list log {
             config false;
             key "name";
-             leaf name {
+            leaf name {
                 type string;
             }
             leaf log {
@@ -191,28 +207,37 @@ module sico-ipsec {
         list monitoring {
             config false;
             key "id";
-             leaf id {
+            leaf id {
                 type int64;
+                description "id of the vrf of which the endpoints are requested";
             }
-            leaf remote_ip {
-                type dotted-quad;
-            }
-            leaf peer_ip {
-                type dotted-quad;
-            }
-            leaf status {
-                type monitoring-status;
+            list endpoint {
+                key "id";
+                leaf id {
+                    type int64;
+                    description "id of the endpoint of which the status is monitored, unique globally";
+                }
+                leaf local_ip {
+                    type dotted-quad;
+                }
+                leaf peer_ip {
+                    type dotted-quad;
+                }
+                leaf status {
+                    type monitoring-status;
+                }
             }
         }
         list ca {
             key "id";
-             leaf id {
+            leaf id {
                 type int64;
             }
             leaf ca_file {
                 type string;
                 mandatory "true";
-                description "text contents of the certificate authority file";
+                description
+                  "text contents of the certificate authority file";
             }
         }
         leaf password {
