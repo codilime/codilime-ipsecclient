@@ -1,21 +1,38 @@
 import { ChangeEvent, useRef, useState, useEffect } from 'react';
 import { useAppContext } from 'hooks/';
-import { handleTakeTime, decodeX509 } from 'utils/';
 import { client } from 'api/';
 
 interface dynamicObject {
   [key: string]: boolean;
 }
 
+interface CertsType {
+  CA: string;
+}
+
 export const useCertificatesLogic = () => {
   const { vrf, setVrf } = useAppContext();
   const { certificates } = vrf;
   const uploadBtn = useRef<HTMLInputElement>(null);
+  const [certs, setCerts] = useState<CertsType[]>([]);
   const [checkedCa, setCheckedCa] = useState<dynamicObject>();
 
   const handleAddCerts = () => {
     if (uploadBtn.current) return uploadBtn.current.click();
   };
+
+  const handleUpdateCertsList = async () => {
+    const newCerts = await client('cas');
+    if (newCerts) setVrf((prev) => ({ ...prev, certificates: [...newCerts] }));
+  };
+
+  useEffect(() => {
+    if (certificates.length) {
+      certificates.map((cert) => {
+        if (cert.ID) setCheckedCa((prev) => ({ ...prev, [cert.ID!]: false }));
+      });
+    }
+  }, [certificates]);
 
   const handleSaveNewCerts = (e: ChangeEvent<HTMLInputElement>) => {
     if (!uploadBtn.current) return;
@@ -25,13 +42,11 @@ export const useCertificatesLogic = () => {
         const reader = new FileReader();
         reader.readAsText(file);
         reader.onload = (e) => {
-          if (e.target?.result) {
+          if (e.target && e.target.result !== null) {
             const cert = e.target.result;
             if (typeof cert === 'string') {
-              const CN = decodeX509(cert);
-              const newCert: any = { name: file.name, commonName: CN, value: e.target.result, time: handleTakeTime() };
-              setCheckedCa((prev) => ({ ...prev, [file.name]: false }));
-              setVrf((prev) => ({ ...prev, certificates: [...prev.certificates, newCert] }));
+              const newCert: any = { CA: e.target.result.toString() };
+              setCerts((prev) => [...prev, newCert]);
             }
           }
         };
@@ -40,27 +55,30 @@ export const useCertificatesLogic = () => {
   };
 
   useEffect(() => {
-    if (certificates.length) {
+    if (certs.length) {
       const timeOut = setTimeout(async () => {
-        const res = await client('cas', [...certificates], { method: 'POST' });
-        console.log(res);
+        await client('cas', [...certificates, ...certs], { method: 'POST' });
       }, 300);
+      const UploadTimeout = setTimeout(async () => {
+        handleUpdateCertsList();
+      }, 500);
       return () => {
         clearTimeout(timeOut);
+        clearTimeout(UploadTimeout);
       };
     }
-  }, [certificates]);
+  }, [certs]);
 
   const handleDeleteCerts = async () => {
     if (!checkedCa) return;
-    const newCert = certificates.filter((Cert) => {
-      if (!checkedCa[Cert.name]) return Cert;
+    const newCert = certificates.filter((cert) => {
+      if (cert.ID && !checkedCa[cert.ID]) return cert;
     });
-    setVrf((prev) => ({ ...prev, certificates: [...newCert] }));
-    await client('cas', { newCert }, { method: 'POST' });
+    client('cas', [...newCert], { method: 'POST' });
+    handleUpdateCertsList();
   };
 
-  const handleCheckCerts = (e: ChangeEvent<HTMLInputElement>, name: string) => {
+  const handleCheckCerts = (e: ChangeEvent<HTMLInputElement>, name: number) => {
     setCheckedCa((prev) => ({ ...prev, [name]: e.target.checked }));
   };
 

@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { vrfSchema } from 'schema/';
 import { useFetchData, useGetLocation, useAppContext } from 'hooks/';
 
+
 export const useCreateVRFMainView = () => {
   const { vrf } = useAppContext();
   const { history, currentLocation } = useGetLocation();
@@ -20,21 +21,22 @@ export const useCreateVRFMainView = () => {
     reset,
     setValue
   } = useForm({ resolver: yupResolver(vrfSchema) });
-
+  
   useEffect(() => {
     if (endpoints === null) reset(data);
     else if (!endpoints.length) reset({ ...data, endpoints: null });
     else reset({ ...data });
   }, [reset, currentLocation, data]);
-
+  
   const submit = async (data: any) => {
     if (data.id) {
       return await putVrfData(data);
     }
-    const id = await postVrfData(data);
-    if (id) {
-      history.push(`/vrf/${id}`);
-    }
+    const res = await postVrfData(data);
+    //TODO: BUG
+    // if (res.id) {
+    //   history.push(`/vrf/${res.id}`);
+    // }
   };
 
   const crypto = hardware ? hardwareCrypto : softwareCrypto;

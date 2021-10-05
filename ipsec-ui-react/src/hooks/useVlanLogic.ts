@@ -1,11 +1,7 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import { FieldValues, UseFormReset, UseFormSetValue } from 'react-hook-form';
 import { useAppContext } from 'hooks/';
-
-interface vlanInterface {
-  vlan: number;
-  lan_ip: string;
-}
+import { vlanInterface } from 'interface/index';
 
 export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>, reset: UseFormReset<FieldValues>) => {
   const {
@@ -48,6 +44,10 @@ export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>, reset: UseF
     if (error) setError(false);
   }, [vlan]);
 
+  useEffect(() => {
+    if (data.vlans !== vlan) setValue('vlans', [...vlan], { shouldDirty: true });
+  }, [vlan]);
+
   const handleChangeInputValue = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === 'vlan') {
@@ -60,16 +60,12 @@ export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>, reset: UseF
     const validate = checkLanIpValue(vlanInterface.lan_ip);
     if (validate || vlanInterface.vlan <= 1) return setError(true);
     setVlanInterface({ vlan: 0, lan_ip: '' });
-    reset({ ...data, vlans: [] });
     setVlan((prev) => [...prev, vlanInterface]);
-    setValue('vlans', [...vlan, vlanInterface]);
   };
 
   const handleDeleteVlan = (value: number) => {
     const newVlan = vlan.filter((el) => el.vlan !== value);
     setVlan(newVlan);
-    reset({ ...data, vlans: [] });
-    setValue('vlans', [...newVlan]);
   };
 
   return { vlan, vlanInterface, error, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue };
