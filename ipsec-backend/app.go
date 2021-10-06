@@ -28,9 +28,6 @@ const (
 	vrfPath          = restconfBasePath + "/vrf"
 	vrfIDPath        = vrfPath + "={id:[0-9]+}"
 	monitoringPath   = restconfBasePath + "/monitoring={id:[0-9]+}"
-	softwarePath     = "/api/algorithms/software"
-	hardwarePathPh1  = "/api/algorithms/hardware/ph1"
-	hardwarePathPh2  = "/api/algorithms/hardware/ph2"
 	listLogsPath     = "/api/listlogs"
 	CAsPath          = "/api/cas"
 	settingsPath     = "/api/settings/{name:[a-zA-Z0-9-_]+}"
@@ -142,9 +139,6 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(vrfIDPath, a.getVrf).Methods(http.MethodGet)
 	a.Router.HandleFunc(vrfIDPath, a.updateVrf).Methods(http.MethodPatch)
 	a.Router.HandleFunc(vrfIDPath, a.deleteVrf).Methods(http.MethodDelete)
-	a.Router.HandleFunc(softwarePath, a.getSoftwareAlgorithms).Methods(http.MethodGet)
-	a.Router.HandleFunc(hardwarePathPh1, a.getHardwareAlgorithmsPh1).Methods(http.MethodGet)
-	a.Router.HandleFunc(hardwarePathPh2, a.getHardwareAlgorithmsPh2).Methods(http.MethodGet)
 	a.Router.HandleFunc(settingsPath, a.apiGetSetting).Methods(http.MethodGet)
 	a.Router.HandleFunc(settingsPath, a.apiSetSetting).Methods(http.MethodPost)
 	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet)
@@ -640,48 +634,6 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	}
 	InfoDebug("Delete vrf completed", fmt.Sprintf("Delete vrf completed|deleted vrf: %v", vrf))
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
-}
-
-func (a *App) getSoftwareAlgorithms(w http.ResponseWriter, r *http.Request) {
-	enc := getSoftwareEncryptionAlgorithms()
-	integrity := getSoftwareIntegrityAlgorithms()
-	keyExchange := getSoftwareKeyExchangeAlgorithms()
-
-	res := map[string][]string{
-		"encryption":   enc,
-		"integrity":    integrity,
-		"key_exchange": keyExchange,
-	}
-
-	respondWithJSON(w, http.StatusOK, res)
-}
-
-func (a *App) getHardwareAlgorithmsPh1(w http.ResponseWriter, r *http.Request) {
-	enc := getHardwareEncryptionAlgorithmsPh1()
-	integrity := getHardwareIntegrityAlgorithmsPh1()
-	keyExchange := getHardwareKeyExchangeAlgorithmsPh1()
-
-	res := map[string][]string{
-		"encryption":   enc,
-		"integrity":    integrity,
-		"key_exchange": keyExchange,
-	}
-
-	respondWithJSON(w, http.StatusOK, res)
-}
-
-func (a *App) getHardwareAlgorithmsPh2(w http.ResponseWriter, r *http.Request) {
-	enc := getHardwareEncryptionAlgorithmsPh2()
-	integrity := getHardwareIntegrityAlgorithmsPh2()
-	keyExchange := getHardwareKeyExchangeAlgorithmsPh2()
-
-	res := map[string][]string{
-		"encryption":   enc,
-		"integrity":    integrity,
-		"key_exchange": keyExchange,
-	}
-
-	respondWithJSON(w, http.StatusOK, res)
 }
 
 func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {

@@ -32,15 +32,15 @@ export interface vrfDataTypes {
   id?: string | number;
 }
 
-export interface softwareCryptoDataTypes {
+export interface SoftwareCryptoDataTypes {
   encryption: string[];
   integrity: string[];
   key_exchange: string[];
 }
 
 export interface CryptoTypes {
-  crypto_ph1: softwareCryptoDataTypes;
-  crypto_ph2: softwareCryptoDataTypes;
+  crypto_ph1: SoftwareCryptoDataTypes;
+  crypto_ph2: SoftwareCryptoDataTypes;
 }
 export interface CertificatesType {
   ID?: number;

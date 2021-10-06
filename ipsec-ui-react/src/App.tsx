@@ -6,12 +6,16 @@ import { Routers } from './routers';
 import 'style/global.scss';
 
 const App: FC = () => {
+<<<<<<< HEAD
   const { fetchVrfData, fetchVrfSettings, fetchCerts, loading } = useInitData();
 
   useLayoutEffect(() => {
     fetchVrfSettings();
     fetchCerts();
   }, []);
+=======
+  const { fetchVrfData, loading } = useInitData();
+>>>>>>> remove fetching algorithm list from the backend (also in frontend)
 
   useEffect(() => {
     if (!loading) fetchVrfData();
