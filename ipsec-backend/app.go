@@ -203,15 +203,32 @@ func writeCAs(cas []CertificateAuthority) error {
 }
 
 func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
-	cas := []CertificateAuthority{}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	if err := json.Unmarshal(body, &cas); err != nil {
+	var j map[string]interface{}
+	if err := json.Unmarshal(body, &j); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
+	}
+	casJson := j["sico-ipsec:ca"].([]interface{})
+	cas := []CertificateAuthority{}
+	for _, ca := range casJson {
+		caJson, err := json.Marshal(&ca)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		caYang := sico_yang.SicoIpsec_Api_Ca{}
+		if err := sico_yang.Unmarshal(caJson, &caYang); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		ca := CertificateAuthority{}
+		ca.FromYang(&caYang)
+		cas = append(cas, ca)
 	}
 	if err := a.DB.Where("1=1").Delete(&CertificateAuthority{}).Error; err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -235,7 +252,16 @@ func (a *App) getCAs(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJSON(w, http.StatusOK, cas)
+	casJson := []string{}
+	for _, ca := range cas {
+		caJson, err := ygot.EmitJSON(ca.ToYang(), nil)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		casJson = append(casJson, caJson)
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, `{"sico-ipsec:ca":[`+strings.Join(casJson, ",")+"]}")
 }
 
 func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
@@ -442,7 +468,6 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vrf := Vrf{}
-	spew.Dump(yangVrf)
 	vrf.FromYang(&yangVrf)
 	valid, err := vrfValid(vrf)
 	if err != nil {
