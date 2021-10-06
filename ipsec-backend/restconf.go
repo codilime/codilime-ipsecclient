@@ -101,6 +101,18 @@ func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 	}, nil
 }
 
+func (c *CertificateAuthority) FromYang(caYang *sico_yang.SicoIpsec_Api_Ca) {
+	c.CA = *caYang.CaFile
+	c.ID = *caYang.Id
+}
+
+func (c *CertificateAuthority) ToYang() *sico_yang.SicoIpsec_Api_Ca {
+	return &sico_yang.SicoIpsec_Api_Ca{
+		Id:     int64Pointer(c.ID),
+		CaFile: stringPointer(c.CA),
+	}
+}
+
 func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
 	v.ID = *vrfYang.Id
 	v.ClientName = *vrfYang.ClientName
