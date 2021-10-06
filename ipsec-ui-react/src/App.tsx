@@ -6,11 +6,7 @@ import { Routers } from './routers';
 import 'style/global.scss';
 
 const App: FC = () => {
-  const { fetchVrfData, fetchVrfSettings, loading } = useInitData();
-
-  useLayoutEffect(() => {
-    fetchVrfSettings();
-  }, []);
+  const { fetchVrfData, loading } = useInitData();
 
   useEffect(() => {
     if (!loading) fetchVrfData();

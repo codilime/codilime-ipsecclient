@@ -40,17 +40,11 @@ export const useFetchData = () => {
     }
   };
 
-  const fetchSoftwareAlgorithms = () => client('algorithms/software');
-
-  const fetchHardwarePh1 = () => client('algorithms/hardware/ph1');
-
-  const fetchHardwarePh2 = () => client('algorithms/hardware/ph2');
-
   const fetchEndpointStatus = async (id: number | string) => await client(`metrics/${id}`);
 
   const fetchLogsList = async () => await client('listlogs');
 
   const fetchLogsData = async (log: string) => await client(`logs/${log}`);
 
-  return { fetchData, postVrfData, deleteVrfData, putVrfData, fetchSoftwareAlgorithms, fetchHardwarePh1, fetchHardwarePh2, fetchEndpointStatus, fetchLogsList, fetchLogsData };
+  return { fetchData, postVrfData, deleteVrfData, putVrfData, fetchEndpointStatus, fetchLogsList, fetchLogsData };
 };
