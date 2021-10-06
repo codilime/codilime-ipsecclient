@@ -26,15 +26,16 @@ const (
 	vrfPath          = restconfBasePath + "/vrf"
 	vrfIDPath        = vrfPath + "={id:[0-9]+}"
 	monitoringPath   = restconfBasePath + "/monitoring={id:[0-9]+}"
-	listLogsPath     = "/api/listlogs"
-	CAsPath          = "/api/cas"
-	settingsPath     = "/api/settings/{name:[a-zA-Z0-9-_]+}"
-	logsPath         = "/api/logs/{name:[a-zA-Z0-9-_]+}"
-	changePassPath   = "/api/changepass"
+	logPath          = restconfBasePath + "/log"
+	CAPath           = restconfBasePath + "/ca"
+	settingNamePath  = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
+	passPath         = restconfBasePath + "/password"
 
 	nginxPasswordFile = "/etc/nginx/htpasswd"
 	username          = "admin"
 	CAsDir            = "/opt/ipsec/x509ca"
+
+	lastLogBytes = 65536
 )
 
 type Generator interface {
@@ -137,14 +138,13 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(vrfIDPath, a.getVrf).Methods(http.MethodGet)
 	a.Router.HandleFunc(vrfIDPath, a.updateVrf).Methods(http.MethodPatch)
 	a.Router.HandleFunc(vrfIDPath, a.deleteVrf).Methods(http.MethodDelete)
-	a.Router.HandleFunc(settingsPath, a.apiGetSetting).Methods(http.MethodGet)
-	a.Router.HandleFunc(settingsPath, a.apiSetSetting).Methods(http.MethodPost)
-	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet)
-	a.Router.HandleFunc(listLogsPath, a.listLogs).Methods(http.MethodGet)
-	a.Router.HandleFunc(changePassPath, a.changePassword).Methods(http.MethodPost)
-	a.Router.HandleFunc(CAsPath, a.setCAs).Methods(http.MethodPost)
-	a.Router.HandleFunc(CAsPath, a.getCAs).Methods(http.MethodGet)
 	a.Router.HandleFunc(monitoringPath, a.monitoring).Methods(http.MethodGet)
+	a.Router.HandleFunc(logPath, a.getLogs).Methods(http.MethodGet)
+	a.Router.HandleFunc(settingNamePath, a.apiGetSetting).Methods(http.MethodGet)
+	a.Router.HandleFunc(settingNamePath, a.apiSetSetting).Methods(http.MethodPost)
+	a.Router.HandleFunc(passPath, a.changePassword).Methods(http.MethodPost)
+	a.Router.HandleFunc(CAPath, a.setCAs).Methods(http.MethodPost)
+	a.Router.HandleFunc(CAPath, a.getCAs).Methods(http.MethodGet)
 }
 
 func getPassFromHeader(header http.Header) (string, error) {
@@ -624,26 +624,68 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
 
-func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	name := vars["name"]
-	offsetStr := r.URL.Query().Get("offset")
-	offset, _ := strconv.Atoi(offsetStr)
-	res, err := GetProcessLog(name, offset, 4294967296)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
+func min(a, b int64) int64 {
+	if a < b {
+		return a
 	}
-	respondWithJSON(w, http.StatusOK, res)
+	return b
 }
 
-func (a *App) listLogs(w http.ResponseWriter, r *http.Request) {
-	res, err := GetProcessNames()
+func getLastBytesOfFile(fname string, maxBytes int64) ([]byte, error) {
+	file, err := os.Open(fname)
+	if err != nil {
+		return nil, ReturnError(err)
+	}
+	defer file.Close()
+
+	stat, err := os.Stat(fname)
+	if err != nil {
+		return nil, ReturnError(err)
+	}
+	bytes := min(maxBytes, stat.Size())
+	buf := make([]byte, bytes)
+	start := stat.Size() - bytes
+	n, err := file.ReadAt(buf, start)
+	fmt.Println(fname, start, bytes, n)
+	if err != nil {
+		return nil, ReturnError(err)
+	}
+	return buf, nil
+}
+
+func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
+	processInfos, err := GetProcessInfos()
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJSON(w, http.StatusOK, res)
+	api := sico_yang.SicoIpsec_Api{
+		Log: map[string]*sico_yang.SicoIpsec_Api_Log{},
+	}
+	for _, info := range processInfos {
+		log, err := getLastBytesOfFile(info.StdoutLogfile, lastLogBytes)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		api.Log[info.Name] = &sico_yang.SicoIpsec_Api_Log{
+			Name: stringPointer(info.Name),
+			Log:  stringPointer(string(log)),
+		}
+	}
+
+	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+		RFC7951Config: &ygot.RFC7951JSONConfig{
+			AppendModuleName: true,
+		},
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, json)
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
