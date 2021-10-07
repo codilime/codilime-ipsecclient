@@ -1,6 +1,6 @@
 curl -v -XPOST http://localhost/restconf/data/sico-ipsec:api/vrf -u "admin:cisco123" -d @- << EOF
 {
-  "sico-ipsec:vrf":
+  "vrf":
     {
       "active": true,
       "client_name": "ansible_test",
@@ -16,23 +16,23 @@ curl -v -XPOST http://localhost/restconf/data/sico-ipsec:api/vrf -u "admin:cisco
             "type": "psk"
           },
           "bgp": true,
-          "id": "2",
+          "id": 2,
           "local_ip": "192.168.1.1",
           "nat": false,
           "peer_ip": "192.168.1.2",
-          "remote_as": "0",
+          "remote_as": 0,
           "remote_ip_sec": "10.69.0.10",
           "source_interface": "",
-          "vrf_id": "2"
+          "vrf_id": 2
         }
       ],
-      "id": "2",
-      "local_as": "65001",
+      "id": 2,
+      "local_as": 65001,
       "physical_interface": "eth0",
       "vlans": [
         {
           "lan_ip": "1.1.1.1/24",
-          "vlan": "321"
+          "vlan": 321
         }
         ]
     }
