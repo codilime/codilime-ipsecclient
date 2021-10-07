@@ -28,7 +28,7 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "bad id: "+idStr)
 	}
 
-	vrf := Vrf{ID: int64(id)}
+	vrf := Vrf{ID: uint32(id)}
 	if err := vrf.getVrf(a.DB); err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
@@ -53,19 +53,16 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	monitoring.Id = int64Pointer(int64(id))
+	monitoring.Id = uint32Pointer(uint32(id))
 	ret := sico_yang.SicoIpsec_Api{
-		Monitoring: map[int64]*sico_yang.SicoIpsec_Api_Monitoring{
-			int64(id): monitoring,
+		Monitoring: map[uint32]*sico_yang.SicoIpsec_Api_Monitoring{
+			uint32(id): monitoring,
 		},
 	}
 	spew.Dump(ret)
 	json, err := ygot.EmitJSON(&ret, &ygot.EmitJSONConfig{
 		Format: ygot.RFC7951,
 		Indent: "  ",
-		RFC7951Config: &ygot.RFC7951JSONConfig{
-			AppendModuleName: true,
-		},
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -89,7 +86,7 @@ func (a *App) getHWMetrics() (*sico_yang.SicoIpsec_Api_Monitoring, error) {
 	}
 	idents := res["Cisco-IOS-XE-crypto-oper:crypto-ipsec-ident"].([]interface{})
 	ret := sico_yang.SicoIpsec_Api_Monitoring{
-		Endpoint: map[int64]*sico_yang.SicoIpsec_Api_Monitoring_Endpoint{},
+		Endpoint: map[uint32]*sico_yang.SicoIpsec_Api_Monitoring_Endpoint{},
 	}
 	for _, ident_ := range idents {
 		ident := ident_.(map[string]interface{})
@@ -99,11 +96,11 @@ func (a *App) getHWMetrics() (*sico_yang.SicoIpsec_Api_Monitoring, error) {
 		localIp := identData["local-endpt-addr"].(string)
 		remoteIp := identData["remote-endpt-addr"].(string)
 		saStatus := identData["inbound-esp-sa"].(map[string]interface{})["sa-status"].(string)
-		ret.Endpoint[int64(endpointID)] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
+		ret.Endpoint[uint32(endpointID)] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
 			LocalIp: stringPointer(localIp),
 			PeerIp:  stringPointer(remoteIp),
 			Status:  stringPointer(normalizeStatus(saStatus)),
-			Id:      int64Pointer(int64(endpointID)),
+			Id:      uint32Pointer(uint32(endpointID)),
 		}
 	}
 	return &ret, nil

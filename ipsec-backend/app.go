@@ -208,26 +208,16 @@ func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	var j map[string]interface{}
-	if err := json.Unmarshal(body, &j); err != nil {
+	api := sico_yang.SicoIpsec_Api{}
+	err = sico_yang.Unmarshal(body, &api, nil)
+	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	casJson := j["sico-ipsec:ca"].([]interface{})
 	cas := []CertificateAuthority{}
-	for _, ca := range casJson {
-		caJson, err := json.Marshal(&ca)
-		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		caYang := sico_yang.SicoIpsec_Api_Ca{}
-		if err := sico_yang.Unmarshal(caJson, &caYang); err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+	for _, caYang := range api.Ca {
 		ca := CertificateAuthority{}
-		ca.FromYang(&caYang)
+		ca.FromYang(caYang)
 		cas = append(cas, ca)
 	}
 	if err := a.DB.Where("1=1").Delete(&CertificateAuthority{}).Error; err != nil {
@@ -252,16 +242,21 @@ func (a *App) getCAs(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	casJson := []string{}
-	for _, ca := range cas {
-		caJson, err := ygot.EmitJSON(ca.ToYang(), nil)
-		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		casJson = append(casJson, caJson)
+	api := sico_yang.SicoIpsec_Api{
+		Ca: map[uint32]*sico_yang.SicoIpsec_Api_Ca{},
 	}
-	respondWithMarshalledJSON(w, http.StatusOK, `{"sico-ipsec:ca":[`+strings.Join(casJson, ",")+"]}")
+	for _, ca := range cas {
+		api.Ca[ca.ID] = ca.ToYang()
+	}
+	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, json)
 }
 
 func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
@@ -309,7 +304,7 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
-	vrfsMap := map[int64]*sico_yang.SicoIpsec_Api_Vrf{}
+	vrfsMap := map[uint32]*sico_yang.SicoIpsec_Api_Vrf{}
 	vrfs, err := getVrfs(a.DB)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -338,9 +333,6 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
 		Format: ygot.RFC7951,
 		Indent: "  ",
-		RFC7951Config: &ygot.RFC7951JSONConfig{
-			AppendModuleName: true,
-		},
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -357,7 +349,7 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vrf := Vrf{ID: id}
+	vrf := Vrf{ID: uint32(id)}
 	if err := vrf.getVrf(a.DB); err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
@@ -382,7 +374,16 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJSON(w, 200, vrfYang)
+
+	json, err := ygot.EmitJSON(vrfYang, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, `{"vrf":`+json+`}`)
 }
 
 func vrfValid(vrf Vrf) (bool, error) {
@@ -457,7 +458,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	vrfJson, err := json.Marshal(j["sico-ipsec:vrf"])
+	vrfJson, err := json.Marshal(j["vrf"])
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -530,7 +531,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	vrfJson, err := json.Marshal(j["sico-ipsec:vrf"])
+	vrfJson, err := json.Marshal(j["vrf"])
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -559,8 +560,8 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var oldVrf Vrf
-	vrf.ID = id
-	oldVrf.ID = id
+	vrf.ID = uint32(id)
+	oldVrf.ID = uint32(id)
 
 	if err := oldVrf.getVrf(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -620,7 +621,7 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vrf := Vrf{ID: id}
+	vrf := Vrf{ID: uint32(id)}
 	if err := vrf.getVrf(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -702,9 +703,6 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
 		Format: ygot.RFC7951,
 		Indent: "  ",
-		RFC7951Config: &ygot.RFC7951JSONConfig{
-			AppendModuleName: true,
-		},
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())

@@ -47,7 +47,7 @@ module sico-ipsec {
         list vrf {
             key "id";
             leaf id {
-                type int64;
+                type uint32;
             }
             leaf client_name {
                 type string;
@@ -58,7 +58,7 @@ module sico-ipsec {
             list vlan {
                 key "vlan";
                 leaf vlan {
-                    type int64;
+                    type uint32;
                     description
                       "vlan number";
                 }
@@ -97,7 +97,7 @@ module sico-ipsec {
                    the database for later";
             }
             leaf local_as {
-                type int64;
+                type uint32;
                 mandatory "true";
                 description
                   "local autonomous system number for the bgp session";
@@ -105,10 +105,10 @@ module sico-ipsec {
             list endpoint {
                 key "id";
                 leaf id {
-                    type int64;
+                    type uint32;
                 }
                 leaf vrf_id {
-                    type int64;
+                    type uint32;
                     description
                       "id of the vrf that this endpoint belongs to";
                 }
@@ -131,7 +131,7 @@ module sico-ipsec {
                       "peer ip of the tunnel interface";
                 }
                 leaf remote_as {
-                    type int64;
+                    type uint32;
                     description
                       "autonomous system number of the remote endpoint";
                 }
@@ -208,13 +208,13 @@ module sico-ipsec {
             config false;
             key "id";
             leaf id {
-                type int64;
+                type uint32;
                 description "id of the vrf of which the endpoints are requested";
             }
             list endpoint {
                 key "id";
                 leaf id {
-                    type int64;
+                    type uint32;
                     description "id of the endpoint of which the status is monitored, unique globally";
                 }
                 leaf local_ip {
@@ -231,7 +231,7 @@ module sico-ipsec {
         list ca {
             key "id";
             leaf id {
-                type int64;
+                type uint32;
             }
             leaf ca_file {
                 type string;

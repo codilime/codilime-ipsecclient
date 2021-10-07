@@ -1,10 +1,10 @@
 {
-  "sico-ipsec:vrf": {
-    "id": "1",
+  "vrf": {
+    "id": 1,
     "client_name": "hardware",
     "vlan": [
       {
-        "vlan": "321",
+        "vlan": 321,
         "lan_ip": "1.1.1.1/24"
       }
     ],
@@ -12,15 +12,15 @@
     "crypto_ph2": "esp-aes.esp-sha256-hmac.group14",
     "physical_interface": "eth0",
     "active": true,
-    "local_as": "65002",
+    "local_as": 65002,
     "endpoint": [
       {
-        "id": "6",
-        "vrf_id": "1",
+        "id": 6,
+        "vrf_id": 1,
         "remote_ip_sec": "10.69.0.3",
         "local_ip": "192.168.1.2",
         "peer_ip": "192.168.1.1",
-        "remote_as": "65001",
+        "remote_as": 65001,
         "nat": false,
         "bgp": true,
         "source_interface": "GigabitEthernet1",

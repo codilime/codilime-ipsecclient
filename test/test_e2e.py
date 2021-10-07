@@ -1,17 +1,23 @@
 from typing import cast
-import requests, time, json, logging, os
+import requests
+import time
+import json
+import logging
+import os
 from requests.auth import HTTPBasicAuth
+import pytest
 
-BASE_URL = "http://sico_api"
+BASE_URL = "http://sico_api/restconf/data/sico-ipsec:api"
 
-VRFS_URL = BASE_URL + "/api/vrfs"
-SETTINGS_URL = BASE_URL + "/api/settings/test_setting"
-CHANGE_PASS_URL = BASE_URL + "/api/changepass"
-CAS_URL = BASE_URL + "/api/cas"
+VRFS_URL = BASE_URL + "/vrf"
+SETTINGS_URL = BASE_URL + "/setting=test_setting"
+CHANGE_PASS_URL = BASE_URL + "/password"
+CAS_URL = BASE_URL + "/ca"
 
-basicAuth=HTTPBasicAuth("admin", "cisco123")
+basicAuth = HTTPBasicAuth("admin", "cisco123")
 
 log = logging.getLogger(__name__)
+
 
 def wait_for_sico_api():
     while True:
@@ -24,17 +30,20 @@ def wait_for_sico_api():
             time.sleep(3)
             continue
 
+
 def wait_for_sico_net():
     while True:
         print("waiting for sico_net...")
         if os.path.exists("/opt/super_net/supervisord.sock") and \
-            os.path.exists("/opt/ipsec/conf/charon.vici"):
+                os.path.exists("/opt/ipsec/conf/charon.vici"):
             return
         time.sleep(3)
+
 
 def setup_module():
     wait_for_sico_api()
     wait_for_sico_net()
+
 
 def ordered(obj):
     if isinstance(obj, dict):
@@ -44,30 +53,24 @@ def ordered(obj):
     else:
         return obj
 
+
 def test_post():
     post = {
-        "id":2,
-        "client_name":"test",
-        "vlans":[
-            {
-                "vlan": 123,
-                "lan_ip": "10.0.0.0/24"
-            }
-        ],
-        "crypto_ph1":[
-            "aes-cbc-128",
-            "sha256",
-            "modp_2048"
-        ],
-        "crypto_ph2":[
-            "esp-gcm",
-            "fourteen"
-        ],
-        "physical_interface":"eth0",
-        "active":False,
-        "hardware_support":False,
-        "local_as":123,
-        "lan_ip":"10.0.0.1",
+        "vrf": {
+            "id": 2,
+            "client_name": "test",
+            "vlan": [
+                {
+                    "vlan": 123,
+                    "lan_ip": "10.0.0.0/24"
+                }
+            ],
+            "crypto_ph1": "aes-cbc-128.sha256.modp_2048",
+            "crypto_ph2": "esp-gcm.fourteen",
+            "physical_interface": "eth0",
+            "active": False,
+            "local_as": 123,
+        }
     }
 
     r = requests.post(VRFS_URL, json=post, auth=basicAuth)
@@ -75,117 +78,118 @@ def test_post():
         print(r.text)
         assert r.status_code < 400
 
-def test_put():
-    put = {
-        "id":2,
-        "client_name":"test",
-        "vlans":[
-            {
-                "vlan": 123,
-                "lan_ip": "10.0.0.0/24"
-            }
-        ],
-        "crypto_ph1":[
-            "aes128",
-            "sha256",
-            "modp1024"
-        ],
-        "crypto_ph2":[
-            "aes128",
-            "sha1",
-            "modp1024"
-        ],
-        "physical_interface":"eth0",
-        "active":True,
-        "hardware_support":False,
-        "local_as":123,
-        "endpoints":[
-            {
-                "remote_ip_sec":"10.1.0.1",
-                "local_ip":"10.2.0.1",
-                "peer_ip":"10.3.0.1",
-                "authentication": {
-                    "type": "psk",
-                    "psk": "asdasdasdasd"
-                },
-                "nat":True,
-                "bgp":True,
-                "remote_as":321,
-                "source_interface":""
-            }
-        ]
+
+def test_patch():
+    patch = {
+        "vrf": {
+            "id": 2,
+            "client_name": "test",
+            "vlan": [
+                {
+                    "vlan": 123,
+                    "lan_ip": "10.0.0.0/24"
+                }
+            ],
+            "crypto_ph1": "aes128.sha256.modp1024",
+            "crypto_ph2": "aes128.sha256.modp1024",
+            "physical_interface": "eth0",
+            "active": True,
+            "local_as": 123,
+            "endpoint": [
+                {
+                    "id": 1,
+                    "vrf_id": 2,
+                    "remote_ip_sec": "10.1.0.1",
+                    "local_ip": "10.2.0.1",
+                    "peer_ip": "10.3.0.1",
+                    "authentication": {
+                        "type": "psk",
+                        "psk": "asdasdasdasd"
+                    },
+                    "nat": True,
+                    "bgp": True,
+                    "remote_as": 321,
+                    "source_interface": ""
+                }
+            ]
+        }
     }
 
-    r = requests.put(VRFS_URL+"/2", json=put, auth=basicAuth)
+    r = requests.patch(VRFS_URL+"=2", json=patch, auth=basicAuth)
     if r.status_code >= 400:
         print(r.text)
         assert r.status_code < 400
 
+
 get_template = {
-    "id": 2,
-    "client_name": "test",
-    'vlans': [
-        {
-            'vlan': 123,
-            'lan_ip': '10.0.0.0/24'
-        }
-    ],
-    "crypto_ph1": ["aes128", "sha256", "modp1024"],
-    "crypto_ph2": ["aes128", "sha1", "modp1024"],
-    "physical_interface": "eth0",
-    "active": True,
-    "local_as": 123,
-    "endpoints": [
-        {
-            "id": 1,
-            "vrf_id": 2,
-            "remote_ip_sec": "10.1.0.1",
-            "local_ip": "10.2.0.1",
-            "peer_ip": "10.3.0.1",
-            "authentication": {
-                "type": "psk",
-                "psk": "asdasdasdasd",
-                "local_cert": "",
-                "remote_cert": "",
-                "private_key": "",
-            },
-            "nat": True,
-            "bgp": True,
-            "remote_as": 321,
-            "source_interface": "",
-        }
-    ],
+    "vrf": {
+        "active": True,
+        "client_name": "test",
+        "crypto_ph1": "aes128.sha256.modp1024",
+        "crypto_ph2": "aes128.sha256.modp1024",
+        
+        "endpoint": [
+            {
+                "id": 1,
+                "vrf_id": 2,
+                "remote_ip_sec": "10.1.0.1",
+                "local_ip": "10.2.0.1",
+                "peer_ip": "10.3.0.1",
+                "authentication": {
+                    "type": "psk",
+                    "psk": "asdasdasdasd",
+                    "local_cert": "",
+                    "remote_cert": "",
+                    "private_key": "",
+                },
+                "nat": True,
+                "bgp": True,
+                "remote_as": 321,
+                "source_interface": "",
+            }
+        ],
+        "id": 2,
+        "local_as": 123,
+        "physical_interface": "eth0",
+        "vlan": [{
+                "lan_ip": "10.0.0.0/24",
+                "vlan": 123
+            }],
+    }
 }
 
 
 def test_get():
-    r = requests.get(VRFS_URL+"/2", auth=basicAuth)
+    r = requests.get(VRFS_URL+"=2", auth=basicAuth)
     if r.status_code >= 400:
         print(r.text)
         assert r.status_code < 400
     result = json.loads(r.text)
     if ordered(result) != ordered(get_template):
-        log.error(get_template)
-        log.error(result)
+        log.error(json.dumps(get_template, indent=4, sort_keys=True))
+        log.error(json.dumps(result, indent=4, sort_keys=True))
         assert False
 
+
 def test_delete():
-    r = requests.delete(VRFS_URL+"/2", auth=basicAuth)
+    r = requests.delete(VRFS_URL+"=2", auth=basicAuth)
     if r.status_code >= 400:
         print(r.text)
         assert r.status_code < 400
 
+
+@pytest.mark.skip
 def test_setting():
     r = requests.post(SETTINGS_URL, auth=basicAuth, data="test_value")
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
-    
+
     r = requests.post(SETTINGS_URL, auth=basicAuth, data="other_test_value")
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
-    
+
     r = requests.get(SETTINGS_URL, auth=basicAuth)
     if r.status_code >= 400:
         log.error(r.text)
@@ -193,18 +197,22 @@ def test_setting():
     j = json.loads(r.text)
     assert j["value"] == "other_test_value"
 
+
+@pytest.mark.skip
 def test_change_pass():
     r = requests.post(CHANGE_PASS_URL, auth=basicAuth, data="innehaslo")
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
 
-    r = requests.post(CHANGE_PASS_URL, auth=HTTPBasicAuth("admin", "innehaslo"), data="cisco123")
+    r = requests.post(CHANGE_PASS_URL, auth=HTTPBasicAuth(
+        "admin", "innehaslo"), data="cisco123")
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
 
 
+@pytest.mark.skip
 def test_cas():
     r = requests.post(CAS_URL, auth=basicAuth, json=[
         {"CA": "123"},
@@ -214,7 +222,7 @@ def test_cas():
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
-    
+
     r = requests.get(CAS_URL, auth=basicAuth)
     if r.status_code >= 400:
         log.error(r.text)
@@ -231,7 +239,7 @@ def test_cas():
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
-    
+
     r = requests.get(CAS_URL, auth=basicAuth)
     if r.status_code >= 400:
         log.error(r.text)

@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func int64Pointer(i int64) *int64 {
+func uint32Pointer(i uint32) *uint32 {
 	return &i
 }
 
@@ -20,15 +20,14 @@ func stringPointer(s string) *string {
 }
 
 func (e *Endpoint) ToYang() *sico_yang.SicoIpsec_Api_Vrf_Endpoint {
-	as := int64(e.RemoteAS)
 	return &sico_yang.SicoIpsec_Api_Vrf_Endpoint{
-		Id:              int64Pointer(e.ID),
-		VrfId:           int64Pointer(e.VrfID),
+		Id:              uint32Pointer(e.ID),
+		VrfId:           uint32Pointer(e.VrfID),
 		Bgp:             boolPointer(e.BGP),
 		LocalIp:         stringPointer(e.LocalIP),
 		Nat:             boolPointer(e.NAT),
 		PeerIp:          stringPointer(e.PeerIP),
-		RemoteAs:        int64Pointer(as),
+		RemoteAs:        uint32Pointer(e.RemoteAS),
 		RemoteIpSec:     stringPointer(e.RemoteIPSec),
 		SourceInterface: stringPointer(e.SourceInterface),
 		Authentication: &sico_yang.SicoIpsec_Api_Vrf_Endpoint_Authentication{
@@ -41,22 +40,29 @@ func (e *Endpoint) ToYang() *sico_yang.SicoIpsec_Api_Vrf_Endpoint {
 	}
 }
 
+func stringIfNotNil(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
 func (e *Endpoint) FromYang(endVrf *sico_yang.SicoIpsec_Api_Vrf_Endpoint) {
 	e.ID = *endVrf.Id
 	e.VrfID = *endVrf.VrfId
 	e.RemoteIPSec = *endVrf.RemoteIpSec
 	e.LocalIP = *endVrf.LocalIp
 	e.PeerIP = *endVrf.PeerIp
-	e.RemoteAS = int(*endVrf.RemoteAs)
+	e.RemoteAS = *endVrf.RemoteAs
 	e.NAT = *endVrf.Nat
 	e.BGP = *endVrf.Bgp
 	e.SourceInterface = *endVrf.SourceInterface
 	e.Authentication = EndpointAuth{
-		Type:       *endVrf.Authentication.Type,
-		PSK:        *endVrf.Authentication.Psk,
-		LocalCert:  *endVrf.Authentication.LocalCert,
-		RemoteCert: *endVrf.Authentication.RemoteCert,
-		PrivateKey: *endVrf.Authentication.PrivateKey,
+		Type:       stringIfNotNil(endVrf.Authentication.Type),
+		PSK:        stringIfNotNil(endVrf.Authentication.Psk),
+		LocalCert:  stringIfNotNil(endVrf.Authentication.LocalCert),
+		RemoteCert: stringIfNotNil(endVrf.Authentication.RemoteCert),
+		PrivateKey: stringIfNotNil(endVrf.Authentication.PrivateKey),
 	}
 }
 
@@ -71,8 +77,7 @@ func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 	}
 	ph1 := strings.Join(cryptoPh1, ".")
 	ph2 := strings.Join(cryptoPh2, ".")
-	as := int64(v.LocalAs)
-	endpoints := map[int64]*sico_yang.SicoIpsec_Api_Vrf_Endpoint{}
+	endpoints := map[uint32]*sico_yang.SicoIpsec_Api_Vrf_Endpoint{}
 	for _, e := range v.Endpoints {
 		endpoints[e.ID] = e.ToYang()
 	}
@@ -80,21 +85,20 @@ func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 	if err != nil {
 		return nil, ReturnError(err)
 	}
-	vlansMap := map[int64]*sico_yang.SicoIpsec_Api_Vrf_Vlan{}
+	vlansMap := map[uint32]*sico_yang.SicoIpsec_Api_Vrf_Vlan{}
 	for _, v := range vlans {
-		vlanID := int64(v.Vlan)
-		vlansMap[vlanID] = &sico_yang.SicoIpsec_Api_Vrf_Vlan{
-			Vlan:  int64Pointer(vlanID),
+		vlansMap[v.Vlan] = &sico_yang.SicoIpsec_Api_Vrf_Vlan{
+			Vlan:  uint32Pointer(v.Vlan),
 			LanIp: stringPointer(v.LanIP),
 		}
 	}
 	return &sico_yang.SicoIpsec_Api_Vrf{
-		Id:                int64Pointer(v.ID),
+		Id:                uint32Pointer(v.ID),
 		Active:            boolPointer(*v.Active),
 		ClientName:        stringPointer(v.ClientName),
 		CryptoPh1:         stringPointer(ph1),
 		CryptoPh2:         stringPointer(ph2),
-		LocalAs:           int64Pointer(as),
+		LocalAs:           uint32Pointer(v.LocalAs),
 		PhysicalInterface: stringPointer(v.PhysicalInterface),
 		Endpoint:          endpoints,
 		Vlan:              vlansMap,
@@ -108,7 +112,7 @@ func (c *CertificateAuthority) FromYang(caYang *sico_yang.SicoIpsec_Api_Ca) {
 
 func (c *CertificateAuthority) ToYang() *sico_yang.SicoIpsec_Api_Ca {
 	return &sico_yang.SicoIpsec_Api_Ca{
-		Id:     int64Pointer(c.ID),
+		Id:     uint32Pointer(c.ID),
 		CaFile: stringPointer(c.CA),
 	}
 }
@@ -119,7 +123,7 @@ func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
 	vlans := []interface{}{}
 	for _, v := range vrfYang.Vlan {
 		vlans = append(vlans, Vlan{
-			Vlan:  int(*v.Vlan),
+			Vlan:  *v.Vlan,
 			LanIP: *v.LanIp,
 		})
 	}
@@ -140,7 +144,7 @@ func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
 	}
 	v.PhysicalInterface = *vrfYang.PhysicalInterface
 	v.Active = vrfYang.Active
-	v.LocalAs = int(*vrfYang.LocalAs)
+	v.LocalAs = *vrfYang.LocalAs
 	for _, e := range vrfYang.Endpoint {
 		end := Endpoint{}
 		end.FromYang(e)
