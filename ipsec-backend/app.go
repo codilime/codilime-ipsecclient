@@ -167,12 +167,18 @@ func (a *App) changePassword(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	newPass, err := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	if err := a._changePassword(oldPass, string(newPass)); err != nil {
+	api := sico_yang.SicoIpsec_Api{}
+	err = sico_yang.Unmarshal(body, &api)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := a._changePassword(oldPass, *api.Password); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

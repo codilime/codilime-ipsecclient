@@ -177,19 +177,21 @@ def test_delete():
         print(r.text)
         assert r.status_code < 400
 
+
 setting_1 = {
-        "setting": {
-                "name": "siemka",
-                "value": "tasiemka"
-        }
+    "setting": {
+        "name": "siemka",
+        "value": "tasiemka"
+    }
 }
 
 setting_2 = {
-        "setting": {
-                "name": "siemka",
-                "value": "foremka"
-        }
+    "setting": {
+        "name": "siemka",
+        "value": "foremka"
+    }
 }
+
 
 def test_setting():
     r = requests.post(SETTINGS_URL, auth=basicAuth, json=setting_1)
@@ -210,15 +212,15 @@ def test_setting():
     assert ordered(setting_2) == ordered(j)
 
 
-@pytest.mark.skip
 def test_change_pass():
-    r = requests.post(CHANGE_PASS_URL, auth=basicAuth, data="innehaslo")
+    r = requests.post(CHANGE_PASS_URL, auth=basicAuth,
+                      json={"password": "innehaslo"})
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
 
     r = requests.post(CHANGE_PASS_URL, auth=HTTPBasicAuth(
-        "admin", "innehaslo"), data="cisco123")
+        "admin", "innehaslo"), json={"password": "cisco123"})
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
@@ -233,6 +235,7 @@ cas_template = {
 }
 
 delete_cas_template = {"ca": []}
+
 
 def test_cas():
     r = requests.post(CAS_URL, auth=basicAuth, json=cas_template)
