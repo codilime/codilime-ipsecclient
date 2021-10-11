@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"gorm.io/datatypes"
 	"gorm.io/driver/sqlite"
@@ -103,6 +104,12 @@ type CertificateAuthority struct {
 	CA string
 }
 
+type StoredError struct {
+	ID        int64
+	Message   string
+	ErrorTime time.Time
+}
+
 func initializeDB(dbName string) (*gorm.DB, error) {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\n", log.LstdFlags),
@@ -130,6 +137,9 @@ func initializeDB(dbName string) (*gorm.DB, error) {
 		return nil, ReturnError(err)
 	}
 	if err = db.AutoMigrate(&CertificateAuthority{}); err != nil {
+		return nil, err
+	}
+	if err = db.AutoMigrate(&StoredError{}); err != nil {
 		return nil, err
 	}
 	return db, nil
@@ -174,4 +184,8 @@ func (s *Setting) getSetting(db *gorm.DB) error {
 func (s *Setting) createSetting(db *gorm.DB) error {
 	res := db.Create(s)
 	return ReturnError(res.Error)
+}
+
+func (e *StoredError) createError(db *gorm.DB) error {
+	return ReturnError(db.Create(e).Error)
 }
