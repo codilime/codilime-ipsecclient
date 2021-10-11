@@ -127,7 +127,7 @@ get_template = {
         "client_name": "test",
         "crypto_ph1": "aes128.sha256.modp1024",
         "crypto_ph2": "aes128.sha256.modp1024",
-        
+
         "endpoint": [
             {
                 "id": 1,
@@ -152,9 +152,9 @@ get_template = {
         "local_as": 123,
         "physical_interface": "eth0",
         "vlan": [{
-                "lan_ip": "10.0.0.0/24",
-                "vlan": 123
-            }],
+            "lan_ip": "10.0.0.0/24",
+            "vlan": 123
+        }],
     }
 }
 
@@ -212,13 +212,18 @@ def test_change_pass():
         assert r.status_code < 400
 
 
-@pytest.mark.skip
+cas_template = {
+    "ca": [
+        {"id": 1, "ca_file": "abc"},
+        {"id": 2, "ca_file": "def"},
+        {"id": 3, "ca_file": "ghi"}
+    ]
+}
+
+delete_cas_template = {"ca": []}
+
 def test_cas():
-    r = requests.post(CAS_URL, auth=basicAuth, json=[
-        {"CA": "123"},
-        {"CA": "456"},
-        {"CA": "789"},
-    ])
+    r = requests.post(CAS_URL, auth=basicAuth, json=cas_template)
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
@@ -229,13 +234,9 @@ def test_cas():
         assert r.status_code < 400
 
     j = json.loads(r.text)
-    assert ordered(j) == ordered([
-        {"CA": "123", "ID": 1},
-        {"CA": "456", "ID": 2},
-        {"CA": "789", "ID": 3}
-    ])
+    assert ordered(j) == ordered(cas_template)
 
-    r = requests.post(CAS_URL, auth=basicAuth, json=[])
+    r = requests.post(CAS_URL, auth=basicAuth, json=delete_cas_template)
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
@@ -246,4 +247,4 @@ def test_cas():
         assert r.status_code < 400
 
     j = json.loads(r.text)
-    assert ordered(j) == ordered([])
+    assert ordered(j) == ordered(delete_cas_template)
