@@ -35,16 +35,16 @@ func (a *App) metrics(w http.ResponseWriter, r *http.Request) {
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "bad id: "+idStr)
+		a.respondWithError(w, http.StatusBadRequest, "bad id: "+idStr)
 	}
 
 	vrf := Vrf{ID: int64(id)}
 	if err := vrf.getVrf(a.DB); err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
-			respondWithError(w, http.StatusNotFound, "Vrf not found")
+			a.respondWithError(w, http.StatusNotFound, "Vrf not found")
 		default:
-			respondWithError(w, http.StatusInternalServerError, err.Error())
+			a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		}
 		return
 	}
@@ -53,13 +53,13 @@ func (a *App) metrics(w http.ResponseWriter, r *http.Request) {
 	if vrf.ID != hardwareVrfID {
 		res, err = getSWMetrics(vrf)
 		if err != nil {
-			respondWithError(w, 500, err.Error())
+			a.respondWithError(w, 500, err.Error())
 			return
 		}
 	} else {
 		res, err = a.getHWMetrics() // no arguments because there is only one vrf in hw
 		if err != nil {
-			respondWithError(w, 500, err.Error())
+			a.respondWithError(w, 500, err.Error())
 			return
 		}
 	}
