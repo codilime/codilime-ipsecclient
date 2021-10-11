@@ -10,7 +10,7 @@ import pytest
 BASE_URL = "http://sico_api/restconf/data/sico-ipsec:api"
 
 VRFS_URL = BASE_URL + "/vrf"
-SETTINGS_URL = BASE_URL + "/setting=test_setting"
+SETTINGS_URL = BASE_URL + "/setting=siemka"
 CHANGE_PASS_URL = BASE_URL + "/password"
 CAS_URL = BASE_URL + "/ca"
 
@@ -177,15 +177,27 @@ def test_delete():
         print(r.text)
         assert r.status_code < 400
 
+setting_1 = {
+        "setting": {
+                "name": "siemka",
+                "value": "tasiemka"
+        }
+}
 
-@pytest.mark.skip
+setting_2 = {
+        "setting": {
+                "name": "siemka",
+                "value": "foremka"
+        }
+}
+
 def test_setting():
-    r = requests.post(SETTINGS_URL, auth=basicAuth, data="test_value")
+    r = requests.post(SETTINGS_URL, auth=basicAuth, json=setting_1)
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
 
-    r = requests.post(SETTINGS_URL, auth=basicAuth, data="other_test_value")
+    r = requests.post(SETTINGS_URL, auth=basicAuth, json=setting_2)
     if r.status_code >= 400:
         log.error(r.text)
         assert r.status_code < 400
@@ -195,7 +207,7 @@ def test_setting():
         log.error(r.text)
         assert r.status_code < 400
     j = json.loads(r.text)
-    assert j["value"] == "other_test_value"
+    assert ordered(setting_2) == ordered(j)
 
 
 @pytest.mark.skip

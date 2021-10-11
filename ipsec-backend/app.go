@@ -271,16 +271,31 @@ func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	value, err := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	if err := a.setSetting(key, name, string(value)); err != nil {
+	j := map[string]interface{}{}
+	if err := json.Unmarshal(body, &j); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	settingJson, err := json.Marshal(j["setting"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	setting := sico_yang.SicoIpsec_Api_Setting{}
+	if err := sico_yang.Unmarshal(settingJson, &setting); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := a.setSetting(key, name, *setting.Value); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "success", "value": string(value), "name": name})
+	respondWithJSON(w, http.StatusCreated, nil)
 }
 
 func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
@@ -300,7 +315,19 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "success", "value": value, "name": name})
+	setting := sico_yang.SicoIpsec_Api_Setting{
+		Name:  stringPointer(name),
+		Value: stringPointer(value),
+	}
+	json, err := ygot.EmitJSON(&setting, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, `{"setting":`+json+"}")
 }
 
 func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
