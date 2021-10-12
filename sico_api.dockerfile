@@ -24,7 +24,7 @@ RUN go build
 FROM alpine:3.13 AS sico_api
 
 #Packages
-RUN apk add --no-cache nginx gettext supervisor curl
+RUN apk add --no-cache nginx gettext supervisor curl sqlite
 
 #API
 RUN mkdir -p /iox_data/appdata

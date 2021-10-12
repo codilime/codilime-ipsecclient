@@ -1,5 +1,5 @@
 from typing import cast
-import requests, time, json, logging, os
+import requests, time, json, logging, os, subprocess
 from requests.auth import HTTPBasicAuth
 
 BASE_URL = "http://sico_api"
@@ -240,3 +240,29 @@ def test_cas():
 
     j = json.loads(r.text)
     assert ordered(j) == ordered([])
+
+def test_error_handling():
+    expected_status_code = 400
+    expected_number_of_errors = 1
+    expected_error_message = "masterpass cannot be used as a setting name"
+
+    initial_number_of_errors = len(get_errors_from_database())
+
+    r = requests.post(BASE_URL + "/api/settings/masterpass", data="test_value", auth=basicAuth)
+    assert r.status_code == expected_status_code
+
+    errors = get_errors_from_database()
+
+    number_of_errors = len(errors)
+    assert number_of_errors - initial_number_of_errors == expected_number_of_errors
+
+    error_message = errors[-2].split('|')[1]
+    assert error_message == expected_error_message
+
+def get_errors_from_database():
+    return subprocess.run(
+        'docker -H \"unix:///var/run/docker.sock\" exec sico_api /bin/sh -c \"sqlite3 /iox_data/appdata/ipsec.db \'select * from stored_errors;\'\"',
+        shell=True,
+        check=True,
+        stdout=subprocess.PIPE,
+        universal_newlines=True).stdout.split('\n')
