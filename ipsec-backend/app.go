@@ -184,7 +184,7 @@ func (a *App) changePassword(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJSON(w, http.StatusOK, map[string]interface{}{"status": "ok"})
+	respondWithJSON(w, http.StatusNoContent, nil)
 }
 
 func ClearCAs() error {
@@ -243,6 +243,7 @@ func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	InfoDebug("Set CAs completed", fmt.Sprintf("Set CAs completed|CAs: %v", cas))
+	respondWithJSON(w, http.StatusNoContent, nil)
 }
 
 func (a *App) getCAs(w http.ResponseWriter, r *http.Request) {
@@ -631,7 +632,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 
 	InfoDebug("Update vrf completed", fmt.Sprintf("Update vrf completed|old vrf: %v|updated vrf: %v", oldVrf, vrf))
 
-	respondWithJSON(w, http.StatusOK, vrf)
+	respondWithJSON(w, http.StatusNoContent, nil)
 }
 
 func (a *App) getSwitchCreds(key string) error {
@@ -696,7 +697,7 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 	}
 	InfoDebug("Delete vrf completed", fmt.Sprintf("Delete vrf completed|deleted vrf: %v", vrf))
-	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+	respondWithJSON(w, http.StatusNoContent, nil)
 }
 
 func min(a, b int64) int64 {

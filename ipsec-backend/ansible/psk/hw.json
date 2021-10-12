@@ -17,7 +17,7 @@
       {
         "id": 6,
         "vrf_id": 1,
-        "remote_ip_sec": "10.69.0.3",
+        "remote_ip_sec": "10.69.0.4",
         "local_ip": "192.168.1.2",
         "peer_ip": "192.168.1.1",
         "remote_as": 65001,
