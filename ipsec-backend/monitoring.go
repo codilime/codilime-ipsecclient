@@ -65,7 +65,7 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	respondWithMarshalledJSON(w, http.StatusOK, json)

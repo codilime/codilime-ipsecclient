@@ -272,7 +272,7 @@ def test_error_handling():
 
     initial_number_of_errors = len(get_errors_from_database())
 
-    r = requests.post(BASE_URL + "/api/settings/masterpass", data="test_value", auth=basicAuth)
+    r = requests.post(BASE_URL + "/setting=masterpass", data="test_value", auth=basicAuth)
     assert r.status_code == expected_status_code
 
     errors = get_errors_from_database()
