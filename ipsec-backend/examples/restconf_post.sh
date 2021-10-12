@@ -4,8 +4,8 @@ curl -v -XPOST http://localhost/restconf/data/sico-ipsec:api/vrf -u "admin:cisco
     {
       "active": true,
       "client_name": "ansible_test",
-      "crypto_ph1": "aes128-sha256-modp2048",
-      "crypto_ph2": "aes128-sha256-modp2048",
+      "crypto_ph1": "aes128.sha256.modp2048",
+      "crypto_ph2": "aes128.sha256.modp2048",
       "endpoint": [
         {
           "authentication": {
@@ -29,7 +29,7 @@ curl -v -XPOST http://localhost/restconf/data/sico-ipsec:api/vrf -u "admin:cisco
       "id": 2,
       "local_as": 65001,
       "physical_interface": "eth0",
-      "vlans": [
+      "vlan": [
         {
           "lan_ip": "1.1.1.1/24",
           "vlan": 321
