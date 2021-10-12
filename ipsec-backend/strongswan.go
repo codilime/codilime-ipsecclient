@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ipsec_backend/sico_yang"
 	"strconv"
 	"strings"
 
@@ -20,7 +21,7 @@ type monitoringEndpoint struct {
 	localAddr  string
 	remoteAddr string
 	status     string
-	ID         int
+	ID         uint32
 }
 
 func endpointIDFromKey(key string) (int, error) {
@@ -54,7 +55,7 @@ func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
 			}
 			e := &monitoringEndpoint{
 				status: "DOWN",
-				ID:     id,
+				ID:     uint32(id),
 			}
 			e.localAddr = m.Get(key).(*vici.Message).Get("local_addrs").([]string)[0]
 			e.remoteAddr = m.Get(key).(*vici.Message).Get("remote_addrs").([]string)[0]
@@ -78,26 +79,32 @@ func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
 	return endpoints, nil
 }
 
-func GetStrongswanSingleState(n string) ([]map[string]interface{}, error) {
+func normalizeAddress(addr string) string {
+	if addr == "%any" {
+		return "0.0.0.0"
+	}
+	return addr
+}
+
+func GetStrongswanSingleState(n string) (*sico_yang.SicoIpsec_Api_Monitoring, error) {
 	name := strings.Replace(n, "-", "_", 1)
 	statuses, err := GetStrongswanState()
 	if err != nil {
 		return nil, ReturnError(err)
 	}
-
-	res := []map[string]interface{}{}
+	ret := sico_yang.SicoIpsec_Api_Monitoring{
+		Endpoint: map[uint32]*sico_yang.SicoIpsec_Api_Monitoring_Endpoint{},
+	}
 	for k, v := range statuses {
 		if strings.Contains(k, name) {
-			res = append(res,
-				map[string]interface{}{
-					localIpStr:  v.localAddr,
-					remoteIpStr: v.remoteAddr,
-					saStatusStr: v.status,
-					idStr:       v.ID,
-				},
-			)
+			ret.Endpoint[v.ID] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
+				LocalIp: stringPointer(normalizeAddress(v.localAddr)),
+				PeerIp:  stringPointer(normalizeAddress(v.remoteAddr)),
+				Status:  stringPointer(normalizeStatus(v.status)),
+				Id:      uint32Pointer(v.ID),
+			}
 		}
 	}
 
-	return res, nil
+	return &ret, nil
 }

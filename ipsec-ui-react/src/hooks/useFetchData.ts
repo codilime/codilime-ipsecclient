@@ -41,12 +41,6 @@ export const useFetchData = () => {
     }
   };
 
-  const fetchSoftwareAlgorithms = () => client('/algorithms/software');
-
-  const fetchHardwarePh1 = () => client('/algorithms/hardware/ph1');
-
-  const fetchHardwarePh2 = () => client('/algorithms/hardware/ph2');
-
   const fetchEndpointStatus = async (id: number | string) => await client(`metrics/${id}`);
 
   const fetchLogsList = async () => await client('listlogs');
@@ -62,9 +56,6 @@ export const useFetchData = () => {
     postVrfData,
     deleteVrfData,
     putVrfData,
-    fetchSoftwareAlgorithms,
-    fetchHardwarePh1,
-    fetchHardwarePh2,
     fetchEndpointStatus,
     fetchLogsList,
     fetchLogsData,

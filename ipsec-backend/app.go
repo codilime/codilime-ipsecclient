@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"ipsec_backend/sico_yang"
 	"net/http"
 	"os"
 	"os/exec"
@@ -13,27 +14,29 @@ import (
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/openconfig/ygot/ygot"
 	"gorm.io/gorm"
 )
 
 const (
-	vrfsPath          = "/api/vrfs"
-	vrfsIDPath        = vrfsPath + "/{id:[0-9]+}"
-	metricsPath       = "/api/metrics"
-	softwarePath      = "/api/algorithms/software"
-	hardwarePathPh1   = "/api/algorithms/hardware/ph1"
-	hardwarePathPh2   = "/api/algorithms/hardware/ph2"
-	listLogsPath      = "/api/listlogs"
-	CAsPath           = "/api/cas"
-	settingsPath      = "/api/settings/{name:[a-zA-Z0-9-_]+}"
-	logsPath          = "/api/logs/{name:[a-zA-Z0-9-_]+}"
-	changePassPath    = "/api/changepass"
+	restconfBasePath = "/restconf/data/sico-ipsec:api"
+	vrfPath          = restconfBasePath + "/vrf"
+	vrfIDPath        = vrfPath + "={id:[0-9]+}"
+	monitoringPath   = restconfBasePath + "/monitoring={id:[0-9]+}"
+	logPath          = restconfBasePath + "/log"
+	CAPath           = restconfBasePath + "/ca"
+	settingNamePath  = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
+	passPath         = restconfBasePath + "/password"
+
 	nginxPasswordFile = "/etc/nginx/htpasswd"
 	username          = "admin"
 	CAsDir            = "/opt/ipsec/x509ca"
+
+	lastLogBytes = 65536
 )
 
 type Generator interface {
@@ -49,10 +52,6 @@ type App struct {
 	switchPassword string
 }
 
-func boolPointer(b bool) *bool {
-	return &b
-}
-
 func (a *App) ensureHWVRF() error {
 	hwVrf := Vrf{
 		ID:         hardwareVrfID,
@@ -61,6 +60,7 @@ func (a *App) ensureHWVRF() error {
 		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
 		Active:     boolPointer(false),
 		Endpoints:  []Endpoint{},
+		Vlans:      []byte("[]"),
 	}
 	err := hwVrf.createVrf(a.DB)
 	if err == nil {
@@ -134,22 +134,18 @@ func (a *App) Run(addr string) {
 
 func (a *App) initializeRoutes() {
 	a.Router = mux.NewRouter()
-	a.Router.HandleFunc(vrfsPath, a.getVrfs).Methods(http.MethodGet)
-	a.Router.HandleFunc(vrfsPath, a.createVrf).Methods(http.MethodPost)
-	a.Router.HandleFunc(vrfsIDPath, a.getVrf).Methods(http.MethodGet)
-	a.Router.HandleFunc(vrfsIDPath, a.updateVrf).Methods(http.MethodPut)
-	a.Router.HandleFunc(vrfsIDPath, a.deleteVrf).Methods(http.MethodDelete)
-	a.Router.HandleFunc(softwarePath, a.getSoftwareAlgorithms).Methods(http.MethodGet)
-	a.Router.HandleFunc(hardwarePathPh1, a.getHardwareAlgorithmsPh1).Methods(http.MethodGet)
-	a.Router.HandleFunc(hardwarePathPh2, a.getHardwareAlgorithmsPh2).Methods(http.MethodGet)
-	a.Router.HandleFunc(settingsPath, a.apiGetSetting).Methods(http.MethodGet)
-	a.Router.HandleFunc(settingsPath, a.apiSetSetting).Methods(http.MethodPost)
-	a.Router.HandleFunc(logsPath, a.getLogs).Methods(http.MethodGet)
-	a.Router.HandleFunc(listLogsPath, a.listLogs).Methods(http.MethodGet)
-	a.Router.HandleFunc(changePassPath, a.changePassword).Methods(http.MethodPost)
-	a.Router.HandleFunc(CAsPath, a.setCAs).Methods(http.MethodPost)
-	a.Router.HandleFunc(CAsPath, a.getCAs).Methods(http.MethodGet)
-	a.Router.HandleFunc(metricsPath+"/{id:[0-9]+}", a.metrics).Methods(http.MethodGet)
+	a.Router.HandleFunc(vrfPath, a.getVrfs).Methods(http.MethodGet)
+	a.Router.HandleFunc(vrfPath, a.createVrf).Methods(http.MethodPost)
+	a.Router.HandleFunc(vrfIDPath, a.getVrf).Methods(http.MethodGet)
+	a.Router.HandleFunc(vrfIDPath, a.updateVrf).Methods(http.MethodPatch)
+	a.Router.HandleFunc(vrfIDPath, a.deleteVrf).Methods(http.MethodDelete)
+	a.Router.HandleFunc(monitoringPath, a.monitoring).Methods(http.MethodGet)
+	a.Router.HandleFunc(logPath, a.getLogs).Methods(http.MethodGet)
+	a.Router.HandleFunc(settingNamePath, a.apiGetSetting).Methods(http.MethodGet)
+	a.Router.HandleFunc(settingNamePath, a.apiSetSetting).Methods(http.MethodPost)
+	a.Router.HandleFunc(passPath, a.changePassword).Methods(http.MethodPost)
+	a.Router.HandleFunc(CAPath, a.setCAs).Methods(http.MethodPost)
+	a.Router.HandleFunc(CAPath, a.getCAs).Methods(http.MethodGet)
 }
 
 func getPassFromHeader(header http.Header) (string, error) {
@@ -172,13 +168,20 @@ func (a *App) changePassword(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	newPass, err := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	api := sico_yang.SicoIpsec_Api{}
+	err = sico_yang.Unmarshal(body, &api)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	if err := a._changePassword(oldPass, string(newPass)); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+
+	if err := a._changePassword(oldPass, *api.Password); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	respondWithJSON(w, http.StatusOK, map[string]interface{}{"status": "ok"})
@@ -208,15 +211,23 @@ func writeCAs(cas []CertificateAuthority) error {
 }
 
 func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
-	cas := []CertificateAuthority{}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	if err := json.Unmarshal(body, &cas); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+
+	api := sico_yang.SicoIpsec_Api{}
+	err = sico_yang.Unmarshal(body, &api, nil)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
+	}
+	cas := []CertificateAuthority{}
+	for _, caYang := range api.Ca {
+		ca := CertificateAuthority{}
+		ca.FromYang(caYang)
+		cas = append(cas, ca)
 	}
 	if err := a.DB.Where("1=1").Delete(&CertificateAuthority{}).Error; err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -240,7 +251,21 @@ func (a *App) getCAs(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJSON(w, http.StatusOK, cas)
+	api := sico_yang.SicoIpsec_Api{
+		Ca: map[uint32]*sico_yang.SicoIpsec_Api_Ca{},
+	}
+	for _, ca := range cas {
+		api.Ca[ca.ID] = ca.ToYang()
+	}
+	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, json)
 }
 
 func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
@@ -255,16 +280,32 @@ func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	value, err := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	if err := a.setSetting(key, name, string(value)); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+
+	j := map[string]interface{}{}
+	if err := json.Unmarshal(body, &j); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "success", "value": string(value), "name": name})
+	settingJson, err := json.Marshal(j["setting"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	setting := sico_yang.SicoIpsec_Api_Setting{}
+	if err := sico_yang.Unmarshal(settingJson, &setting); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := a.setSetting(key, name, *setting.Value); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, nil)
 }
 
 func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
@@ -284,10 +325,23 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "success", "value": value, "name": name})
+	setting := sico_yang.SicoIpsec_Api_Setting{
+		Name:  stringPointer(name),
+		Value: stringPointer(value),
+	}
+	json, err := ygot.EmitJSON(&setting, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, `{"setting":`+json+"}")
 }
 
 func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
+	vrfsMap := map[uint32]*sico_yang.SicoIpsec_Api_Vrf{}
 	vrfs, err := getVrfs(a.DB)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -298,15 +352,30 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	for i, v := range vrfs {
-		err = a.decryptPSK(key, &v)
-		if err != nil {
-			a.respondWithError(w, http.StatusUnauthorized, err.Error())
+	for _, v := range vrfs {
+		if err := a.decryptPSK(key, &v); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		vrfs[i] = v
+		vrfYang, err := v.ToYang()
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		vrfsMap[v.ID] = vrfYang
 	}
-	respondWithJSON(w, http.StatusOK, vrfs)
+	api := sico_yang.SicoIpsec_Api{
+		Vrf: vrfsMap,
+	}
+	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, json)
 }
 
 func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
@@ -317,7 +386,7 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vrf := Vrf{ID: id}
+	vrf := Vrf{ID: uint32(id)}
 	if err := vrf.getVrf(a.DB); err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
@@ -337,7 +406,21 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, vrf)
+	vrfYang, err := vrf.ToYang()
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	json, err := ygot.EmitJSON(vrfYang, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, `{"vrf":`+json+`}`)
 }
 
 func vrfValid(vrf Vrf) (bool, error) {
@@ -359,19 +442,71 @@ func vrfValid(vrf Vrf) (bool, error) {
 	return true, nil
 }
 
+func (a *App) _updateBackends(key string, vrf, oldVrf *Vrf) error {
+	createHandler, deleteHandler, err := a.getHandlers(key, *vrf)
+	if err != nil {
+		return ReturnError(err)
+	}
+
+	// save and retrieve the vrf to update the endpoints ids
+	if err := a.encryptPSK(key, vrf); err != nil {
+		return ReturnError(err)
+	}
+	if err := vrf.updateVrf(a.DB); err != nil {
+		return ReturnError(err)
+	}
+	if err := vrf.getVrf(a.DB); err != nil {
+		return ReturnError(err)
+	}
+	if err := a.decryptPSK(key, vrf); err != nil {
+		return ReturnError(err)
+	}
+
+	// handle backends
+	if *oldVrf.Active != *vrf.Active {
+		if *vrf.Active {
+			if err := createHandler(*vrf); err != nil {
+				return ReturnError(err)
+			}
+		} else {
+			if err := deleteHandler(*oldVrf); err != nil {
+				return ReturnError(err)
+			}
+		}
+	} else if *vrf.Active {
+		if err := deleteHandler(*oldVrf); err != nil {
+			return ReturnError(err)
+		}
+		if err := createHandler(*vrf); err != nil {
+			return ReturnError(err)
+		}
+	}
+	return nil
+}
+
 func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
-	var vrf Vrf
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&vrf); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error())
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	defer func() {
-		if err := r.Body.Close(); err != nil {
-			ReturnNewError("error while closing body: " + err.Error())
-		}
-	}()
-
+	j := map[string]interface{}{}
+	if err := json.Unmarshal(body, &j); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	vrfJson, err := json.Marshal(j["vrf"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	yangVrf := sico_yang.SicoIpsec_Api_Vrf{}
+	if err := sico_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	vrf := Vrf{}
+	vrf.FromYang(&yangVrf)
 	valid, err := vrfValid(vrf)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -390,7 +525,6 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	plaintextVrf := vrf
 	if err := a.encryptPSK(key, &vrf); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -399,8 +533,20 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	if err := a.decryptPSK(key, &vrf); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 
-	respondWithJSON(w, http.StatusCreated, plaintextVrf)
+	if err := a._updateBackends(key, &vrf, &Vrf{
+		ID:     vrf.ID,
+		Active: boolPointer(false),
+	}); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusCreated, nil)
 }
 
 type handler func(Vrf) error
@@ -412,22 +558,35 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, "Invalid vrf ID")
 		return
 	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	j := map[string]interface{}{}
+	if err := json.Unmarshal(body, &j); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	vrfJson, err := json.Marshal(j["vrf"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	yangVrf := sico_yang.SicoIpsec_Api_Vrf{}
+	if err := sico_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 	key, err := getPassFromHeader(r.Header)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error())
+		respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	var vrf, oldVrf Vrf
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&vrf); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-	defer func() {
-		if err := r.Body.Close(); err != nil {
-			ReturnNewError("error while closing body: " + err.Error())
-		}
-	}()
+	vrf := Vrf{}
+	spew.Dump(yangVrf)
+	vrf.FromYang(&yangVrf)
 
 	valid, err := vrfValid(vrf)
 	if err != nil {
@@ -438,9 +597,9 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, "vrf invalid")
 		return
 	}
-
-	vrf.ID = id
-	oldVrf.ID = id
+	var oldVrf Vrf
+	vrf.ID = uint32(id)
+	oldVrf.ID = uint32(id)
 
 	if err := oldVrf.getVrf(a.DB); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -456,55 +615,10 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	if vrf.Active == nil {
 		vrf.Active = oldVrf.Active
 	}
-
-	createHandler, deleteHandler, err := a.getHandlers(key, vrf)
-	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+	if err := a._updateBackends(key, &vrf, &oldVrf); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	// save and retrieve the vrf to update the endpoints ids
-	if err := a.encryptPSK(key, &vrf); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	if err := vrf.updateVrf(a.DB); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	if err := vrf.getVrf(a.DB); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	if err := a.decryptPSK(key, &vrf); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	// handle backends
-	if *oldVrf.Active != *vrf.Active {
-		if *vrf.Active {
-			if err := createHandler(vrf); err != nil {
-				a.respondWithError(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-		} else {
-			if err := deleteHandler(oldVrf); err != nil {
-				a.respondWithError(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-		}
-	} else if *vrf.Active {
-		if err := deleteHandler(oldVrf); err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		if err := createHandler(vrf); err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-	}
-
 	respondWithJSON(w, http.StatusOK, vrf)
 }
 
@@ -543,7 +657,7 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vrf := Vrf{ID: id}
+	vrf := Vrf{ID: uint32(id)}
 	if err := vrf.getVrf(a.DB); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -553,7 +667,6 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
 	err = ReturnError(
 		func() error {
 			return deleteHandler(vrf)
@@ -572,68 +685,65 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
 
-func (a *App) getSoftwareAlgorithms(w http.ResponseWriter, r *http.Request) {
-	enc := getSoftwareEncryptionAlgorithms()
-	integrity := getSoftwareIntegrityAlgorithms()
-	keyExchange := getSoftwareKeyExchangeAlgorithms()
-
-	res := map[string][]string{
-		"encryption":   enc,
-		"integrity":    integrity,
-		"key_exchange": keyExchange,
+func min(a, b int64) int64 {
+	if a < b {
+		return a
 	}
-
-	respondWithJSON(w, http.StatusOK, res)
+	return b
 }
 
-func (a *App) getHardwareAlgorithmsPh1(w http.ResponseWriter, r *http.Request) {
-	enc := getHardwareEncryptionAlgorithmsPh1()
-	integrity := getHardwareIntegrityAlgorithmsPh1()
-	keyExchange := getHardwareKeyExchangeAlgorithmsPh1()
-
-	res := map[string][]string{
-		"encryption":   enc,
-		"integrity":    integrity,
-		"key_exchange": keyExchange,
+func getLastBytesOfFile(fname string, maxBytes int64) ([]byte, error) {
+	file, err := os.Open(fname)
+	if err != nil {
+		return nil, ReturnError(err)
 	}
+	defer file.Close()
 
-	respondWithJSON(w, http.StatusOK, res)
-}
-
-func (a *App) getHardwareAlgorithmsPh2(w http.ResponseWriter, r *http.Request) {
-	enc := getHardwareEncryptionAlgorithmsPh2()
-	integrity := getHardwareIntegrityAlgorithmsPh2()
-	keyExchange := getHardwareKeyExchangeAlgorithmsPh2()
-
-	res := map[string][]string{
-		"encryption":   enc,
-		"integrity":    integrity,
-		"key_exchange": keyExchange,
+	stat, err := os.Stat(fname)
+	if err != nil {
+		return nil, ReturnError(err)
 	}
-
-	respondWithJSON(w, http.StatusOK, res)
+	bytes := min(maxBytes, stat.Size())
+	buf := make([]byte, bytes)
+	start := stat.Size() - bytes
+	n, err := file.ReadAt(buf, start)
+	fmt.Println(fname, start, bytes, n)
+	if err != nil {
+		return nil, ReturnError(err)
+	}
+	return buf, nil
 }
 
 func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	name := vars["name"]
-	offsetStr := r.URL.Query().Get("offset")
-	offset, _ := strconv.Atoi(offsetStr)
-	res, err := GetProcessLog(name, offset, 4294967296)
+	processInfos, err := GetProcessInfos()
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJSON(w, http.StatusOK, res)
-}
+	api := sico_yang.SicoIpsec_Api{
+		Log: map[string]*sico_yang.SicoIpsec_Api_Log{},
+	}
+	for _, info := range processInfos {
+		log, err := getLastBytesOfFile(info.StdoutLogfile, lastLogBytes)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		api.Log[info.Name] = &sico_yang.SicoIpsec_Api_Log{
+			Name: stringPointer(info.Name),
+			Log:  stringPointer(string(log)),
+		}
+	}
 
-func (a *App) listLogs(w http.ResponseWriter, r *http.Request) {
-	res, err := GetProcessNames()
+	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJSON(w, http.StatusOK, res)
+	respondWithMarshalledJSON(w, http.StatusOK, json)
 }
 
 func (a *App) respondWithError(w http.ResponseWriter, code int, message string) {
