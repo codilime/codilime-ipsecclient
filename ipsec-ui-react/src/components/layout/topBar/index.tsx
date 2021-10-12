@@ -1,7 +1,7 @@
 import { useState, FC } from 'react';
-import Logo from 'images/cisco_logo.png';
 import { Button } from 'common/';
 import { Notification, Logout, Setting, PopupLogs } from 'template';
+import Logo from 'images/cisco_logo.png';
 import './styles.scss';
 
 interface TopBarTypes {
@@ -12,13 +12,14 @@ export const TopBar: FC<TopBarTypes> = ({ productName }) => {
   const [openPopup, setOpenPopup] = useState({ setting: false, notice: false, logs: false });
 
   const handleOpenAction = (name: string) => {
-    if (name === 'setting') {
-      return setOpenPopup((prev) => ({ setting: !prev.setting, notice: false, logs: false }));
+    switch (name) {
+      case 'setting':
+        return setOpenPopup((prev) => ({ setting: !prev.setting, notice: false, logs: false }));
+      case 'logs':
+        return setOpenPopup((prev) => ({ setting: false, notice: false, logs: !prev.logs }));
+      default:
+        return setOpenPopup((prev) => ({ notice: !prev.notice, setting: false, logs: false }));
     }
-    if (name === 'logs') {
-      return setOpenPopup((prev) => ({ setting: false, notice: false, logs: !prev.logs }));
-    }
-    return setOpenPopup((prev) => ({ notice: !prev.notice, setting: false, logs: false }));
   };
 
   return (

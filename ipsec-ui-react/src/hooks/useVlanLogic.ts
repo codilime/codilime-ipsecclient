@@ -1,16 +1,16 @@
 import { useState, useEffect, ChangeEvent } from 'react';
-import { FieldValues, UseFormReset, UseFormSetValue } from 'react-hook-form';
+import { FieldValues, UseFormSetValue } from 'react-hook-form';
 import { useAppContext } from 'hooks/';
-import { vlanInterface } from 'interface/index';
+import { VlanInterface } from 'interface/index';
 
-export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>, reset: UseFormReset<FieldValues>) => {
+export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
   const {
     vrf: { data }
   } = useAppContext();
 
   const [error, setError] = useState(false);
-  const [vlan, setVlan] = useState<vlanInterface[] | []>([]);
-  const [vlanInterface, setVlanInterface] = useState<vlanInterface>({ vlan: 0, lan_ip: '' });
+  const [vlan, setVlan] = useState<VlanInterface[] | []>([]);
+  const [vlanInterface, setVlanInterface] = useState<VlanInterface>({ vlan: 0, lan_ip: '' });
 
   const checkLanIpValue = (value: string) => {
     const arrayOfValue = value.split('.');

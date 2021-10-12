@@ -5,9 +5,10 @@ import { defaultVrf } from 'db';
 
 export const useGetVrfs = (vrfId?: string) => {
   const { currentLocation, history } = useGetLocation();
-  const { vrf, setVrf } = useAppContext();
-
-  const { vrfs } = vrf;
+  const {
+    vrf: { vrfs },
+    setVrf
+  } = useAppContext();
 
   const findActiveVrfPage = () => {
     if (!vrfs.length) {

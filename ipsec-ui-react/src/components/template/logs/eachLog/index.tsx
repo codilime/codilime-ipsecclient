@@ -2,8 +2,8 @@ import { FC, useEffect } from 'react';
 import { Button, ScrollToBottom } from 'common/';
 import { Dotted } from 'template';
 import { useToggle, useLogsLogic } from 'hooks/';
-import classNames from 'classnames';
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
+import classNames from 'classnames';
 
 interface EachLogType {
   title: string;

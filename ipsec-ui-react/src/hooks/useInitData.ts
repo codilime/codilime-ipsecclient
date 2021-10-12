@@ -28,9 +28,7 @@ export const useInitData = () => {
 
   const fetchVrfData = async () => {
     const vrfs = await fetchData();
-    if (!vrfs) {
-      throw new Error('Hardware_ph nie został pobrany');
-    }
+    if (!vrfs) throw new Error('Hardware_ph nie został pobrany');
     setVrf((prev) => ({ ...prev, vrfs }));
   };
 

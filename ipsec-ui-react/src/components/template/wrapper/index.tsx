@@ -1,5 +1,4 @@
 import { FC, Ref } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './styles.scss';
 

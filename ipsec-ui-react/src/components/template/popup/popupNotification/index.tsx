@@ -9,7 +9,7 @@ interface PopupNotificationType {
 }
 
 export const PopupNotification: FC<PopupNotificationType> = ({ open, handleToggle, notifications }) => {
-  const displayError = notifications.map((error, index) => <EachError key={index} {...error} />);
+  const displayError = notifications.map((notice, index) => <EachError key={index} {...notice} />);
 
   return (
     <Popup {...{ open, handleToggle, title: 'Notifications' }}>

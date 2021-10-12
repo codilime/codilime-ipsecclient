@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useFetchData, useAppContext } from 'hooks/';
-import { endpointsType } from 'interface/index';
+import { EndpointsType } from 'interface/index';
 
 export const useEndpoint = (handleToggle: () => void) => {
   const { vrf, setVrf } = useAppContext();
   const { data, loading } = vrf;
   const { endpoints } = data;
   const [send, setSend] = useState(false);
-  const [vrfEndpoints, setVrfEndpoints] = useState<endpointsType[] | null>(endpoints);
+  const [vrfEndpoints, setVrfEndpoints] = useState<EndpointsType[] | null>(endpoints);
   const { putVrfData } = useFetchData();
 
-  const handleChangeVrfEndpoints = (data: any, id: number) => {
+  const handleChangeVrfEndpoints = (data: EndpointsType, id: number) => {
     if (vrfEndpoints === null) return;
     return vrfEndpoints.reduce((total: any, vrf, index) => {
       if (index === id) {
@@ -30,7 +30,7 @@ export const useEndpoint = (handleToggle: () => void) => {
     }, []);
   };
 
-  const handleActionVrfEndpoints = (action: string, data: endpointsType, id?: number) => {
+  const handleActionVrfEndpoints = (action: string, data: EndpointsType, id?: number) => {
     switch (action) {
       case 'add': {
         if (endpoints === null) {

@@ -2,12 +2,12 @@ import { FC } from 'react';
 import { EndpointButton } from 'common/';
 import { EndpointOption, Modal } from 'template';
 import { useEndpointLogic, useToggle, useModalLogic } from 'hooks/';
-import { endpointsType } from 'interface/index';
+import { EndpointsType } from 'interface/index';
 
 interface EachEndpointType {
-  endpoint: endpointsType;
+  endpoint: EndpointsType;
   active: boolean;
-  handleActionVrfEndpoints: (action: string, data: endpointsType, id?: number) => void;
+  handleActionVrfEndpoints: (action: string, data: EndpointsType, id?: number) => void;
   id: number | null;
 }
 

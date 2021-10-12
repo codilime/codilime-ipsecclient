@@ -2,16 +2,16 @@ import { FC } from 'react';
 import { VisualizationOneLabel, VisualizationTwoLabel, VisualizationThreeLabel, VisualizationBox, VisualizationLine, VisualizationStatus, VisualizationIcon } from 'template';
 import { variable } from '../visualizationConstants';
 import { Group } from 'react-konva';
-import { visualization } from 'interface/components';
-import { endpointsType, vlanInterface, MetricsType } from 'interface/index';
+import { Visualization } from 'interface/components';
+import { EndpointsType, VlanInterface, MetricsType } from 'interface/index';
 
-interface VisualizationVrf extends visualization {
+interface VisualizationVrf extends Visualization {
   title: string;
   dimensions: number;
-  vlans?: vlanInterface[] | null;
+  vlans?: VlanInterface[] | null;
   height: number;
   width: number;
-  endpoints: endpointsType[];
+  endpoints: EndpointsType[];
   metrics: MetricsType[];
   hardware: boolean;
 }

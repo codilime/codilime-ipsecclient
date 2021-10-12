@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { Circle, Group, Text } from 'react-konva';
-import { visualization } from 'interface/components';
+import { Visualization } from 'interface/components';
 import { MetricsType } from 'interface/index';
 
-interface VisualizationStatusText extends visualization {
+interface VisualizationStatusText extends Visualization {
   status?: MetricsType;
   width: number;
 }

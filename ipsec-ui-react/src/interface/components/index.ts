@@ -18,7 +18,7 @@ export interface InputType {
   references?: Ref<HTMLInputElement>;
 }
 
-export interface visualization {
+export interface Visualization {
   x: number;
   y: number;
   width?: number;

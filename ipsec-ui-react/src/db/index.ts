@@ -1,4 +1,4 @@
-import { ContextProps, endpointsType, DetailsTypes, endpointSchemaType } from 'interface/index';
+import { ContextProps, EndpointsType, DetailsTypes, EndpointSchemaType, SoftwareCryptoDataTypes } from 'interface/index';
 
 export const defaultVrf: ContextProps = {
   data: {
@@ -44,7 +44,7 @@ export const tableHardwaHeaderSchema = [
   { header: 'ACTION' }
 ];
 
-export const emptyEndpointSchema: endpointsType = {
+export const emptyEndpointSchema: EndpointsType = {
   remote_ip_sec: '',
   local_ip: '',
   peer_ip: '',
@@ -59,7 +59,7 @@ export const emptyEndpointSchema: endpointsType = {
   bgp: false
 };
 
-export const emptyHardwareSchema: endpointsType = {
+export const emptyHardwareSchema: EndpointsType = {
   remote_ip_sec: '',
   local_ip: '',
   peer_ip: '',
@@ -75,7 +75,7 @@ export const emptyHardwareSchema: endpointsType = {
   bgp: false
 };
 
-export const endpointInputSchema: endpointSchemaType[] = [
+export const endpointInputSchema: EndpointSchemaType[] = [
   { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
   { type: 'text', name: 'local_ip', placeholder: 'Enter local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
   { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor. ' },
@@ -83,7 +83,7 @@ export const endpointInputSchema: endpointSchemaType[] = [
   { type: 'checkbox', name: 'nat' },
   { type: 'checkbox', name: 'bgp' }
 ];
-export const endpointHardwareSchema: endpointSchemaType[] = [
+export const endpointHardwareSchema: EndpointSchemaType[] = [
   { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
   { type: 'text', name: 'local_ip', placeholder: 'Enter local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
   { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor.' },

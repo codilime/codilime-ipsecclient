@@ -2,7 +2,7 @@ import { ChangeEvent, useRef, useState, useEffect } from 'react';
 import { useAppContext } from 'hooks/';
 import { client } from 'api/';
 
-interface dynamicObject {
+interface DynamicObject {
   [key: string]: boolean;
 }
 
@@ -15,7 +15,7 @@ export const useCertificatesLogic = () => {
   const { certificates } = vrf;
   const uploadBtn = useRef<HTMLInputElement>(null);
   const [certs, setCerts] = useState<CertsType[]>([]);
-  const [checkedCa, setCheckedCa] = useState<dynamicObject>();
+  const [checkedCa, setCheckedCa] = useState<DynamicObject>();
 
   const handleAddCerts = () => {
     if (uploadBtn.current) return uploadBtn.current.click();
