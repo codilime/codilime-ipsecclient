@@ -1,20 +1,22 @@
 import { ChangeEvent, FC } from 'react';
+import { decodeX509 } from 'utils/';
 
 interface eachCertificateType {
-  name: string;
-  commonName: string;
-  time: any;
-  checked: boolean;
-  handleCheckCerts: (e: ChangeEvent<HTMLInputElement>, name: string) => void;
+  ID: number;
+  CA: string;
+  handleCheckCerts: (e: ChangeEvent<HTMLInputElement>, name: number) => void;
 }
 
-export const EachCertificate: FC<eachCertificateType> = ({ name, commonName, time, checked, handleCheckCerts }) => (
-  <tr className="table__row">
-    <td className="table__setting__column">{name}</td>
-    <td className="table__setting__column">{commonName}</td>
-    <td className="table__setting__column table__setting__time">{time}</td>
-    <td className="table__setting__column table__setting__checked">
-      <input {...{ type: 'checkbox', className: 'table__setting__checkbox', checked, onChange: (e) => handleCheckCerts(e, name) }} />
-    </td>
-  </tr>
-);
+export const EachCertificate: FC<eachCertificateType> = ({ ID, CA, handleCheckCerts }) => {
+  const decode = decodeX509(CA);
+
+  return (
+    <tr className="table__row">
+      <td className="table__setting__column">{decode.ON}</td>
+      <td className="table__setting__column">{decode.CN}</td>
+      <td className="table__setting__column table__setting__checked">
+        <input {...{ type: 'checkbox', className: 'table__setting__checkbox', onChange: (e) => handleCheckCerts(e, ID) }} />
+      </td>
+    </tr>
+  );
+};

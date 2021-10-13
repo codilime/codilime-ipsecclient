@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import { endpointsType } from 'interface/index';
 import { decodeX509 } from 'utils/';
 
-
 interface HookType {
   edit: boolean;
   error: any;
@@ -102,12 +101,12 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       setFileName((prev) => ({ ...prev, key: 'Private Key' }));
     }
     if (local_cert) {
-      const CN = decodeX509(local_cert);
-      if (CN) setFileName((prev) => ({ ...prev, certificate: CN }));
+      const decode = decodeX509(local_cert);
+      if (decode) setFileName((prev) => ({ ...prev, certificate: decode.CN }));
     }
     if (remote_cert) {
-      const CN = decodeX509(remote_cert);
-      setFileName((prev) => ({ ...prev, peerCertificate: CN }));
+      const decode = decodeX509(remote_cert);
+      if (decode) setFileName((prev) => ({ ...prev, peerCertificate: decode.CN }));
     }
   }, [private_key, local_cert, remote_cert]);
 

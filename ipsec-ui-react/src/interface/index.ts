@@ -42,13 +42,17 @@ export interface CryptoTypes {
   crypto_ph1: softwareCryptoDataTypes;
   crypto_ph2: softwareCryptoDataTypes;
 }
+export interface CertificatesType {
+  ID?: number;
+  CA: string;
+}
 
 export interface ContextProps {
   data: vrfDataTypes;
   softwareCrypto: CryptoTypes;
   hardwareCrypto: CryptoTypes;
-  certificates: Array<any>;
-  vrfs: Array<any>;
+  certificates: CertificatesType[];
+  vrfs: vrfDataTypes[];
   notifications: Array<any>;
   loading: boolean;
   hardware: boolean;
@@ -120,4 +124,9 @@ export interface descriptionType {
 export interface ChangePasswordType {
   newPassword: string;
   newPasswordConfirmation: string;
+}
+
+export interface vlanInterface {
+  vlan: number;
+  lan_ip: string;
 }

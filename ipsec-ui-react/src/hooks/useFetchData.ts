@@ -4,16 +4,16 @@ import { handleTakeTime } from 'utils/';
 
 export const useFetchData = () => {
   const { setVrf } = useAppContext();
-  
+
   const fetchData = () => client('vrfs');
 
   const postVrfData = async (payload: any) => {
     setVrf((prev) => ({ ...prev, loading: true }));
     try {
-      const { id } = await client('vrfs', { ...payload }, { method: 'POST' });
-      if (id) {
+      const res = await client('vrfs', { ...payload }, { method: 'POST' });
+      if (res) {
         setVrf((prev) => ({ ...prev, loading: false }));
-        return id;
+        return res;
       }
     } catch (err: any) {
       setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { time: handleTakeTime(), description: err.error }] }));
@@ -55,5 +55,20 @@ export const useFetchData = () => {
 
   const fetchRestConfData = async () => await client(`settings/restConf`);
 
-  return { fetchData, postVrfData, deleteVrfData, putVrfData, fetchSoftwareAlgorithms, fetchHardwarePh1, fetchHardwarePh2, fetchEndpointStatus, fetchLogsList, fetchLogsData, fetchRestConfData };
+  const fetchCertsData = async () => await client('cas');
+
+  return {
+    fetchData,
+    postVrfData,
+    deleteVrfData,
+    putVrfData,
+    fetchSoftwareAlgorithms,
+    fetchHardwarePh1,
+    fetchHardwarePh2,
+    fetchEndpointStatus,
+    fetchLogsList,
+    fetchLogsData,
+    fetchRestConfData,
+    fetchCertsData
+  };
 };

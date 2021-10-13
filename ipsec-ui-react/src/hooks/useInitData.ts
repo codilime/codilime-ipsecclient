@@ -1,8 +1,7 @@
 import { useFetchData, useAppContext } from 'hooks/';
 
-
 export const useInitData = () => {
-  const { fetchData, fetchHardwarePh1, fetchHardwarePh2, fetchSoftwareAlgorithms, fetchRestConfData } = useFetchData();
+  const { fetchData, fetchHardwarePh1, fetchHardwarePh2, fetchSoftwareAlgorithms, fetchCertsData } = useFetchData();
 
   const {
     vrf: { loading },
@@ -35,5 +34,11 @@ export const useInitData = () => {
     setVrf((prev) => ({ ...prev, vrfs }));
   };
 
-  return { fetchVrfData, fetchVrfSettings, loading };
+  const fetchCerts = async () => {
+    const certificates = await fetchCertsData();
+    if (!certificates) throw new Error('Hardware_ph nie został pobrany');
+    setVrf((prev) => ({ ...prev, certificates }));
+  };
+
+  return { fetchVrfData, fetchVrfSettings, fetchCerts, loading };
 };
