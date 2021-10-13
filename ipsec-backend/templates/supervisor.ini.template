@@ -1,7 +1,7 @@
 [program:{{ $.ClientName }}]
 command=/usr/local/sbin/ipsec.sh
 # todo: fix this
-environment=PHYS_IF="{{ $.PhysicalInterface }}", VRF_ID="{{ $.ID }}", XFRM_IP="{{ $.LocalIPs }}", XFRM_PEER="{{ $.PeerIPs }}", NAT="{{ $.Nats }}", VLANS_IPS="{{ $.Vlans }}"
+environment=PHYS_IF="{{ $.PhysicalInterface }}", VRF_ID="{{ $.ID }}", XFRM_IP="{{ $.LocalIPs }}", XFRM_PEER="{{ $.PeerIPs }}", NAT="{{ $.Nats }}", VLANS_IPS="{{ $.Vlans }}", ENDPOINT_IDS="{{ $.EndpointIDs }}"
 redirect_stderr=true
 #stdout_logfile=/dev/stdout
 #stdout_logfile_maxbytes = 0

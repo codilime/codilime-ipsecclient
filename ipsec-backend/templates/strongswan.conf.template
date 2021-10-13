@@ -1,34 +1,34 @@
 connections {
-{{ range $index, $val := .Endpoints }}
-    {{ $.ClientName }}_{{ $val.ID }} {
-        remote_addrs = {{ $val.RemoteIPSec }}
+{{ range $index, $endpoint := .Endpoints }}
+    {{ $.ClientName }}_{{ $endpoint.ID }} {
+        remote_addrs = {{ $endpoint.RemoteIPSec }}
         local {
-            {{ if $val.IsPSK }}
+            {{ if $endpoint.IsPSK }}
                 auth = psk
-                id = {{ $val.RemoteIPSec }}
-            {{ else if $val.IsCerts }}
+                id = {{ $endpoint.RemoteIPSec }}
+            {{ else if $endpoint.IsCerts }}
                 auth = pubkey
-                certs = {{$.ClientName}}-{{$val.LocalIP}}.pem
+                certs = {{$.ClientName}}-{{$endpoint.LocalIP}}.pem
             {{ end }}
         }
         remote {
-            {{ if $val.IsPSK }}
+            {{ if $endpoint.IsPSK }}
                 auth = psk
-                id = {{ $val.RemoteIPSec }}
-            {{ else if $val.IsCerts }}
+                id = {{ $endpoint.RemoteIPSec }}
+            {{ else if $endpoint.IsCerts }}
                 auth = pubkey
-                certs = {{$.ClientName}}-{{$val.PeerIP}}.pem
+                certs = {{$.ClientName}}-{{$endpoint.PeerIP}}.pem
             {{ end }}
         }
         children {
-            site-cisco_{{ $val.ID }} {
+            site-cisco_{{ $endpoint.ID }} {
                 remote_ts = 0.0.0.0/0
                 local_ts = 0.0.0.0/0
-                if_id_in = {{ $val.ID }}
-                if_id_out = {{ $val.ID }}
+                if_id_in = {{ $endpoint.ID }}
+                if_id_out = {{ $endpoint.ID }}
                 esp_proposals = {{ $.Crypto2 }}
                 start_action = start
-                updown=/usr/local/bin/status.sh {{ $.ClientName }}-{{ $val.ID }}-{{ $val.RemoteIPSec }}
+                updown=/usr/local/bin/status.sh {{ $.ClientName }}-{{ $endpoint.ID }}-{{ $endpoint.RemoteIPSec }}
             }
         }
         version = 2
@@ -37,13 +37,13 @@ connections {
 {{ end }}
 }
 secrets {
-{{ range $index, $val := .Endpoints }}
-    ike-{{ $.ClientName }}_{{ $val.ID }} {
-        {{ if $val.IsPSK }}
-            id = {{ $val.RemoteIPSec }}
-            secret = {{ $val.Authentication.PSK }}
-        {{ else if $val.IsCerts }}
-            file = {{$.ClientName}}-{{$val.PeerIP}}.key.pem
+{{ range $index, $endpoint := .Endpoints }}
+    ike-{{ $.ClientName }}_{{ $endpoint.ID }} {
+        {{ if $endpoint.IsPSK }}
+            id = {{ $endpoint.RemoteIPSec }}
+            secret = {{ $endpoint.Authentication.PSK }}
+        {{ else if $endpoint.IsCerts }}
+            file = {{$.ClientName}}-{{$endpoint.PeerIP}}.key.pem
         {{ end }}
     }
 {{ end }}

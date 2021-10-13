@@ -111,8 +111,9 @@ for IP in $XFRM_IP; do
   INTERFACE="ipsec-$VRF_ID`printf %02d $ITER`"
   LOCAL_IP=`echo $XFRM_IP|awk {'print $'$ITER}`
   PEER_IP=`echo $XFRM_PEER|awk {'print $'$ITER}`
+  ENDPOINT_ID=`echo $ENDPOINT_IDS|awk {'print $'$ITER}`
   logs " $INTERFACE"
-  ip link add $INTERFACE type xfrm dev lo if_id $VRF_ID`printf %02d $ITER` 2>&1 | logs_err
+  ip link add $INTERFACE type xfrm dev lo if_id $ENDPOINT_ID 2>&1 | logs_err
   ip link set dev $INTERFACE master vrf-$VRF_ID 2>&1 | logs_err
   ip link set dev $INTERFACE up 2>&1 | logs_err
   ip addr add $LOCAL_IP peer $PEER_IP dev $INTERFACE 2>&1 | logs_err

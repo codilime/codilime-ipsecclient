@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 	"text/template"
 
@@ -181,6 +182,7 @@ func generateSupervisorTemplate(vrf Vrf) (string, error) {
 	localIps := make([]string, 0, len(vrf.Endpoints))
 	peerIps := make([]string, 0, len(vrf.Endpoints))
 	nats := make([]string, 0, len(vrf.Endpoints))
+	ids := make([]string, 0, len(vrf.Endpoints))
 	vlans, err := vrf.getVlans()
 	if err != nil {
 		return "", ReturnError(err)
@@ -195,6 +197,7 @@ func generateSupervisorTemplate(vrf Vrf) (string, error) {
 	for _, endpoint := range vrf.Endpoints {
 		localIps = append(localIps, endpoint.LocalIP)
 		peerIps = append(peerIps, endpoint.PeerIP)
+		ids = append(ids, strconv.Itoa(int(endpoint.ID)))
 		if endpoint.NAT {
 			nats = append(nats, "YES")
 		} else {
@@ -205,17 +208,19 @@ func generateSupervisorTemplate(vrf Vrf) (string, error) {
 	builder := strings.Builder{}
 	if err = t.Execute(&builder, struct {
 		Vrf
-		LocalIPs string
-		PeerIPs  string
-		LanIPs   string
-		Nats     string
-		Vlans    string
+		LocalIPs    string
+		PeerIPs     string
+		LanIPs      string
+		Nats        string
+		EndpointIDs string
+		Vlans       string
 	}{
-		Vrf:      vrf,
-		LocalIPs: strings.Join(localIps, " "),
-		PeerIPs:  strings.Join(peerIps, " "),
-		Nats:     strings.Join(nats, " "),
-		Vlans:    vlansStr,
+		Vrf:         vrf,
+		LocalIPs:    strings.Join(localIps, " "),
+		PeerIPs:     strings.Join(peerIps, " "),
+		Nats:        strings.Join(nats, " "),
+		EndpointIDs: strings.Join(ids, " "),
+		Vlans:       vlansStr,
 	}); err != nil {
 		return "", ReturnError(err)
 	}
