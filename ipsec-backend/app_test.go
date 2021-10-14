@@ -79,6 +79,7 @@ func TestCreateVrf(t *testing.T) {
 
 	expectedVrf := createTestVrf()
 	data := map[string]interface{}{
+		"id":                 expectedVrf.ID,
 		"client_name":        expectedVrf.ClientName,
 		"vlans":              expectedVrf.Vlans,
 		"crypto_ph1":         expectedVrf.CryptoPh1,
@@ -108,14 +109,9 @@ func TestCreateVrf(t *testing.T) {
 	if err := decoder.Decode(&receivedVrf); err != nil {
 		t.Fatalf("error during decode %v\n", err)
 	}
-
-	expectedVrf.ID = 0 // ID of vrf in the responsnse is different than ID of vrf stored in data base
-
 	if !reflect.DeepEqual(expectedVrf, receivedVrf) {
 		t.Fatalf("Expected received vrf to be '%v'. Got '%v'\n", expectedVrf, receivedVrf)
 	}
-
-	expectedVrf.ID = 1 // ID of vrf in the responsnse is different than ID of vrf stored in data base
 
 	var vrfs []Vrf
 	a.DB.Preload("Endpoints").Find(&vrfs)
@@ -154,20 +150,16 @@ func TestUpdateVrf(t *testing.T) {
 	expectedVrf := createTestVrf()
 	addVrf(t, expectedVrf)
 
-	active := true
-
 	expectedVrf.ClientName = `changed name`
 	expectedVrf.Vlans = []byte(`[{"vlan":1000,"lan_ip":"10"}]`)
 	expectedVrf.PhysicalInterface = `changed interface name`
 	expectedVrf.Endpoints = []Endpoint{}
-	expectedVrf.Active = &active
 
 	data := map[string]interface{}{
 		"client_name":        expectedVrf.ClientName,
-		"vlans":              expectedVrf.Vlans, // CHECK THIS BUG
+		"vlans":              expectedVrf.Vlans,
 		"physical_interface": expectedVrf.PhysicalInterface,
 		"endpoints":          expectedVrf.Endpoints,
-		"active":             expectedVrf.Active,
 	}
 	dataJSON, _ := json.Marshal(data)
 
@@ -286,7 +278,7 @@ func createTestVrf() Vrf {
 		3,
 		[]Endpoint{{
 			1,
-			1,
+			2,
 			"192.168.0.1",
 			"0.0.0.1",
 			"10.42.0.1",
