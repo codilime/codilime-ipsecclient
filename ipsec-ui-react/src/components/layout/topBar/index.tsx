@@ -1,5 +1,5 @@
 import { useState, FC } from 'react';
-import Logo from 'images/cisco_logo.png';
+import Logo from 'images/Logo.png';
 import { Button } from 'common/';
 import { Notification, Logout, Setting, PopupLogs } from 'template';
 import './styles.scss';
