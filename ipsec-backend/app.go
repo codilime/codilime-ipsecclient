@@ -14,7 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
@@ -122,7 +121,6 @@ func (a *App) _changePassword(oldPass, newPass string) error {
 	if err != nil {
 		return ReturnError(err)
 	}
-	fmt.Println("masterpass", masterpass)
 	return ReturnError(
 		a.DB.Where("1 = 1").Delete(&Masterpass{}).Error,
 		a.ensureMasterPass(newPass, masterpass),
@@ -594,7 +592,6 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vrf := Vrf{}
-	spew.Dump(yangVrf)
 	vrf.FromYang(&yangVrf)
 
 	valid, err := vrfValid(vrf)
@@ -721,8 +718,7 @@ func getLastBytesOfFile(fname string, maxBytes int64) ([]byte, error) {
 	bytes := min(maxBytes, stat.Size())
 	buf := make([]byte, bytes)
 	start := stat.Size() - bytes
-	n, err := file.ReadAt(buf, start)
-	fmt.Println(fname, start, bytes, n)
+	_, err = file.ReadAt(buf, start)
 	if err != nil {
 		return nil, ReturnError(err)
 	}

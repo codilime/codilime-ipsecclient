@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
 	"github.com/openconfig/ygot/ygot"
 	"gorm.io/gorm"
@@ -54,13 +53,12 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	monitoring.Id = uint32Pointer(uint32(id))
-	ret := sico_yang.SicoIpsec_Api{
+	api := sico_yang.SicoIpsec_Api{
 		Monitoring: map[uint32]*sico_yang.SicoIpsec_Api_Monitoring{
 			uint32(id): monitoring,
 		},
 	}
-	spew.Dump(ret)
-	json, err := ygot.EmitJSON(&ret, &ygot.EmitJSONConfig{
+	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
 		Format: ygot.RFC7951,
 		Indent: "  ",
 	})
@@ -85,7 +83,7 @@ func (a *App) getHWMetrics() (*sico_yang.SicoIpsec_Api_Monitoring, error) {
 		return &sico_yang.SicoIpsec_Api_Monitoring{}, nil
 	}
 	idents := res["Cisco-IOS-XE-crypto-oper:crypto-ipsec-ident"].([]interface{})
-	ret := sico_yang.SicoIpsec_Api_Monitoring{
+	monitoring := sico_yang.SicoIpsec_Api_Monitoring{
 		Endpoint: map[uint32]*sico_yang.SicoIpsec_Api_Monitoring_Endpoint{},
 	}
 	for _, ident_ := range idents {
@@ -96,12 +94,12 @@ func (a *App) getHWMetrics() (*sico_yang.SicoIpsec_Api_Monitoring, error) {
 		localIp := identData["local-endpt-addr"].(string)
 		remoteIp := identData["remote-endpt-addr"].(string)
 		saStatus := identData["inbound-esp-sa"].(map[string]interface{})["sa-status"].(string)
-		ret.Endpoint[uint32(endpointID)] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
+		monitoring.Endpoint[uint32(endpointID)] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
 			LocalIp: stringPointer(localIp),
 			PeerIp:  stringPointer(remoteIp),
 			Status:  stringPointer(normalizeStatus(saStatus)),
 			Id:      uint32Pointer(uint32(endpointID)),
 		}
 	}
-	return &ret, nil
+	return &monitoring, nil
 }

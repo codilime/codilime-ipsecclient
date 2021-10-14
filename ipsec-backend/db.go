@@ -85,15 +85,6 @@ func (v *Vrf) getVlans() ([]Vlan, error) {
 	return ret, ReturnError(err)
 }
 
-func (v *Vrf) setVlans(vlans []Vlan) error {
-	vlansJson, err := json.Marshal(&vlans)
-	if err != nil {
-		return ReturnError(err)
-	}
-	v.Vlans = vlansJson
-	return nil
-}
-
 type Masterpass struct {
 	ID         uint32
 	Masterpass string

@@ -137,8 +137,7 @@ func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
 	if err != nil {
 		return ReturnError(err)
 	}
-	cryptoPh2 := strings.Split(*vrfYang.CryptoPh2, ".")
-	v.CryptoPh2, err = json.Marshal(&cryptoPh2)
+	v.CryptoPh2, err = json.Marshal(strings.Split(*vrfYang.CryptoPh2, "."))
 	if err != nil {
 		return ReturnError(err)
 	}

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"hash/fnv"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -381,20 +380,20 @@ func (a *App) restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []Endpoint
 	      }`
 	neighbors := []string{}
 	neighbors2 := []string{}
+	neighbor := `{
+		"id": "%s",
+		"remote-as": %d
+	      }`
+	neighbor2 := `{
+		"id":"%s",
+		"activate":[
+		   null
+		]
+	     }`
 	for _, Endpoint := range dbEndpoints {
 		if !Endpoint.BGP {
 			continue
 		}
-		neighbor := `{
-			"id": "%s",
-			"remote-as": %d
-		      }`
-		neighbor2 := `{
-			"id":"%s",
-			"activate":[
-			   null
-			]
-		     }`
 		neighbors = append(neighbors, fmt.Sprintf(neighbor, Endpoint.PeerIP, Endpoint.RemoteAS))
 		neighbors2 = append(neighbors2, fmt.Sprintf(neighbor2, Endpoint.PeerIP))
 	}
@@ -493,15 +492,8 @@ func restconfGetCryptoStrings(cryptoString string) ([]string, error) {
 		return nil, ReturnError(err)
 	}
 
-	cryptoLen := len(crypto)
-	if cryptoLen < 2 {
+	if len(crypto) < 2 {
 		return nil, ReturnError(errors.New("malformed crypto: " + strings.Join(crypto, ", ")))
 	}
 	return crypto, nil
-}
-
-func hash(s string) int {
-	h := fnv.New32a()
-	h.Write([]byte(s))
-	return int(h.Sum32())
 }
