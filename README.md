@@ -10,3 +10,11 @@
 - `./run_net.sh`
 
 The app should be available on http://localhost:80
+
+## building docker for API unit tests
+
+`docker build -t sico_api_ut -f sico_api_ut.dockerfile .`
+
+## running API unit tests
+
+`./run_api_ut.sh`
