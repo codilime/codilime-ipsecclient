@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strconv"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func runTmpVtyshFile(tmpFile string) error {
@@ -25,8 +27,7 @@ func generateFRRTemplate(vrf Vrf) error {
 		`  address-family ipv4 unicast
     redistribute connected
   exit-address-family`
-	fmt.Println("generating frr template:")
-	fmt.Println(createTmpFile)
+	log.Debugf("generating frr template:\n%s", createTmpFile)
 	return ReturnError(runTmpVtyshFile(createTmpFile))
 }
 

@@ -16,6 +16,7 @@ import (
 	"github.com/foomo/htpasswd"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -109,7 +110,7 @@ func (a *App) setDefaultPasswords() error {
 }
 
 func (a *App) _changePassword(oldPass, newPass string) error {
-	fmt.Println("changing pass from", oldPass, "to", newPass)
+	log.Infof("changing pass from %s to %s", oldPass, newPass)
 	if err := htpasswd.SetPassword(nginxPasswordFile, username, newPass, htpasswd.HashBCrypt); err != nil {
 		return ReturnError(err)
 	}
@@ -232,6 +233,7 @@ func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	InfoDebug("Set CAs completed", fmt.Sprintf("Set CAs completed|CAs: %v", cas))
 }
 
 func (a *App) getCAs(w http.ResponseWriter, r *http.Request) {
@@ -240,6 +242,7 @@ func (a *App) getCAs(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	log.Debugf("Get CAs: %v", cas)
 	respondWithJSON(w, http.StatusOK, cas)
 }
 
@@ -264,6 +267,7 @@ func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	InfoDebug("Set setting completed", fmt.Sprintf("Set Setting completed|key: %s|value: %s", key, value))
 	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "success", "value": string(value), "name": name})
 }
 
@@ -284,6 +288,7 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	log.Debugf("Get setting key %s value %s", key, value)
 	respondWithJSON(w, http.StatusCreated, map[string]string{"result": "success", "value": value, "name": name})
 }
 
@@ -306,6 +311,7 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 		}
 		vrfs[i] = v
 	}
+	log.Debugf("Get vrfs: %v", vrfs)
 	respondWithJSON(w, http.StatusOK, vrfs)
 }
 
@@ -336,7 +342,7 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
+	log.Debugf("Get vrf: %v", vrf)
 	respondWithJSON(w, http.StatusOK, vrf)
 }
 
@@ -399,7 +405,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
+	InfoDebug("Create vrf completed", fmt.Sprintf("Create vrf completed|vrf: %v", plaintextVrf))
 	respondWithJSON(w, http.StatusCreated, plaintextVrf)
 }
 
@@ -504,7 +510,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
+	InfoDebug("Update vrf completed", fmt.Sprintf("Update vrf completed|old vrf: %v|updated vrf: %v", oldVrf, vrf))
 	respondWithJSON(w, http.StatusOK, vrf)
 }
 
@@ -569,6 +575,7 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 	}
+	InfoDebug("Delete vrf completed", fmt.Sprintf("Delete vrf completed|deleted vrf: %v", vrf))
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
 
