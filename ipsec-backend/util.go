@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 type ErrorFormatter struct{}
@@ -22,25 +22,22 @@ func FieldToString(key string, value interface{}) string {
 		fullpath := value.(string)
 		folders := strings.Split(fullpath, "/")
 		parentpath := strings.Join(folders[:len(folders)-1], "/")
-		return parentpath + "/" + folders[len(folders)-1]
+		return " " + parentpath + "/" + folders[len(folders)-1]
 	case "func":
-		fullpath := value.(string)
-		folders := strings.Split(fullpath, "/")
-		parentpath := strings.Join(folders[:len(folders)-1], "/")
-		return parentpath + fmt.Sprintf("/%s\n", folders[len(folders)-1])
+		return fmt.Sprintf(" %s\n", value)
 	}
-	return "LOGGER ERROR LOL"
+	return "LOGGER ERROR"
 }
 
-func (f *ErrorFormatter) Format(entry *logrus.Entry) ([]byte, error) {
-	if entry.Level == logrus.InfoLevel {
+func (f *ErrorFormatter) Format(entry *log.Entry) ([]byte, error) {
+	if entry.Level == log.InfoLevel {
 		if len(entry.Data) != 0 {
 			fmt.Println("ENTRY HAS DATA")
 		}
 		return []byte(fmt.Sprintf("%s\n", ("INFO: " + entry.Message))), nil
 	}
 
-	if entry.Level == logrus.DebugLevel {
+	if entry.Level == log.DebugLevel {
 		return []byte("DEBUG: " + entry.Message + "\n"), nil
 	}
 	ret := make([]byte, 0)
@@ -63,7 +60,7 @@ func (f *ErrorFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	if entryFunc == nil {
 		entryFunc = "<no func>"
 	}
-	ret = append(ret, []byte(entry.Message+"\n")...)
+	ret = append(ret, []byte("ERROR: "+entry.Message)...)
 	ret = append(ret, []byte(FieldToString("err", entryErr))...)
 	ret = append(ret, []byte(FieldToString("file", entryFile)+FieldToString("line", entryLine))...)
 	ret = append(ret, []byte(FieldToString("func", entryFunc))...)
@@ -85,12 +82,20 @@ func Error(errs ...error) {
 	for _, err := range errs {
 		errStrs = append(errStrs, err.Error())
 	}
-	logrus.WithFields(logrus.Fields{
+	log.WithFields(log.Fields{
 		"err":  strings.Join(errStrs, ", "),
 		"line": line,
 		"func": f.Name(),
 		"file": file,
 	}).Error()
+}
+
+func InfoDebug(info, debug string) {
+	if log.GetLevel() >= log.DebugLevel {
+		log.Debugf(debug)
+	} else {
+		log.Infof(info)
+	}
 }
 
 //ReturnError logs error, but returns it, allowing returning of errors to be chained in a "stack trace"
@@ -122,7 +127,7 @@ func returnErrorEx(caller int, errs ...error) error {
 			errStr = errStr + fmt.Sprintf("%d: %s\n", i, currentErr)
 		}
 	}
-	logrus.WithFields(logrus.Fields{
+	log.WithFields(log.Fields{
 		"err":  errStr,
 		"line": line,
 		"func": f.Name(),

@@ -80,6 +80,7 @@ func deleteCerts(v Vrf) error {
 }
 
 func (FileGenerator) GenerateTemplates(vrf Vrf) error {
+	log.Infof("generating templates")
 	if err := saveCerts(&vrf); err != nil {
 		return ReturnError(err)
 	}
@@ -113,21 +114,25 @@ func (FileGenerator) GenerateTemplates(vrf Vrf) error {
 	if err = ReloadStrongSwan(); err != nil {
 		return ReturnError(err)
 	}
-
+	log.Debugf("generated templates for vrf %+v", vrf)
 	return nil
 }
 
 func (FileGenerator) DeleteTemplates(vrf Vrf) error {
-	log.Infof("deleting templates for vrf %+v", vrf)
+	log.Infof("deleting templates")
 	prefix := calculatePrefix(vrf)
-	return ReturnError(
+	if err := ReturnError(
 		os.RemoveAll(getSupervisorFileName(prefix)),
 		os.RemoveAll(getStrongswanFileName(prefix)),
 		deleteFRRTemplate(vrf),
 		ReloadStrongSwan(),
 		ReloadSupervisor(),
 		deleteCerts(vrf),
-	)
+	); err != nil {
+		return ReturnError(err)
+	}
+	log.Debugf("deleted templates for vrf %+v", vrf)
+	return nil
 }
 
 func getStrongswanFileName(prefix string) string {
@@ -157,8 +162,7 @@ func generateStrongswanTemplate(vrf Vrf) (string, error) {
 	if err != nil {
 		return "", ReturnError(err)
 	}
-	fmt.Println("generating for")
-	spew.Dump(vrf)
+	log.Debugf("generating for:\n%+v", spew.Sdump(vrf))
 	if err = t.Execute(&builder, struct {
 		Vrf
 		Crypto1 string
