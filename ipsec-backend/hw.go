@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 const switchBase = "https://%s/restconf/data/"
@@ -156,6 +158,10 @@ func (a *App) restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []En
 
 	peers := make([]string, 0, len(dbEndpoints))
 	for i, Endpoint := range dbEndpoints {
+		if Endpoint.Authentication.Type == "certs" {
+			log.Debugf("skipping a cert endpoint")
+			continue
+		}
 		peer :=
 			`{
 			"name": "%s",
@@ -304,6 +310,10 @@ func (a *App) restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName st
 
 func (a *App) restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
 	for i, Endpoint := range dbEndpoints {
+		if Endpoint.Authentication.Type == "certs" {
+			log.Debugf("skipping a cert endpoint")
+			continue
+		}
 		tunnel := `{
 			"interface": {
 			  "Tunnel": {
@@ -391,6 +401,10 @@ func (a *App) restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []Endpoint
 		]
 	     }`
 	for _, Endpoint := range dbEndpoints {
+		if Endpoint.Authentication.Type == "certs" {
+			log.Debugf("skipping a cert endpoint")
+			continue
+		}
 		if !Endpoint.BGP {
 			continue
 		}

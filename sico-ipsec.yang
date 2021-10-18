@@ -180,6 +180,11 @@ module sico-ipsec {
                         description
                           "in case of 'certs' authentication, this holds the private key";
                     }
+                    leaf pkcs12_base64 {
+                        type string;
+                        description
+                            "a pkcs12 file containing a certificate, a des3 encrypted key and a CA, encoded in base64";
+                    }
                 }
             }
         }

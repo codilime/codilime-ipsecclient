@@ -17,11 +17,12 @@ import (
 const hardwareVrfID = 1
 
 type EndpointAuth struct {
-	Type       string `json:"type"`
-	PSK        string `json:"psk"`
-	LocalCert  string `json:"local_cert"`
-	RemoteCert string `json:"remote_cert"`
-	PrivateKey string `json:"private_key"`
+	Type         string `json:"type"`
+	PSK          string `json:"psk"`
+	LocalCert    string `json:"local_cert"`
+	RemoteCert   string `json:"remote_cert"`
+	PrivateKey   string `json:"private_key"`
+	Pkcs12Base64 string `json:"pkcs12_base64"`
 }
 
 func (e *EndpointAuth) Scan(value interface{}) error {
@@ -66,6 +67,15 @@ type Vrf struct {
 	Active            *bool          `json:"active"` // pointer, otherwise it is impossible to set value to false
 	LocalAs           uint32         `json:"local_as"`
 	Endpoints         []Endpoint     `json:"endpoints"`
+}
+
+func (v *Vrf) endpointByID(id uint32) *Endpoint {
+	for _, e := range v.Endpoints {
+		if e.ID == id {
+			return &e
+		}
+	}
+	return nil
 }
 
 type Vlan struct {

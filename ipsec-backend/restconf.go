@@ -31,11 +31,12 @@ func (e *Endpoint) ToYang() *sico_yang.SicoIpsec_Api_Vrf_Endpoint {
 		RemoteIpSec:     stringPointer(e.RemoteIPSec),
 		SourceInterface: stringPointer(e.SourceInterface),
 		Authentication: &sico_yang.SicoIpsec_Api_Vrf_Endpoint_Authentication{
-			LocalCert:  stringPointer(e.Authentication.LocalCert),
-			PrivateKey: stringPointer(e.Authentication.PrivateKey),
-			Psk:        stringPointer(e.Authentication.PSK),
-			RemoteCert: stringPointer(e.Authentication.RemoteCert),
-			Type:       stringPointer(e.Authentication.Type),
+			LocalCert:    stringPointer(e.Authentication.LocalCert),
+			PrivateKey:   stringPointer(e.Authentication.PrivateKey),
+			Psk:          stringPointer(e.Authentication.PSK),
+			RemoteCert:   stringPointer(e.Authentication.RemoteCert),
+			Pkcs12Base64: stringPointer(e.Authentication.Pkcs12Base64),
+			Type:         stringPointer(e.Authentication.Type),
 		},
 	}
 }
@@ -58,11 +59,12 @@ func (e *Endpoint) FromYang(endVrf *sico_yang.SicoIpsec_Api_Vrf_Endpoint) {
 	e.BGP = *endVrf.Bgp
 	e.SourceInterface = *endVrf.SourceInterface
 	e.Authentication = EndpointAuth{
-		Type:       stringIfNotNil(endVrf.Authentication.Type),
-		PSK:        stringIfNotNil(endVrf.Authentication.Psk),
-		LocalCert:  stringIfNotNil(endVrf.Authentication.LocalCert),
-		RemoteCert: stringIfNotNil(endVrf.Authentication.RemoteCert),
-		PrivateKey: stringIfNotNil(endVrf.Authentication.PrivateKey),
+		Type:         stringIfNotNil(endVrf.Authentication.Type),
+		PSK:          stringIfNotNil(endVrf.Authentication.Psk),
+		LocalCert:    stringIfNotNil(endVrf.Authentication.LocalCert),
+		RemoteCert:   stringIfNotNil(endVrf.Authentication.RemoteCert),
+		PrivateKey:   stringIfNotNil(endVrf.Authentication.PrivateKey),
+		Pkcs12Base64: stringIfNotNil(endVrf.Authentication.Pkcs12Base64),
 	}
 }
 

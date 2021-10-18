@@ -32,6 +32,8 @@ const (
 	settingNamePath  = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
 	passPath         = restconfBasePath + "/password"
 
+	pkcs12Path = "/pkcs12/{id:[0-9]+}"
+
 	nginxPasswordFile = "/etc/nginx/htpasswd"
 	username          = "admin"
 	CAsDir            = "/opt/ipsec/x509ca"
@@ -145,6 +147,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(passPath, a.changePassword).Methods(http.MethodPost)
 	a.Router.HandleFunc(CAPath, a.setCAs).Methods(http.MethodPost)
 	a.Router.HandleFunc(CAPath, a.getCAs).Methods(http.MethodGet)
+	a.Router.HandleFunc(pkcs12Path, a.getPkcs12).Methods(http.MethodGet)
 }
 
 func getPassFromHeader(header http.Header) (string, error) {
@@ -183,6 +186,27 @@ func (a *App) changePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJSON(w, http.StatusNoContent, nil)
+}
+
+func (a *App) getPkcs12(w http.ResponseWriter, r *http.Request) {
+	endpointID, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		a.respondWithError(w, 500, err.Error())
+		return
+	}
+	hwVrf := Vrf{ID: hardwareVrfID}
+	if err := hwVrf.getVrf(a.DB); err != nil {
+		a.respondWithError(w, 500, err.Error())
+		return
+	}
+	decBytes, err := base64.RawStdEncoding.WithPadding('=').DecodeString(hwVrf.endpointByID(uint32(endpointID)).Authentication.Pkcs12Base64)
+	if err != nil {
+		a.respondWithError(w, 500, err.Error())
+		return
+	}
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.WriteHeader(http.StatusOK)
+	w.Write(decBytes)
 }
 
 func ClearCAs() error {
@@ -775,7 +799,9 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	if _, err := w.Write(response); err != nil {
-		ReturnNewError("Error while writing the response: " + err.Error())
+	if payload != nil {
+		if _, err := w.Write(response); err != nil {
+			ReturnNewError("Error while writing the response: " + err.Error())
+		}
 	}
 }
