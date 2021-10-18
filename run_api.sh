@@ -23,3 +23,4 @@ docker run --name sico_api \
         --network ipsec \
         --publish 11111:80 \
         sico_api
+        # --publish 8080:8080 \

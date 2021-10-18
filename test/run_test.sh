@@ -2,6 +2,7 @@
 
 set -e
 
+# docker stop sico_test || true
 docker rm sico_test || true
 
 docker run --name sico_test \
