@@ -305,7 +305,7 @@ func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	InfoDebug("Set setting completed", fmt.Sprintf("Set Setting completed|key: %s|value: %s", key, value))
+	InfoDebug("Set setting completed", fmt.Sprintf("Set Setting completed|key: %s|value: %s", key, *setting.Value))
 
 	respondWithJSON(w, http.StatusCreated, nil)
 }

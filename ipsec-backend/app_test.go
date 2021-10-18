@@ -7,7 +7,11 @@ import (
 	"net/http/httptest"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
+	"unicode"
+
+	log "github.com/sirupsen/logrus"
 )
 
 var a App
@@ -34,6 +38,7 @@ func (m *MockGenerator) reset() {
 }
 
 func TestMain(m *testing.M) {
+	log.SetFormatter(&ErrorFormatter{})
 	dbName := "file::memory:?cache=shared"
 	a.Initialize(dbName)
 	mock = MockGenerator{}
@@ -42,24 +47,33 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+func removeWhitespace(str string) string {
+	return strings.Map(func(r rune) rune {
+		if unicode.IsSpace(r) {
+			return -1
+		}
+		return r
+	}, str)
+}
+
 func TestEmptyTable(t *testing.T) {
 	clearTable()
 
-	req, _ := http.NewRequest(http.MethodGet, vrfsPath, nil)
+	req, _ := http.NewRequest(http.MethodGet, vrfPath, nil)
 	req.SetBasicAuth("admin", "cisco123")
 	response := executeRequest(req)
 
 	checkResponseCode(t, http.StatusOK, response.Code)
 
-	if body := response.Body.String(); body != "[]" {
-		t.Fatalf("Expected an empty array. Got %s", body)
+	if body := response.Body.String(); removeWhitespace(body) != `{"vrf":[]}` {
+		t.Fatalf("Expected an empty YANG list. Got %s", body)
 	}
 }
 
 func TestGetNonExistentVrf(t *testing.T) {
 	clearTable()
 
-	req, _ := http.NewRequest(http.MethodGet, vrfsPath+"/42", nil)
+	req, _ := http.NewRequest(http.MethodGet, vrfPath+"=42", nil)
 	req.SetBasicAuth("admin", "cisco123")
 	response := executeRequest(req)
 
@@ -74,27 +88,41 @@ func TestGetNonExistentVrf(t *testing.T) {
 	}
 }
 
+func MarshalCryptoPh1(vrf Vrf) string {
+	cryptos := []string{}
+	json.Unmarshal(vrf.CryptoPh1, &cryptos)
+	return `"` + strings.Join(cryptos, ".") + `"`
+}
+
+func MarshalCryptoPh2(vrf Vrf) string {
+	cryptos := []string{}
+	json.Unmarshal(vrf.CryptoPh2, &cryptos)
+	return `"` + strings.Join(cryptos, ".") + `"`
+}
+
 func TestCreateVrf(t *testing.T) {
 	clearTable()
 
 	expectedVrf := createTestVrf()
 	data := map[string]interface{}{
-		"id":                 expectedVrf.ID,
-		"client_name":        expectedVrf.ClientName,
-		"vlans":              expectedVrf.Vlans,
-		"crypto_ph1":         expectedVrf.CryptoPh1,
-		"crypto_ph2":         expectedVrf.CryptoPh2,
-		"physical_interface": expectedVrf.PhysicalInterface,
-		"active":             expectedVrf.Active,
-		"local_as":           expectedVrf.LocalAs,
-		"endpoints":          expectedVrf.Endpoints,
+		"vrf": map[string]interface{}{
+			"id":                 expectedVrf.ID,
+			"client_name":        expectedVrf.ClientName,
+			"vlan":               expectedVrf.Vlans,
+			"crypto_ph1":         expectedVrf.CryptoPh1,
+			"crypto_ph2":         expectedVrf.CryptoPh2,
+			"physical_interface": expectedVrf.PhysicalInterface,
+			"active":             expectedVrf.Active,
+			"local_as":           expectedVrf.LocalAs,
+			"endpoint":           expectedVrf.Endpoints,
+		},
 	}
 	dataJSON, err := json.Marshal(data)
 	if err != nil {
 		t.Fatalf("error during encode data %v\n", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, vrfsPath, bytes.NewBuffer(dataJSON))
+	req, err := http.NewRequest(http.MethodPost, vrfPath, bytes.NewBuffer(dataJSON))
 	if err != nil {
 		t.Fatalf("error during create request %v\n", err)
 	}
@@ -104,18 +132,15 @@ func TestCreateVrf(t *testing.T) {
 	response := executeRequest(req)
 	checkResponseCode(t, http.StatusCreated, response.Code)
 
-	var receivedVrf Vrf
-	decoder := json.NewDecoder(response.Body)
-	if err := decoder.Decode(&receivedVrf); err != nil {
-		t.Fatalf("error during decode %v\n", err)
-	}
-	if !reflect.DeepEqual(expectedVrf, receivedVrf) {
-		t.Fatalf("Expected received vrf to be '%v'. Got '%v'\n", expectedVrf, receivedVrf)
-	}
-
 	var vrfs []Vrf
 	a.DB.Preload("Endpoints").Find(&vrfs)
 	storedVrf := vrfs[0]
+	storedVrf.Endpoints[0].Authentication.PSK = ""
+	expectedVrf.Endpoints[0].Authentication.PSK = ""
+
+	storedVrf.CryptoPh1 = []byte(MarshalCryptoPh1(storedVrf))
+	storedVrf.CryptoPh2 = []byte(MarshalCryptoPh2(storedVrf))
+
 	if !reflect.DeepEqual(expectedVrf, storedVrf) {
 		t.Fatalf("Expected stored vrf to be '%v'. Got '%v'\n", expectedVrf, storedVrf)
 	}
@@ -127,7 +152,7 @@ func TestGetVrf(t *testing.T) {
 	expectedVrf := createTestVrf()
 	addVrf(t, expectedVrf)
 
-	req, _ := http.NewRequest(http.MethodGet, vrfsPath+"/2", nil)
+	req, _ := http.NewRequest(http.MethodGet, vrfPath+"=2", nil)
 	req.SetBasicAuth("admin", "cisco123")
 	response := executeRequest(req)
 
@@ -163,7 +188,7 @@ func TestUpdateVrf(t *testing.T) {
 	}
 	dataJSON, _ := json.Marshal(data)
 
-	req, _ := http.NewRequest("PUT", vrfsPath+"/2", bytes.NewBuffer(dataJSON))
+	req, _ := http.NewRequest("PUT", vrfPath+"=2", bytes.NewBuffer(dataJSON))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth("admin", "cisco123")
 
@@ -231,7 +256,7 @@ func TestDeleteVrf(t *testing.T) {
 	testVrf := createTestVrf()
 	addVrf(t, testVrf)
 
-	req, _ := http.NewRequest(http.MethodDelete, vrfsPath+"/2", nil)
+	req, _ := http.NewRequest(http.MethodDelete, vrfPath+"=2", nil)
 	req.SetBasicAuth("admin", "cisco123")
 	response := executeRequest(req)
 
@@ -248,7 +273,7 @@ func TestErrorDatabase(t *testing.T) {
 	expectedErrorMessage := "no basic auth"
 	expectedNumberOfErrors := 1
 
-	req, err := http.NewRequest(http.MethodGet, vrfsPath, nil)
+	req, err := http.NewRequest(http.MethodGet, vrfPath, nil)
 	if err != nil {
 		t.Fatalf("error during create request %v\n", err)
 	}
@@ -271,9 +296,9 @@ func createTestVrf() Vrf {
 		2,
 		"test vrf",
 		[]byte(`[{"vlan":1000,"lan_ip":"10"},{"vlan":2000,"lan_ip":"20"}]`),
-		[]byte(`["aes123","sha234","modp345"]`),
-		[]byte(`["camellia456","md567","frodos678"]`),
-		"test interface",
+		[]byte(`"aes123.sha234.modp345"`),
+		[]byte(`"camellia456.md567.frodos678"`),
+		"test_interface",
 		&active,
 		3,
 		[]Endpoint{{
@@ -286,7 +311,7 @@ func createTestVrf() Vrf {
 			true,
 			false,
 			"eth3",
-			EndpointAuth{"type12", "psk23", "localcert34", "remotecert45", "privatekey56"}}}}
+			EndpointAuth{"psk", "psk23", "", "", ""}}}}
 }
 
 func createActivationRequest(vrf Vrf, active bool) *http.Request {
@@ -300,7 +325,7 @@ func createActivationRequest(vrf Vrf, active bool) *http.Request {
 	}
 	dataJSON, _ := json.Marshal(data)
 
-	req, _ := http.NewRequest("PUT", vrfsPath+"/2", bytes.NewBuffer(dataJSON))
+	req, _ := http.NewRequest("PUT", vrfPath+"=2", bytes.NewBuffer(dataJSON))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth("admin", "cisco123")
 
