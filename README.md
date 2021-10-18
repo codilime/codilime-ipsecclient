@@ -11,6 +11,10 @@
 
 The app should be available on http://localhost:80
 
+## enviroment variables for ipsec_backend binary
+
+- `LOG_LEVEL` - specify logging level. Three levels available : error, info, debug.
+
 ## building docker for API unit tests
 
 `docker build -t sico_api_ut -f sico_api_ut.dockerfile .`
