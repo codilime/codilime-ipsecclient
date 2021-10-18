@@ -6,8 +6,7 @@ pipeline {
             agent any
             steps {
                 sh '''
-                cd test
-                ./test.sh
+                cat /etc/os-release
                 '''
             }
         }
