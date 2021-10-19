@@ -1,14 +1,12 @@
 Cisco-IOS-XE-native:native/crypto/ipsec/transform-set
 {
         "transform-set": {
-                "tag": "%s",
-                "esp": "%s",
-                %s
-                %s
+                "tag": "{{ .ClientName }}",
+                "esp": "{{ transformSetEsp $.VrfWithCryptoSlices }}",
+                {{ transformSetKeyBit $.VrfWithCryptoSlices }}
+                {{ transformSetEspHmac $.VrfWithCryptoSlices }}
                 "mode": {
-                "%s": [
-                null
-                ]
+                "{{ transformSetTunnelOptionName $.VrfWithCryptoSlices }}": [null]
                 }
         }
 }

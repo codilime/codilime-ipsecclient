@@ -19,7 +19,7 @@ import (
 
 const (
 	switchBase     = "https://%s/restconf/data/"
-	hwTemplatesDir = "hw_templates/"
+	hwTemplatesDir = "hw_templates"
 )
 
 type VrfWithCryptoSlices struct {
@@ -28,35 +28,69 @@ type VrfWithCryptoSlices struct {
 	CryptoPh2Slice []string
 }
 
-func doTemplateFolder(folderName string, client *http.Client, vrf VrfWithCryptoSlices, endpoints []Endpoint) error {
-	files, err := ioutil.ReadDir(hwTemplatesDir + folderName)
+func (a *App) doTemplateFolder(folderName string, client *http.Client, vrf VrfWithCryptoSlices, endpoints []Endpoint) error {
+	files, err := ioutil.ReadDir(hwTemplatesDir + "/" + folderName)
 	if err != nil {
 		return ReturnError(err)
 	}
 
 	for _, file := range files {
-		bytes, err := ioutil.ReadFile(hwTemplatesDir + file.Name())
+		bytes, err := ioutil.ReadFile(hwTemplatesDir + "/" + folderName + "/" + file.Name())
 		if err != nil {
 			return ReturnError(err)
 		}
 		lines := strings.Split(string(bytes), "\n")
 		url := lines[0]
 		templ := strings.Join(lines[1:], "\n")
-		t, err := template.New(file.Name()).Parse(templ)
+		t, err := template.New(file.Name()).Funcs(template.FuncMap{
+			"notEndOfSlice": func(l []Endpoint, i int) bool {
+				return len(l)-1 != i
+			},
+			"transformSetEsp": func(vrf VrfWithCryptoSlices) string {
+				if containsADigit(vrf.CryptoPh2Slice[0]) {
+					// this is gcm or aes
+					encFunc := strings.Split(vrf.CryptoPh2Slice[0], "-")
+					return fmt.Sprintf("%s-%s", encFunc[0], encFunc[2])
+				}
+				return vrf.CryptoPh2Slice[0]
+			},
+			"transformSetKeyBit": func(vrf VrfWithCryptoSlices) string {
+				if containsADigit(vrf.CryptoPh2Slice[0]) {
+					// this is gcm or aes
+					encFunc := strings.Split(vrf.CryptoPh2Slice[0], "-")
+					return fmt.Sprintf(`"key-bit": "%s",`, encFunc[1])
+				}
+				return ""
+			},
+			"transformSetEspHmac": func(vrf VrfWithCryptoSlices) string {
+				if !strings.Contains(vrf.CryptoPh2Slice[0], "gcm") {
+					return fmt.Sprintf(`"esp-hmac":"%s",`, vrf.CryptoPh2Slice[1])
+				}
+				return ""
+			},
+			"transformSetTunnelOptionName": func(vrf VrfWithCryptoSlices) string {
+				if os.Getenv("CAF_SYSTEM_NAME") == "cat9300X" {
+					return "tunnel-choice"
+				}
+				return "tunnel"
+			},
+		}).Parse(templ)
 		if err != nil {
 			return ReturnError(err)
 		}
 		builder := strings.Builder{}
 		if err = t.Execute(&builder, struct {
-			Vrf       VrfWithCryptoSlices
-			Endpoints []Endpoint
+			VrfWithCryptoSlices
+			EndpointSubset []Endpoint
 		}{
 			vrf,
 			endpoints,
 		}); err != nil {
 			return ReturnError(err)
 		}
-		fmt.Println(url, builder.String())
+		if err := a.tryRestconfPatch(url, builder.String(), client); err != nil {
+			return ReturnError(err)
+		}
 	}
 	return nil
 }
@@ -91,7 +125,7 @@ func (a *App) restconfCreate(vrf Vrf) error {
 	}
 
 	if len(pskEndpoints) > 0 {
-		if err := doTemplateFolder("psk", client, vrfWithSlices, pskEndpoints); err != nil {
+		if err := a.doTemplateFolder("psk", client, vrfWithSlices, pskEndpoints); err != nil {
 			return ReturnError(err)
 		}
 	}
@@ -104,7 +138,7 @@ func (a *App) restconfCreate(vrf Vrf) error {
 	}
 
 	if len(certsEndpoints) > 0 {
-		if err := doTemplateFolder("certs", client, vrfWithSlices, certsEndpoints); err != nil {
+		if err := a.doTemplateFolder("certs", client, vrfWithSlices, certsEndpoints); err != nil {
 			return ReturnError(err)
 		}
 	}

@@ -1,18 +1,18 @@
 Cisco-IOS-XE-native:native/crypto/ikev2/proposal
 {
-        "proposal": {
-                "name": "%s",
-                "encryption": {
-                "%s": [null]
-                },
-                "integrity": {
-                "%s": [null]
-                },
-                "prf": {
-                "%s": [null]
-                },
-                "group": {
-                "%s": [null]
-                }
-        }
+   "proposal":{
+      "name":"{{ .ClientName }}",
+      "encryption":{
+         "{{ index .CryptoPh1Slice 0 }}":[null]
+      },
+      "integrity":{
+         "{{ index .CryptoPh1Slice 1 }}":[null]
+      },
+      "prf":{
+         "{{ index .CryptoPh1Slice 1 }}":[null]
+      },
+      "group":{
+         "{{ index .CryptoPh1Slice 2 }}":[null]
+      }
+   }
 }

@@ -1,7 +1,7 @@
 Cisco-IOS-XE-native:native/crypto/ikev2/profile
 {
         "profile": {
-                "name": "%s",
+                "name": "{{ .ClientName }}",
                 "authentication": {
                 "local": {
                 "pre-share": {}
@@ -12,7 +12,7 @@ Cisco-IOS-XE-native:native/crypto/ikev2/profile
                 },
                 "keyring": {
                 "local": {
-                "name": "%s"
+                "name": "{{ .ClientName }}"
                 }
                 },
                 "match": {
