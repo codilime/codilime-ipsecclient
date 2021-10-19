@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import { Button } from 'common/';
+import { DescriptionType } from 'interface/index';
 import classNames from 'classnames';
-import { descriptionType } from 'interface/index';
 
 interface HoverPanelType {
   active: boolean;
   handleReset?: () => void;
-  description: descriptionType;
+  description: DescriptionType;
   button?: string;
 }
 

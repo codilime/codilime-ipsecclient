@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { EachEndpoint } from 'template';
 import { useToggle, useEndpoint, useGetLocation, useVrfLogic } from 'hooks/';
 import { emptyEndpointSchema, emptyHardwareSchema, tableSoftwareHeaderSchema, tableHardwaHeaderSchema } from 'db';
-import classNames from 'classnames';
 import { newVrf, endpointTableConst } from 'constant/';
+import classNames from 'classnames';
 
 const { pskCertificates, nat, bgp, action, remote } = endpointTableConst;
 

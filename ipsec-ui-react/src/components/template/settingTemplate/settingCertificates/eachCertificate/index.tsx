@@ -1,13 +1,13 @@
 import { ChangeEvent, FC } from 'react';
 import { decodeX509 } from 'utils/';
 
-interface eachCertificateType {
+interface EachCertificateType {
   ID: number;
   CA: string;
   handleCheckCerts: (e: ChangeEvent<HTMLInputElement>, name: number) => void;
 }
 
-export const EachCertificate: FC<eachCertificateType> = ({ ID, CA, handleCheckCerts }) => {
+export const EachCertificate: FC<EachCertificateType> = ({ ID, CA, handleCheckCerts }) => {
   const decode = decodeX509(CA);
 
   return (

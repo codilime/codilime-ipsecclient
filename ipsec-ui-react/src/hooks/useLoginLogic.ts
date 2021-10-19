@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { client } from 'api/';
-import { ChangePasswordType, descriptionType } from 'interface/index';
+import { ChangePasswordType, DescriptionType } from 'interface/index';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { newLoginSchema } from 'schema/';
 
 export const useLoginLogic = () => {
   const [logged, setLogged] = useState<boolean>(false);
-  const [description, setDescription] = useState<descriptionType>({ result: 'default', message: '' });
+  const [description, setDescription] = useState<DescriptionType>({ result: 'default', message: '' });
 
   const {
     register,
@@ -22,11 +22,9 @@ export const useLoginLogic = () => {
     if (status === 'ok') {
       setLogged(true);
       setDescription({ result: 'success', message: 'Successful change. New variables saved' });
-    }
-    if (!status) {
-      setLogged(true);
-      setDescription({ result: 'error', message: 'Error change, something is wrong' });
-    }
+    } else setLogged(true);
+    setDescription({ result: 'error', message: 'Error change, something is wrong' });
+
     setTimeout(() => {
       reset();
       client('vrfs', {}, { method: 'POST', headers: { Authorization: '' } });
@@ -44,7 +42,6 @@ export const useLoginLogic = () => {
   }, [description]);
 
   const handleLogout = () => {
- 
     client('vrfs', {}, { method: 'POST', headers: { Authorization: '' } });
     window.location.reload();
   };

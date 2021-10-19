@@ -1,8 +1,8 @@
 import { FC } from 'react';
-import classNames from 'classnames';
 import { useVrfLogic } from 'hooks/';
 import { validateDataInput } from 'utils/';
 import { InputType } from 'interface/components';
+import classNames from 'classnames';
 
 interface InputTypes extends InputType {
   register?: any;

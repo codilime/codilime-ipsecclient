@@ -16,7 +16,7 @@ export const useFetchData = () => {
         return res;
       }
     } catch (err: any) {
-      setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { time: handleTakeTime(), description: err.error }] }));
+      setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { id: prev.notifications.length + 1, errorTime: handleTakeTime(), message: err.error }] }));
     }
   };
 
@@ -29,7 +29,7 @@ export const useFetchData = () => {
         return data;
       }
     } catch (err: any) {
-      setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { time: handleTakeTime(), description: err.error }] }));
+      setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { id: prev.notifications.length + 1, errorTime: handleTakeTime(), message: err.error }] }));
     }
   };
 

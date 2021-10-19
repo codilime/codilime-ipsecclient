@@ -4,12 +4,12 @@ import { PopupSetting } from 'template';
 import { FiSettings } from 'react-icons/fi';
 import { useSettingLogic } from 'hooks/';
 
-interface settingType {
+interface SettingType {
   open: boolean;
   handleToggle: () => void;
 }
 
-export const Setting: FC<settingType> = ({ open, handleToggle }) => {
+export const Setting: FC<SettingType> = ({ open, handleToggle }) => {
   const { handleChangeActiveSetting, activeSetting } = useSettingLogic(open);
   
   return (

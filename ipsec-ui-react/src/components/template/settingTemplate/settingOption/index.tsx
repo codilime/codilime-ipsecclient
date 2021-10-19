@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import classNames from 'classnames';
 
-interface settingOptionType {
+interface SettingOptionType {
   activeSetting: any;
   handleChangeActiveSetting: (name: string) => void;
 }
 
-export const SettingOption: FC<settingOptionType> = ({ activeSetting, handleChangeActiveSetting }) => (
+export const SettingOption: FC<SettingOptionType> = ({ activeSetting, handleChangeActiveSetting }) => (
   <nav className="setting__nav">
     <ul className="setting__list">
       <li className={classNames('setting__option', { setting__active: activeSetting.profile })} onClick={() => handleChangeActiveSetting('profile')}>

@@ -2,12 +2,12 @@ import { useState, createContext, FunctionComponent, Dispatch, SetStateAction } 
 import { defaultVrf } from 'db';
 import { ContextProps } from 'interface/index';
 
-type contextType = {
+type ContextType = {
   vrf: ContextProps;
   setVrf: Dispatch<SetStateAction<ContextProps>>;
 };
 
-export const VrfsContext = createContext<contextType | null>(null);
+export const VrfsContext = createContext<ContextType | null>(null);
 
 export const VrfsProvider: FunctionComponent = ({ children }) => {
   const [vrf, setVrf] = useState<ContextProps>(defaultVrf);

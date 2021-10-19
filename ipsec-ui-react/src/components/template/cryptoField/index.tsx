@@ -1,16 +1,21 @@
 import { FC } from 'react';
 import './styles.scss';
 
+interface CryptoType {
+  encryption: string[];
+  integrity: string[];
+  key_exchange: string[];
+}
+
 interface CryptoFieldType {
   name: string;
-  crypto: { encryption: string[]; integrity: string[]; key_exchange: string[] };
+  crypto: CryptoType;
   register: any;
   error: any;
   text?: string;
 }
 
 export const CryptoField: FC<CryptoFieldType> = ({ text, name, crypto, register, error }) => {
-  
   const encryptionOption = crypto.encryption.map((el) => (
     <option key={el} value={el}>
       {el}

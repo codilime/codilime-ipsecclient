@@ -5,13 +5,13 @@ import { DynamicRestConfForm } from 'db';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { restConfSchema } from 'schema/';
-import { restConfType } from 'interface/index';
+import { RestConfType } from 'interface/index';
 
-interface restConfFormType {
-  handleSendRestConf: (data: restConfType) => void;
+interface RestConfFormType {
+  handleSendRestConf: (data: RestConfType) => void;
 }
 
-export const RestConfForm: FC<restConfFormType> = ({ handleSendRestConf }) => {
+export const RestConfForm: FC<RestConfFormType> = ({ handleSendRestConf }) => {
   const {
     register,
     handleSubmit,

@@ -4,14 +4,14 @@ import { Stage, Layer } from 'react-konva';
 import { MetricsType } from 'interface/index';
 import { VisualizationIcon, VisualizationLine, VisualizationVrf, Cube } from 'template';
 
-interface visualizationEndpoints {
+interface VisualizationEndpoints {
   dimensions: number;
   hardware: boolean;
   data: vrfDataTypes;
   metrics: MetricsType[];
 }
 
-export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimensions, metrics, hardware }) => {
+export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimensions, metrics, hardware }) => {
   const { endpoints, client_name, vlans } = data;
   const getAmount = () => {
     if (vlans !== null && endpoints !== null) {

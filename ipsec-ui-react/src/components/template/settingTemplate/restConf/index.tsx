@@ -3,11 +3,11 @@ import { RestConfForm } from './form';
 import { Wrapper, HoverPanel } from 'template';
 import { UseRestConfLogic } from 'hooks/';
 
-interface restConfType {
+interface RestConfType {
   open: boolean;
 }
 
-export const RestConf: FC<restConfType> = ({ open }) => {
+export const RestConf: FC<RestConfType> = ({ open }) => {
   const { handleSendRestConf, handleResetRestConf, logged, description } = UseRestConfLogic(open);
 
   return (

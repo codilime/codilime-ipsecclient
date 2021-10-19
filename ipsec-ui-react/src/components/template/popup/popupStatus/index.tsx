@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useModalLogic, useAppContext } from 'hooks/';
-import classNames from 'classnames';
 import { Button } from 'common/';
+import classNames from 'classnames';
 import './styles.scss';
 
 export const PopupStatus: FC = () => {
@@ -14,13 +14,12 @@ export const PopupStatus: FC = () => {
   useEffect(() => {
     if (error) handleToggleModal();
   }, [error]);
-  const errorStatus = error && error.error;
 
   return (
     <div className={classNames('status', { status__active: show })}>
       <div className={'status__content'} onClick={stopPropagation}>
         <div className={classNames('status__context', { status__context__error: error })}>
-          <p className="status__description">{errorStatus}</p>
+          <p className="status__description">{error && error.error}</p>
           <div className="status__buttons">
             <Button btnDelete onClick={handleToggleModal}>
               Close

@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Group } from 'react-konva';
 import { VisualizationEndpointLabel, VisualizationLine, VisualizationEndpointBox, VisualizationStatusText } from 'template';
 import { variable } from '../visualizationConstants';
-import { endpointsType, MetricsType } from 'interface/index';
+import { EndpointsType, MetricsType } from 'interface/index';
 const { mdHeightLabel } = variable;
 
 interface VisualizationStatusType {
@@ -13,7 +13,7 @@ interface VisualizationStatusType {
   lineWidth: number;
   title: string;
   status: MetricsType;
-  endpoint: endpointsType;
+  endpoint: EndpointsType;
 }
 
 export const VisualizationStatus: FC<VisualizationStatusType> = ({ x, height, lineStartX, lineStartY, lineWidth, title, endpoint, status }) => {

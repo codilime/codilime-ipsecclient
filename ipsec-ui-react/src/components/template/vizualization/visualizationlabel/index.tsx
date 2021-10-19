@@ -4,10 +4,10 @@ import { variable } from '../visualizationConstants';
 import Router from 'images/router.png';
 import useImage from 'use-image';
 import { VisualizationChecked } from '../visualizationChecked';
-import { visualization } from 'interface/components';
-const { labelColor, smWidthLabel } = variable;
+import { Visualization } from 'interface/components';
+const { smWidthLabel } = variable;
 
-interface VisualizationLabel extends visualization {
+interface VisualizationLabel extends Visualization {
   width: number;
   height: number;
   firstText?: string;
