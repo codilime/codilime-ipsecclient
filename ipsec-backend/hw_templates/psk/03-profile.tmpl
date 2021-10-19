@@ -1,0 +1,28 @@
+Cisco-IOS-XE-native:native/crypto/ikev2/profile
+{
+        "profile": {
+                "name": "%s",
+                "authentication": {
+                "local": {
+                "pre-share": {}
+                },
+                "remote": {
+                "pre-share": {}
+                }
+                },
+                "keyring": {
+                "local": {
+                "name": "%s"
+                }
+                },
+                "match": {
+                "identity": {
+                "remote": {
+                "any": [
+                        null
+                ]
+                }
+                }
+                }
+        }
+}

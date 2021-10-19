@@ -10,12 +10,56 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"text/template"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	log "github.com/sirupsen/logrus"
 )
 
-const switchBase = "https://%s/restconf/data/"
+const (
+	switchBase     = "https://%s/restconf/data/"
+	hwTemplatesDir = "hw_templates/"
+)
+
+type VrfWithCryptoSlices struct {
+	Vrf
+	CryptoPh1Slice []string
+	CryptoPh2Slice []string
+}
+
+func doTemplateFolder(folderName string, client *http.Client, vrf VrfWithCryptoSlices, endpoints []Endpoint) error {
+	files, err := ioutil.ReadDir(hwTemplatesDir + folderName)
+	if err != nil {
+		return ReturnError(err)
+	}
+
+	for _, file := range files {
+		bytes, err := ioutil.ReadFile(hwTemplatesDir + file.Name())
+		if err != nil {
+			return ReturnError(err)
+		}
+		lines := strings.Split(string(bytes), "\n")
+		url := lines[0]
+		templ := strings.Join(lines[1:], "\n")
+		t, err := template.New(file.Name()).Parse(templ)
+		if err != nil {
+			return ReturnError(err)
+		}
+		builder := strings.Builder{}
+		if err = t.Execute(&builder, struct {
+			Vrf       VrfWithCryptoSlices
+			Endpoints []Endpoint
+		}{
+			vrf,
+			endpoints,
+		}); err != nil {
+			return ReturnError(err)
+		}
+		fmt.Println(url, builder.String())
+	}
+	return nil
+}
 
 func (a *App) restconfCreate(vrf Vrf) error {
 	client := &http.Client{
@@ -24,45 +68,71 @@ func (a *App) restconfCreate(vrf Vrf) error {
 		},
 	}
 
-	// Remove NAT-T as 9300X does not support it yet
-	if err := a.tryRestconfDelete("Cisco-IOS-XE-native:native/crypto/ipsec/nat-transparency", client); err != nil {
-		fmt.Println("NAT-T config already removed, skipping", err)
-	}
-
-	cryptoPh1, err := restconfGetCryptoStrings(string(vrf.CryptoPh1))
+	vrfWithSlices := VrfWithCryptoSlices{}
+	vrfWithSlices.Vrf = vrf
+	var err error
+	vrfWithSlices.CryptoPh1Slice, err = restconfGetCryptoStrings(string(vrf.CryptoPh1))
 	if err != nil {
 		return ReturnError(err)
 	}
 
-	cryptoPh2, err := restconfGetCryptoStrings(string(vrf.CryptoPh2))
+	vrfWithSlices.CryptoPh2Slice, err = restconfGetCryptoStrings(string(vrf.CryptoPh2))
 	if err != nil {
 		return ReturnError(err)
 	}
 
-	if err := a.restconfDoProposal(vrf, client, cryptoPh1); err != nil {
-		return ReturnError(err)
+	spew.Dump(vrfWithSlices)
+
+	pskEndpoints := []Endpoint{}
+	for _, e := range vrf.Endpoints {
+		if e.Authentication.Type == "psk" {
+			pskEndpoints = append(pskEndpoints, e)
+		}
 	}
-	if err := a.restconfDoPolicy(vrf, client); err != nil {
-		return ReturnError(err)
+
+	if len(pskEndpoints) > 0 {
+		if err := doTemplateFolder("psk", client, vrfWithSlices, pskEndpoints); err != nil {
+			return ReturnError(err)
+		}
 	}
-	if err := a.restconfDoEndpoints(vrf, client, vrf.Endpoints); err != nil {
-		return ReturnError(err)
+
+	certsEndpoints := []Endpoint{}
+	for _, e := range vrf.Endpoints {
+		if e.Authentication.Type == "certs" {
+			certsEndpoints = append(certsEndpoints, e)
+		}
 	}
-	if err := a.restconfDoProfile(vrf, client); err != nil {
-		return ReturnError(err)
+
+	if len(certsEndpoints) > 0 {
+		if err := doTemplateFolder("certs", client, vrfWithSlices, certsEndpoints); err != nil {
+			return ReturnError(err)
+		}
 	}
-	if err := a.restconfDoTransformSet(vrf, cryptoPh2, client); err != nil {
-		return ReturnError(err)
-	}
-	if err := a.restconfDoIpsecProfile(vrf, client, cryptoPh2[len(cryptoPh2)-1]); err != nil {
-		return ReturnError(err)
-	}
-	if err := a.restconfDoTunnels(vrf, client, vrf.Endpoints); err != nil {
-		return ReturnError(err)
-	}
-	if err := a.restconfDoBGP(vrf, client, vrf.Endpoints); err != nil {
-		return ReturnError(err)
-	}
+
+	// if err := a.restconfDoProposal(vrf, client, cryptoPh1); err != nil {
+	// 	return ReturnError(err)
+	// }
+	// if err := a.restconfDoPolicy(vrf, client); err != nil {
+	// 	return ReturnError(err)
+	// }
+	// if err := a.restconfDoEndpoints(vrf, client, vrf.Endpoints); err != nil {
+	// 	return ReturnError(err)
+	// }
+	// if err := a.restconfDoProfile(vrf, client); err != nil {
+	// 	return ReturnError(err)
+	// }
+	// if err := a.restconfDoTransformSet(vrf, cryptoPh2, client); err != nil {
+	// 	return ReturnError(err)
+	// }
+	// if err := a.restconfDoIpsecProfile(vrf, client, cryptoPh2[len(cryptoPh2)-1]); err != nil {
+	// 	return ReturnError(err)
+	// }
+	// if err := a.restconfDoTunnels(vrf, client, vrf.Endpoints); err != nil {
+	// 	return ReturnError(err)
+	// }
+	// if err := a.restconfDoBGP(vrf, client, vrf.Endpoints); err != nil {
+	// 	return ReturnError(err)
+	// }
 
 	return nil
 }

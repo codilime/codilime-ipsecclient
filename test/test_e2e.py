@@ -150,6 +150,7 @@ get_template = {
                 "authentication": {
                     "type": "psk",
                     "psk": "asdasdasdasd",
+                    "pkcs12_base64": "",
                     "local_cert": "",
                     "remote_cert": "",
                     "private_key": "",

@@ -1,0 +1,35 @@
+Cisco-IOS-XE-native:native/interface
+{
+        "interface": {
+                "Tunnel": {
+                "name": %d,
+                "description": "%s",
+                "ip": {
+                "address": {
+                "primary": {
+                        "address": "%s",
+                        "mask": "255.255.255.252"
+                }
+                }
+                },
+                "Cisco-IOS-XE-tunnel:tunnel": {
+                "source": "%s",
+                "destination-config": {
+                "ipv4": "%s"
+                },
+                "mode": {
+                "ipsec": {
+                        "ipv4": {}
+                }
+                },
+                "protection": {
+                "Cisco-IOS-XE-crypto:ipsec": {
+                        "profile-option": {
+                        "name": "%s"
+                        }
+                }
+                }
+                }
+                }
+        }
+}

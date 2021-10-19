@@ -1,0 +1,20 @@
+Cisco-IOS-XE-native:native/crypto/ipsec/profile
+{
+        "profile": {
+                "name": "%s",
+                "set": {
+                "ikev2-profile": "%s",
+                "pfs": {
+                "group": "%s"
+                },
+                "transform-set": [
+                "%s"
+                ],
+                "security-association": {
+                "lifetime": {
+                "kilobytes": "disable"
+                }
+                }
+                }
+        }
+}

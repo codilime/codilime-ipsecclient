@@ -1,0 +1,31 @@
+Cisco-IOS-XE-native:native/router/bgp
+{
+        "bgp": [
+                {
+                "id": %d,
+                "bgp": {
+                "log-neighbor-changes": true
+                },
+                "neighbor": [
+                %s
+                ],
+                "address-family":{
+                "no-vrf":{
+                        "ipv4":[
+                        {
+                                "af-name":"unicast",
+                                "ipv4-unicast":{
+                                "neighbor":[
+                                        %s
+                                ],
+                                "redistribute":{
+                                "connected":{}
+                                }
+                                }
+                        }
+                        ]
+                }
+                }
+                }
+        ]
+}
