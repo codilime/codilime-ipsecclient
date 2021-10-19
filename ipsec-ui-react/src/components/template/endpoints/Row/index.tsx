@@ -5,16 +5,16 @@ import { useEndpointLogic, useToggle, useModalLogic } from 'hooks/';
 import { EndpointsType } from 'interface/index';
 
 interface EachEndpointType {
-  endpoint: EndpointsType;
+  currentEndpoint: EndpointsType;
   active: boolean;
   handleActionVrfEndpoints: (action: string, data: EndpointsType, id?: number) => void;
   id: number | null;
 }
 
-export const EachEndpoint: FC<EachEndpointType> = ({ endpoint, active, handleActionVrfEndpoints, id }) => {
+export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, handleActionVrfEndpoints, id }) => {
   const { open, handleToggle } = useToggle();
   const { show, handleToggleModal } = useModalLogic();
-  const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic({ endpoint, active, handleActionVrfEndpoints, id });
+  const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic({ currentEndpoint, active, handleActionVrfEndpoints, id });
 
   const activeButton = edit ? (
     <EndpointButton {...{ onClick: handleAddNewEndpoint }} className="table__add">
@@ -34,7 +34,7 @@ export const EachEndpoint: FC<EachEndpointType> = ({ endpoint, active, handleAct
         <EndpointOption {...{ open, handleToggleModal, handleActiveEdit, handleToggle }} />
         <Modal
           {...{ show, handleToggleModal, header: 'Delete endpoint', leftButton: 'cancel', rightButton: 'delete ', btnDelete: true }}
-          handleDelete={() => handleActionVrfEndpoints('delete', endpoint, id!)}
+          handleDelete={() => handleActionVrfEndpoints('delete', currentEndpoint, id!)}
         >
           Are you sure you want to delete the endpoint? This action cannot be undone
         </Modal>

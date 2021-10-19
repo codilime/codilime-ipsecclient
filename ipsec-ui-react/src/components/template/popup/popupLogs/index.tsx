@@ -10,12 +10,12 @@ interface PopupLogsType {
 export const PopupLogs: FC<PopupLogsType> = ({ open, handleToggle }) => {
   const { logList, handleFetchList } = useLogsLogic();
   const {
-    vrf: { loading }
+    context: { loading }
   } = useAppContext();
 
-  useEffect(() => {
-    handleFetchList();
-  }, [loading]);
+  // useEffect(() => {
+  //   handleFetchList();
+  // }, [loading]);
 
   return (
     <Popup {...{ open, handleToggle, title: 'Logs' }}>

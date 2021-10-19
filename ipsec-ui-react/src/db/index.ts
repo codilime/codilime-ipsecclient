@@ -177,18 +177,18 @@ const hardwareCrypto: CryptoTypes = {
 export const defaultVrf: ContextProps = {
   data: {
     client_name: '',
-    vlans: [],
-    crypto_ph1: [],
-    crypto_ph2: [],
+    vlan: [],
+    crypto_ph1: '',
+    crypto_ph2: '',
     physical_interface: 'eth0',
     active: false,
     local_as: 0,
-    endpoints: null
+    endpoint: []
   },
   softwareCrypto: softwareCrypto,
   hardwareCrypto: hardwareCrypto,
   certificates: [],
-  vrfs: [],
+  vrf: [],
   notifications: [],
   loading: false,
   hardware: false,

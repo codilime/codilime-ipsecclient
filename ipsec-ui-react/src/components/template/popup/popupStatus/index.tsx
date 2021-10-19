@@ -6,7 +6,7 @@ import './styles.scss';
 
 export const PopupStatus: FC = () => {
   const {
-    vrf: { error }
+    context: { error }
   } = useAppContext();
 
   const { stopPropagation, handleToggleModal, show } = useModalLogic();

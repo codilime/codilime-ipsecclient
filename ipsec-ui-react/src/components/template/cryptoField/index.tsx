@@ -1,4 +1,6 @@
 import { FC } from 'react';
+import { useCryptoLogic } from 'hooks/';
+import { FieldValues, UseFormSetValue } from 'react-hook-form';
 import './styles.scss';
 
 interface CryptoType {
@@ -10,12 +12,15 @@ interface CryptoType {
 interface CryptoFieldType {
   name: string;
   crypto: CryptoType;
-  register: any;
+  setValue: UseFormSetValue<any>;
   error: any;
   text?: string;
+  value: string;
 }
 
-export const CryptoField: FC<CryptoFieldType> = ({ text, name, crypto, register, error }) => {
+export const CryptoField: FC<CryptoFieldType> = ({ text, name, crypto, error, value, setValue }) => {
+  const { handleSetCryptoData, cryptoData } = useCryptoLogic(name, value, setValue);
+
   const encryptionOption = crypto.encryption.map((el) => (
     <option key={el} value={el}>
       {el}
@@ -36,13 +41,13 @@ export const CryptoField: FC<CryptoFieldType> = ({ text, name, crypto, register,
     <>
       <div className="crypto" {...{ name }}>
         <label className="crypto__label">{text}</label>
-        <select className="crypto__select" {...register(`${name}[0]`)}>
+        <select className="crypto__select" name="encryption" value={cryptoData.encryption} onChange={handleSetCryptoData}>
           {encryptionOption}
         </select>
-        <select className="crypto__select" {...register(`${name}[1]`)}>
+        <select className="crypto__select" name="integrity" value={cryptoData.integrity} onChange={handleSetCryptoData}>
           {integrityOption}
         </select>
-        <select className="crypto__select" {...register(`${name}[2]`)}>
+        <select className="crypto__select" name="keyExchange" value={cryptoData.keyExchange} onChange={handleSetCryptoData}>
           {keyExchangeOption}
         </select>
       </div>

@@ -12,7 +12,7 @@ export const VrfView: FC<MatchProps> = ({ match }) => {
   const {
     client_name,
     handleDelete,
-    vrf: { loading },
+    context: { loading },
     hardware
   } = useVrfLogic();
 
@@ -23,7 +23,6 @@ export const VrfView: FC<MatchProps> = ({ match }) => {
       Delete VRF
     </Button>
   );
-
 
   return (
     <>

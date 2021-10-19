@@ -12,11 +12,11 @@ interface VisualizationStatusType {
   lineStartY: number;
   lineWidth: number;
   title: string;
-  status: MetricsType;
+  monitoring: MetricsType;
   endpoint: EndpointsType;
 }
 
-export const VisualizationStatus: FC<VisualizationStatusType> = ({ x, height, lineStartX, lineStartY, lineWidth, title, endpoint, status }) => {
+export const VisualizationStatus: FC<VisualizationStatusType> = ({ x, height, lineStartX, lineStartY, lineWidth, title, endpoint, monitoring }) => {
   const firstLabel = {
     x: x + (lineWidth - 260) / 3 - 15,
     y: lineStartY - mdHeightLabel / 2,
@@ -48,12 +48,12 @@ export const VisualizationStatus: FC<VisualizationStatusType> = ({ x, height, li
     x: lineStartX,
     y: lineStartY - 30,
     width: lineWidth,
-    status
+    monitoring
   };
 
-  const statusColor = (status: MetricsType) => {
-    if (status) {
-      switch (status.sa_status) {
+  const statusColor = (monitoring: MetricsType) => {
+    if (monitoring) {
+      switch (monitoring.status) {
         case 'up': {
           return 'green';
         }
@@ -67,7 +67,7 @@ export const VisualizationStatus: FC<VisualizationStatusType> = ({ x, height, li
   };
 
   const line = {
-    color: statusColor(status),
+    color: statusColor(monitoring),
     points: [lineStartX, lineStartY, lineStartX + lineWidth, lineStartY]
   };
 

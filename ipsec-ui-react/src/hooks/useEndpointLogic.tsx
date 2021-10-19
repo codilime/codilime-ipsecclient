@@ -6,15 +6,15 @@ import classNames from 'classnames';
 import { EndpointsType } from 'interface/index';
 
 interface EndpointLogicType {
-  endpoint: EndpointsType;
+  currentEndpoint: EndpointsType;
   active: boolean;
   handleActionVrfEndpoints: (action: string, data: EndpointsType, id?: number) => void;
   id: number | null;
 }
 
-export const useEndpointLogic = ({ endpoint, active, handleActionVrfEndpoints, id }: EndpointLogicType) => {
+export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpoints, id }: EndpointLogicType) => {
   const [edit, setEdit] = useState(active);
-  const { hardware } = useVrfLogic();
+  const { hardware, endpoint, vrf_id } = useVrfLogic();
   const emptyEndpoint = hardware ? emptyHardwareSchema : emptyEndpointSchema;
   const [endpoints, setEndpoint] = useState<EndpointsType>(emptyEndpoint);
   const { error, validateEmptyEndpoint, setError } = useValidateEndpoint();
@@ -44,14 +44,14 @@ export const useEndpointLogic = ({ endpoint, active, handleActionVrfEndpoints, i
   };
 
   useEffect(() => {
-    setEndpoint(endpoint);
-  }, [endpoint]);
+    setEndpoint({ ...currentEndpoint, vrf_id });
+  }, [currentEndpoint]);
 
   useEffect(() => {
     return () => {
       setEdit(false);
     };
-  }, [endpoint]);
+  }, [currentEndpoint]);
 
   const endpointSchema = hardware ? endpointHardwareSchema : endpointInputSchema;
 
@@ -80,9 +80,10 @@ export const useEndpointLogic = ({ endpoint, active, handleActionVrfEndpoints, i
 
   const handleAddNewEndpoint = () => {
     const validate = validateEmptyEndpoint(endpoints);
+    console.log(endpoints);
     if (!validate) return;
     if (id === null) {
-      handleActionVrfEndpoints('add', endpoints);
+      handleActionVrfEndpoints('add', { ...endpoints, id: endpoint.length + 1, source_interface: '', remote_as: 6500 });
       return setEdit(false);
     }
     handleActionVrfEndpoints('change', endpoints, id);

@@ -9,7 +9,7 @@ interface VlanType {
   errorSchema?: any;
 }
 
-export const Vlan: FC<VlanType> = ({ setValue,  errorSchema }) => {
+export const Vlan: FC<VlanType> = ({ setValue, errorSchema }) => {
   const { vlan, error, vlanInterface, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue } = useVlanLogic(setValue);
 
   const errorMessage = errorSchema ? <p className="vlan__cancel">{errorSchema.message}</p> : 'There are no active Vlan and no Lan IP Mask';

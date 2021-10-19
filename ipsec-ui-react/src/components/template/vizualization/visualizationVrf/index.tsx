@@ -8,15 +8,15 @@ import { EndpointsType, VlanInterface, MetricsType } from 'interface/index';
 interface VisualizationVrf extends Visualization {
   title: string;
   dimensions: number;
-  vlans?: VlanInterface[] | null;
+  vlan?: VlanInterface[];
   height: number;
   width: number;
-  endpoints: EndpointsType[];
-  metrics: MetricsType[];
+  endpoint: EndpointsType[];
+  monitoring: MetricsType[];
   hardware: boolean;
 }
 
-export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, title, endpoints, dimensions, metrics, hardware, vlans = [] }) => {
+export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, title, endpoint, dimensions, monitoring, hardware, vlan = [] }) => {
   const { smHeightLabel, lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
   const eachBreak = hardware ? 35 : 25;
 
@@ -35,19 +35,27 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
 
   const hightOfX = (height - 55) / 2 - (20 + mdHeightLabel / 2) + 7.5;
 
-  const findStatus = (id: string) => {
-    return metrics.filter((status: MetricsType) => status.id === id)[0];
+  const findStatus = (id: number) => {
+    return monitoring.filter((status: MetricsType) => status.id === id)[0];
   };
 
   const getCenterEndpoints = () => {
-    if (vlans && vlans.length && endpoints && endpoints.length) {
-      const amount = endpoints.length - vlans.length;
+    if (vlan.length > endpoint.length) {
+      const amount = endpoint.length - vlan.length;
       return Math.abs(amount) * 40;
     }
     return 0;
   };
 
-  const endpointStatus = endpoints.map((endpoint, index) => {
+  const getCenterVlan = () => {
+    if (vlan.length < endpoint.length) {
+      const amount = endpoint.length - vlan.length;
+      return Math.abs(amount) * 40;
+    }
+    return 0;
+  };
+
+  const endpointStatus = endpoint.map((endpoint, index) => {
     const hardwareLabel = hardware ? mdHeightLabel : lgHeightLabel;
     const textY = y + heightHeader + paddingBox + index * 80 + getCenterEndpoints();
     const textX = x + width - paddingBox - smWidthLabel;
@@ -81,27 +89,27 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
       title: `Remote Site ${index + 1}`,
       endpoint,
       lineWidth: dimensions - 700,
-      status
+      monitoring: status
     };
 
     return (
       <Group key={index}>
         <VisualizationLine {...line} />
         <VisualizationThreeLabel {...thirdLabel} />
-        <VisualizationStatus {...connectStatus} />
+         <VisualizationStatus {...connectStatus} /> 
       </Group>
     );
   });
 
   const vlansLabel =
     !hardware &&
-    vlans &&
-    vlans.map(({ vlan, lan_ip }, index) => {
+    vlan &&
+    vlan.map(({ vlan, lan_ip }, index) => {
       const centerX = x - 32.5;
-      const centerY = y + 50 + mdHeightLabel / 2 + index * 80 + 4;
+      const centerY = y + 50 + mdHeightLabel / 2 + index * 80 + getCenterVlan();
       const label = {
         x: x + paddingBox,
-        y: y + heightHeader + paddingBox / 2 + index * 80 + 4,
+        y: y + heightHeader + paddingBox / 2 + index * 80 + getCenterVlan(),
         width: smWidthLabel,
         height: lgHeightLabel,
         vlan: vlan.toString(),

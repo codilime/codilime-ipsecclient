@@ -3,45 +3,39 @@ import { useAppContext } from 'hooks/';
 import { handleTakeTime } from 'utils/';
 
 export const useFetchData = () => {
-  const { setVrf } = useAppContext();
+  const { setContext } = useAppContext();
 
-  const fetchData = () => client('vrfs');
+  const fetchData = () => client('vrf');
 
   const postVrfData = async (payload: any) => {
-    setVrf((prev) => ({ ...prev, loading: true }));
+    setContext((prev) => ({ ...prev, loading: true }));
     try {
-      const res = await client('vrfs', { ...payload }, { method: 'POST' });
-      if (res) {
-        setVrf((prev) => ({ ...prev, loading: false }));
-        return res;
-      }
+      const res = await client('vrf', { ...payload }, { method: 'POST' });
+      if (res) setContext((prev) => ({ ...prev, loading: false }));
+      return res;
     } catch (err: any) {
-      setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { id: prev.notifications.length + 1, errorTime: handleTakeTime(), message: err.error }] }));
+      setContext((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { id: prev.notifications.length + 1, errorTime: handleTakeTime(), message: err.error }] }));
     }
   };
 
-  const putVrfData = async (payload: any) => {
-    setVrf((prev) => ({ ...prev, loading: true }));
+  const patchVrfData = async (payload: any) => {
+    setContext((prev) => ({ ...prev, loading: true }));
     try {
-      const data = await client(`vrfs/${payload.id}`, { ...payload }, { method: 'PUT' });
-      if (data) {
-        setVrf((prev) => ({ ...prev, loading: false }));
-        return data;
-      }
+      const res = await client(`vrf=${payload.vrf.id}`, { ...payload }, { method: 'PATCH' });
+      if (res) setContext((prev) => ({ ...prev, loading: false }));
+      return res;
     } catch (err: any) {
-      setVrf((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { id: prev.notifications.length + 1, errorTime: handleTakeTime(), message: err.error }] }));
+      setContext((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { id: prev.notifications.length + 1, errorTime: handleTakeTime(), message: err.error }] }));
     }
   };
 
   const deleteVrfData = async (id: number | string) => {
-    setVrf((prev) => ({ ...prev, loading: true }));
-    const res = await client(`vrfs/${id}`, {}, { method: 'DELETE' });
-    if (res) {
-      setVrf((prev) => ({ ...prev, loading: false }));
-    }
+    setContext((prev) => ({ ...prev, loading: true }));
+    const res = await client(`vrf=${id}`, {}, { method: 'DELETE' });
+    if (res) setContext((prev) => ({ ...prev, loading: false }));
   };
 
-  const fetchEndpointStatus = async (id: number | string) => await client(`metrics/${id}`);
+  const fetchEndpointStatus = async (id: number | string) => await client(`monitoring=${id}`);
 
   const fetchLogsList = async () => await client('listlogs');
 
@@ -55,7 +49,7 @@ export const useFetchData = () => {
     fetchData,
     postVrfData,
     deleteVrfData,
-    putVrfData,
+    patchVrfData,
     fetchEndpointStatus,
     fetchLogsList,
     fetchLogsData,

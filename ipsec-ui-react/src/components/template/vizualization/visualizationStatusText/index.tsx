@@ -4,14 +4,14 @@ import { Visualization } from 'interface/components';
 import { MetricsType } from 'interface/index';
 
 interface VisualizationStatusText extends Visualization {
-  status?: MetricsType;
+  monitoring: MetricsType;
   width: number;
 }
 
-export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, width, height, status }) => {
+export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, width, height, monitoring }) => {
   const handleGetIcon = () => {
-    if (!status) return '';
-    switch (status.sa_status) {
+    if (!monitoring) return '';
+    switch (monitoring.status) {
       case 'up':
         return '✓';
       case 'down':
@@ -19,8 +19,8 @@ export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, wid
     }
   };
   const handleGetColor = () => {
-    if (!status) return 'gray';
-    switch (status?.sa_status) {
+    if (!monitoring) return 'gray';
+    switch (monitoring.status) {
       case 'up':
         return 'green';
       case 'down':
@@ -28,8 +28,8 @@ export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, wid
     }
   };
   const handleGetText = () => {
-    if (!status) return 'Checking';
-    switch (status?.sa_status) {
+    if (!monitoring) return 'Checking';
+    switch (monitoring.status) {
       case 'up':
         return 'Working';
       case 'down':

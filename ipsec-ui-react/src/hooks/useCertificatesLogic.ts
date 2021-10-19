@@ -11,8 +11,8 @@ interface CertsType {
 }
 
 export const useCertificatesLogic = () => {
-  const { vrf, setVrf } = useAppContext();
-  const { certificates } = vrf;
+  const { context, setContext } = useAppContext();
+  const { certificates } = context;
   const uploadBtn = useRef<HTMLInputElement>(null);
   const [certs, setCerts] = useState<CertsType[]>([]);
   const [checkedCa, setCheckedCa] = useState<DynamicObject>();
@@ -23,7 +23,7 @@ export const useCertificatesLogic = () => {
 
   const handleUpdateCertsList = async () => {
     const newCerts = await client('cas');
-    if (newCerts) setVrf((prev) => ({ ...prev, certificates: [...newCerts] }));
+    if (newCerts) setContext((prev) => ({ ...prev, certificates: [...newCerts] }));
   };
 
   useEffect(() => {
@@ -54,20 +54,20 @@ export const useCertificatesLogic = () => {
     }
   };
 
-  useEffect(() => {
-    if (certs.length) {
-      const timeOut = setTimeout(async () => {
-        await client('cas', [...certificates, ...certs], { method: 'POST' });
-      }, 300);
-      const UploadTimeout = setTimeout(async () => {
-        handleUpdateCertsList();
-      }, 500);
-      return () => {
-        clearTimeout(timeOut);
-        clearTimeout(UploadTimeout);
-      };
-    }
-  }, [certs]);
+  // useEffect(() => {
+  //   if (certs.length) {
+  //     const timeOut = setTimeout(async () => {
+  //       await client('cas', [...certificates, ...certs], { method: 'POST' });
+  //     }, 300);
+  //     const UploadTimeout = setTimeout(async () => {
+  //       handleUpdateCertsList();
+  //     }, 500);
+  //     return () => {
+  //       clearTimeout(timeOut);
+  //       clearTimeout(UploadTimeout);
+  //     };
+  //   }
+  // }, [certs]);
 
   const handleDeleteCerts = async () => {
     if (!checkedCa) return;

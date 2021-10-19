@@ -1,16 +1,15 @@
 import { useFetchData, useGetLocation, useAppContext } from 'hooks/';
 
 export const useVrfLogic = () => {
-  const { vrf } = useAppContext();
-
+  const { context } = useAppContext();
   const { deleteVrfData } = useFetchData();
   const { history } = useGetLocation();
   const {
-    data: { client_name, id },
+    data: { client_name, id, endpoint },
     hardware,
     error,
     success
-  } = vrf;
+  } = context;
 
   const handleDelete = () => {
     if (!id) return;
@@ -18,5 +17,5 @@ export const useVrfLogic = () => {
     deleteVrfData(id);
     history.push('/vrf/create');
   };
-  return { vrf, client_name, error, hardware, success, handleDelete };
+  return { context, client_name, error, vrf_id: id, hardware, success, endpoint, handleDelete };
 };

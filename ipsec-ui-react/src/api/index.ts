@@ -1,4 +1,4 @@
-const API_URL = '/api';
+const API_URL = '/restconf/data/sico-ipsec:api';
 
 export async function client(endpoint: RequestInfo, data?: any, options?: RequestInit) {
   const { ...customConfig } = options ?? {};
@@ -14,11 +14,11 @@ export async function client(endpoint: RequestInfo, data?: any, options?: Reques
   };
   try {
     const response = await window.fetch(`${API_URL}/${endpoint}`, config);
-    const res = await response.json();
-    if (response.ok) {
-      return res;
+    if (response.status === 200) {
+      const res = await response.json();
+      if (res) return res;
     }
-    return Promise.reject(res);
+    return response.ok;
   } catch (error: any) {
     return Promise.reject(error ? error.message : data);
   }

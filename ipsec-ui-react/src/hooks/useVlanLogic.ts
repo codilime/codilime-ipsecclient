@@ -5,7 +5,7 @@ import { VlanInterface } from 'interface/index';
 
 export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
   const {
-    vrf: { data }
+    context: { data }
   } = useAppContext();
 
   const [error, setError] = useState(false);
@@ -35,8 +35,12 @@ export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
   };
 
   useEffect(() => {
-    if (data.vlans) {
-      setVlan(data.vlans);
+    if (vlan.length) setValue('vlan', [...vlan], { shouldDirty: true });
+  }, [vlan]);
+  
+  useEffect(() => {
+    if (data.vlan) {
+      setVlan(data.vlan);
     }
   }, [data]);
 
@@ -44,9 +48,7 @@ export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
     if (error) setError(false);
   }, [vlan]);
 
-  useEffect(() => {
-    if (data.vlans !== vlan) setValue('vlans', [...vlan], { shouldDirty: true });
-  }, [vlan]);
+  console.log(vlan);
 
   const handleChangeInputValue = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

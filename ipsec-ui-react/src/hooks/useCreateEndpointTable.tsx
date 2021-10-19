@@ -34,9 +34,9 @@ export const useCreateEndpointTable = () => {
     );
   });
 
-  const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ active: false, endpoint: el, id: index, handleActionVrfEndpoints }} />);
+  const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ active: false, currentEndpoint: el, id: index, handleActionVrfEndpoints }} />);
 
-  const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, endpoint: emptySchema, handleActionVrfEndpoints, id: null }} />;
+  const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, currentEndpoint: emptySchema, handleActionVrfEndpoints, id: null }} />;
 
   const newEndpointButton = open ? 'Close' : 'Add a new endpoint';
 

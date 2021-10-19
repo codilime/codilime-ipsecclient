@@ -9,7 +9,7 @@ interface AuthenticationType {
 }
 
 export interface EndpointsType {
-  id?: string;
+  id?: number;
   remote_ip_sec: string;
   local_ip: string;
   peer_ip: string;
@@ -18,18 +18,19 @@ export interface EndpointsType {
   nat?: boolean;
   remote_as?: number;
   source_interface?: string;
+  vrf_id?: number;
 }
 
 export interface vrfDataTypes {
   client_name: string;
-  vlans: VlanInterface[] | null;
-  crypto_ph1: string[];
-  crypto_ph2: string[];
+  vlan: VlanInterface[];
+  crypto_ph1: string;
+  crypto_ph2: string;
   physical_interface: string;
   active: boolean;
   local_as: number;
-  endpoints: EndpointsType[] | null;
-  id?: string | number;
+  endpoint: EndpointsType[] | [];
+  id?: number;
 }
 
 export interface SoftwareCryptoDataTypes {
@@ -58,7 +59,7 @@ export interface ContextProps {
   softwareCrypto: CryptoTypes;
   hardwareCrypto: CryptoTypes;
   certificates: CertificatesType[];
-  vrfs: vrfDataTypes[];
+  vrf: vrfDataTypes[] | [];
   notifications: NotificationsType[];
   loading: boolean;
   hardware: boolean;
@@ -108,10 +109,10 @@ export interface VlanInterface {
 }
 
 export interface MetricsType {
-  id: string;
+  id: number;
   local_ip: string;
-  remote_ip: string;
-  sa_status: string;
+  peer_ip: string;
+  status: string;
 }
 export interface RestConfType {
   switch_username: string;

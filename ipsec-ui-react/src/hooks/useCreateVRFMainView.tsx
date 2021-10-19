@@ -2,41 +2,39 @@ import { useEffect } from 'react';
 import { DynamicVrfHardwareDetails, DynamicVrfDetails } from 'db';
 import { Field, CryptoField } from 'template';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { vrfSchema } from 'schema/';
 import { useFetchData, useGetLocation, useAppContext } from 'hooks/';
-
+import { vrfDataTypes } from 'interface/index';
 
 export const useCreateVRFMainView = () => {
-  const { vrf } = useAppContext();
+  const { context } = useAppContext();
   const { history, currentLocation } = useGetLocation();
-  const { postVrfData, putVrfData } = useFetchData();
-  const { data, softwareCrypto, hardwareCrypto, hardware } = vrf;
-  const { endpoints } = data;
+  const { postVrfData, patchVrfData } = useFetchData();
+  const { data, softwareCrypto, hardwareCrypto, hardware, vrf } = context;
+  const { endpoint, vlan } = data;
 
   const {
     register,
     handleSubmit,
     formState: { errors, isDirty, isValid },
     reset,
-    setValue
-  } = useForm({ resolver: yupResolver(vrfSchema) });
-  
+    setValue,
+    watch,
+  } = useForm<vrfDataTypes>({
+    resolver: yupResolver(vrfSchema)
+  });
+
   useEffect(() => {
-    if (endpoints === null) reset(data);
-    else if (!endpoints.length) reset({ ...data, endpoints: null });
-    else reset({ ...data });
+    reset(data);
   }, [reset, currentLocation, data]);
-  
-  const submit = async (data: any) => {
+  console.log(data,watch('vlan'),'watch');
+  const submit = async (data: vrfDataTypes) => {
     if (data.id) {
-      return await putVrfData(data);
+      return patchVrfData({ vrf: data });
     }
-    const res = await postVrfData(data);
-    //TODO: BUG
-    // if (res.id) {
-    //   history.push(`/vrf/${res.id}`);
-    // }
+    const res = await postVrfData({ vrf: { ...data, id: vrf.length + 1 } });
+    if (res) return history.push(`/vrf/${vrf.length + 1}`);
   };
 
   const crypto = hardware ? hardwareCrypto : softwareCrypto;
@@ -44,7 +42,7 @@ export const useCreateVRFMainView = () => {
 
   const displayDetails = details.map((el) => {
     if (el.name === 'crypto_ph1' || el.name === 'crypto_ph2') {
-      return <CryptoField {...{ ...el, key: el.name, crypto: crypto[el.name], register, value: data[el.name], error: errors[el.name] }} />;
+      return <CryptoField {...{ ...el, key: el.name, crypto: crypto[el.name], setValue, value: data[el.name], error: errors[el.name] }} />;
     }
     return <Field {...{ ...el, key: el.name, value: data[el.name], register: register(el.name), error: errors[el.name], className: 'field__detail' }} />;
   });

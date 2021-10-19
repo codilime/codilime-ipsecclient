@@ -12,7 +12,7 @@ export const FormDetail: FC = () => {
       <form autoComplete="off" className="form" onSubmit={handleSubmit(submit)}>
         <fieldset className="form__fieldset">
           <div className="form__details">{displayDetails}</div>
-          {!hardware && <Vlan {...{ setValue, reset, errorSchema: errors['vlans'] }} />}
+          {!hardware && <Vlan {...{ setValue, reset, errorSchema: errors['vlan'] }} />}
         </fieldset>
         <Button className="form__btn" disabled={!isDirty}>
           Save changes

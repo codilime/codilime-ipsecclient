@@ -15,14 +15,14 @@ export const EachLog: FC<EachLogType> = ({ title, activePopup }) => {
 
   const { logData, autoScroll, loading, handleFetchLogsData, HandleDownloadTextFile, handleActioveScroll } = useLogsLogic();
 
-  useEffect(() => {
-    if (open) {
-      handleFetchLogsData(title);
-    }
-    if (!open && autoScroll) {
-      handleActioveScroll();
-    }
-  }, [open]);
+  // useEffect(() => {
+  //   if (open) {
+  //     handleFetchLogsData(title);
+  //   }
+  //   if (!open && autoScroll) {
+  //     handleActioveScroll();
+  //   }
+  // }, [open]);
 
   useEffect(() => {
     const timeOut = setTimeout(() => {
