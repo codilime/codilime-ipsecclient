@@ -6,7 +6,6 @@ pipeline {
             agent any
             steps {
                 sh '''
-                ss -tulpn | grep LISTEN
                 cd test
                 ./test.sh
                 '''

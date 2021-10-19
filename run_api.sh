@@ -21,5 +21,6 @@ docker run --name sico_api \
         -e SWITCH_PASSWORD=cisco123 \
         -e LOG_LEVEL=info \
         --network ipsec \
-        --publish 80:80 \
+        --publish 11111:80 \
         sico_api
+        # --publish 8080:8080 \
