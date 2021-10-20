@@ -1,0 +1,25 @@
+Cisco-IOS-XE-native:native/crypto/ipsec/profile
+{
+        "profile": [
+        {{ range $index, $endpoint := .EndpointSubset }}
+        {
+                "name": "hardware_certs{{ $endpoint.ID }}",
+                "set": {
+                "ikev2-profile": "hardware_certs{{ $endpoint.ID }}",
+                "pfs": {
+                "group": "{{ index $.CryptoPh2Slice 2 }}"
+                },
+                "transform-set": [
+                "hardware_certs"
+                ],
+                "security-association": {
+                "lifetime": {
+                "kilobytes": "disable"
+                }
+                }
+                }
+        }
+        {{ if (notEndOfSlice $.EndpointSubset $index) }},{{ end }}
+        {{ end }}
+        ]
+}

@@ -1,0 +1,20 @@
+---
+- name: configure an example tunnel
+  hosts: localhost
+  vars_files: ../vars.yml
+  tasks:
+
+  - name: template the configuration json
+    ansible.builtin.template:
+      src: sw_create.json.j2
+      dest: sw_create.json
+
+  - name: patch the hardware vrf
+    uri:
+      url: http://localhost/restconf/data/sico-ipsec:api/vrf=1
+      method: PATCH
+      status_code: [200, 201]
+      force_basic_auth: yes
+      user: "{{ sico_username }}"
+      password: "{{ sico_password }}"
+      src: sw_create.json

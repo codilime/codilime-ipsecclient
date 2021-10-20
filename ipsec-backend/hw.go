@@ -94,6 +94,25 @@ func (a *App) doTemplateFolder(folderName string, client *http.Client, vrf VrfWi
 	return nil
 }
 
+func (a *App) insertPkcs12(vrf VrfWithCryptoSlices, client *http.Client) error {
+	for _, e := range vrf.Endpoints {
+		if err := a.tryRestconfRequest("POST", "Cisco-IOS-XE-rpc:crypto", `{
+		"input": {
+			"pki":{
+				"import": {
+					"pkcs12": "http://10.69.0.1/pkcs12/`+strconv.Itoa(int(e.ID))+`",
+					"name-drop-node-name": "hardware_certs`+strconv.Itoa(int(e.ID))+`",
+					"password": "`+e.Authentication.PSK+`"
+				}
+			}
+		}
+		}`, client); err != nil {
+			return ReturnError(err)
+		}
+	}
+	return nil
+}
+
 func (a *App) restconfCreate(vrf Vrf) error {
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -137,6 +156,9 @@ func (a *App) restconfCreate(vrf Vrf) error {
 	}
 
 	if len(certsEndpoints) > 0 {
+		if err := a.insertPkcs12(vrfWithSlices, client); err != nil {
+			return ReturnError(err)
+		}
 		if err := a.doTemplateFolder("certs", client, vrfWithSlices, certsEndpoints); err != nil {
 			return ReturnError(err)
 		}

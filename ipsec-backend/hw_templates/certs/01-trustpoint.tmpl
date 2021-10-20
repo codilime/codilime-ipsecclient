@@ -1,0 +1,12 @@
+Cisco-IOS-XE-native:native/crypto/pki/trustpoint
+{
+  "Cisco-IOS-XE-crypto:trustpoint": [
+    {{ range $index, $endpoint := .EndpointSubset }}
+    {
+      "id": "hardware_certs{{ $endpoint.ID }}",
+      "revocation-check": ["none"]
+    }
+    {{ if (notEndOfSlice $.EndpointSubset $index) }},{{ end }}
+    {{ end }}
+  ]
+}
