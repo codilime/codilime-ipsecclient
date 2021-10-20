@@ -13,7 +13,7 @@
     uri:
       url: http://localhost/restconf/data/sico-ipsec:api/vrf=1
       method: PATCH
-      status_code: [200, 201]
+      status_code: [200, 204]
       force_basic_auth: yes
       user: "{{ sico_username }}"
       password: "{{ sico_password }}"
