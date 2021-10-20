@@ -60,13 +60,13 @@ type Endpoint struct {
 type Vrf struct {
 	ID                uint32         `json:"id"`
 	ClientName        string         `json:"client_name"`
-	Vlans             datatypes.JSON `json:"vlans"`
+	Vlans             datatypes.JSON `json:"vlan"`
 	CryptoPh1         datatypes.JSON `json:"crypto_ph1"`
 	CryptoPh2         datatypes.JSON `json:"crypto_ph2"`
 	PhysicalInterface string         `json:"physical_interface"`
 	Active            *bool          `json:"active"` // pointer, otherwise it is impossible to set value to false
 	LocalAs           uint32         `json:"local_as"`
-	Endpoints         []Endpoint     `json:"endpoints"`
+	Endpoints         []Endpoint     `json:"endpoint"`
 }
 
 func (v *Vrf) endpointByID(id uint32) *Endpoint {
