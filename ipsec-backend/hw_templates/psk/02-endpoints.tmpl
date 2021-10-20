@@ -1,7 +1,7 @@
 Cisco-IOS-XE-native:native/crypto/ikev2/keyring
 {
         "keyring": {
-                "name": "{{ .ClientName }}",
+                "name": "hardware_psk",
                 "peer": [
                 {{ range $index, $endpoint := .EndpointSubset }}
                         {

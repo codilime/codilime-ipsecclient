@@ -2,12 +2,18 @@ Cisco-IOS-XE-native:native/router/bgp
 {
         "bgp": [
                 {
-                "id": %d,
+                "id": {{ .LocalAs }},
                 "bgp": {
                 "log-neighbor-changes": true
                 },
                 "neighbor": [
-                %s
+                {{ range $index, $endpoint := .EndpointSubset }}
+                {
+                        "id": "{{ $endpoint.PeerIP }}",
+                        "remote-as": {{ $endpoint.RemoteAS }}
+                }
+                {{ if (notEndOfSlice $.EndpointSubset $index) }},{{ end }}
+                {{ end }}
                 ],
                 "address-family":{
                 "no-vrf":{
@@ -16,7 +22,15 @@ Cisco-IOS-XE-native:native/router/bgp
                                 "af-name":"unicast",
                                 "ipv4-unicast":{
                                 "neighbor":[
-                                        %s
+                                {{ range $index, $endpoint := .EndpointSubset }}
+                                        {
+                                                "id":"{{ $endpoint.PeerIP }}",
+                                                "activate":[
+                                                null
+                                                ]
+                                        }
+                                {{ if (notEndOfSlice $.EndpointSubset $index) }},{{ end }}
+                                {{ end }}
                                 ],
                                 "redistribute":{
                                 "connected":{}

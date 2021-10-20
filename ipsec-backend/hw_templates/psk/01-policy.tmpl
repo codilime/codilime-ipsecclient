@@ -1,14 +1,14 @@
 Cisco-IOS-XE-native:native/crypto/ikev2/policy
 {
         "policy": {
-                "name": "{{ .ClientName }}",
+                "name": "hardware_psk",
                 "match": {
                 "fvrf": {
                         "any": [null]
                 }
                 },
                 "proposal": {
-                "proposals": "{{ .ClientName }}"
+                "proposals": "hardware_psk"
                 }
         }
 }

@@ -1,14 +1,14 @@
 Cisco-IOS-XE-native:native/crypto/ipsec/profile
 {
         "profile": {
-                "name": "%s",
+                "name": "hardware_psk",
                 "set": {
-                "ikev2-profile": "%s",
+                "ikev2-profile": "hardware_psk",
                 "pfs": {
-                "group": "%s"
+                "group": "{{ index .CryptoPh2Slice 2 }}"
                 },
                 "transform-set": [
-                "%s"
+                "hardware_psk"
                 ],
                 "security-association": {
                 "lifetime": {

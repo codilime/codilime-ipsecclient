@@ -1,7 +1,7 @@
 Cisco-IOS-XE-native:native/crypto/ikev2/profile
 {
         "profile": {
-                "name": "{{ .ClientName }}",
+                "name": "hardware_psk",
                 "authentication": {
                 "local": {
                 "pre-share": {}
@@ -12,7 +12,7 @@ Cisco-IOS-XE-native:native/crypto/ikev2/profile
                 },
                 "keyring": {
                 "local": {
-                "name": "{{ .ClientName }}"
+                "name": "hardware_psk"
                 }
                 },
                 "match": {

@@ -1,7 +1,7 @@
 Cisco-IOS-XE-native:native/crypto/ipsec/transform-set
 {
         "transform-set": {
-                "tag": "{{ .ClientName }}",
+                "tag": "hardware_psk",
                 "esp": "{{ transformSetEsp $.VrfWithCryptoSlices }}",
                 {{ transformSetKeyBit $.VrfWithCryptoSlices }}
                 {{ transformSetEspHmac $.VrfWithCryptoSlices }}
