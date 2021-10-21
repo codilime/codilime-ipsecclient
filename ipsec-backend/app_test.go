@@ -62,6 +62,7 @@ func removeWhitespace(str string) string {
 
 func TestEmptyTable(t *testing.T) {
 	clearTable()
+	expectedBody := `{"vrf":[{"active":false,"client_name":"hardware","crypto_ph1":"aes-cbc-128.sha256.fourteen","crypto_ph2":"esp-aes.esp-sha-hmac.group14","endpoint":[],"id":1,"local_as":0,"physical_interface":"","vlan":[]}]}`
 
 	req, _ := http.NewRequest(http.MethodGet, vrfPath, nil)
 	req.SetBasicAuth("admin", "cisco123")
@@ -69,8 +70,8 @@ func TestEmptyTable(t *testing.T) {
 
 	checkResponseCode(t, http.StatusOK, response.Code)
 
-	if body := response.Body.String(); removeWhitespace(body) != `{"vrf":[]}` {
-		t.Fatalf("Expected an empty YANG list. Got %s", body)
+	if body := response.Body.String(); removeWhitespace(body) != expectedBody {
+		t.Fatalf("Expected HW vrf: %s. Got %s", expectedBody, removeWhitespace(body))
 	}
 }
 
@@ -110,7 +111,6 @@ func TestCreateVrf(t *testing.T) {
 	expectedVrf := createTestVrf()
 	data := map[string]interface{}{
 		"vrf": map[string]interface{}{
-			"id":                 expectedVrf.ID,
 			"client_name":        expectedVrf.ClientName,
 			"vlan":               expectedVrf.Vlans,
 			"crypto_ph1":         expectedVrf.CryptoPh1,
@@ -138,7 +138,8 @@ func TestCreateVrf(t *testing.T) {
 
 	var vrfs []Vrf
 	a.DB.Preload("Endpoints").Find(&vrfs)
-	storedVrf := vrfs[0]
+
+	storedVrf := vrfs[1]
 	storedVrf.Endpoints[0].Authentication.PSK = ""
 	expectedVrf.Endpoints[0].Authentication.PSK = ""
 
@@ -202,7 +203,6 @@ func TestUpdateVrf(t *testing.T) {
 
 	data := map[string]interface{}{
 		"vrf": map[string]interface{}{
-			"id":                 expectedVrf.ID,
 			"client_name":        expectedVrf.ClientName,
 			"vlan":               expectedVrf.Vlans,
 			"crypto_ph1":         expectedVrf.CryptoPh1,
@@ -228,8 +228,8 @@ func TestUpdateVrf(t *testing.T) {
 	var vrfs []Vrf
 	a.DB.Preload("Endpoints").Find(&vrfs)
 
-	if !reflect.DeepEqual(expectedVrf, vrfs[0]) {
-		t.Fatalf("Expected %+v got %+v", expectedVrf, vrfs[0])
+	if !reflect.DeepEqual(expectedVrf, vrfs[1]) {
+		t.Fatalf("Expected %+v got %+v", expectedVrf, vrfs[1])
 	}
 }
 
@@ -292,8 +292,8 @@ func TestDeleteVrf(t *testing.T) {
 	checkResponseCode(t, http.StatusNoContent, response.Code)
 
 	var vrfs []Vrf
-	if result := a.DB.Find(&vrfs); result.RowsAffected != 0 {
-		t.Fatalf("Expected number of vrfs to be 0 got %v", result.RowsAffected)
+	if result := a.DB.Find(&vrfs); result.RowsAffected != 1 {
+		t.Fatalf("Expected number of vrfs to be 1 got %v", result.RowsAffected)
 	}
 }
 
@@ -399,7 +399,7 @@ func createActivationRequest(vrf Vrf, active bool) *http.Request {
 }
 
 func clearTable() {
-	a.DB.Where("1=1").Delete(Vrf{})
+	a.DB.Where("id != 1").Delete(Vrf{})
 	a.DB.Where("1=1").Delete(StoredError{})
 }
 

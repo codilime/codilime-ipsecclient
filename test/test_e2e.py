@@ -142,6 +142,7 @@ get_template = {
                     "local_cert": "",
                     "remote_cert": "",
                     "private_key": "",
+                    "pkcs12_base64": "",
                 },
                 "nat": True,
                 "bgp": True,

@@ -120,7 +120,6 @@ func (c *CertificateAuthority) ToYang() *sico_yang.SicoIpsec_Api_Ca {
 }
 
 func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
-	v.ID = *vrfYang.Id
 	v.ClientName = *vrfYang.ClientName
 	vlans := []interface{}{}
 	for _, v := range vrfYang.Vlan {

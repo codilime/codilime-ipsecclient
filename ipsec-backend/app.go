@@ -454,10 +454,21 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithMarshalledJSON(w, http.StatusOK, `{"vrf":`+json+`}`)
 }
 
-func vrfValid(vrf Vrf) (bool, error) {
+func vrfUpdateValid(vrf Vrf) (bool, error) {
 	if vrf.ID == hardwareVrfID {
 		return true, nil
 	}
+	return vrfValid(vrf)
+}
+
+func vrfCreateValid(vrf Vrf) (bool, error) {
+	if vrf.ID == hardwareVrfID {
+		return false, nil
+	}
+	return vrfValid(vrf)
+}
+
+func vrfValid(vrf Vrf) (bool, error) {
 	if vrf.PhysicalInterface == "" {
 		return false, nil
 	}
@@ -538,7 +549,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	}
 	vrf := Vrf{}
 	vrf.FromYang(&yangVrf)
-	valid, err := vrfValid(vrf)
+	valid, err := vrfCreateValid(vrf)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -576,9 +587,24 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	vrfYang, err := vrf.ToYang()
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	json, err := ygot.EmitJSON(vrfYang, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 	InfoDebug("Create vrf completed", fmt.Sprintf("Create vrf completed|vrf: %v", vrf))
 
-	respondWithJSON(w, http.StatusCreated, nil)
+	respondWithMarshalledJSON(w, http.StatusCreated, `{"vrf":`+json+`}`)
 }
 
 type handler func(Vrf) error
@@ -616,9 +642,10 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vrf := Vrf{}
+	vrf.ID = uint32(id)
 	vrf.FromYang(&yangVrf)
 
-	valid, err := vrfValid(vrf)
+	valid, err := vrfUpdateValid(vrf)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -628,7 +655,6 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var oldVrf Vrf
-	vrf.ID = uint32(id)
 	oldVrf.ID = uint32(id)
 
 	if err := oldVrf.getVrf(a.DB); err != nil {
