@@ -8,12 +8,12 @@ Cisco-IOS-XE-native:native/router/bgp={{ .Vrf.LocalAs }}
                 "log-neighbor-changes": true
                 },
                 "neighbor": [
-                {{ range $index, $endpoint := .EndpointSubset }}
+                {{ range $index, $endpoint := .BGPEndpointSubset }}
                 {
                         "id": "{{ $endpoint.PeerIP }}",
                         "remote-as": {{ $endpoint.RemoteAS }}
                 }
-                {{ if (notEndOfSlice $.EndpointSubset $index) }},{{ end }}
+                {{ if (notEndOfSlice $.BGPEndpointSubset $index) }},{{ end }}
                 {{ end }}
                 ],
                 "address-family":{
@@ -23,14 +23,14 @@ Cisco-IOS-XE-native:native/router/bgp={{ .Vrf.LocalAs }}
                                 "af-name":"unicast",
                                 "ipv4-unicast":{
                                 "neighbor":[
-                                {{ range $index, $endpoint := .EndpointSubset }}
+                                {{ range $index, $endpoint := .BGPEndpointSubset }}
                                         {
                                                 "id":"{{ $endpoint.PeerIP }}",
                                                 "activate":[
                                                 null
                                                 ]
                                         }
-                                {{ if (notEndOfSlice $.EndpointSubset $index) }},{{ end }}
+                                {{ if (notEndOfSlice $.BGPEndpointSubset $index) }},{{ end }}
                                 {{ end }}
                                 ],
                                 "redistribute":{

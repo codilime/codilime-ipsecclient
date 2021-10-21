@@ -28,11 +28,23 @@ type VrfWithCryptoSlices struct {
 	CryptoPh2Slice []string
 }
 
+func bgpEndpointSubset(endpoints []Endpoint) []Endpoint {
+	bgpEndpoints := []Endpoint{}
+	for _, e := range endpoints {
+		if e.BGP {
+			bgpEndpoints = append(bgpEndpoints, e)
+		}
+	}
+	return bgpEndpoints
+}
+
 func (a *App) doTemplateFolderCreate(folderName string, client *http.Client, vrf VrfWithCryptoSlices, endpoints []Endpoint) error {
 	files, err := ioutil.ReadDir(hwTemplatesDir + "/" + folderName)
 	if err != nil {
 		return ReturnError(err)
 	}
+
+	bgpEndpoints := bgpEndpointSubset(endpoints)
 
 	for _, file := range files {
 		bytes, err := ioutil.ReadFile(hwTemplatesDir + "/" + folderName + "/" + file.Name())
@@ -82,10 +94,12 @@ func (a *App) doTemplateFolderCreate(folderName string, client *http.Client, vrf
 		builder := strings.Builder{}
 		if err = t.Execute(&builder, struct {
 			VrfWithCryptoSlices
-			EndpointSubset []Endpoint
+			EndpointSubset    []Endpoint
+			BGPEndpointSubset []Endpoint
 		}{
 			vrf,
 			endpoints,
+			bgpEndpoints,
 		}); err != nil {
 			return ReturnError(err)
 		}
@@ -115,6 +129,7 @@ func (a *App) doTemplateFolderDelete(folderName string, client *http.Client, vrf
 	}
 
 	files = reverseSlice(files)
+	bgpEndpoints := bgpEndpointSubset(endpoints)
 
 	for _, file := range files {
 		bytes, err := ioutil.ReadFile(hwTemplatesDir + "/" + folderName + "/" + file.Name())
@@ -130,10 +145,12 @@ func (a *App) doTemplateFolderDelete(folderName string, client *http.Client, vrf
 		builder := strings.Builder{}
 		if err = t.Execute(&builder, struct {
 			Vrf
-			EndpointSubset []Endpoint
+			EndpointSubset    []Endpoint
+			BGPEndpointSubset []Endpoint
 		}{
 			vrf,
 			endpoints,
+			bgpEndpoints,
 		}); err != nil {
 			return ReturnError(err)
 		}
@@ -168,6 +185,23 @@ func (a *App) insertPkcs12(vrf VrfWithCryptoSlices, client *http.Client) error {
 	return nil
 }
 
+func endpointSubsets(vrf Vrf) ([]Endpoint, []Endpoint) {
+	pskEndpoints := []Endpoint{}
+	for _, e := range vrf.Endpoints {
+		if e.Authentication.Type == "psk" {
+			pskEndpoints = append(pskEndpoints, e)
+		}
+	}
+
+	certsEndpoints := []Endpoint{}
+	for _, e := range vrf.Endpoints {
+		if e.Authentication.Type == "certs" {
+			certsEndpoints = append(certsEndpoints, e)
+		}
+	}
+	return pskEndpoints, certsEndpoints
+}
+
 func (a *App) restconfCreate(vrf Vrf) error {
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -190,23 +224,11 @@ func (a *App) restconfCreate(vrf Vrf) error {
 
 	spew.Dump(vrfWithSlices)
 
-	pskEndpoints := []Endpoint{}
-	for _, e := range vrf.Endpoints {
-		if e.Authentication.Type == "psk" {
-			pskEndpoints = append(pskEndpoints, e)
-		}
-	}
+	pskEndpoints, certsEndpoints := endpointSubsets(vrf)
 
 	if len(pskEndpoints) > 0 {
 		if err := a.doTemplateFolderCreate("psk", client, vrfWithSlices, pskEndpoints); err != nil {
 			return ReturnError(err)
-		}
-	}
-
-	certsEndpoints := []Endpoint{}
-	for _, e := range vrf.Endpoints {
-		if e.Authentication.Type == "certs" {
-			certsEndpoints = append(certsEndpoints, e)
 		}
 	}
 
@@ -227,23 +249,11 @@ func (a *App) restconfDelete(vrf Vrf) error {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	pskEndpoints := []Endpoint{}
-	for _, e := range vrf.Endpoints {
-		if e.Authentication.Type == "psk" {
-			pskEndpoints = append(pskEndpoints, e)
-		}
-	}
+	pskEndpoints, certsEndpoints := endpointSubsets(vrf)
 
 	if len(pskEndpoints) > 0 {
 		if err := a.doTemplateFolderDelete("psk", client, vrf, pskEndpoints); err != nil {
 			return ReturnError(err)
-		}
-	}
-
-	certsEndpoints := []Endpoint{}
-	for _, e := range vrf.Endpoints {
-		if e.Authentication.Type == "certs" {
-			certsEndpoints = append(certsEndpoints, e)
 		}
 	}
 
