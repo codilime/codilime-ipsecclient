@@ -1,4 +1,5 @@
 Cisco-IOS-XE-native:native/crypto/ikev2/profile
+{{ range $index, $endpoint := .EndpointSubset }}Cisco-IOS-XE-native:native/crypto/ikev2/profile=hardware_certs{{$endpoint.ID}} {{end}}
 {
   "Cisco-IOS-XE-crypto:profile": [
   {{ range $index, $endpoint := .EndpointSubset }}

@@ -1,4 +1,5 @@
 Cisco-IOS-XE-native:native/crypto/ipsec/profile
+{{ range $index, $endpoint := .EndpointSubset }}Cisco-IOS-XE-native:native/crypto/ipsec/profile=hardware_certs{{$endpoint.ID}} {{end}}
 {
         "profile": [
         {{ range $index, $endpoint := .EndpointSubset }}

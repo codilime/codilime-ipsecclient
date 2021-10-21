@@ -1,4 +1,5 @@
 Cisco-IOS-XE-native:native/crypto/pki/trustpoint
+{{ range $index, $endpoint := .EndpointSubset }}Cisco-IOS-XE-native:native/crypto/pki/trustpoint=hardware_certs{{$endpoint.ID}} {{end}}
 {
   "Cisco-IOS-XE-crypto:trustpoint": [
     {{ range $index, $endpoint := .EndpointSubset }}

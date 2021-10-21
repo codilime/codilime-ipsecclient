@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -27,7 +28,7 @@ type VrfWithCryptoSlices struct {
 	CryptoPh2Slice []string
 }
 
-func (a *App) doTemplateFolder(folderName string, client *http.Client, vrf VrfWithCryptoSlices, endpoints []Endpoint) error {
+func (a *App) doTemplateFolderCreate(folderName string, client *http.Client, vrf VrfWithCryptoSlices, endpoints []Endpoint) error {
 	files, err := ioutil.ReadDir(hwTemplatesDir + "/" + folderName)
 	if err != nil {
 		return ReturnError(err)
@@ -40,7 +41,8 @@ func (a *App) doTemplateFolder(folderName string, client *http.Client, vrf VrfWi
 		}
 		lines := strings.Split(string(bytes), "\n")
 		url := lines[0]
-		templ := strings.Join(lines[1:], "\n")
+		_ = lines[1] // this is the delete url
+		templ := strings.Join(lines[2:], "\n")
 		t, err := template.New(file.Name()).Funcs(template.FuncMap{
 			"notEndOfSlice": func(l []Endpoint, i int) bool {
 				return len(l)-1 != i
@@ -89,6 +91,59 @@ func (a *App) doTemplateFolder(folderName string, client *http.Client, vrf VrfWi
 		}
 		if err := a.tryRestconfPatch(url, builder.String(), client); err != nil {
 			return ReturnError(err)
+		}
+	}
+	return nil
+}
+
+func reverseSlice(s []fs.FileInfo) []fs.FileInfo {
+	a := make([]fs.FileInfo, len(s))
+	copy(a, s)
+
+	for i := len(a)/2 - 1; i >= 0; i-- {
+		opp := len(a) - 1 - i
+		a[i], a[opp] = a[opp], a[i]
+	}
+
+	return a
+}
+
+func (a *App) doTemplateFolderDelete(folderName string, client *http.Client, vrf Vrf, endpoints []Endpoint) error {
+	files, err := ioutil.ReadDir(hwTemplatesDir + "/" + folderName)
+	if err != nil {
+		return ReturnError(err)
+	}
+
+	files = reverseSlice(files)
+
+	for _, file := range files {
+		bytes, err := ioutil.ReadFile(hwTemplatesDir + "/" + folderName + "/" + file.Name())
+		if err != nil {
+			return ReturnError(err)
+		}
+		lines := strings.Split(string(bytes), "\n")
+		deleteUrlTemplate := lines[1]
+		t, err := template.New(file.Name()).Parse(deleteUrlTemplate)
+		if err != nil {
+			return ReturnError(err)
+		}
+		builder := strings.Builder{}
+		if err = t.Execute(&builder, struct {
+			Vrf
+			EndpointSubset []Endpoint
+		}{
+			vrf,
+			endpoints,
+		}); err != nil {
+			return ReturnError(err)
+		}
+		for _, url := range strings.Split(builder.String(), " ") {
+			if strings.TrimSpace(url) == "" {
+				continue
+			}
+			if err := a.tryRestconfDelete(url, client); err != nil {
+				Error(err) // but don't stop execution for this, ignore delete errors
+			}
 		}
 	}
 	return nil
@@ -143,7 +198,7 @@ func (a *App) restconfCreate(vrf Vrf) error {
 	}
 
 	if len(pskEndpoints) > 0 {
-		if err := a.doTemplateFolder("psk", client, vrfWithSlices, pskEndpoints); err != nil {
+		if err := a.doTemplateFolderCreate("psk", client, vrfWithSlices, pskEndpoints); err != nil {
 			return ReturnError(err)
 		}
 	}
@@ -159,7 +214,7 @@ func (a *App) restconfCreate(vrf Vrf) error {
 		if err := a.insertPkcs12(vrfWithSlices, client); err != nil {
 			return ReturnError(err)
 		}
-		if err := a.doTemplateFolder("certs", client, vrfWithSlices, certsEndpoints); err != nil {
+		if err := a.doTemplateFolderCreate("certs", client, vrfWithSlices, certsEndpoints); err != nil {
 			return ReturnError(err)
 		}
 	}
@@ -172,33 +227,30 @@ func (a *App) restconfDelete(vrf Vrf) error {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	// Ignore delete errors. Sometimes there is a leftover configuration left and some of the calls will return 404.
-	// We just want to make sure that nothing in the configuration will conflict with what we're inserting
-	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/router/bgp=%d", vrf.LocalAs), client); err != nil {
-		Error(err)
-	}
+	pskEndpoints := []Endpoint{}
 	for _, e := range vrf.Endpoints {
-		if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/interface/Tunnel=%d", e.ID), client); err != nil {
-			Error(err)
+		if e.Authentication.Type == "psk" {
+			pskEndpoints = append(pskEndpoints, e)
 		}
 	}
-	if err := a.tryRestconfDelete("Cisco-IOS-XE-native:native/crypto/ipsec/profile=hardware_psk", client); err != nil {
-		Error(err)
+
+	if len(pskEndpoints) > 0 {
+		if err := a.doTemplateFolderDelete("psk", client, vrf, pskEndpoints); err != nil {
+			return ReturnError(err)
+		}
 	}
-	if err := a.tryRestconfDelete("Cisco-IOS-XE-native:native/crypto/ipsec/transform-set=hardware_psk", client); err != nil {
-		Error(err)
+
+	certsEndpoints := []Endpoint{}
+	for _, e := range vrf.Endpoints {
+		if e.Authentication.Type == "certs" {
+			certsEndpoints = append(certsEndpoints, e)
+		}
 	}
-	if err := a.tryRestconfDelete("Cisco-IOS-XE-native:native/crypto/ikev2/profile=hardware_psk", client); err != nil {
-		Error(err)
-	}
-	if err := a.tryRestconfDelete("Cisco-IOS-XE-native:native/crypto/ikev2/keyring=hardware_psk", client); err != nil {
-		Error(err)
-	}
-	if err := a.tryRestconfDelete("Cisco-IOS-XE-native:native/crypto/ikev2/policy=hardware_psk", client); err != nil {
-		Error(err)
-	}
-	if err := a.tryRestconfDelete("Cisco-IOS-XE-native:native/crypto/ikev2/proposal=hardware_psk", client); err != nil {
-		Error(err)
+
+	if len(certsEndpoints) > 0 {
+		if err := a.doTemplateFolderDelete("certs", client, vrf, certsEndpoints); err != nil {
+			return ReturnError(err)
+		}
 	}
 	return nil
 }
@@ -234,7 +286,7 @@ func (a *App) tryRestconfRequest(method, path, data string, client *http.Client)
 				fmt.Println("lock denied")
 				continue
 			}
-			fmt.Println("other error encountered")
+			fmt.Println("other error encountered", err.Error())
 			return ReturnError(err)
 		}
 	}
@@ -261,7 +313,7 @@ func (a *App) restconfDoRequest(method, path, data string, client *http.Client) 
 		if err != nil {
 			return ReturnError(err)
 		}
-		return ReturnError(errors.New("call to " + path + " failed (" + strconv.Itoa(resp.StatusCode) + "): " + string(body)))
+		return ReturnError(errors.New(method + " to " + path + " failed (" + strconv.Itoa(resp.StatusCode) + "): " + string(body)))
 	}
 	return nil
 }

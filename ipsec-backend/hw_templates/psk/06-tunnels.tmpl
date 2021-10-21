@@ -1,4 +1,5 @@
 Cisco-IOS-XE-native:native/interface
+{{ range $index, $endpoint := .EndpointSubset }}Cisco-IOS-XE-native:native/interface/Tunnel={{$endpoint.ID}} {{end}}
 {
         "interface": [
         {{ range $index, $endpoint := .EndpointSubset }}
