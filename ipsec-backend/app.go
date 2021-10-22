@@ -369,7 +369,7 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
-	vrfsMap := map[uint32]*sico_yang.SicoIpsec_Api_Vrf{}
+	vrfsMap := map[string]*sico_yang.SicoIpsec_Api_Vrf{}
 	vrfs, err := getVrfs(a.DB)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -390,7 +390,7 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 			a.respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		vrfsMap[v.ID] = vrfYang
+		vrfsMap[v.ClientName] = vrfYang
 	}
 	api := sico_yang.SicoIpsec_Api{
 		Vrf: vrfsMap,
@@ -587,24 +587,15 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	vrfYang, err := vrf.ToYang()
-	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	json, err := ygot.EmitJSON(vrfYang, &ygot.EmitJSONConfig{
-		Format: ygot.RFC7951,
-		Indent: "  ",
-	})
-	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
 	InfoDebug("Create vrf completed", fmt.Sprintf("Create vrf completed|vrf: %v", vrf))
 
-	respondWithMarshalledJSON(w, http.StatusCreated, `{"vrf":`+json+`}`)
+	if len(r.Header["Origin"]) < 1 {
+		w.Header().Set("Location", fmt.Sprintf("%s=%d", vrfPath, vrf.ID))
+	} else {
+		w.Header().Set("Location", fmt.Sprintf("%s%s=%d", r.Header["Origin"][0], vrfPath, vrf.ID))
+	}
+
+	respondWithJSON(w, http.StatusCreated, nil)
 }
 
 type handler func(Vrf) error

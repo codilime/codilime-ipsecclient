@@ -58,7 +58,6 @@ def ordered(obj):
 def test_post():
     post = {
         "vrf": {
-            "id": 2,
             "client_name": "test",
             "vlan": [
                 {
@@ -71,6 +70,21 @@ def test_post():
             "physical_interface": "eth0",
             "active": False,
             "local_as": 123,
+            "endpoint": [
+                {
+                    "remote_ip_sec": "10.1.0.1",
+                    "local_ip": "10.2.0.1",
+                    "peer_ip": "10.3.0.1",
+                    "authentication": {
+                        "type": "psk",
+                        "psk": "asdasdasdasd"
+                    },
+                    "nat": True,
+                    "bgp": True,
+                    "remote_as": 321,
+                    "source_interface": ""
+                }
+            ]
         }
     }
 
@@ -83,7 +97,6 @@ def test_post():
 def test_patch():
     patch = {
         "vrf": {
-            "id": 2,
             "client_name": "test",
             "vlan": [
                 {
@@ -98,8 +111,6 @@ def test_patch():
             "local_as": 123,
             "endpoint": [
                 {
-                    "id": 1,
-                    "vrf_id": 2,
                     "remote_ip_sec": "10.1.0.1",
                     "local_ip": "10.2.0.1",
                     "peer_ip": "10.3.0.1",
@@ -131,7 +142,7 @@ get_template = {
 
         "endpoint": [
             {
-                "id": 1,
+                "id": 2,
                 "vrf_id": 2,
                 "remote_ip_sec": "10.1.0.1",
                 "local_ip": "10.2.0.1",

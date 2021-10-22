@@ -107,6 +107,8 @@ func MarshalCryptoPh2(vrf Vrf) string {
 
 func TestCreateVrf(t *testing.T) {
 	clearTable()
+	const origin = "test-origin"
+	const expectedLocation = origin + "/restconf/data/sico-ipsec:api/vrf=2"
 
 	expectedVrf := createTestVrf()
 	data := map[string]interface{}{
@@ -118,7 +120,16 @@ func TestCreateVrf(t *testing.T) {
 			"physical_interface": expectedVrf.PhysicalInterface,
 			"active":             expectedVrf.Active,
 			"local_as":           expectedVrf.LocalAs,
-			"endpoint":           expectedVrf.Endpoints,
+			"endpoint": []map[string]interface{}{{
+				"remote_ip_sec":    expectedVrf.Endpoints[0].RemoteIPSec,
+				"local_ip":         expectedVrf.Endpoints[0].LocalIP,
+				"peer_ip":          expectedVrf.Endpoints[0].PeerIP,
+				"remote_as":        expectedVrf.Endpoints[0].RemoteAS,
+				"nat":              expectedVrf.Endpoints[0].NAT,
+				"bgp":              expectedVrf.Endpoints[0].BGP,
+				"source_interface": expectedVrf.Endpoints[0].SourceInterface,
+				"authentication":   expectedVrf.Endpoints[0].Authentication,
+			}},
 		},
 	}
 	dataJSON, err := json.Marshal(data)
@@ -132,9 +143,14 @@ func TestCreateVrf(t *testing.T) {
 	}
 	req.SetBasicAuth("admin", "cisco123")
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Origin", origin)
 
 	response := executeRequest(req)
 	checkResponseCode(t, http.StatusCreated, response.Code)
+
+	if len(response.Header()["Location"]) < 1 || response.Header()["Location"][0] != expectedLocation {
+		t.Fatalf("Expected received Location to be '%s'. Got '%v'\n", expectedLocation, response.Header()["Location"])
+	}
 
 	var vrfs []Vrf
 	a.DB.Preload("Endpoints").Find(&vrfs)
