@@ -17,17 +17,19 @@ export const useLoginLogic = () => {
   } = useForm({ resolver: yupResolver(newLoginSchema) });
 
   const handleChangeGlobalPassword = async (data: ChangePasswordType) => {
-    const { status } = await client('changepass', {}, { method: 'POST', body: data.newPassword });
-
-    if (status === 'ok') {
+    const status: boolean = await client('password', { password: data.password }, { method: 'POST' });
+    console.log(status);
+    if (status) {
       setLogged(true);
       setDescription({ result: 'success', message: 'Successful change. New variables saved' });
-    } else setLogged(true);
-    setDescription({ result: 'error', message: 'Error change, something is wrong' });
-
+    } else {
+      setLogged(true);
+      setDescription({ result: 'error', message: 'Error change, something is wrong' });
+    }
     setTimeout(() => {
       reset();
-      client('vrfs', {}, { method: 'POST', headers: { Authorization: '' } });
+      window.location.reload();
+      client('vrf', {}, { method: 'POST', headers: { Authorization: '' } });
     }, 500);
   };
 
@@ -42,8 +44,8 @@ export const useLoginLogic = () => {
   }, [description]);
 
   const handleLogout = () => {
-    client('vrfs', {}, { method: 'POST', headers: { Authorization: '' } });
     window.location.reload();
+    client('vrf', {}, { method: 'POST', headers: { Authorization: '' } });
   };
 
   return { description, logged, errors, register, handleSubmit, handleLogout, handleChangeGlobalPassword };

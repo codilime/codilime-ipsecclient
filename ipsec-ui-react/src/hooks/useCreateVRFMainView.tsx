@@ -12,15 +12,13 @@ export const useCreateVRFMainView = () => {
   const { history, currentLocation } = useGetLocation();
   const { postVrfData, patchVrfData } = useFetchData();
   const { data, softwareCrypto, hardwareCrypto, hardware, vrf } = context;
-  const { endpoint, vlan } = data;
 
   const {
     register,
     handleSubmit,
     formState: { errors, isDirty, isValid },
     reset,
-    setValue,
-    watch,
+    setValue
   } = useForm<vrfDataTypes>({
     resolver: yupResolver(vrfSchema)
   });
@@ -28,11 +26,9 @@ export const useCreateVRFMainView = () => {
   useEffect(() => {
     reset(data);
   }, [reset, currentLocation, data]);
-  console.log(data,watch('vlan'),'watch');
+
   const submit = async (data: vrfDataTypes) => {
-    if (data.id) {
-      return patchVrfData({ vrf: data });
-    }
+    if (data.id) return patchVrfData({ vrf: data });
     const res = await postVrfData({ vrf: { ...data, id: vrf.length + 1 } });
     if (res) return history.push(`/vrf/${vrf.length + 1}`);
   };

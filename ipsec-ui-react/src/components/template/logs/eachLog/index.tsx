@@ -7,22 +7,20 @@ import classNames from 'classnames';
 
 interface EachLogType {
   title: string;
+  log: string;
   activePopup: boolean;
 }
 
-export const EachLog: FC<EachLogType> = ({ title, activePopup }) => {
+export const EachLog: FC<EachLogType> = ({ title, activePopup, log }) => {
   const { open, handleToggle } = useToggle();
 
-  const { logData, autoScroll, loading, handleFetchLogsData, HandleDownloadTextFile, handleActioveScroll } = useLogsLogic();
+  const { autoScroll, loading, handleFetchLogsData, HandleDownloadTextFile, handleActioveScroll } = useLogsLogic();
 
-  // useEffect(() => {
-  //   if (open) {
-  //     handleFetchLogsData(title);
-  //   }
-  //   if (!open && autoScroll) {
-  //     handleActioveScroll();
-  //   }
-  // }, [open]);
+  useEffect(() => {
+    if (!open && autoScroll) {
+      handleActioveScroll();
+    }
+  }, [open]);
 
   useEffect(() => {
     const timeOut = setTimeout(() => {
@@ -35,16 +33,17 @@ export const EachLog: FC<EachLogType> = ({ title, activePopup }) => {
     };
   }, [activePopup]);
 
-  useEffect(() => {
-    if (open) {
-      const interval = setInterval(() => {
-        handleFetchLogsData(title);
-      }, 1000);
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  }, [open]);
+
+  // useEffect(() => {
+  //   if (open) {
+  //     const interval = setInterval(() => {
+  //       handleFetchLogsData(title);
+  //     }, 1000);
+  //     return () => {
+  //       clearInterval(interval);
+  //     };
+  //   }
+  // }, [open]);
 
   const icon = open ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />;
 
@@ -59,15 +58,15 @@ export const EachLog: FC<EachLogType> = ({ title, activePopup }) => {
         <div className="logs__panel">
           <Dotted loading={loading} />
           <div className="logs__description">
-            <p>{logData}</p>
+            <p>{log}</p>
           </div>
-          <ScrollToBottom {...{ change: logData, auto: autoScroll }} />
+          <ScrollToBottom {...{ change: log, auto: autoScroll }} />
         </div>
         <div className="popup__footer">
           <Button className="logs__auto" onClick={handleActioveScroll}>
             <span className="logs__char"> {active}</span> Auto scroll
           </Button>
-          <Button className="logs__save" onClick={() => HandleDownloadTextFile(title)}>
+          <Button className="logs__save" onClick={() => HandleDownloadTextFile(log, title)}>
             Save
           </Button>
         </div>

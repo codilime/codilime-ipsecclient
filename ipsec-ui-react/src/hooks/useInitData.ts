@@ -10,14 +10,14 @@ export const useInitData = () => {
 
   const fetchVrfData = async () => {
     const { vrf } = await fetchData();
-    if (!vrf) throw new Error('Hardware_ph nie został pobrany');
+    if (!vrf) return;
     setContext((prev) => ({ ...prev, vrf }));
   };
 
   const fetchCerts = async () => {
-    const certificates = await fetchCertsData();
-    if (!certificates) throw new Error('Hardware_ph nie został pobrany');
-    setContext((prev) => ({ ...prev, certificates }));
+    const { ca } = await fetchCertsData();
+    if (!ca) return;
+    setContext((prev) => ({ ...prev, certificates: [...ca] }));
   };
 
   return { fetchVrfData, fetchCerts, loading };

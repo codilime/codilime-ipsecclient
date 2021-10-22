@@ -22,8 +22,8 @@ export const UseRestConfLogic = (open: boolean) => {
   }, [open]);
 
   const handleSendRestConf = async (data: RestConfType) => {
-    const username = await client('settings/switch_username', {}, { method: 'POST', body: data.switch_username });
-    const password = await client('settings/switch_password', {}, { method: 'POST', body: data.switch_password });
+    const username = await client('setting=switch_username', { setting: { name: 'switch_username', value: data.switch_username } }, { method: 'POST' });
+    const password = await client('setting=switch_password', { setting: { name: 'switch_password', value: data.switch_password } }, { method: 'POST' });
     if (!username || !password) {
       setLogged(true);
       setDescription({ result: 'error', message: 'Error change, something is wrong' });

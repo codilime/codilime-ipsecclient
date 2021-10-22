@@ -289,7 +289,7 @@ export const DynamicVrfHardwareDetails: DetailsTypes[] = [
 ];
 
 export const DynamicLoginForm = [
-  { type: 'password', name: 'newPassword', placeholder: 'New password' },
+  { type: 'password', name: 'password', placeholder: 'New password' },
   { type: 'password', name: 'newPasswordConfirmation', placeholder: 'Repeat new password' }
 ];
 export const DynamicRestConfForm = [

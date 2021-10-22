@@ -7,7 +7,8 @@ interface DynamicObject {
 }
 
 interface CertsType {
-  CA: string;
+  id: number;
+  ca_file: string;
 }
 
 export const useCertificatesLogic = () => {
@@ -22,14 +23,14 @@ export const useCertificatesLogic = () => {
   };
 
   const handleUpdateCertsList = async () => {
-    const newCerts = await client('cas');
+    const newCerts = await client('ca');
     if (newCerts) setContext((prev) => ({ ...prev, certificates: [...newCerts] }));
   };
 
   useEffect(() => {
     if (certificates.length) {
       certificates.map((cert) => {
-        if (cert.ID) setCheckedCa((prev) => ({ ...prev, [cert.ID!]: false }));
+        if (cert.id) setCheckedCa((prev) => ({ ...prev, [cert.id!]: false }));
       });
     }
   }, [certificates]);
@@ -45,7 +46,7 @@ export const useCertificatesLogic = () => {
           if (e.target && e.target.result !== null) {
             const cert = e.target.result;
             if (typeof cert === 'string') {
-              const newCert: any = { CA: e.target.result.toString() };
+              const newCert: CertsType = { id: 1, ca_file: e.target.result.toString() };
               setCerts((prev) => [...prev, newCert]);
             }
           }
@@ -54,27 +55,27 @@ export const useCertificatesLogic = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (certs.length) {
-  //     const timeOut = setTimeout(async () => {
-  //       await client('cas', [...certificates, ...certs], { method: 'POST' });
-  //     }, 300);
-  //     const UploadTimeout = setTimeout(async () => {
-  //       handleUpdateCertsList();
-  //     }, 500);
-  //     return () => {
-  //       clearTimeout(timeOut);
-  //       clearTimeout(UploadTimeout);
-  //     };
-  //   }
-  // }, [certs]);
+  useEffect(() => {
+    if (certs.length) {
+      const timeOut = setTimeout(async () => {
+        await client('ca', { ca: [...certificates, ...certs] }, { method: 'POST' });
+      }, 300);
+      const UploadTimeout = setTimeout(async () => {
+        handleUpdateCertsList();
+      }, 500);
+      return () => {
+        clearTimeout(timeOut);
+        clearTimeout(UploadTimeout);
+      };
+    }
+  }, [certs]);
 
   const handleDeleteCerts = async () => {
     if (!checkedCa) return;
     const newCert = certificates.filter((cert) => {
-      if (cert.ID && !checkedCa[cert.ID]) return cert;
+      if (cert.id && !checkedCa[cert.id]) return cert;
     });
-    client('cas', [...newCert], { method: 'POST' });
+    client('ca', { ca: [...newCert] }, { method: 'POST' });
     handleUpdateCertsList();
   };
 

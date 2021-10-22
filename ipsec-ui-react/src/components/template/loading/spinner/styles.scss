@@ -10,7 +10,7 @@
   visibility: hidden;
   opacity: 0;
   transform: scale(0);
-  transition: $transition;
+  transition: 0.5s linear all;
   &__active {
     visibility: visible;
     opacity: 1;

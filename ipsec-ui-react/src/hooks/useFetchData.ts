@@ -11,8 +11,10 @@ export const useFetchData = () => {
     setContext((prev) => ({ ...prev, loading: true }));
     try {
       const res = await client('vrf', { ...payload }, { method: 'POST' });
-      if (res) setContext((prev) => ({ ...prev, loading: false }));
-      return res;
+      if (res) {
+        setContext((prev) => ({ ...prev, loading: false }));
+        return res;
+      }
     } catch (err: any) {
       setContext((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { id: prev.notifications.length + 1, errorTime: handleTakeTime(), message: err.error }] }));
     }
@@ -22,8 +24,10 @@ export const useFetchData = () => {
     setContext((prev) => ({ ...prev, loading: true }));
     try {
       const res = await client(`vrf=${payload.vrf.id}`, { ...payload }, { method: 'PATCH' });
-      if (res) setContext((prev) => ({ ...prev, loading: false }));
-      return res;
+      if (res) {
+        setContext((prev) => ({ ...prev, loading: false }));
+        return res;
+      }
     } catch (err: any) {
       setContext((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { id: prev.notifications.length + 1, errorTime: handleTakeTime(), message: err.error }] }));
     }
@@ -37,13 +41,11 @@ export const useFetchData = () => {
 
   const fetchEndpointStatus = async (id: number | string) => await client(`monitoring=${id}`);
 
-  const fetchLogsList = async () => await client('listlogs');
-
-  const fetchLogsData = async (log: string) => await client(`logs/${log}`);
+  const fetchLogs = async () => await client('log');
 
   const fetchRestConfData = async () => await client(`settings/restConf`);
 
-  const fetchCertsData = async () => await client('cas');
+  const fetchCertsData = async () => await client('ca');
 
   return {
     fetchData,
@@ -51,8 +53,7 @@ export const useFetchData = () => {
     deleteVrfData,
     patchVrfData,
     fetchEndpointStatus,
-    fetchLogsList,
-    fetchLogsData,
+    fetchLogs,
     fetchRestConfData,
     fetchCertsData
   };

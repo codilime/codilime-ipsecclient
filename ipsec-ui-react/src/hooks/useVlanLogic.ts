@@ -37,7 +37,7 @@ export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
   useEffect(() => {
     if (vlan.length) setValue('vlan', [...vlan], { shouldDirty: true });
   }, [vlan]);
-  
+
   useEffect(() => {
     if (data.vlan) {
       setVlan(data.vlan);
@@ -47,8 +47,6 @@ export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
   useEffect(() => {
     if (error) setError(false);
   }, [vlan]);
-
-  console.log(vlan);
 
   const handleChangeInputValue = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

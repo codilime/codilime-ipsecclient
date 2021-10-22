@@ -66,7 +66,6 @@ export const useEndpoint = (handleToggle: () => void) => {
   }, [endpoint]);
 
   useEffect(() => {
-    console.log(data);
     if (send) {
       patchVrfData({ vrf: data });
       setSend(false);

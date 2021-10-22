@@ -2,23 +2,21 @@ import { useState, useEffect } from 'react';
 import { useFetchData } from 'hooks/';
 import { handleTakeTime } from 'utils/';
 
+interface LogData {
+  log: string;
+  name: string;
+}
+
 export const useLogsLogic = () => {
-  const [logList, setLogList] = useState<string[]>([]);
-  const [logData, setLogData] = useState<string | null>(null);
+  const [logData, setLogData] = useState<{ log: LogData[] }>({ log: [] });
   const [loading, setLoading] = useState<boolean>(false);
   const [autoScroll, setAutoScroll] = useState<boolean>(false);
-
-  const { fetchLogsList, fetchLogsData } = useFetchData();
+  const { fetchLogs } = useFetchData();
 
   const handleActioveScroll = () => setAutoScroll((prev) => !prev);
 
-  const handleFetchList = async () => {
-    const list = await fetchLogsList();
-    setLogList(list);
-  };
-
-  const handleFetchLogsData = async (logs: string) => {
-    const data = await fetchLogsData(logs);
+  const handleFetchLogsData = async () => {
+    const data = await fetchLogs();
     setLogData(data);
   };
 
@@ -28,10 +26,10 @@ export const useLogsLogic = () => {
     } else setLoading(true);
   }, [logData]);
 
-  const HandleDownloadTextFile = (title: string) => {
+  const HandleDownloadTextFile = (log: string, title: string) => {
     const element = document.createElement('a');
     if (logData) {
-      const file = new Blob([logData], { type: 'text/plain;charset=utf-8' });
+      const file = new Blob([log], { type: 'text/plain;charset=utf-8' });
       element.href = URL.createObjectURL(file);
       element.download = `${handleTakeTime() + title}.txt`;
       document.body.appendChild(element);
@@ -39,5 +37,5 @@ export const useLogsLogic = () => {
     }
   };
 
-  return { logList, logData, autoScroll, loading, handleFetchLogsData, handleFetchList, HandleDownloadTextFile, handleActioveScroll };
+  return { logData, autoScroll, loading, handleFetchLogsData, HandleDownloadTextFile, handleActioveScroll };
 };

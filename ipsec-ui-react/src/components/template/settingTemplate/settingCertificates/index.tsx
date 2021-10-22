@@ -6,9 +6,9 @@ import './styles.scss';
 export const SettingCertificates: FC = () => {
   const { certificates, uploadBtn, handleAddCerts, handleSaveNewCerts, handleCheckCerts, handleDeleteCerts } = useCertificatesLogic();
 
-  const displayCertificates = certificates.map(({ CA, ID }) => {
-    if (ID !== undefined) {
-      return <EachCertificate key={ID} {...{ CA, ID, handleCheckCerts: handleCheckCerts }} />;
+  const displayCertificates = certificates.map(({ ca_file, id }) => {
+    if (id !== undefined) {
+      return <EachCertificate key={id} {...{ ca_file, id, handleCheckCerts: handleCheckCerts }} />;
     }
   });
 

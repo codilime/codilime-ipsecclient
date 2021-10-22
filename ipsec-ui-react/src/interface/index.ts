@@ -44,8 +44,8 @@ export interface CryptoTypes {
   crypto_ph2: SoftwareCryptoDataTypes;
 }
 export interface CertificatesType {
-  ID?: number;
-  CA: string;
+  id: number;
+  ca_file: string;
 }
 
 export interface NotificationsType {
@@ -130,7 +130,7 @@ export interface DescriptionType {
   message: string;
 }
 export interface ChangePasswordType {
-  newPassword: string;
+  password: string;
   newPasswordConfirmaton: string;
 }
 

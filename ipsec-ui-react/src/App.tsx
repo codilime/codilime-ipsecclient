@@ -8,9 +8,9 @@ import 'style/global.scss';
 const App: FC = () => {
   const { fetchVrfData, fetchCerts, loading } = useInitData();
 
-  // useEffect(() => {
-  //   fetchCerts();
-  // }, []);
+  useEffect(() => {
+    fetchCerts();
+  }, []);
 
   useEffect(() => {
     if (!loading) fetchVrfData();
