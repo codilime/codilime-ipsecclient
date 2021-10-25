@@ -3,7 +3,7 @@ pipeline {
 
     stages {
         stage('test') {
-            agent any
+            agent {label 'sico-node'}
             steps {
                 sh '''
                 cd test
