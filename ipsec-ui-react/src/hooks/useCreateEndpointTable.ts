@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useToggle, useEndpoint, useGetLocation, useVrfLogic } from 'hooks/';
-import { emptyEndpointSchema, emptyHardwareSchema, tableSoftwareHeaderSchema, tableHardwaHeaderSchema } from 'db';
+import { EndpointSchema, tableSoftwareHeaderSchema, tableHardwaHeaderSchema } from 'db';
 
 export const useCreateEndpointTable = () => {
   const { open, handleToggle } = useToggle();
@@ -13,12 +13,11 @@ export const useCreateEndpointTable = () => {
   }, [currentLocation]);
 
   const headerSchema = hardware ? tableHardwaHeaderSchema : tableSoftwareHeaderSchema;
-  const emptySchema = hardware ? emptyHardwareSchema : emptyEndpointSchema;
 
   return {
     open,
     vrfEndpoints,
-    emptySchema,
+    EndpointSchema,
     headerSchema,
     currentLocation,
     handleToggle,

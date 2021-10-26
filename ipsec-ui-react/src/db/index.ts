@@ -218,7 +218,7 @@ export const tableHardwaHeaderSchema = [
   { header: 'ACTION' }
 ];
 
-export const emptyEndpointSchema: EndpointsType = {
+export const EndpointSchema: EndpointsType = {
   remote_ip_sec: '',
   local_ip: '',
   peer_ip: '',
@@ -229,6 +229,8 @@ export const emptyEndpointSchema: EndpointsType = {
     remote_cert: '',
     private_key: ''
   },
+  remote_as: 0,
+  source_interface: '',
   nat: false,
   bgp: false
 };

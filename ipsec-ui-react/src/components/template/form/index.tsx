@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useCreateVRFMainView } from 'hooks/';
-import { Wrapper, Vlan, CryptoField, Field } from 'template';
+import { Wrapper, Vlan, CryptoField, Field, Spinner } from 'template';
 import { Button } from 'common/';
 import './styles.scss';
 

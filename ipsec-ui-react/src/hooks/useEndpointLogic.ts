@@ -1,5 +1,5 @@
-import { useState, useEffect, ChangeEvent } from 'react';
-import { endpointInputSchema, endpointHardwareSchema, emptyEndpointSchema, emptyHardwareSchema } from 'db';
+import { useState, useEffect, ChangeEvent, useLayoutEffect } from 'react';
+import { endpointInputSchema, endpointHardwareSchema, EndpointSchema } from 'db';
 import { useValidateEndpoint, useVrfLogic, useChoiceCertyficate } from 'hooks/';
 import { EndpointsType } from 'interface/index';
 
@@ -11,10 +11,9 @@ interface EndpointLogicType {
 }
 
 export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpoints, id }: EndpointLogicType) => {
-  const { hardware, endpoint, vrf_id } = useVrfLogic();
+  const { hardware, vrf_id } = useVrfLogic();
   const { error, validateEmptyEndpoint, setError } = useValidateEndpoint();
-  const emptyEndpoint = hardware ? emptyHardwareSchema : emptyEndpointSchema;
-  const [endpoints, setEndpoint] = useState<EndpointsType>(emptyEndpoint);
+  const [endpoints, setEndpoint] = useState<EndpointsType>(EndpointSchema);
   const [edit, setEdit] = useState(active);
   const { handleGeneratePskField } = useChoiceCertyficate({ edit, error, setEndpoint, endpoints });
 
@@ -42,7 +41,7 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setEndpoint({ ...currentEndpoint, vrf_id });
   }, [currentEndpoint]);
 
@@ -58,7 +57,7 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
     const validate = validateEmptyEndpoint(endpoints);
     if (!validate) return;
     if (id === null) {
-      handleActionVrfEndpoints('add', { ...endpoints, id: endpoint.length + 1, source_interface: '', remote_as: 6500 });
+      handleActionVrfEndpoints('add', endpoints);
       return setEdit(false);
     }
     handleActionVrfEndpoints('change', endpoints, id);

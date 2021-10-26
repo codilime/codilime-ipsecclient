@@ -31,11 +31,13 @@ export const Visualization: FC = () => {
   };
 
   useEffect(() => {
-    handleFetchStatus();
+    if (data.active) handleFetchStatus();
   }, [data]);
 
   useEffect(() => {
-    const interval = setInterval(async () => handleFetchStatus(), 5000);
+    const interval = setInterval(async () => {
+      if (data.active) handleFetchStatus();
+    }, 5000);
     return () => {
       clearInterval(interval);
     };

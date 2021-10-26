@@ -1,8 +1,7 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { DynamicVrfHardwareDetails, DynamicVrfDetails } from 'db';
-import { Field, CryptoField } from 'template';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { vrfSchema } from 'schema/';
 import { useFetchData, useGetLocation, useAppContext } from 'hooks/';
 import { vrfDataTypes } from 'interface/index';
@@ -23,13 +22,13 @@ export const useCreateVRFMainView = () => {
     resolver: yupResolver(vrfSchema)
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     reset(data);
   }, [reset, currentLocation, data]);
 
   const submit = async (data: vrfDataTypes) => {
     if (data.id) return patchVrfData({ vrf: data });
-    const res = await postVrfData({ vrf: { ...data, id: vrf.length + 1 } });
+    const res = await postVrfData({ vrf: data });
     if (res) return history.push(`/vrf/${vrf.length + 1}`);
   };
 

@@ -27,10 +27,7 @@ export const useCryptoLogic = (name: string, value: string, setValue: UseFormSet
   const setNewValue = () => {
     const { encryption, integrity, keyExchange } = cryptoData;
     const cryptoValue = `${encryption}.${integrity}.${keyExchange}`;
-    if (value !== cryptoValue) {
-      console.log('crypto')
-      setValue(`${name}`, cryptoValue, { shouldDirty: true });
-    }
+    if (value !== cryptoValue) setValue(`${name}`, cryptoValue, { shouldDirty: true });
   };
 
   useEffect(() => {

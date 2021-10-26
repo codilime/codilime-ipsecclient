@@ -15,9 +15,9 @@ export interface EndpointsType {
   peer_ip: string;
   authentication: AuthenticationType;
   bgp: boolean;
+  remote_as: number;
+  source_interface: string;
   nat?: boolean;
-  remote_as?: number;
-  source_interface?: string;
   vrf_id?: number;
 }
 

@@ -9,7 +9,7 @@ import './styles.scss';
 const { pskCertificates, nat, bgp, action, remote } = endpointTableConst;
 
 export const Endpoints: FC = () => {
-  const { currentLocation, open, emptySchema, vrfEndpoints, headerSchema, handleActionVrfEndpoints, handleToggle } = useCreateEndpointTable();
+  const { currentLocation, open, EndpointSchema, vrfEndpoints, headerSchema, handleActionVrfEndpoints, handleToggle } = useCreateEndpointTable();
 
   const dynamicHeader = headerSchema.map(({ header }) => (
     <th
@@ -25,7 +25,7 @@ export const Endpoints: FC = () => {
 
   const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ active: false, currentEndpoint: el, id: index, handleActionVrfEndpoints }} />);
 
-  const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, currentEndpoint: emptySchema, handleActionVrfEndpoints, id: null }} />;
+  const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, currentEndpoint: EndpointSchema, handleActionVrfEndpoints, id: null }} />;
 
   const newEndpointButton = open ? 'Close' : 'Add a new endpoint';
 
