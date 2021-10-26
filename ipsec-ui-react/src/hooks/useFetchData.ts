@@ -1,6 +1,5 @@
 import { client } from 'api/';
 import { useAppContext } from 'hooks/';
-import { handleTakeTime } from 'utils/';
 
 export const useFetchData = () => {
   const { setContext } = useAppContext();
@@ -9,27 +8,19 @@ export const useFetchData = () => {
 
   const postVrfData = async (payload: any) => {
     setContext((prev) => ({ ...prev, loading: true }));
-    try {
-      const res = await client('vrf', { ...payload }, { method: 'POST' });
-      if (res) {
-        setContext((prev) => ({ ...prev, loading: false }));
-        return res;
-      }
-    } catch (err: any) {
-      setContext((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { id: prev.notifications.length + 1, errorTime: handleTakeTime(), message: err.error }] }));
+    const res = await client('vrf', { ...payload }, { method: 'POST' });
+    if (res) {
+      setContext((prev) => ({ ...prev, loading: false }));
+      return res;
     }
   };
 
   const patchVrfData = async (payload: any) => {
     setContext((prev) => ({ ...prev, loading: true }));
-    try {
-      const res = await client(`vrf=${payload.vrf.id}`, { ...payload }, { method: 'PATCH' });
-      if (res) {
-        setContext((prev) => ({ ...prev, loading: false }));
-        return res;
-      }
-    } catch (err: any) {
-      setContext((prev) => ({ ...prev, loading: false, error: err, notifications: [...prev.notifications, { id: prev.notifications.length + 1, errorTime: handleTakeTime(), message: err.error }] }));
+    const res = await client(`vrf=${payload.vrf.id}`, { ...payload }, { method: 'PATCH' });
+    if (res) {
+      setContext((prev) => ({ ...prev, loading: false }));
+      return res;
     }
   };
 

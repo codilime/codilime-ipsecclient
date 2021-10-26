@@ -13,7 +13,7 @@ interface HookType {
 }
 
 export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: HookType) => {
-  const [fileName, setFileName] = useState({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' });
+  const [fileName, setFileName] = useState<{ key: string; certificate: string; peerCertificate: string }>({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' });
   const {
     authentication: { type, psk, private_key, local_cert, remote_cert }
   } = endpoints;
