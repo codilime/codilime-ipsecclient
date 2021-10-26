@@ -140,6 +140,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       handleUploadFile
     }
   ];
+
   const displayCerts = UploadCaSchema.map((ca) => <UploadCertificates key={ca.name} {...ca} />);
 
   const handleGeneratePskField = (el: any) => {

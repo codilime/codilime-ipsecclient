@@ -5,7 +5,7 @@ import { VrfsProvider } from 'context';
 const App = lazy(() => import('./App'));
 
 ReactDOM.render(
-  <Suspense fallback={<Spinner />}>
+  <Suspense fallback={<div>...</div>}>
     <VrfsProvider>
       <App />
     </VrfsProvider>

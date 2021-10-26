@@ -36,12 +36,7 @@ export const useCreateVRFMainView = () => {
   const crypto = hardware ? hardwareCrypto : softwareCrypto;
   const details = hardware ? DynamicVrfHardwareDetails : DynamicVrfDetails;
 
-  const displayDetails = details.map((el) => {
-    if (el.name === 'crypto_ph1' || el.name === 'crypto_ph2') {
-      return <CryptoField {...{ ...el, key: el.name, crypto: crypto[el.name], setValue, value: data[el.name], error: errors[el.name] }} />;
-    }
-    return <Field {...{ ...el, key: el.name, value: data[el.name], register: register(el.name), error: errors[el.name], className: 'field__detail' }} />;
-  });
+  const formAttributes = { crypto, details, data, isValid, isDirty, setValue, register };
 
-  return { isDirty, isValid, errors, hardware, displayDetails, handleSubmit, submit, setValue, reset };
+  return { errors, hardware, handleSubmit, submit, reset, formAttributes };
 };

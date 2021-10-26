@@ -18,7 +18,7 @@ export const HoverPanel: FC<HoverPanelType> = ({ description, button, active, ha
       <Button {...{ className: 'loginForm__btn', onClick: handleReset }}>{button}</Button>
     </div>
   );
-  
+
   return (
     <div className={classNames('loginForm__panel', { loginForm__panel__active: active })}>
       <div
