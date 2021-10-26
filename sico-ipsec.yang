@@ -45,13 +45,13 @@ module sico-ipsec {
 
     container api {
         list vrf {
-            key "id";
+            key "client_name";
             leaf id {
                 type uint32;
+                mandatory "false";
             }
             leaf client_name {
                 type string;
-                mandatory "true";
                 description
                   "name of the vrf as it will appear in the configuration";
             }
@@ -103,12 +103,14 @@ module sico-ipsec {
                   "local autonomous system number for the bgp session";
             }
             list endpoint {
-                key "id";
+                key "remote_ip_sec";
                 leaf id {
                     type uint32;
+                    mandatory "false";
                 }
                 leaf vrf_id {
                     type uint32;
+                    mandatory "false";
                     description
                       "id of the vrf that this endpoint belongs to";
                 }

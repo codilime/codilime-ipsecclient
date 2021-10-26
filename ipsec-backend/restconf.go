@@ -49,8 +49,6 @@ func stringIfNotNil(s *string) string {
 }
 
 func (e *Endpoint) FromYang(endVrf *sico_yang.SicoIpsec_Api_Vrf_Endpoint) {
-	e.ID = *endVrf.Id
-	e.VrfID = *endVrf.VrfId
 	e.RemoteIPSec = *endVrf.RemoteIpSec
 	e.LocalIP = *endVrf.LocalIp
 	e.PeerIP = *endVrf.PeerIp
@@ -79,9 +77,9 @@ func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 	}
 	ph1 := strings.Join(cryptoPh1, ".")
 	ph2 := strings.Join(cryptoPh2, ".")
-	endpoints := map[uint32]*sico_yang.SicoIpsec_Api_Vrf_Endpoint{}
+	endpoints := map[string]*sico_yang.SicoIpsec_Api_Vrf_Endpoint{}
 	for _, e := range v.Endpoints {
-		endpoints[e.ID] = e.ToYang()
+		endpoints[e.RemoteIPSec] = e.ToYang()
 	}
 	vlans, err := v.getVlans()
 	if err != nil {
@@ -120,7 +118,6 @@ func (c *CertificateAuthority) ToYang() *sico_yang.SicoIpsec_Api_Ca {
 }
 
 func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
-	v.ID = *vrfYang.Id
 	v.ClientName = *vrfYang.ClientName
 	vlans := []interface{}{}
 	for _, v := range vrfYang.Vlan {
