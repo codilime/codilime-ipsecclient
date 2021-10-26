@@ -12,4 +12,5 @@ docker run --cap-add=NET_ADMIN \
         --mount type=volume,source=super_api,destination=/opt/super_api/ \
         --mount type=volume,source=logs,destination=/opt/logs/ \
         --network ipsec \
+        --sysctl net.ipv6.conf.all.disable_ipv6=0 \
         sico_net
