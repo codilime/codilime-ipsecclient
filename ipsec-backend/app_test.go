@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -13,6 +14,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 )
+
+const decryptedPsk = "psk23"
+const encryptedPsk = "UrO4Jx0D6USzyds2yFMd/VdIczYc4/oxFPbPTl2jQOv4"
 
 var a App
 var mock MockGenerator
@@ -58,6 +62,7 @@ func removeWhitespace(str string) string {
 
 func TestEmptyTable(t *testing.T) {
 	clearTable()
+	expectedBody := `{"vrf":[{"active":false,"client_name":"hardware","crypto_ph1":"aes-cbc-128.sha256.fourteen","crypto_ph2":"esp-aes.esp-sha-hmac.group14","endpoint":[],"id":1,"local_as":0,"physical_interface":"","vlan":[]}]}`
 
 	req, _ := http.NewRequest(http.MethodGet, vrfPath, nil)
 	req.SetBasicAuth("admin", "cisco123")
@@ -65,8 +70,8 @@ func TestEmptyTable(t *testing.T) {
 
 	checkResponseCode(t, http.StatusOK, response.Code)
 
-	if body := response.Body.String(); removeWhitespace(body) != `{"vrf":[]}` {
-		t.Fatalf("Expected an empty YANG list. Got %s", body)
+	if body := response.Body.String(); removeWhitespace(body) != expectedBody {
+		t.Fatalf("Expected HW vrf: %s. Got %s", expectedBody, removeWhitespace(body))
 	}
 }
 
@@ -102,11 +107,12 @@ func MarshalCryptoPh2(vrf Vrf) string {
 
 func TestCreateVrf(t *testing.T) {
 	clearTable()
+	const origin = "test-origin"
+	const expectedLocation = origin + "/restconf/data/sico-ipsec:api/vrf=2"
 
 	expectedVrf := createTestVrf()
 	data := map[string]interface{}{
 		"vrf": map[string]interface{}{
-			"id":                 expectedVrf.ID,
 			"client_name":        expectedVrf.ClientName,
 			"vlan":               expectedVrf.Vlans,
 			"crypto_ph1":         expectedVrf.CryptoPh1,
@@ -114,7 +120,16 @@ func TestCreateVrf(t *testing.T) {
 			"physical_interface": expectedVrf.PhysicalInterface,
 			"active":             expectedVrf.Active,
 			"local_as":           expectedVrf.LocalAs,
-			"endpoint":           expectedVrf.Endpoints,
+			"endpoint": []map[string]interface{}{{
+				"remote_ip_sec":    expectedVrf.Endpoints[0].RemoteIPSec,
+				"local_ip":         expectedVrf.Endpoints[0].LocalIP,
+				"peer_ip":          expectedVrf.Endpoints[0].PeerIP,
+				"remote_as":        expectedVrf.Endpoints[0].RemoteAS,
+				"nat":              expectedVrf.Endpoints[0].NAT,
+				"bgp":              expectedVrf.Endpoints[0].BGP,
+				"source_interface": expectedVrf.Endpoints[0].SourceInterface,
+				"authentication":   expectedVrf.Endpoints[0].Authentication,
+			}},
 		},
 	}
 	dataJSON, err := json.Marshal(data)
@@ -128,13 +143,19 @@ func TestCreateVrf(t *testing.T) {
 	}
 	req.SetBasicAuth("admin", "cisco123")
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Origin", origin)
 
 	response := executeRequest(req)
 	checkResponseCode(t, http.StatusCreated, response.Code)
 
+	if len(response.Header()["Location"]) < 1 || response.Header()["Location"][0] != expectedLocation {
+		t.Fatalf("Expected received Location to be '%s'. Got '%v'\n", expectedLocation, response.Header()["Location"])
+	}
+
 	var vrfs []Vrf
 	a.DB.Preload("Endpoints").Find(&vrfs)
-	storedVrf := vrfs[0]
+
+	storedVrf := vrfs[1]
 	storedVrf.Endpoints[0].Authentication.PSK = ""
 	expectedVrf.Endpoints[0].Authentication.PSK = ""
 
@@ -148,9 +169,12 @@ func TestCreateVrf(t *testing.T) {
 
 func TestGetVrf(t *testing.T) {
 	clearTable()
+	var cryptoAlgorythms = []string{"aes123", "sha234", "modp345", "camellia456", "md567", "frodos678"}
 
 	expectedVrf := createTestVrf()
-	addVrf(t, expectedVrf)
+	expectedVrf.Endpoints[0].Authentication.PSK = encryptedPsk
+	setCryptoDB(&expectedVrf, cryptoAlgorythms, t)
+	addVrfToDB(t, expectedVrf)
 
 	req, _ := http.NewRequest(http.MethodGet, vrfPath+"=2", nil)
 	req.SetBasicAuth("admin", "cisco123")
@@ -158,49 +182,70 @@ func TestGetVrf(t *testing.T) {
 
 	checkResponseCode(t, http.StatusOK, response.Code)
 
-	var receivedVrf Vrf
+	expectedVrf.Endpoints[0].Authentication.PSK = decryptedPsk
+	setCryptoYang(&expectedVrf, cryptoAlgorythms, t)
+
+	var receivedVrf struct {
+		Vrf Vrf `json:"vrf"`
+	}
 	decoder := json.NewDecoder(response.Body)
 	if err := decoder.Decode(&receivedVrf); err != nil {
 		t.Fatalf("error during decode %v\n", err)
 	}
 
-	if !reflect.DeepEqual(expectedVrf, receivedVrf) {
-		t.Fatalf("Expected vrf to be '%v'. Got '%v'\n", expectedVrf, receivedVrf)
+	checkVlans(expectedVrf, receivedVrf.Vrf, t)
+	expectedVrf.Vlans = []byte{}
+	receivedVrf.Vrf.Vlans = []byte{}
+
+	if !reflect.DeepEqual(expectedVrf, receivedVrf.Vrf) {
+		t.Fatalf("Expected vrf to be '%v'. Got '%v'\n", expectedVrf, receivedVrf.Vrf)
 	}
 }
 
 func TestUpdateVrf(t *testing.T) {
 	clearTable()
+	var cryptoAlgorythms = []string{"aes123", "sha234", "modp345", "camellia456", "md567", "frodos678"}
 
 	expectedVrf := createTestVrf()
-	addVrf(t, expectedVrf)
+	expectedVrf.Endpoints[0].Authentication.PSK = encryptedPsk
+	setCryptoDB(&expectedVrf, cryptoAlgorythms, t)
+	addVrfToDB(t, expectedVrf)
 
+	setCryptoYang(&expectedVrf, cryptoAlgorythms, t)
 	expectedVrf.ClientName = `changed name`
 	expectedVrf.Vlans = []byte(`[{"vlan":1000,"lan_ip":"10"}]`)
 	expectedVrf.PhysicalInterface = `changed interface name`
 	expectedVrf.Endpoints = []Endpoint{}
 
 	data := map[string]interface{}{
-		"client_name":        expectedVrf.ClientName,
-		"vlans":              expectedVrf.Vlans,
-		"physical_interface": expectedVrf.PhysicalInterface,
-		"endpoints":          expectedVrf.Endpoints,
+		"vrf": map[string]interface{}{
+			"client_name":        expectedVrf.ClientName,
+			"vlan":               expectedVrf.Vlans,
+			"crypto_ph1":         expectedVrf.CryptoPh1,
+			"crypto_ph2":         expectedVrf.CryptoPh2,
+			"physical_interface": expectedVrf.PhysicalInterface,
+			"active":             expectedVrf.Active,
+			"local_as":           expectedVrf.LocalAs,
+			"endpoint":           expectedVrf.Endpoints,
+		},
 	}
 	dataJSON, _ := json.Marshal(data)
 
-	req, _ := http.NewRequest("PUT", vrfPath+"=2", bytes.NewBuffer(dataJSON))
+	req, _ := http.NewRequest("PATCH", vrfPath+"=2", bytes.NewBuffer(dataJSON))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth("admin", "cisco123")
 
 	response := executeRequest(req)
 
-	checkResponseCode(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusNoContent, response.Code)
+
+	setCryptoDB(&expectedVrf, cryptoAlgorythms, t)
 
 	var vrfs []Vrf
 	a.DB.Preload("Endpoints").Find(&vrfs)
 
-	if !reflect.DeepEqual(expectedVrf, vrfs[0]) {
-		t.Fatalf("Expected %+v got %+v", expectedVrf, vrfs[0])
+	if !reflect.DeepEqual(expectedVrf, vrfs[1]) {
+		t.Fatalf("Expected %+v got %+v", expectedVrf, vrfs[1])
 	}
 }
 
@@ -208,13 +253,13 @@ func TestVrfActivation(t *testing.T) {
 	clearTable()
 
 	testVrf := createTestVrf()
-	addVrf(t, testVrf)
+	addVrfToDB(t, testVrf)
 
 	mock.reset()
 
 	req := createActivationRequest(testVrf, false)
 	response := executeRequest(req)
-	checkResponseCode(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusNoContent, response.Code)
 
 	if mock.genCalled != 0 {
 		t.Fatalf("Expected generator to not be called, got %d", mock.genCalled)
@@ -227,7 +272,7 @@ func TestVrfActivation(t *testing.T) {
 
 	req = createActivationRequest(testVrf, true)
 	response = executeRequest(req)
-	checkResponseCode(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusNoContent, response.Code)
 
 	if mock.genCalled != 1 {
 		t.Fatalf("Expected generator to be called once, got %d", mock.genCalled)
@@ -240,7 +285,7 @@ func TestVrfActivation(t *testing.T) {
 
 	req = createActivationRequest(testVrf, true)
 	response = executeRequest(req)
-	checkResponseCode(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusNoContent, response.Code)
 
 	if mock.genCalled != 1 {
 		t.Fatalf("Expected generator to be called once, got %d", mock.genCalled)
@@ -254,17 +299,17 @@ func TestDeleteVrf(t *testing.T) {
 	clearTable()
 
 	testVrf := createTestVrf()
-	addVrf(t, testVrf)
+	addVrfToDB(t, testVrf)
 
 	req, _ := http.NewRequest(http.MethodDelete, vrfPath+"=2", nil)
 	req.SetBasicAuth("admin", "cisco123")
 	response := executeRequest(req)
 
-	checkResponseCode(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusNoContent, response.Code)
 
 	var vrfs []Vrf
-	if result := a.DB.Find(&vrfs); result.RowsAffected != 0 {
-		t.Fatalf("Expected number of vrfs to be 0 got %v", result.RowsAffected)
+	if result := a.DB.Find(&vrfs); result.RowsAffected != 1 {
+		t.Fatalf("Expected number of vrfs to be 1 got %v", result.RowsAffected)
 	}
 }
 
@@ -290,14 +335,44 @@ func TestErrorDatabase(t *testing.T) {
 	}
 }
 
+func setCryptoDB(vrf *Vrf, cryptoAlgs []string, t *testing.T) {
+	if len(cryptoAlgs) < 6 {
+		t.Fatalf("Wrong number of algorithms expected at least 6 got %d\n", len(cryptoAlgs))
+	}
+	vrf.CryptoPh1 = []byte(fmt.Sprintf(`["%s","%s","%s"]`, cryptoAlgs[0], cryptoAlgs[1], cryptoAlgs[2]))
+	vrf.CryptoPh2 = []byte(fmt.Sprintf(`["%s","%s","%s"]`, cryptoAlgs[3], cryptoAlgs[4], cryptoAlgs[5]))
+}
+
+func setCryptoYang(vrf *Vrf, cryptoAlgs []string, t *testing.T) {
+	if len(cryptoAlgs) < 6 {
+		t.Fatalf("Wrong number of algorithms expected at least 6 got %d\n", len(cryptoAlgs))
+	}
+	vrf.CryptoPh1 = []byte(fmt.Sprintf(`"%s.%s.%s"`, cryptoAlgs[0], cryptoAlgs[1], cryptoAlgs[2]))
+	vrf.CryptoPh2 = []byte(fmt.Sprintf(`"%s.%s.%s"`, cryptoAlgs[3], cryptoAlgs[4], cryptoAlgs[5]))
+}
+
+func checkVlans(expectedVrf, receivedVrf Vrf, t *testing.T) {
+	var receivedVlans []map[string]interface{}
+	if err := json.Unmarshal(receivedVrf.Vlans, &receivedVlans); err != nil {
+		t.Fatalf("error during unmarshal %v", err)
+	}
+	var expectedVlans []map[string]interface{}
+	if err := json.Unmarshal(expectedVrf.Vlans, &expectedVlans); err != nil {
+		t.Fatalf("error during unmarshal %v", err)
+	}
+	if !reflect.DeepEqual(receivedVlans, expectedVlans) {
+		t.Fatalf("Expected vlans of vrf to be '%v'. Got '%v'\n", createTestVrf().Vlans, receivedVrf.Vlans)
+	}
+}
+
 func createTestVrf() Vrf {
 	active := true
 	return Vrf{
 		2,
 		"test vrf",
-		[]byte(`[{"vlan":1000,"lan_ip":"10"},{"vlan":2000,"lan_ip":"20"}]`),
-		[]byte(`"aes123.sha234.modp345"`),
-		[]byte(`"camellia456.md567.frodos678"`),
+		[]byte(`[{"vlan":1000,"lan_ip":"11.11.0.0/30"},{"vlan":2000,"lan_ip":"22.22.0.0/30"}]`),
+		[]byte(`"aes128.sha256.modp1536"`),
+		[]byte(`"aes128.sha256.modp1536"`),
 		"test_interface",
 		&active,
 		3,
@@ -311,21 +386,28 @@ func createTestVrf() Vrf {
 			true,
 			false,
 			"eth3",
-			EndpointAuth{"psk", "psk23", "", "", ""}}}}
+			EndpointAuth{"psk", "psk23", "", "", "", ""}}}}
 }
 
 func createActivationRequest(vrf Vrf, active bool) *http.Request {
 	vrf.Active = &active
 
 	data := map[string]interface{}{
-		"client_name":        vrf.ClientName,
-		"vlans":              vrf.Vlans,
-		"physical_interface": vrf.PhysicalInterface,
-		"active":             vrf.Active,
+		"vrf": map[string]interface{}{
+			"id":                 vrf.ID,
+			"client_name":        vrf.ClientName,
+			"vlan":               vrf.Vlans,
+			"crypto_ph1":         vrf.CryptoPh1,
+			"crypto_ph2":         vrf.CryptoPh2,
+			"physical_interface": vrf.PhysicalInterface,
+			"active":             vrf.Active,
+			"local_as":           vrf.LocalAs,
+			"endpoint":           vrf.Endpoints,
+		},
 	}
 	dataJSON, _ := json.Marshal(data)
 
-	req, _ := http.NewRequest("PUT", vrfPath+"=2", bytes.NewBuffer(dataJSON))
+	req, _ := http.NewRequest("PATCH", vrfPath+"=2", bytes.NewBuffer(dataJSON))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth("admin", "cisco123")
 
@@ -333,11 +415,11 @@ func createActivationRequest(vrf Vrf, active bool) *http.Request {
 }
 
 func clearTable() {
-	a.DB.Where("1=1").Delete(Vrf{})
+	a.DB.Where("id != 1").Delete(Vrf{})
 	a.DB.Where("1=1").Delete(StoredError{})
 }
 
-func addVrf(t *testing.T, vrf Vrf) {
+func addVrfToDB(t *testing.T, vrf Vrf) {
 	res := a.DB.Create(&vrf)
 	if res.Error != nil {
 		t.Fatalf("Error while inserting: %v", res.Error)
