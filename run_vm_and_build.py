@@ -37,7 +37,7 @@ run_vm = ['./helper-scripts/run_vm.py', args.csr_vm, args.csr_config]
 
 csr_vm = subprocess.run(run_vm)
 if csr_vm.returncode == 1:
-    csr_vm = subprocess.run('virsh destroy csr_vm; virsh undefine csr_vm', shell=True)
+    csr_vm = subprocess.run('virsh -c qemu:///system destroy csr_vm; virsh -c qemu:///system undefine csr_vm', shell=True)
     csr_vm = subprocess.run(run_vm)
     if csr_vm.returncode == 1:
         sys.exit("csr vm unable to create")

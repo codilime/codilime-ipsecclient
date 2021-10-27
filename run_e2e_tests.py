@@ -42,4 +42,4 @@ if (subprocess.run('ansible-playbook ./ipsec-backend/ansible/psk/playbook.yml', 
 api_process.terminate()
 net_process.terminate()
 
-subprocess.run('virsh destroy csr_vm; virsh undefine csr_vm', shell=True)
+subprocess.run('virsh -c qemu:///system destroy csr_vm; virsh -c qemu:///system undefine csr_vm', shell=True)
