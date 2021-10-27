@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useFetchData, useAppContext } from 'hooks/';
-import { endpointsType } from 'interface/index';
+import { EndpointsType } from 'interface/index';
 
 export const useEndpoint = (handleToggle: () => void) => {
-  const { vrf, setVrf } = useAppContext();
-  const { data, loading } = vrf;
-  const { endpoints } = data;
+  const { context, setContext } = useAppContext();
+  const { data, loading } = context;
+  const { endpoint } = data;
   const [send, setSend] = useState(false);
-  const [vrfEndpoints, setVrfEndpoints] = useState<endpointsType[] | null>(endpoints);
-  const { putVrfData } = useFetchData();
+  const [vrfEndpoints, setVrfEndpoints] = useState<EndpointsType[] | null>(endpoint);
+  const { patchVrfData } = useFetchData();
 
-  const handleChangeVrfEndpoints = (data: any, id: number) => {
+  const handleChangeVrfEndpoints = (data: EndpointsType, id: number) => {
     if (vrfEndpoints === null) return;
     return vrfEndpoints.reduce((total: any, vrf, index) => {
       if (index === id) {
@@ -30,30 +30,29 @@ export const useEndpoint = (handleToggle: () => void) => {
     }, []);
   };
 
-  const handleActionVrfEndpoints = (action: string, data: endpointsType, id?: number) => {
+  const handleActionVrfEndpoints = (action: string, data: EndpointsType, id?: number) => {
     switch (action) {
       case 'add': {
-        if (endpoints === null) {
-          setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: [data] } }));
+        if (endpoint === null) {
+          setContext((prev) => ({ ...prev, data: { ...prev.data, endpoint: [data] } }));
           handleToggle();
           setSend(true);
           break;
         }
-        setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: [...prev.data.endpoints!, data] } }));
+        setContext((prev) => ({ ...prev, data: { ...prev.data, endpoint: [...prev.data.endpoint!, data] } }));
         handleToggle();
         setSend(true);
         break;
       }
       case 'change': {
         const newArray = handleChangeVrfEndpoints(data, id!);
-        setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: newArray } }));
+        setContext((prev) => ({ ...prev, data: { ...prev.data, endpoint: newArray } }));
         setSend(true);
-
         break;
       }
       case 'delete': {
         const newArray = handleDeleteVrfEndpoints(id!);
-        setVrf((prev) => ({ ...prev, data: { ...prev.data, endpoints: newArray } }));
+        setContext((prev) => ({ ...prev, data: { ...prev.data, endpoint: newArray } }));
         setSend(true);
         break;
       }
@@ -63,12 +62,12 @@ export const useEndpoint = (handleToggle: () => void) => {
   };
 
   useEffect(() => {
-    setVrfEndpoints(endpoints);
-  }, [endpoints]);
+    setVrfEndpoints(endpoint);
+  }, [endpoint]);
 
   useEffect(() => {
     if (send) {
-      putVrfData(data);
+      patchVrfData({ vrf: data });
       setSend(false);
     }
   }, [send]);

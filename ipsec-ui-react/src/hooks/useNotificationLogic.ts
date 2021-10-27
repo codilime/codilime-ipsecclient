@@ -3,7 +3,7 @@ import { useAppContext } from 'hooks/';
 
 export const useNotificationLogic = () => {
   const {
-    vrf: { notifications }
+    context: { notifications }
   } = useAppContext();
 
   const [openLogs, setOpenLogs] = useState(false);

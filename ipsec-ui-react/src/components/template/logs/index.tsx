@@ -1,14 +1,14 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { EachLog } from './eachLog';
 import './styles.scss';
 
 interface LogsType {
-  logList: string[];
+  logData: { log: string; name: string }[];
   open: boolean;
 }
 
-export const Logs: FC<LogsType> = ({ logList, open }) => {
-  const displayLogsList = logList.map((log) => <EachLog key={log} {...{ title: log, activePopup: open }} />);
+export const Logs: FC<LogsType> = ({ logData, open }) => {
+  const displayLogsList = useMemo(() => logData.map(({ name, log }) => <EachLog key={log} {...{ log, title: name, activePopup: open }} />), [logData]);
   return (
     <article className="logs">
       <ul className="logs__list">{displayLogsList}</ul>

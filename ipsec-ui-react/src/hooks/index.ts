@@ -20,3 +20,4 @@ export * from './useAppContext';
 export * from './useLogsLogic';
 export * from './useRestConfLogic';
 export * from './useWindowDimensions';
+export * from './useCryptoLogic';

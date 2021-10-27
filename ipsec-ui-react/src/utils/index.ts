@@ -36,8 +36,10 @@ export const decodeX509 = (x509: string) => {
     const cert = pki.certificateFromPem(x509);
     const { value: CN } = cert.subject.attributes.filter((attr) => attr.shortName === 'CN')[0];
     const { value: ON } = cert.subject.attributes.filter((attr) => attr.shortName === 'O')[0];
-    const decode: { CN: string; ON: string } = { CN, ON };
-    return decode;
+    if (CN === typeof 'string' && ON === typeof 'string') {
+      const decode: { CN: string; ON: string } = { CN, ON };
+      return decode;
+    }
   }
   return { CN: '', ON: '' };
 };

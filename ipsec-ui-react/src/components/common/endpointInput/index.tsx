@@ -3,23 +3,23 @@ import { IoEyeSharp } from 'react-icons/io5';
 import { BsEyeSlashFill } from 'react-icons/bs';
 import { validateDataInput } from 'utils/';
 import { useToggle } from 'hooks/';
-import classNames from 'classnames';
 import { InputType } from 'interface/components';
+import classNames from 'classnames';
 import './styles.scss';
 
-type errorProps = {
+type ErrorProps = {
   remote_ip_se: boolean;
   psk: boolean;
   local_ip: boolean;
   peer_ip: boolean;
 };
 
-interface endpointInputTypes extends InputType {
+interface EndpointInputTypes extends InputType {
   edit?: boolean;
-  error?: keyof errorProps | any;
+  error?: keyof ErrorProps | any;
 }
 
-export const EndpointInput: FC<endpointInputTypes> = ({ type, placeholder, name, value, edit, onChange, onClick, checked, error, references }) => {
+export const EndpointInput: FC<EndpointInputTypes> = ({ type, placeholder, name, value, edit, onChange, onClick, checked, error, references }) => {
   const { open, handleToggle } = useToggle();
   const icon = open && edit ? <BsEyeSlashFill className="endpointInput__icon" onClick={handleToggle} /> : <IoEyeSharp className="endpointInput__icon" onClick={handleToggle} />;
 

@@ -77,7 +77,7 @@ module.exports = {
   plugins: [new webpack.HotModuleReplacementPlugin(), new HtmlWebpackPlugin({ template: './src/index.html' }), new CleanWebpackPlugin(), new NodePolyfillPlugin()],
   devServer: {
     proxy: {
-      '/api': {
+      '/restconf/data/sico-ipsec:api': {
         target: 'http://0.0.0.0:80',
         secure: false
       }

@@ -10,8 +10,8 @@ interface PopupType {
   title: string;
 }
 
-export const Popup: FC<PopupType> = ({ open, handleToggle, title, children }) => {
-  return createPortal(
+export const Popup: FC<PopupType> = ({ open, handleToggle, title, children }) =>
+  createPortal(
     <div className={classNames('popup', { popup__active: open })} onClick={handleToggle}>
       <section className="popup__content" onClick={(e) => e.stopPropagation()}>
         <header className="popup__header">
@@ -23,4 +23,3 @@ export const Popup: FC<PopupType> = ({ open, handleToggle, title, children }) =>
     </div>,
     document.getElementById('root') as HTMLElement
   );
-};

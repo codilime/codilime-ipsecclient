@@ -1,15 +1,16 @@
 import { FC } from 'react';
 
-interface eachNotificationType {
-  time: string;
-  description: string;
+interface EachErrorType {
+  id: number;
+  message: string;
+  errorTime: string;
 }
 
-export const EachNotification: FC<eachNotificationType> = ({ time, description }) => {
+export const EachNotification: FC<EachErrorType> = ({ errorTime, message }) => {
   return (
     <div className="notification__each">
-      <h4 className="notification__time">{time}</h4>
-      <p className="notification__description">{description}</p>
+      <h4 className="notification__time">{errorTime}</h4>
+      <p className="notification__description">{message}</p>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { FC } from 'react';
-import classNames from 'classnames';
 import { ButtonType } from 'interface/components';
+import classNames from 'classnames';
 import './styles.scss';
 
 interface UploadButtonTypes extends ButtonType {

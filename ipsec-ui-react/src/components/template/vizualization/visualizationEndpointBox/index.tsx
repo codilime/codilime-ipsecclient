@@ -1,14 +1,14 @@
 import { FC } from 'react';
 import { VisualizationBox, VisualizationEndpointLabel, VisualizationOneLabel } from 'template';
 import { variable } from '../visualizationConstants';
-import { visualization } from 'interface/components';
+import { Visualization } from 'interface/components';
 
-interface visualizationEndpointBoxType extends visualization {
+interface VisualizationEndpointBoxType extends Visualization {
   title: string;
   value: string;
 }
 
-export const VisualizationEndpointBox: FC<visualizationEndpointBoxType> = ({ x, y, width, height, title, value }) => {
+export const VisualizationEndpointBox: FC<VisualizationEndpointBoxType> = ({ x, y, width, height, title, value }) => {
   const { paddingBox, heightHeader } = variable;
 
   const firstLabel = {

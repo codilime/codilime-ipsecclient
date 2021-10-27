@@ -1,20 +1,43 @@
-import { FC } from 'react';
-import { EndpointButton } from 'common/';
-import { EndpointOption, Modal } from 'template';
+import { FC, useEffect } from 'react';
+import { EndpointButton, EndpointInput, ToolTipInfo } from 'common/';
+import { EndpointOption, Modal, Spinner } from 'template';
 import { useEndpointLogic, useToggle, useModalLogic } from 'hooks/';
-import { endpointsType } from 'interface/index';
+import { EndpointsType } from 'interface/index';
+import classNames from 'classnames';
 
 interface EachEndpointType {
-  endpoint: endpointsType;
+  currentEndpoint: EndpointsType;
   active: boolean;
-  handleActionVrfEndpoints: (action: string, data: endpointsType, id?: number) => void;
+  handleActionVrfEndpoints: (action: string, data: EndpointsType, id?: number) => void;
   id: number | null;
 }
 
-export const EachEndpoint: FC<EachEndpointType> = ({ endpoint, active, handleActionVrfEndpoints, id }) => {
+export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, handleActionVrfEndpoints, id }) => {
   const { open, handleToggle } = useToggle();
   const { show, handleToggleModal } = useModalLogic();
-  const { displayEndpoint, handleAddNewEndpoint, edit, handleActiveEdit } = useEndpointLogic({ endpoint, active, handleActionVrfEndpoints, id });
+  const { endpointAttributes, handleAddNewEndpoint, handleActiveEdit } = useEndpointLogic({ currentEndpoint, active, handleActionVrfEndpoints, id });
+  const { endpointSchema, endpoints, edit, error, onChange, handleGeneratePskField } = endpointAttributes;
+  
+  const displayEndpoint = endpointSchema.map((el) => {
+    switch (el.name) {
+      case 'psk':
+        return handleGeneratePskField(el);
+      case 'nat':
+      case 'bgp':
+        return (
+          <td key={el.name} className={classNames('table__column', 'table__bool')}>
+            <EndpointInput {...{ ...el, onChange, edit, error, checked: endpoints[el.name] }} />
+          </td>
+        );
+      default:
+        return (
+          <td key={el.name} className={classNames('table__column', { table__bool: el.name === 'remote_as' })}>
+            <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints[el.name] }} />
+            {edit && <ToolTipInfo {...{ error: error[el.name] }}>{el.tooltip}</ToolTipInfo>}
+          </td>
+        );
+    }
+  });
 
   const activeButton = edit ? (
     <EndpointButton {...{ onClick: handleAddNewEndpoint }} className="table__add">
@@ -34,7 +57,7 @@ export const EachEndpoint: FC<EachEndpointType> = ({ endpoint, active, handleAct
         <EndpointOption {...{ open, handleToggleModal, handleActiveEdit, handleToggle }} />
         <Modal
           {...{ show, handleToggleModal, header: 'Delete endpoint', leftButton: 'cancel', rightButton: 'delete ', btnDelete: true }}
-          handleDelete={() => handleActionVrfEndpoints('delete', endpoint, id!)}
+          handleDelete={() => handleActionVrfEndpoints('delete', currentEndpoint, id!)}
         >
           Are you sure you want to delete the endpoint? This action cannot be undone
         </Modal>

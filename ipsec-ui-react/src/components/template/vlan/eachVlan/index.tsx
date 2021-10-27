@@ -1,7 +1,7 @@
 import { FC } from 'react';
-import { vlanInterface } from 'interface/index';
+import { VlanInterface } from 'interface/index';
 
-interface EachVlanType extends vlanInterface {
+interface EachVlanType extends VlanInterface {
   onClick: (vlan: number) => void;
 }
 

@@ -2,18 +2,18 @@ import { useRef, useState, useEffect, ChangeEvent, Dispatch, SetStateAction, Ref
 import { EndpointInput, Button, UploadCertificates } from 'common/';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
-import { endpointsType } from 'interface/index';
+import { EndpointsType } from 'interface/index';
 import { decodeX509 } from 'utils/';
 
 interface HookType {
   edit: boolean;
   error: any;
-  setEndpoint: Dispatch<SetStateAction<endpointsType>>;
-  endpoints: endpointsType;
+  setEndpoint: Dispatch<SetStateAction<EndpointsType>>;
+  endpoints: EndpointsType;
 }
 
 export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: HookType) => {
-  const [fileName, setFileName] = useState({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' });
+  const [fileName, setFileName] = useState<{ key: string; certificate: string; peerCertificate: string }>({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' });
   const {
     authentication: { type, psk, private_key, local_cert, remote_cert }
   } = endpoints;
@@ -23,28 +23,26 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
   const peerCertificate = useRef<HTMLInputElement>(null);
 
   const handleUploadFile = (name: string) => {
-    if (name === null) {
-      return;
-    }
-    if (name === 'private_key') {
-      return key.current?.click();
-    }
-    if (name === 'local_cert') {
-      return certificate.current?.click();
-    }
-    if (name === 'remote_cert') {
-      return peerCertificate.current?.click();
+    switch (name) {
+      case 'private_key':
+        return key.current?.click();
+      case 'local_cert':
+        return certificate.current?.click();
+      case 'remote_cert':
+        return peerCertificate.current?.click();
+      default:
+        return;
     }
   };
 
-  const handleChangeValueFile = (e: ChangeEvent<HTMLInputElement>, setEndpoint: Dispatch<SetStateAction<endpointsType>>, ref: RefObject<HTMLInputElement>) => {
+  const handleChangeValueFile = (e: ChangeEvent<HTMLInputElement>, setEndpoint: Dispatch<SetStateAction<EndpointsType>>, ref: RefObject<HTMLInputElement>) => {
     const { name } = e.target;
 
     if (!ref.current?.files) return;
     const reader = new FileReader();
 
     reader.onload = (e) => {
-      setEndpoint((prev: endpointsType) => ({
+      setEndpoint((prev: EndpointsType) => ({
         ...prev,
         authentication: {
           ...prev.authentication,
@@ -58,31 +56,27 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
 
   const handleUpdateEndpoint = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name === 'psk') {
-      setFileName({ key: '', certificate: '', peerCertificate: '' });
-      return setEndpoint((prev) => ({
-        ...prev,
-        authentication: {
-          ...prev.authentication,
-          private_key: '',
-          local_cert: '',
-          remote_cert: '',
-          [name]: value
-        }
-      }));
-    }
-    if (name === 'private_key') {
-      key.current?.files && setFileName((prev) => ({ ...prev, key: 'Complete' }));
-      return handleChangeValueFile(e, setEndpoint, key);
-    }
-    if (name === 'local_cert') {
-      certificate.current?.files && setFileName((prev) => ({ ...prev, certificate: 'Complete' }));
-
-      return handleChangeValueFile(e, setEndpoint, certificate);
-    }
-    if (name === 'remote_cert') {
-      peerCertificate.current?.files && setFileName((prev) => ({ ...prev, peerCertificate: 'Complete' }));
-      return handleChangeValueFile(e, setEndpoint, peerCertificate);
+    switch (name) {
+      case 'psk':
+        setFileName({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' });
+        return setEndpoint((prev) => ({
+          ...prev,
+          authentication: {
+            ...prev.authentication,
+            private_key: '',
+            local_cert: '',
+            remote_cert: '',
+            [name]: value
+          }
+        }));
+      case 'private_key':
+        return handleChangeValueFile(e, setEndpoint, key);
+      case 'local_cert':
+        return handleChangeValueFile(e, setEndpoint, certificate);
+      case 'remote_cert':
+        return handleChangeValueFile(e, setEndpoint, peerCertificate);
+      default:
+        return;
     }
   };
 
@@ -96,7 +90,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
     }));
   };
 
-  useEffect(() => {
+  const handleUpdateFileName = () => {
     if (private_key) {
       setFileName((prev) => ({ ...prev, key: 'Private Key' }));
     }
@@ -108,6 +102,10 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       const decode = decodeX509(remote_cert);
       if (decode) setFileName((prev) => ({ ...prev, peerCertificate: decode.CN }));
     }
+  };
+
+  useEffect(() => {
+    handleUpdateFileName();
   }, [private_key, local_cert, remote_cert]);
 
   const UploadCaSchema = [
@@ -142,41 +140,41 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       handleUploadFile
     }
   ];
+
   const displayCerts = UploadCaSchema.map((ca) => <UploadCertificates key={ca.name} {...ca} />);
 
   const handleGeneratePskField = (el: any) => {
-    if (!type) {
-      return (
-        <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
-          <div className="table__center">
-            <button className="table__psk__btn" onClick={() => handleChooseAuthentication('psk')}>
-              Enter PSK
-            </button>
-          </div>
-          <span className="table__text">or</span>
-          <div className="table__center">
-            <Button className="table__btn" onClick={() => handleChooseAuthentication('certs')}>
-              X509
-            </Button>
-          </div>
-        </td>
-      );
-    }
-    if (type === 'psk') {
-      return (
-        <td key={el.name} className={classNames('table__column', 'table__psk')}>
-          <EndpointInput {...{ ...el, onChange: handleUpdateEndpoint, edit, error, value: psk }} />
-          <div className="table__iconBox">{edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}</div>
-        </td>
-      );
-    }
-    if (type === 'certs') {
-      return (
-        <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
-          {displayCerts}
-          {edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}
-        </td>
-      );
+    switch (type) {
+      case 'psk':
+        return (
+          <td key={el.name} className={classNames('table__column', 'table__psk')}>
+            <EndpointInput {...{ ...el, onChange: handleUpdateEndpoint, edit, error, value: psk }} />
+            <div className="table__iconBox">{edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}</div>
+          </td>
+        );
+      case 'certs':
+        return (
+          <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
+            {displayCerts}
+            {edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}
+          </td>
+        );
+      default:
+        return (
+          <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
+            <div className="table__center">
+              <button className="table__psk__btn" onClick={() => handleChooseAuthentication('psk')}>
+                Enter PSK
+              </button>
+            </div>
+            <span className="table__text">or</span>
+            <div className="table__center">
+              <Button className="table__btn" onClick={() => handleChooseAuthentication('certs')}>
+                X509
+              </Button>
+            </div>
+          </td>
+        );
     }
   };
 
