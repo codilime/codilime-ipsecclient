@@ -13,7 +13,6 @@ headers = {
     'Accept': 'application/yang-data+json',
     'Content-Type': 'application/yang-data+json',
 }
-
 proposal_data = '{"proposal": {"name": "hardware","encryption": {"aes-cbc-128": [null]},"integrity": {"sha256": [null]},"prf": {"sha256": [null]},"group": {"fourteen": [null]}}}'
 
 while True:
@@ -22,7 +21,7 @@ while True:
         if response.status_code == 204:
             print("CSR-VM is ready")
             break
-        print("Waiting for CSR-VM: " + response)
+        print("Waiting for CSR-VM: " + str(response))
         time.sleep(5)
     except requests.ConnectionError:
         print("Waiting for CSR-VM: No route to CSR-VM")
