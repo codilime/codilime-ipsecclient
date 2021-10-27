@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { Text, Rect, Group } from 'react-konva';
 import { variable } from '../visualizationConstants';
-import { visualization } from 'interface/components';
+import { Visualization } from 'interface/components';
 
-interface VisualizationBoxType extends visualization {
+interface VisualizationBoxType extends Visualization {
   title: string;
 }
 

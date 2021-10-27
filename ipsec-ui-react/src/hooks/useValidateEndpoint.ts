@@ -1,4 +1,4 @@
-import { endpointsType } from 'interface/index';
+import { EndpointsType } from 'interface/index';
 import { useState } from 'react';
 
 const validateStatus = {
@@ -24,7 +24,7 @@ const checkIpValue = (value: string) => {
 export const useValidateEndpoint = () => {
   const [error, setError] = useState(validateStatus);
 
-  const validateEmptyEndpoint = (endpoints: endpointsType) => {
+  const validateEmptyEndpoint = (endpoints: EndpointsType) => {
     const {
       remote_ip_sec,
       authentication: { psk },

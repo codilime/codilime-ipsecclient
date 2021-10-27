@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { client } from 'api/';
-import { restConfType, descriptionType } from 'interface/index';
+import { RestConfType, DescriptionType } from 'interface/index';
 
 export const UseRestConfLogic = (open: boolean) => {
   const [logged, setLogged] = useState<boolean>(true);
-  const [description, setDescription] = useState<descriptionType>({ result: 'default', message: 'The variables are set. If you want to change them, please click reset' });
+  const [description, setDescription] = useState<DescriptionType>({ result: 'default', message: 'The variables are set. If you want to change them, please click reset' });
 
   useEffect(() => {
     const timeOut = setTimeout(() => {
@@ -21,9 +21,9 @@ export const UseRestConfLogic = (open: boolean) => {
     }
   }, [open]);
 
-  const handleSendRestConf = async (data: restConfType) => {
-    const username = await client('settings/switch_username', {}, { method: 'POST', body: data.switch_username });
-    const password = await client('settings/switch_password', {}, { method: 'POST', body: data.switch_password });
+  const handleSendRestConf = async (data: RestConfType) => {
+    const username = await client('setting=switch_username', { setting: { name: 'switch_username', value: data.switch_username } }, { method: 'POST' });
+    const password = await client('setting=switch_password', { setting: { name: 'switch_password', value: data.switch_password } }, { method: 'POST' });
     if (!username || !password) {
       setLogged(true);
       setDescription({ result: 'error', message: 'Error change, something is wrong' });

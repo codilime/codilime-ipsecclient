@@ -8,22 +8,16 @@ import './styles.scss';
 export const VrfView: FC<MatchProps> = ({ match }) => {
   const { show, handleToggleModal } = useModalLogic();
   const {} = useGetVrfs(match.params.id);
-
-  const {
-    client_name,
-    handleDelete,
-    vrf: { loading },
-    hardware
-  } = useVrfLogic();
+  const { client_name, handleDelete, context, hardware } = useVrfLogic();
+  const { loading } = context;
 
   const vrfName = client_name ? client_name : 'New VRF';
 
-  const deleteBtn = !hardware && (
+  const deleteBtn = !hardware && match.params.id && (
     <Button btnDelete className="vrf__btn" onClick={handleToggleModal}>
       Delete VRF
     </Button>
   );
-
 
   return (
     <>

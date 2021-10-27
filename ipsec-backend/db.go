@@ -17,11 +17,12 @@ import (
 const hardwareVrfID = 1
 
 type EndpointAuth struct {
-	Type       string `json:"type"`
-	PSK        string `json:"psk"`
-	LocalCert  string `json:"local_cert"`
-	RemoteCert string `json:"remote_cert"`
-	PrivateKey string `json:"private_key"`
+	Type         string `json:"type"`
+	PSK          string `json:"psk"`
+	LocalCert    string `json:"local_cert"`
+	RemoteCert   string `json:"remote_cert"`
+	PrivateKey   string `json:"private_key"`
+	Pkcs12Base64 string `json:"pkcs12_base64"`
 }
 
 func (e *EndpointAuth) Scan(value interface{}) error {
@@ -44,12 +45,12 @@ func (e EndpointAuth) Value() (driver.Value, error) {
 }
 
 type Endpoint struct {
-	ID              int64        `json:"id"`
-	VrfID           int64        `json:"vrf_id"`
+	ID              uint32       `json:"id"`
+	VrfID           uint32       `json:"vrf_id"`
 	RemoteIPSec     string       `json:"remote_ip_sec"`
 	LocalIP         string       `json:"local_ip"`
 	PeerIP          string       `json:"peer_ip"`
-	RemoteAS        int          `json:"remote_as"`
+	RemoteAS        uint32       `json:"remote_as"`
 	NAT             bool         `json:"nat"`
 	BGP             bool         `json:"bgp"`
 	SourceInterface string       `json:"source_interface"`
@@ -57,24 +58,33 @@ type Endpoint struct {
 }
 
 type Vrf struct {
-	ID                int64          `json:"id"`
+	ID                uint32         `json:"id"`
 	ClientName        string         `json:"client_name"`
-	Vlans             datatypes.JSON `json:"vlans"`
+	Vlans             datatypes.JSON `json:"vlan"`
 	CryptoPh1         datatypes.JSON `json:"crypto_ph1"`
 	CryptoPh2         datatypes.JSON `json:"crypto_ph2"`
 	PhysicalInterface string         `json:"physical_interface"`
 	Active            *bool          `json:"active"` // pointer, otherwise it is impossible to set value to false
-	LocalAs           int            `json:"local_as"`
-	Endpoints         []Endpoint     `json:"endpoints"`
+	LocalAs           uint32         `json:"local_as"`
+	Endpoints         []Endpoint     `json:"endpoint"`
+}
+
+func (v *Vrf) endpointByID(id uint32) *Endpoint {
+	for _, e := range v.Endpoints {
+		if e.ID == id {
+			return &e
+		}
+	}
+	return nil
 }
 
 type Vlan struct {
-	Vlan  int    `json:"vlan"`
+	Vlan  uint32 `json:"vlan"`
 	LanIP string `json:"lan_ip"`
 }
 
 type Setting struct {
-	ID    int64
+	ID    uint32
 	Name  string
 	Value string
 }
@@ -85,22 +95,13 @@ func (v *Vrf) getVlans() ([]Vlan, error) {
 	return ret, ReturnError(err)
 }
 
-func (v *Vrf) setVlans(vlans []Vlan) error {
-	vlansJson, err := json.Marshal(&vlans)
-	if err != nil {
-		return ReturnError(err)
-	}
-	v.Vlans = vlansJson
-	return nil
-}
-
 type Masterpass struct {
-	ID         int64
+	ID         uint32
 	Masterpass string
 }
 
 type CertificateAuthority struct {
-	ID int64
+	ID uint32
 	CA string
 }
 

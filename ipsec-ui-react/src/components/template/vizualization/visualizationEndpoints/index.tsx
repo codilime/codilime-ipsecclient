@@ -4,21 +4,21 @@ import { Stage, Layer } from 'react-konva';
 import { MetricsType } from 'interface/index';
 import { VisualizationIcon, VisualizationLine, VisualizationVrf, Cube } from 'template';
 
-interface visualizationEndpoints {
+interface VisualizationEndpoints {
   dimensions: number;
   hardware: boolean;
   data: vrfDataTypes;
-  metrics: MetricsType[];
+  monitoring: MetricsType[];
 }
 
-export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimensions, metrics, hardware }) => {
-  const { endpoints, client_name, vlans } = data;
+export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimensions, monitoring, hardware }) => {
+  const { endpoint, client_name, vlan } = data;
   const getAmount = () => {
-    if (vlans !== null && endpoints !== null) {
-      return endpoints.length > vlans.length ? endpoints.length : vlans.length;
+    if (vlan.length && endpoint) {
+      return endpoint.length > vlan.length ? endpoint.length : vlan.length;
     }
-    if (endpoints !== null) {
-      return endpoints.length;
+    if (endpoint?.length) {
+      return endpoint.length;
     }
     return 0;
   };
@@ -38,24 +38,32 @@ export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimen
     height: 40 + getAmount() * 80,
     title: client_name,
     size: 8,
-    endpoints: endpoints!,
+    endpoint,
     dimensions,
-    metrics
+    monitoring
   };
 
   const getVisualizationHeight = () => {
-    if (vlans !== null && endpoints !== null) {
-      return endpoints.length > vlans.length ? endpoints.length * 100 : vlans.length * 100;
+    if (vlan.length && endpoint !== null) {
+      return endpoint.length > vlan.length ? endpoint.length * 100 : vlan.length * 100;
     }
-    if (endpoints !== null) {
-      return endpoints.length * 100;
+    if (endpoint !== null) {
+      return endpoint.length * 100;
+    }
+    return 0;
+  };
+
+  const getCenterVlan = () => {
+    if (vlan.length < endpoint.length) {
+      const amount = endpoint.length - vlan.length;
+      return Math.abs(amount) * 40;
     }
     return 0;
   };
 
   const endYOfVlans = () => {
-    if (vlans) {
-      return 65 + (vlans?.length - 1) * 80 + 55 / 2;
+    if (vlan.length) {
+      return 87.5 + (vlan.length - 1) * 80 + getCenterVlan();
     }
     return 0;
   };
@@ -72,7 +80,7 @@ export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimen
   }
   if (hardware)
     return (
-      <Stage width={dimensions} height={endpoints!.length * 90 + 90}>
+      <Stage width={dimensions} height={endpoint!.length * 90 + 90}>
         <Layer>
           <VisualizationVrf {...{ ...vrfBox, hardware }} />
         </Layer>
@@ -83,7 +91,7 @@ export const VisualizationEndpoints: FC<visualizationEndpoints> = ({ data, dimen
     <Stage width={dimensions} height={getVisualizationHeight() + 170}>
       <Layer>
         <VisualizationIcon {...{ ...icon, hardware }} />
-        <VisualizationVrf {...{ ...vrfBox, hardware, vlans }} />
+        <VisualizationVrf {...{ ...vrfBox, hardware, vlan }} />
         <VisualizationLine {...iconToVRfLine} />
       </Layer>
     </Stage>

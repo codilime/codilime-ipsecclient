@@ -2,34 +2,35 @@ import { ChangeEvent, useRef, useState, useEffect } from 'react';
 import { useAppContext } from 'hooks/';
 import { client } from 'api/';
 
-interface dynamicObject {
+interface DynamicObject {
   [key: string]: boolean;
 }
 
 interface CertsType {
-  CA: string;
+  id?: number;
+  ca_file: string;
 }
 
 export const useCertificatesLogic = () => {
-  const { vrf, setVrf } = useAppContext();
-  const { certificates } = vrf;
+  const { context, setContext } = useAppContext();
+  const { certificates } = context;
   const uploadBtn = useRef<HTMLInputElement>(null);
   const [certs, setCerts] = useState<CertsType[]>([]);
-  const [checkedCa, setCheckedCa] = useState<dynamicObject>();
+  const [checkedCa, setCheckedCa] = useState<DynamicObject>();
 
   const handleAddCerts = () => {
     if (uploadBtn.current) return uploadBtn.current.click();
   };
 
   const handleUpdateCertsList = async () => {
-    const newCerts = await client('cas');
-    if (newCerts) setVrf((prev) => ({ ...prev, certificates: [...newCerts] }));
+    const newCerts = await client('ca');
+    if (newCerts) setContext((prev) => ({ ...prev, certificates: [...newCerts.ca] }));
   };
 
   useEffect(() => {
     if (certificates.length) {
       certificates.map((cert) => {
-        if (cert.ID) setCheckedCa((prev) => ({ ...prev, [cert.ID!]: false }));
+        if (cert.id) setCheckedCa((prev) => ({ ...prev, [cert.id]: false }));
       });
     }
   }, [certificates]);
@@ -45,7 +46,7 @@ export const useCertificatesLogic = () => {
           if (e.target && e.target.result !== null) {
             const cert = e.target.result;
             if (typeof cert === 'string') {
-              const newCert: any = { CA: e.target.result.toString() };
+              const newCert: CertsType = { ca_file: e.target.result.toString() };
               setCerts((prev) => [...prev, newCert]);
             }
           }
@@ -57,10 +58,13 @@ export const useCertificatesLogic = () => {
   useEffect(() => {
     if (certs.length) {
       const timeOut = setTimeout(async () => {
-        await client('cas', [...certificates, ...certs], { method: 'POST' });
+        const newCerts = certs.map((cert, index) => {
+          return { id: certificates.length + index + 1, ...cert };
+        });
+        await client('ca', { ca: [...certificates, ...newCerts] }, { method: 'POST' });
       }, 300);
       const UploadTimeout = setTimeout(async () => {
-        handleUpdateCertsList();
+        await handleUpdateCertsList();
       }, 500);
       return () => {
         clearTimeout(timeOut);
@@ -72,10 +76,10 @@ export const useCertificatesLogic = () => {
   const handleDeleteCerts = async () => {
     if (!checkedCa) return;
     const newCert = certificates.filter((cert) => {
-      if (cert.ID && !checkedCa[cert.ID]) return cert;
+      if (cert.id && !checkedCa[cert.id]) return cert;
     });
-    client('cas', [...newCert], { method: 'POST' });
-    handleUpdateCertsList();
+    await client('ca', { ca: [...newCert] }, { method: 'POST' });
+    await handleUpdateCertsList();
   };
 
   const handleCheckCerts = (e: ChangeEvent<HTMLInputElement>, name: number) => {

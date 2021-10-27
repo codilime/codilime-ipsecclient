@@ -2,14 +2,12 @@ import { FC } from 'react';
 import classNames from 'classnames';
 import './styles.scss';
 
-interface loadingType {
+interface LoadingType {
   loading: boolean;
 }
 
-export const Dotted: FC<loadingType> = ({ loading }) => {
-  return (
-    <div className={classNames('dotted__loading', { dotted__loading__active: loading })}>
-      <div className="dotted"></div>
-    </div>
-  );
-};
+export const Dotted: FC<LoadingType> = ({ loading }) => (
+  <div className={classNames('dotted__loading', { dotted__loading__active: loading })}>
+    <div className="dotted"></div>
+  </div>
+);

@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { Text, Rect, Group } from 'react-konva';
 import { variable } from '../visualizationConstants';
-import { visualization } from 'interface/components';
+import { Visualization } from 'interface/components';
 
-interface VisualizationEndpointLabelType extends visualization {
+interface VisualizationEndpointLabelType extends Visualization {
   title: string;
   value: string;
   height: number;

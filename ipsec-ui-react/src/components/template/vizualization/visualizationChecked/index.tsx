@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import { Text, Rect, Group } from 'react-konva';
-import { visualization } from 'interface/components';
+import { Visualization } from 'interface/components';
 
-interface visualizationCheckedType extends visualization {
+interface VisualizationCheckedType extends Visualization {
   status?: boolean;
 }
 
-export const VisualizationChecked: FC<visualizationCheckedType> = ({ x, y, status }) => {
+export const VisualizationChecked: FC<VisualizationCheckedType> = ({ x, y, status }) => {
   const checked = status ? '✓' : '';
   const strokeColor = status ? 'green' : 'black';
   return (

@@ -1,6 +1,6 @@
 import { RouteComponentProps } from 'react-router';
 
-interface authenticationType {
+interface AuthenticationType {
   type: string;
   psk: string;
   local_cert: string;
@@ -8,43 +8,50 @@ interface authenticationType {
   private_key: string;
 }
 
-export interface endpointsType {
-  id?: string;
+export interface EndpointsType {
+  id?: number;
   remote_ip_sec: string;
   local_ip: string;
   peer_ip: string;
-  authentication: authenticationType;
+  authentication: AuthenticationType;
   bgp: boolean;
+  remote_as: number;
+  source_interface: string;
   nat?: boolean;
-  remote_as?: number;
-  source_interface?: string;
+  vrf_id?: number;
 }
 
 export interface vrfDataTypes {
   client_name: string;
-  vlans: vlanInterface[] | null;
-  crypto_ph1: string[];
-  crypto_ph2: string[];
+  vlan: VlanInterface[];
+  crypto_ph1: string;
+  crypto_ph2: string;
   physical_interface: string;
   active: boolean;
   local_as: number;
-  endpoints: endpointsType[] | null;
-  id?: string | number;
+  endpoint: EndpointsType[] | [];
+  id?: number;
 }
 
-export interface softwareCryptoDataTypes {
+export interface SoftwareCryptoDataTypes {
   encryption: string[];
   integrity: string[];
   key_exchange: string[];
 }
 
 export interface CryptoTypes {
-  crypto_ph1: softwareCryptoDataTypes;
-  crypto_ph2: softwareCryptoDataTypes;
+  crypto_ph1: SoftwareCryptoDataTypes;
+  crypto_ph2: SoftwareCryptoDataTypes;
 }
 export interface CertificatesType {
-  ID?: number;
-  CA: string;
+  id: number;
+  ca_file: string;
+}
+
+export interface NotificationsType {
+  id: number;
+  message: string;
+  errorTime: string;
 }
 
 export interface ContextProps {
@@ -52,8 +59,8 @@ export interface ContextProps {
   softwareCrypto: CryptoTypes;
   hardwareCrypto: CryptoTypes;
   certificates: CertificatesType[];
-  vrfs: vrfDataTypes[];
-  notifications: Array<any>;
+  vrf: vrfDataTypes[] | [];
+  notifications: NotificationsType[];
   loading: boolean;
   hardware: boolean;
   error: any;
@@ -61,7 +68,7 @@ export interface ContextProps {
   restConf: boolean;
 }
 
-type nameProps = {
+type NameProps = {
   client_name: 'client_name';
   crypto_ph1: 'crypto_ph1';
   local_as: 'local_as';
@@ -69,12 +76,13 @@ type nameProps = {
   active: 'active';
 };
 export interface DetailsTypes {
-  name: keyof nameProps;
+  name: keyof NameProps;
   type?: string;
   placeholder?: string;
   text?: string;
 }
-type endpointNameProps = {
+
+type EndpointNameProps = {
   remote_ip_sec: 'remote_ip_sec';
   local_ip: 'local_ip';
   peer_ip: 'peer_ip';
@@ -85,8 +93,8 @@ type endpointNameProps = {
   bgp: 'bgp';
 };
 
-export interface endpointSchemaType {
-  name: keyof endpointNameProps;
+export interface EndpointSchemaType {
+  name: keyof EndpointNameProps;
   type?: string;
   placeholder?: string;
   text?: string;
@@ -95,38 +103,38 @@ export interface endpointSchemaType {
 
 export interface MatchProps extends RouteComponentProps<{ id: string }> {}
 
-export interface vlanInterface {
+export interface VlanInterface {
   vlan: number;
   lan_ip: string;
 }
 
 export interface MetricsType {
-  id: string;
+  id: number;
   local_ip: string;
-  remote_ip: string;
-  sa_status: string;
+  peer_ip: string;
+  status: string;
 }
-export interface restConfType {
+export interface RestConfType {
   switch_username: string;
   switch_password: string;
 }
 
-type resultType = {
+type ResultType = {
   default: 'default';
   success: 'success';
   error: 'error';
 };
 
-export interface descriptionType {
-  result: keyof resultType;
+export interface DescriptionType {
+  result: keyof ResultType;
   message: string;
 }
 export interface ChangePasswordType {
-  newPassword: string;
-  newPasswordConfirmation: string;
+  password: string;
+  newPasswordConfirmaton: string;
 }
 
-export interface vlanInterface {
+export interface VlanInterface {
   vlan: number;
   lan_ip: string;
 }

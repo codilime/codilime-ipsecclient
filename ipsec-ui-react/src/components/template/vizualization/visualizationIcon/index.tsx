@@ -3,9 +3,9 @@ import { Text, Rect, Group, Image } from 'react-konva';
 import useImage from 'use-image';
 import Spine from 'images/spine.png';
 import { variable } from '../visualizationConstants';
-import { visualization } from 'interface/components';
+import { Visualization } from 'interface/components';
 
-interface VisualizationIconType extends visualization {
+interface VisualizationIconType extends Visualization {
   text: string;
   height: number;
   width: number;
