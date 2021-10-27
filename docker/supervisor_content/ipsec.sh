@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 declare -a vlans_ips
 i=0
 
