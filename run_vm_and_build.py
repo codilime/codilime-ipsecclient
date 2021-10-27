@@ -49,13 +49,13 @@ build_processes.append(subprocess.Popen('exec docker build -t sico_api_ut -f sic
 
 while build_processes:
     time.sleep(1)
-    for index, process in enumerate(build_processes):
+    for process in build_processes:
         returncode = process.poll()
         if returncode is None:
             continue
         elif returncode:
             sys.exit(returncode)
         else:
-            build_processes.remove(index)
+            build_processes.remove(process)
             break
 
