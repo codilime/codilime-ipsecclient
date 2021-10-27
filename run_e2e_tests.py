@@ -20,13 +20,16 @@ while True:
     try:
         response = requests.patch('https://10.69.0.10/restconf/data/Cisco-IOS-XE-native:native/crypto/ikev2/proposal', headers=headers, data=proposal_data, verify=False, auth=('admin', 'cisco123'))
         if response.status_code == 204:
+            print("CSR-VM is ready")
             break
         print("Waiting for CSR-VM: " + response)
         time.sleep(5)
-    except:
+    except requests.ConnectionError:
         print("Waiting for CSR-VM: No route to CSR-VM")
         time.sleep(5)
         continue
+    else:
+        print("UNKNOWN EXCEPTION")
 
 api_process = subprocess.Popen('./run_api.sh', shell=True)
 net_process = subprocess.Popen('./run_net.sh', shell=True)
