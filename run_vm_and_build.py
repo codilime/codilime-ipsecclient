@@ -14,6 +14,7 @@ def my_except_hook():
     for process in build_processes:
         process.terminate()
 
+
 subprocess.run('docker stop sico_api', shell=True)
 subprocess.run('docker stop sico_net', shell=True)
 subprocess.run('docker stop sico_test', shell=True)
@@ -40,14 +41,15 @@ if csr_vm.returncode:
     if csr_vm.returncode:
         sys.exit("Unable to run CSR-VM")
 
-build_processes.append(subprocess.Popen('docker build -t sico_api -f sico_api.dockerfile .', shell=True))
-build_processes.append(subprocess.Popen('docker build -t sico_net -f sico_net.dockerfile .', shell=True))
-build_processes.append(subprocess.Popen('docker build -t sico_test test', shell=True))
-build_processes.append(subprocess.Popen('docker build -t sico_api_ut -f sico_api_ut.dockerfile .', shell=True))
+build_processes.append(subprocess.Popen('exec docker build -t sico_api -f sico_api.dockerfile .', shell=True))
+build_processes.append(subprocess.Popen('exec docker build -t sico_net -f sico_net.dockerfile .', shell=True))
+build_processes.append(subprocess.Popen('exec docker build -t sico_test test', shell=True))
+build_processes.append(subprocess.Popen('exec docker build -t sico_api_ut -f sico_api_ut.dockerfile .', shell=True))
+
 
 while build_processes:
     time.sleep(1)
-    for process, index in build_processes:
+    for index, process in enumerate(build_processes):
         returncode = process.poll()
         if returncode is None:
             continue
@@ -56,3 +58,4 @@ while build_processes:
         else:
             build_processes.remove(index)
             break
+

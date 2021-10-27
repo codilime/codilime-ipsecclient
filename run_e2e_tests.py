@@ -50,8 +50,8 @@ def run_python_test_cases():
 
 
 def run_app_and_check():
-    app_processes.append(subprocess.Popen('./run_api.sh', shell=True))
-    app_processes.append(subprocess.Popen('./run_net.sh', shell=True))
+    app_processes.append(subprocess.Popen('exec ./run_api.sh', shell=True))
+    app_processes.append(subprocess.Popen('exec ./run_net.sh', shell=True))
 
     time.sleep(4) # fix this one
 
