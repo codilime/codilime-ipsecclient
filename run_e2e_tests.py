@@ -1,11 +1,13 @@
 #!/usr/bin/python3
-import requests, time, subprocess, sys
+import requests, time, subprocess, sys, urllib3
 
 def my_except_hook(exctype, value, traceback):
     api_process.terminate()
     net_process.terminate()
     sys.__excepthook__(exctype, value, traceback)
 sys.excepthook = my_except_hook
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 headers = {
     'Accept': 'application/yang-data+json',

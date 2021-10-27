@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import requests, time, subprocess, sys, urllib3, time, os, argparse
+import  subprocess, sys, argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('csr_vm', nargs='?', type=str, default="csr1000v-universalk9.17.03.03-serial.qcow2",
@@ -9,8 +9,6 @@ parser.add_argument('csr_config', nargs='?', type=str, default="csr_config.iso",
                     help='path to csr_config.iso image')
 
 args = parser.parse_args()
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def my_except_hook(exctype, value, traceback):
     api_build_process.terminate()
