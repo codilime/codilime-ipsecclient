@@ -29,6 +29,7 @@ connections {
                 esp_proposals = {{ $.Crypto2 }}
                 start_action = start
                 updown=/usr/local/bin/status.sh {{ $.ClientName }}-{{ $endpoint.ID }}-{{ $endpoint.RemoteIPSec }}
+                copy_dscp = out
             }
         }
         version = 2
