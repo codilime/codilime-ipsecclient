@@ -13,8 +13,6 @@ import (
 	"strings"
 	"text/template"
 	"time"
-
-	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -221,8 +219,6 @@ func (a *App) restconfCreate(vrf Vrf) error {
 	if err != nil {
 		return ReturnError(err)
 	}
-
-	spew.Dump(vrfWithSlices)
 
 	pskEndpoints, certsEndpoints := endpointSubsets(vrf)
 
