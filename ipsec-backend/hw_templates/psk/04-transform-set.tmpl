@@ -1,0 +1,13 @@
+Cisco-IOS-XE-native:native/crypto/ipsec/transform-set
+Cisco-IOS-XE-native:native/crypto/ipsec/transform-set=hardware_psk
+{
+        "transform-set": {
+                "tag": "hardware_psk",
+                "esp": "{{ transformSetEsp $.VrfWithCryptoSlices }}",
+                {{ transformSetKeyBit $.VrfWithCryptoSlices }}
+                {{ transformSetEspHmac $.VrfWithCryptoSlices }}
+                "mode": {
+                "{{ transformSetTunnelOptionName $.VrfWithCryptoSlices }}": [null]
+                }
+        }
+}

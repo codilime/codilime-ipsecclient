@@ -5,17 +5,200 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
+	"text/template"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 )
 
-const switchBase = "https://%s/restconf/data/"
+const (
+	switchBase     = "https://%s/restconf/data/"
+	hwTemplatesDir = "hw_templates"
+)
+
+type VrfWithCryptoSlices struct {
+	Vrf
+	CryptoPh1Slice []string
+	CryptoPh2Slice []string
+}
+
+func bgpEndpointSubset(endpoints []Endpoint) []Endpoint {
+	bgpEndpoints := []Endpoint{}
+	for _, e := range endpoints {
+		if e.BGP {
+			bgpEndpoints = append(bgpEndpoints, e)
+		}
+	}
+	return bgpEndpoints
+}
+
+func (a *App) doTemplateFolderCreate(folderName string, client *http.Client, vrf VrfWithCryptoSlices, endpoints []Endpoint) error {
+	files, err := ioutil.ReadDir(hwTemplatesDir + "/" + folderName)
+	if err != nil {
+		return ReturnError(err)
+	}
+
+	bgpEndpoints := bgpEndpointSubset(endpoints)
+
+	for _, file := range files {
+		bytes, err := ioutil.ReadFile(hwTemplatesDir + "/" + folderName + "/" + file.Name())
+		if err != nil {
+			return ReturnError(err)
+		}
+		lines := strings.Split(string(bytes), "\n")
+		url := lines[0]
+		_ = lines[1] // this is the delete url
+		templ := strings.Join(lines[2:], "\n")
+		t, err := template.New(file.Name()).Funcs(template.FuncMap{
+			"notEndOfSlice": func(l []Endpoint, i int) bool {
+				return len(l)-1 != i
+			},
+			"transformSetEsp": func(vrf VrfWithCryptoSlices) string {
+				if containsADigit(vrf.CryptoPh2Slice[0]) {
+					// this is gcm or aes
+					encFunc := strings.Split(vrf.CryptoPh2Slice[0], "-")
+					return fmt.Sprintf("%s-%s", encFunc[0], encFunc[2])
+				}
+				return vrf.CryptoPh2Slice[0]
+			},
+			"transformSetKeyBit": func(vrf VrfWithCryptoSlices) string {
+				if containsADigit(vrf.CryptoPh2Slice[0]) {
+					// this is gcm or aes
+					encFunc := strings.Split(vrf.CryptoPh2Slice[0], "-")
+					return fmt.Sprintf(`"key-bit": "%s",`, encFunc[1])
+				}
+				return ""
+			},
+			"transformSetEspHmac": func(vrf VrfWithCryptoSlices) string {
+				if !strings.Contains(vrf.CryptoPh2Slice[0], "gcm") {
+					return fmt.Sprintf(`"esp-hmac":"%s",`, vrf.CryptoPh2Slice[1])
+				}
+				return ""
+			},
+			"transformSetTunnelOptionName": func(vrf VrfWithCryptoSlices) string {
+				if os.Getenv("CAF_SYSTEM_NAME") == "cat9300X" {
+					return "tunnel-choice"
+				}
+				return "tunnel"
+			},
+		}).Parse(templ)
+		if err != nil {
+			return ReturnError(err)
+		}
+		builder := strings.Builder{}
+		if err = t.Execute(&builder, struct {
+			VrfWithCryptoSlices
+			EndpointSubset    []Endpoint
+			BGPEndpointSubset []Endpoint
+		}{
+			vrf,
+			endpoints,
+			bgpEndpoints,
+		}); err != nil {
+			return ReturnError(err)
+		}
+		if err := a.tryRestconfPatch(url, builder.String(), client); err != nil {
+			return ReturnError(err)
+		}
+	}
+	return nil
+}
+
+func reverseSlice(s []fs.FileInfo) []fs.FileInfo {
+	a := make([]fs.FileInfo, len(s))
+	copy(a, s)
+
+	for i := len(a)/2 - 1; i >= 0; i-- {
+		opp := len(a) - 1 - i
+		a[i], a[opp] = a[opp], a[i]
+	}
+
+	return a
+}
+
+func (a *App) doTemplateFolderDelete(folderName string, client *http.Client, vrf Vrf, endpoints []Endpoint) error {
+	files, err := ioutil.ReadDir(hwTemplatesDir + "/" + folderName)
+	if err != nil {
+		return ReturnError(err)
+	}
+
+	files = reverseSlice(files)
+	bgpEndpoints := bgpEndpointSubset(endpoints)
+
+	for _, file := range files {
+		bytes, err := ioutil.ReadFile(hwTemplatesDir + "/" + folderName + "/" + file.Name())
+		if err != nil {
+			return ReturnError(err)
+		}
+		lines := strings.Split(string(bytes), "\n")
+		deleteUrlTemplate := lines[1]
+		t, err := template.New(file.Name()).Parse(deleteUrlTemplate)
+		if err != nil {
+			return ReturnError(err)
+		}
+		builder := strings.Builder{}
+		if err = t.Execute(&builder, struct {
+			Vrf
+			EndpointSubset    []Endpoint
+			BGPEndpointSubset []Endpoint
+		}{
+			vrf,
+			endpoints,
+			bgpEndpoints,
+		}); err != nil {
+			return ReturnError(err)
+		}
+		for _, url := range strings.Split(builder.String(), " ") {
+			if strings.TrimSpace(url) == "" {
+				continue
+			}
+			if err := a.tryRestconfDelete(url, client); err != nil {
+				Error(err) // but don't stop execution for this, ignore delete errors
+			}
+		}
+	}
+	return nil
+}
+
+func (a *App) insertPkcs12(vrf VrfWithCryptoSlices, client *http.Client) error {
+	for _, e := range vrf.Endpoints {
+		if err := a.tryRestconfRequest("POST", "Cisco-IOS-XE-rpc:crypto", `{
+		"input": {
+			"pki":{
+				"import": {
+					"pkcs12": "http://10.69.0.1/pkcs12/`+strconv.Itoa(int(e.ID))+`",
+					"name-drop-node-name": "hardware_certs`+strconv.Itoa(int(e.ID))+`",
+					"password": "`+e.Authentication.PSK+`"
+				}
+			}
+		}
+		}`, client); err != nil {
+			return ReturnError(err)
+		}
+	}
+	return nil
+}
+
+func endpointSubsets(vrf Vrf) ([]Endpoint, []Endpoint) {
+	pskEndpoints := []Endpoint{}
+	for _, e := range vrf.Endpoints {
+		if e.Authentication.Type == "psk" {
+			pskEndpoints = append(pskEndpoints, e)
+		}
+	}
+
+	certsEndpoints := []Endpoint{}
+	for _, e := range vrf.Endpoints {
+		if e.Authentication.Type == "certs" {
+			certsEndpoints = append(certsEndpoints, e)
+		}
+	}
+	return pskEndpoints, certsEndpoints
+}
 
 func (a *App) restconfCreate(vrf Vrf) error {
 	client := &http.Client{
@@ -24,46 +207,35 @@ func (a *App) restconfCreate(vrf Vrf) error {
 		},
 	}
 
-	// Remove NAT-T as 9300X does not support it yet
-	if err := a.tryRestconfDelete("Cisco-IOS-XE-native:native/crypto/ipsec/nat-transparency", client); err != nil {
-		fmt.Println("NAT-T config already removed, skipping", err)
-	}
-
-	cryptoPh1, err := restconfGetCryptoStrings(string(vrf.CryptoPh1))
+	vrfWithSlices := VrfWithCryptoSlices{}
+	vrfWithSlices.Vrf = vrf
+	var err error
+	vrfWithSlices.CryptoPh1Slice, err = restconfGetCryptoStrings(string(vrf.CryptoPh1))
 	if err != nil {
 		return ReturnError(err)
 	}
 
-	cryptoPh2, err := restconfGetCryptoStrings(string(vrf.CryptoPh2))
+	vrfWithSlices.CryptoPh2Slice, err = restconfGetCryptoStrings(string(vrf.CryptoPh2))
 	if err != nil {
 		return ReturnError(err)
 	}
 
-	if err := a.restconfDoProposal(vrf, client, cryptoPh1); err != nil {
-		return ReturnError(err)
-	}
-	if err := a.restconfDoPolicy(vrf, client); err != nil {
-		return ReturnError(err)
-	}
-	if err := a.restconfDoEndpoints(vrf, client, vrf.Endpoints); err != nil {
-		return ReturnError(err)
-	}
-	if err := a.restconfDoProfile(vrf, client); err != nil {
-		return ReturnError(err)
-	}
-	if err := a.restconfDoTransformSet(vrf, cryptoPh2, client); err != nil {
-		return ReturnError(err)
-	}
-	if err := a.restconfDoIpsecProfile(vrf, client, cryptoPh2[len(cryptoPh2)-1]); err != nil {
-		return ReturnError(err)
-	}
-	if err := a.restconfDoTunnels(vrf, client, vrf.Endpoints); err != nil {
-		return ReturnError(err)
-	}
-	if err := a.restconfDoBGP(vrf, client, vrf.Endpoints); err != nil {
-		return ReturnError(err)
+	pskEndpoints, certsEndpoints := endpointSubsets(vrf)
+
+	if len(pskEndpoints) > 0 {
+		if err := a.doTemplateFolderCreate("psk", client, vrfWithSlices, pskEndpoints); err != nil {
+			return ReturnError(err)
+		}
 	}
 
+	if len(certsEndpoints) > 0 {
+		if err := a.insertPkcs12(vrfWithSlices, client); err != nil {
+			return ReturnError(err)
+		}
+		if err := a.doTemplateFolderCreate("certs", client, vrfWithSlices, certsEndpoints); err != nil {
+			return ReturnError(err)
+		}
+	}
 	return nil
 }
 
@@ -73,203 +245,24 @@ func (a *App) restconfDelete(vrf Vrf) error {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	// Ignore delete errors. Sometimes there is a leftover configuration left and some of the calls will return 404.
-	// We just want to make sure that nothing in the configuration will conflict with what we're inserting
-	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/router/bgp=%d", vrf.LocalAs), client); err != nil {
-		Error(err)
-	}
-	for _, e := range vrf.Endpoints {
-		if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/interface/Tunnel=%d", e.ID), client); err != nil {
-			Error(err)
+	pskEndpoints, certsEndpoints := endpointSubsets(vrf)
+
+	if len(pskEndpoints) > 0 {
+		if err := a.doTemplateFolderDelete("psk", client, vrf, pskEndpoints); err != nil {
+			return ReturnError(err)
 		}
 	}
-	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ipsec/profile=%s", vrf.ClientName), client); err != nil {
-		Error(err)
-	}
-	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ipsec/transform-set=%s", vrf.ClientName), client); err != nil {
-		Error(err)
-	}
-	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ikev2/profile=%s", vrf.ClientName), client); err != nil {
-		Error(err)
-	}
-	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ikev2/keyring=%s", vrf.ClientName), client); err != nil {
-		Error(err)
-	}
-	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ikev2/policy=%s", vrf.ClientName), client); err != nil {
-		Error(err)
-	}
-	if err := a.tryRestconfDelete(fmt.Sprintf("Cisco-IOS-XE-native:native/crypto/ikev2/proposal=%s", vrf.ClientName), client); err != nil {
-		Error(err)
+
+	if len(certsEndpoints) > 0 {
+		if err := a.doTemplateFolderDelete("certs", client, vrf, certsEndpoints); err != nil {
+			return ReturnError(err)
+		}
 	}
 	return nil
 }
 
 func (a *App) tryRestconfDelete(path string, client *http.Client) error {
 	return ReturnError(a.tryRestconfRequest("DELETE", path, "", client))
-}
-
-func (a *App) restconfDoProposal(vrf Vrf, client *http.Client, cryptoPh1 []string) error {
-	proposal := `{
-		"proposal": {
-		  "name": "%s",
-		  "encryption": {
-		    "%s": [null]
-		  },
-		  "integrity": {
-		    "%s": [null]
-		  },
-		  "prf": {
-		    "%s": [null]
-		  },
-		  "group": {
-		    "%s": [null]
-		  }
-		}
-	}`
-	proposalData := fmt.Sprintf(proposal, vrf.ClientName, cryptoPh1[0], cryptoPh1[1], cryptoPh1[1], cryptoPh1[2])
-	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ikev2/proposal", proposalData, client); err != nil {
-		return ReturnError(err)
-	}
-	return nil
-}
-
-func (a *App) restconfDoPolicy(vrf Vrf, client *http.Client) error {
-	policy := `{
-		"policy": {
-		  "name": "%s",
-		  "match": {
-			"fvrf": {
-			  "any": [null]
-			}
-		  },
-		  "proposal": {
-		    "proposals": "%s"
-		  }
-		}
-	}`
-	policyData := fmt.Sprintf(policy, vrf.ClientName, vrf.ClientName)
-	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ikev2/policy", policyData, client); err != nil {
-		return ReturnError(err)
-	}
-	return nil
-}
-
-func (a *App) restconfDoEndpoints(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
-
-	peers := make([]string, 0, len(dbEndpoints))
-	for i, Endpoint := range dbEndpoints {
-		if Endpoint.Authentication.Type == "certs" {
-			log.Debugf("skipping a cert endpoint")
-			continue
-		}
-		peer :=
-			`{
-			"name": "%s",
-			"address": {
-			  "ipv4": {
-			    "ipv4-address": "%s"
-			  }
-			},
-			"pre-shared-key": {
-			  "key": "%s"
-			}
-			}`
-		// TODO hw certs
-		peerData := fmt.Sprintf(peer, vrf.ClientName+strconv.Itoa(i), Endpoint.RemoteIPSec, Endpoint.Authentication.PSK)
-		peers = append(peers, peerData)
-	}
-
-	keyring := `{
-		"keyring": {
-		  "name": "%s",
-		  "peer": %s
-		}
-	}`
-	keyringData := fmt.Sprintf(keyring, vrf.ClientName, "["+strings.Join(peers, ",")+"]")
-	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ikev2/keyring", keyringData, client); err != nil {
-		return ReturnError(err)
-	}
-	return nil
-}
-
-func (a *App) restconfDoProfile(vrf Vrf, client *http.Client) error {
-	profile := `{
-		"profile": {
-		  "name": "%s",
-		  "authentication": {
-		    "local": {
-		      "pre-share": {}
-		    },
-		    "remote": {
-		      "pre-share": {}
-		    }
-		  },
-		  "keyring": {
-		    "local": {
-		      "name": "%s"
-		    }
-		  },
-		  "match": {
-		    "identity": {
-		      "remote": {
-			"any": [
-			  null
-			]
-		      }
-		    }
-		  }
-		}
-		}`
-	profileData := fmt.Sprintf(profile, vrf.ClientName, vrf.ClientName)
-	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ikev2/profile", profileData, client); err != nil {
-		return ReturnError(err)
-	}
-	return nil
-}
-
-func (a *App) restconfDoTransformSet(vrf Vrf, cryptoPh2 []string, client *http.Client) error {
-	// esp: always present
-	// key-bit: when it's gcm or aes
-	keyBit := ""
-	// esp-hmac: when it's not gcm
-	espHmac := ""
-	esp := ""
-	if containsADigit(cryptoPh2[0]) {
-		// this is gcm or aes
-		encFunc := strings.Split(cryptoPh2[0], "-")
-		if len(encFunc) < 3 {
-			return ReturnError(fmt.Errorf("wrong encryption function format: %s", cryptoPh2[0]))
-		}
-		keyBit = fmt.Sprintf(`"key-bit": "%s",`, encFunc[1])
-		esp = fmt.Sprintf("%s-%s", encFunc[0], encFunc[2])
-	} else {
-		esp = cryptoPh2[0]
-	}
-	if !strings.Contains(cryptoPh2[0], "gcm") {
-		espHmac = fmt.Sprintf(`"esp-hmac":"%s",`, cryptoPh2[1])
-	}
-	tunnelOptionName := "tunnel"
-	if os.Getenv("CAF_SYSTEM_NAME") == "cat9300X" {
-		tunnelOptionName = "tunnel-choice"
-	}
-	transformSet := `{
-		"transform-set": {
-		  "tag": "%s",
-		  "esp": "%s",
-		  %s
-		  %s
-		  "mode": {
-		    "%s": [
-		      null
-		    ]
-		  }
-		}
-		}`
-	transformSetData := fmt.Sprintf(transformSet, vrf.ClientName, esp, keyBit, espHmac, tunnelOptionName)
-	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ipsec/transform-set", transformSetData, client); err != nil {
-		return ReturnError(err)
-	}
-	return nil
 }
 
 func containsADigit(str string) bool {
@@ -279,143 +272,6 @@ func containsADigit(str string) bool {
 		}
 	}
 	return false
-}
-
-func (a *App) restconfDoIpsecProfile(vrf Vrf, client *http.Client, cryptoName string) error {
-	ipsecProfile := `{
-		"profile": {
-		  "name": "%s",
-		  "set": {
-		    "ikev2-profile": "%s",
-		    "pfs": {
-		      "group": "%s"
-		    },
-		    "transform-set": [
-		      "%s"
-		    ],
-		    "security-association": {
-		      "lifetime": {
-			"kilobytes": "disable"
-		      }
-		    }
-		  }
-		}
-		}`
-	ipsecProfileData := fmt.Sprintf(ipsecProfile, vrf.ClientName, vrf.ClientName, cryptoName, vrf.ClientName)
-	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/crypto/ipsec/profile", ipsecProfileData, client); err != nil {
-		return ReturnError(err)
-	}
-	return nil
-}
-
-func (a *App) restconfDoTunnels(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
-	for i, Endpoint := range dbEndpoints {
-		if Endpoint.Authentication.Type == "certs" {
-			log.Debugf("skipping a cert endpoint")
-			continue
-		}
-		tunnel := `{
-			"interface": {
-			  "Tunnel": {
-			    "name": %d,
-			    "description": "%s",
-			    "ip": {
-			      "address": {
-				"primary": {
-				  "address": "%s",
-				  "mask": "255.255.255.252"
-				}
-			      }
-			    },
-			    "Cisco-IOS-XE-tunnel:tunnel": {
-			      "source": "%s",
-			      "destination-config": {
-				"ipv4": "%s"
-			      },
-			      "mode": {
-				"ipsec": {
-				  "ipv4": {}
-				}
-			      },
-			      "protection": {
-				"Cisco-IOS-XE-crypto:ipsec": {
-				  "profile-option": {
-				    "name": "%s"
-				  }
-				}
-			      }
-			    }
-			  }
-			}
-			}`
-		tunnelData := fmt.Sprintf(tunnel, Endpoint.ID, vrf.ClientName+strconv.Itoa(i),
-			Endpoint.LocalIP, Endpoint.SourceInterface, Endpoint.RemoteIPSec, vrf.ClientName)
-		if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/interface", tunnelData, client); err != nil {
-			return ReturnError(err)
-		}
-	}
-	return nil
-}
-
-func (a *App) restconfDoBGP(vrf Vrf, client *http.Client, dbEndpoints []Endpoint) error {
-	bgp := `{
-		"bgp": [
-		  {
-		    "id": %d,
-		    "bgp": {
-		      "log-neighbor-changes": true
-		    },
-		    "neighbor": [
-		      %s
-		    ],
-		    "address-family":{
-			"no-vrf":{
-			   "ipv4":[
-			      {
-				 "af-name":"unicast",
-				 "ipv4-unicast":{
-				    "neighbor":[
-					    %s
-				    ],
-				    "redistribute":{
-				       "connected":{}
-				    }
-				 }
-			      }
-			   ]
-			}
-		     }
-		  }
-		]
-	      }`
-	neighbors := []string{}
-	neighbors2 := []string{}
-	neighbor := `{
-		"id": "%s",
-		"remote-as": %d
-	      }`
-	neighbor2 := `{
-		"id":"%s",
-		"activate":[
-		   null
-		]
-	     }`
-	for _, Endpoint := range dbEndpoints {
-		if Endpoint.Authentication.Type == "certs" {
-			log.Debugf("skipping a cert endpoint")
-			continue
-		}
-		if !Endpoint.BGP {
-			continue
-		}
-		neighbors = append(neighbors, fmt.Sprintf(neighbor, Endpoint.PeerIP, Endpoint.RemoteAS))
-		neighbors2 = append(neighbors2, fmt.Sprintf(neighbor2, Endpoint.PeerIP))
-	}
-	bgpData := fmt.Sprintf(bgp, vrf.LocalAs, strings.Join(neighbors, ","), strings.Join(neighbors2, ","))
-	if err := a.tryRestconfPatch("Cisco-IOS-XE-native:native/router/bgp", bgpData, client); err != nil {
-		return ReturnError(err)
-	}
-	return nil
 }
 
 func (a *App) tryRestconfPatch(path, data string, client *http.Client) error {
@@ -436,7 +292,7 @@ func (a *App) tryRestconfRequest(method, path, data string, client *http.Client)
 				fmt.Println("lock denied")
 				continue
 			}
-			fmt.Println("other error encountered")
+			fmt.Println("other error encountered", err.Error())
 			return ReturnError(err)
 		}
 	}
@@ -463,7 +319,7 @@ func (a *App) restconfDoRequest(method, path, data string, client *http.Client) 
 		if err != nil {
 			return ReturnError(err)
 		}
-		return ReturnError(errors.New("call to " + path + " failed (" + strconv.Itoa(resp.StatusCode) + "): " + string(body)))
+		return ReturnError(errors.New(method + " to " + path + " failed (" + strconv.Itoa(resp.StatusCode) + "): " + string(body)))
 	}
 	return nil
 }

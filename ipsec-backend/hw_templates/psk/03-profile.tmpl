@@ -1,0 +1,29 @@
+Cisco-IOS-XE-native:native/crypto/ikev2/profile
+Cisco-IOS-XE-native:native/crypto/ikev2/profile=hardware_psk
+{
+        "profile": {
+                "name": "hardware_psk",
+                "authentication": {
+                "local": {
+                "pre-share": {}
+                },
+                "remote": {
+                "pre-share": {}
+                }
+                },
+                "keyring": {
+                "local": {
+                "name": "hardware_psk"
+                }
+                },
+                "match": {
+                "identity": {
+                "remote": {
+                "any": [
+                        null
+                ]
+                }
+                }
+                }
+        }
+}

@@ -1,0 +1,35 @@
+Cisco-IOS-XE-native:native/crypto/ikev2/profile
+{{ range $index, $endpoint := .EndpointSubset }}Cisco-IOS-XE-native:native/crypto/ikev2/profile=hardware_certs{{$endpoint.ID}} {{end}}
+{
+  "Cisco-IOS-XE-crypto:profile": [
+  {{ range $index, $endpoint := .EndpointSubset }}
+    {
+      "name": "hardware_certs{{ $endpoint.ID }}",
+      "authentication": {
+        "local": {
+          "rsa-sig": [null]
+        },
+        "remote": {
+          "rsa-sig": [null]
+        }
+      },
+      "identity": {
+        "local": {
+          "dn": [null]
+        }
+      },
+      "match": {
+        "identity": {
+          "remote": {
+            "any": [null]
+          }
+        }
+      },
+      "pki": {
+        "trustpoint": "hardware_certs{{ $endpoint.ID }}"
+      }
+    }
+    {{ if (notEndOfSlice $.EndpointSubset $index) }},{{ end }}
+    {{ end }}
+  ]
+}

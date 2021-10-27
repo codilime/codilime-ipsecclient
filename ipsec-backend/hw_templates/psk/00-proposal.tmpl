@@ -1,0 +1,19 @@
+Cisco-IOS-XE-native:native/crypto/ikev2/proposal
+Cisco-IOS-XE-native:native/crypto/ikev2/proposal=hardware_psk
+{
+   "proposal":{
+      "name":"hardware_psk",
+      "encryption":{
+         "{{ index .CryptoPh1Slice 0 }}":[null]
+      },
+      "integrity":{
+         "{{ index .CryptoPh1Slice 1 }}":[null]
+      },
+      "prf":{
+         "{{ index .CryptoPh1Slice 1 }}":[null]
+      },
+      "group":{
+         "{{ index .CryptoPh1Slice 2 }}":[null]
+      }
+   }
+}
