@@ -1,11 +1,13 @@
 #!/usr/bin/python3
-import requests, time, subprocess, sys, urllib3
+import requests, time, subprocess, sys, urllib3, atexit
 
-def my_except_hook(exctype, value, traceback):
-    api_process.terminate()
-    net_process.terminate()
-    sys.__excepthook__(exctype, value, traceback)
-sys.excepthook = my_except_hook
+@atexit.register
+def my_except_hook():
+    try:
+        api_process.terminate()
+        net_process.terminate()
+    except NameError:
+        pass
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -27,8 +29,10 @@ while True:
         print("Waiting for CSR-VM: No route to CSR-VM")
         time.sleep(5)
         continue
-    else:
+    except Exception as e:
         print("UNKNOWN EXCEPTION")
+        print(e)
+        raise e
 
 api_process = subprocess.Popen('./run_api.sh', shell=True)
 net_process = subprocess.Popen('./run_net.sh', shell=True)
@@ -38,11 +42,6 @@ time.sleep(4)
 if (subprocess.run('ansible-playbook ./ipsec-backend/ansible/psk/playbook.yml', shell=True).returncode or
     subprocess.run('ansible-playbook ./ipsec-backend/ansible/x509/playbook.yml', shell=True).returncode):
     subprocess.run('docker exec -it sico_api /bin/sh -c "cat /tmp/*"', shell=True)
-    api_process.terminate()
-    net_process.terminate()
     sys.exit(1)
-
-api_process.terminate()
-net_process.terminate()
 
 subprocess.run('virsh -c qemu:///system destroy csr_vm; virsh -c qemu:///system undefine csr_vm', shell=True)

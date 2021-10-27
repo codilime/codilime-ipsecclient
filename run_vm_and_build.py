@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import  subprocess, sys, argparse
+import  subprocess, sys, argparse, atexit
 
 parser = argparse.ArgumentParser()
 parser.add_argument('csr_vm', nargs='?', type=str, default="csr1000v-universalk9.17.03.03-serial.qcow2",
@@ -10,11 +10,13 @@ parser.add_argument('csr_config', nargs='?', type=str, default="csr_config.iso",
 
 args = parser.parse_args()
 
-def my_except_hook(exctype, value, traceback):
-    api_build_process.terminate()
-    net_build_process.terminate()
-    sys.__excepthook__(exctype, value, traceback)
-sys.excepthook = my_except_hook
+@atexit.register
+def my_except_hook():
+    try:
+        api_build_process.terminate()
+        net_build_process.terminate()
+    except NameError:
+        pass
 
 subprocess.run('docker stop sico_api', shell=True)
 subprocess.run('docker stop sico_net', shell=True)
@@ -40,7 +42,7 @@ if csr_vm.returncode == 1:
     csr_vm = subprocess.run('virsh -c qemu:///system destroy csr_vm; virsh -c qemu:///system undefine csr_vm', shell=True)
     csr_vm = subprocess.run(run_vm)
     if csr_vm.returncode == 1:
-        sys.exit("csr vm unable to create")
+        sys.exit("Unable to run CSR-VM")
 
 api_build_process = subprocess.Popen('docker build -t sico_api -f sico_api.dockerfile .', shell=True)
 net_build_process = subprocess.Popen('docker build -t sico_net -f sico_net.dockerfile .', shell=True)
