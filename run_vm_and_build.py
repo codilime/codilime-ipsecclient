@@ -1,5 +1,9 @@
 #!/usr/bin/python3
-import  subprocess, sys, argparse
+import  subprocess, sys, argparse, time
+
+while True:
+    print("Waiting TEST!!!!!!")
+    time.sleep(5)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('csr_vm', nargs='?', type=str, default="csr1000v-universalk9.17.03.03-serial.qcow2",

@@ -35,6 +35,7 @@ time.sleep(4)
 
 if (subprocess.run('ansible-playbook ./ipsec-backend/ansible/psk/playbook.yml', shell=True).returncode or
     subprocess.run('ansible-playbook ./ipsec-backend/ansible/x509/playbook.yml', shell=True).returncode):
+    subprocess.run('docker exec -it sico_api /bin/sh -c "cat /tmp/*"', shell=True)
     api_process.terminate()
     net_process.terminate()
     sys.exit(1)
