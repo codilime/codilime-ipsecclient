@@ -35,9 +35,9 @@ RUN apk add --no-cache nginx gettext supervisor curl sqlite tzdata
 
 #API
 RUN mkdir -p /iox_data/appdata
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 COPY ipsec-backend/templates /templates
 COPY ipsec-backend/hw_templates /hw_templates
-ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 COPY --from=middleware-build /usr/src/app/ipsec_backend /usr/local/sbin/ipsec_api
 COPY docker/api.ini /etc/supervisor.d/
 

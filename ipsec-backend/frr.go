@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"strconv"
+	"strings"
+	"text/template"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -19,16 +22,21 @@ func (f *FileGenerator) storeFRRConfig(tmpFile string) error {
 }
 
 func (f *FileGenerator) generateFRRConfig(vrf Vrf) error {
-	log.Debugf("generating frr config")
-	frrConfig := fmt.Sprintf("router bgp %d vrf %s\n  no bgp ebgp-requires-policy\n", vrf.LocalAs, "vrf-"+strconv.Itoa(int(vrf.ID)))
-	for _, endpoint := range vrf.Endpoints {
-		frrConfig += fmt.Sprintf("  neighbor %s remote-as external\n", endpoint.PeerIP)
+	bytes, err := ioutil.ReadFile(templatesFolder + "frr.template")
+	if err != nil {
+		return ReturnError(err)
 	}
-	frrConfig +=
-		`  address-family ipv4 unicast
-    redistribute connected
-  exit-address-family`
-	return ReturnError(f.storeFRRConfig(frrConfig))
+	t, err := template.New("frr").Parse(string(bytes))
+	if err != nil {
+		return ReturnError(err)
+	}
+	builder := strings.Builder{}
+	if err = t.Execute(&builder, vrf); err != nil {
+		return ReturnError(err)
+	}
+	template := builder.String()
+	log.Debugf("generated frr template:\n%s", template)
+	return ReturnError(f.storeFRRConfig(template))
 }
 
 func (f *FileGenerator) deleteFRRConfig(vrf Vrf) error {
