@@ -11,9 +11,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def main():
-    run_ansible_test_cases()
-    terminate_app_processes()
     run_python_test_cases()
+    terminate_app_processes()
+    run_ansible_test_cases()
     terminate_app_processes()
 
 
