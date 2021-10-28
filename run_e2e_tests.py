@@ -51,7 +51,7 @@ def run_ansible_test_cases():
 
 def run_python_test_cases():
     run_app_and_check()
-    if (subprocess.run('./test/tun_test.sh', shell=True).returncode):
+    if (subprocess.run('./test/run_test.sh', shell=True).returncode):
         sys.exit(1)
 
 
