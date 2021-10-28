@@ -166,8 +166,8 @@ def test_get():
         assert r.status_code < 400
     result = json.loads(r.text)
     if ordered(result) != ordered(get_template):
-        log.error(get_template)
-        log.error(result)
+        log.error(ordered(get_template))
+        log.error(ordered(result))
         assert False
 
 def test_delete():

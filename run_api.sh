@@ -11,7 +11,7 @@ docker network create \
                --subnet=10.69.0.0/24 \
                ipsec || true
 
-docker run --name sico_api \
+exec docker run --name sico_api \
         --mount type=volume,source=ipsec,destination=/opt/ipsec/ \
         --mount type=volume,source=frr,destination=/opt/frr/ \
         --mount type=volume,source=super_net,destination=/opt/super_net/ \

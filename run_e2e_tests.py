@@ -52,6 +52,7 @@ def run_ansible_test_cases():
 def run_python_test_cases():
     run_app_and_check()
     if (subprocess.run('./test/run_test.sh', shell=True).returncode):
+        subprocess.run('docker exec -it sico_api /bin/sh -c "cat /tmp/*"', shell=True) # Fix this on merge!
         sys.exit(1)
 
 
@@ -65,6 +66,8 @@ def run_app_and_check():
 def terminate_app_processes():
     for process in app_processes:
         process.terminate()
+        process.communicate()
+    app_processes.clear()
 
 
 if __name__ == "__main__":
