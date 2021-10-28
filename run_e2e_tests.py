@@ -9,6 +9,14 @@ def my_except_hook():
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+
+def main():
+    run_ansible_test_cases()
+    terminate_app_processes()
+    run_python_test_cases()
+    terminate_app_processes()
+
+
 def run_ansible_test_cases():
     headers = {
         'Accept': 'application/yang-data+json',
@@ -37,16 +45,14 @@ def run_ansible_test_cases():
 
     if (subprocess.run('ansible-playbook ./ipsec-backend/ansible/psk/playbook.yml', shell=True).returncode or
         subprocess.run('ansible-playbook ./ipsec-backend/ansible/x509/playbook.yml', shell=True).returncode):
-        subprocess.run('docker exec -it sico_api /bin/sh -c "cat /tmp/*"', shell=True)
+        subprocess.run('docker exec -it sico_api /bin/sh -c "cat /tmp/*"', shell=True) # Fix this on merge!
         sys.exit(1)
-
-    subprocess.run('virsh -c qemu:///system destroy csr_vm; virsh -c qemu:///system undefine csr_vm', shell=True)
 
 
 def run_python_test_cases():
     run_app_and_check()
-
-    subprocess.run('./test/tun_test.sh', shell=True)
+    if (subprocess.run('./test/tun_test.sh', shell=True).returncode):
+        sys.exit(1)
 
 
 def run_app_and_check():
@@ -59,13 +65,6 @@ def run_app_and_check():
 def terminate_app_processes():
     for process in app_processes:
         process.terminate()
-
-
-def main():
-    run_ansible_test_cases()
-    terminate_app_processes()
-    run_python_test_cases()
-    terminate_app_processes()
 
 
 if __name__ == "__main__":
