@@ -22,3 +22,11 @@ The app should be available on http://localhost:80
 ## running API unit tests
 
 `./run_api_ut.sh`
+
+## additional scripts
+
+Run csr-vm and build the dockers.  
+`./run_vm_and_build.py <path to csr-vm image> <path to csr_config.iso>`
+
+Run e2e tests along with ansible. Script will be waiting for csr-vm.  
+`./run_e2e_tests.py`

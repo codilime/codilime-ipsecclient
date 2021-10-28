@@ -4,7 +4,7 @@ set -e
 
 docker rm sico_net || true 
 
-docker run --cap-add=NET_ADMIN \
+exec docker run --cap-add=NET_ADMIN \
         --name sico_net \
         --mount type=volume,source=ipsec,destination=/opt/ipsec/ \
         --mount type=volume,source=frr,destination=/opt/frr/ \
