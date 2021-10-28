@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Stop CSR-VM') {
             steps {
-                sh 'virsh destroy csr_vm; virsh undefine csr_vm'
+                sh 'virsh -c qemu:///system destroy csr_vm; virsh -c qemu:///system undefine csr_vm'
             }
         }
     }
