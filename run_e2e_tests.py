@@ -23,7 +23,7 @@ def run_python_test_cases():
     run_app()
 
     if subprocess.run('./test/run_test.sh', shell=True).returncode:
-        subprocess.run('docker exec -it sico_api /bin/sh -c "cat /opt/logs/api.log"', shell=True)
+        subprocess.run('docker exec sico_api /bin/sh -c "cat /opt/logs/api.log"', shell=True)
         sys.exit(1)
 
 
@@ -34,7 +34,7 @@ def run_ansible_test_cases():
 
     if (subprocess.run('ansible-playbook ./ipsec-backend/ansible/psk/playbook.yml', shell=True).returncode or
         subprocess.run('ansible-playbook ./ipsec-backend/ansible/x509/playbook.yml', shell=True).returncode):
-        subprocess.run('docker exec -it sico_api /bin/sh -c "cat /opt/logs/api.log"', shell=True)
+        subprocess.run('docker exec sico_api /bin/sh -c "cat /opt/logs/api.log"', shell=True)
         sys.exit(1)
 
 
@@ -63,8 +63,8 @@ def wait_for_sico_api():
 def wait_for_sico_net():
     while True:
         print("waiting for sico_net...")
-        if(not subprocess.run('docker exec -it sico_net /bin/sh -c "ls \"/opt/super_net/supervisord.sock\""', shell=True).returncode and
-           not subprocess.run('docker exec -it sico_net /bin/sh -c "ls \"/opt/ipsec/conf/charon.vici\""', shell=True).returncode):
+        if(not subprocess.run('docker exec sico_net /bin/sh -c "ls \"/opt/super_net/supervisord.sock\""', shell=True).returncode and
+           not subprocess.run('docker exec sico_net /bin/sh -c "ls \"/opt/ipsec/conf/charon.vici\""', shell=True).returncode):
             return
         time.sleep(3)
 
