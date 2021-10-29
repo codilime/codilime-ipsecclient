@@ -8,7 +8,6 @@ const OUTPUT_PATH = path.resolve(__dirname, './dist');
 
 module.exports = {
   entry: path.resolve(__dirname, './src/index.tsx'),
-  devtool: 'inline-source-map',
   module: {
     rules: [
       {
@@ -44,6 +43,11 @@ module.exports = {
       },
       { test: /\.(woff|woff2|eot|ttf)$/, use: ['url-loader?limit=100000'] }
     ]
+  },
+  performance: {
+    hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000
   },
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],

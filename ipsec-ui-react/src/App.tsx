@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, useLayoutEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { MainLayout } from 'layout/';
 import { useInitData } from 'hooks/';
@@ -8,11 +8,11 @@ import 'style/global.scss';
 const App: FC = () => {
   const { fetchVrfData, fetchCerts, loading } = useInitData();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     fetchCerts();
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!loading) fetchVrfData();
   }, [loading]);
 
