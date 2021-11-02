@@ -79,13 +79,6 @@ func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
 	return endpoints, nil
 }
 
-func normalizeAddress(addr string) string {
-	if addr == "%any" {
-		return "0.0.0.0"
-	}
-	return addr
-}
-
 func GetStrongswanSingleState(n string) (*sico_yang.SicoIpsec_Api_Monitoring, error) {
 	name := strings.Replace(n, "-", "_", 1)
 	statuses, err := GetStrongswanState()
@@ -98,8 +91,8 @@ func GetStrongswanSingleState(n string) (*sico_yang.SicoIpsec_Api_Monitoring, er
 	for k, v := range statuses {
 		if strings.Contains(k, name) {
 			ret.Endpoint[v.ID] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
-				LocalIp: stringPointer(normalizeAddress(v.localAddr)),
-				PeerIp:  stringPointer(normalizeAddress(v.remoteAddr)),
+				LocalIp: stringPointer(v.localAddr),
+				PeerIp:  stringPointer(v.remoteAddr),
 				Status:  stringPointer(normalizeStatus(v.status)),
 				Id:      uint32Pointer(v.ID),
 			}

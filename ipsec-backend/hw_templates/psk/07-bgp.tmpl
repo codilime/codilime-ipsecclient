@@ -23,14 +23,35 @@ Cisco-IOS-XE-native:native/router/bgp={{ .Vrf.LocalAs }}
                                 "af-name":"unicast",
                                 "ipv4-unicast":{
                                 "neighbor":[
-                                {{ range $index, $endpoint := .BGPEndpointSubset }}
+                                {{ range $index, $endpoint := .BGPEndpoints4 }}
                                         {
                                                 "id":"{{ $endpoint.PeerIP }}",
                                                 "activate":[
                                                 null
                                                 ]
                                         }
-                                {{ if (notEndOfSlice $.BGPEndpointSubset $index) }},{{ end }}
+                                {{ if (notEndOfSlice $.BGPEndpoints4 $index) }},{{ end }}
+                                {{ end }}
+                                ],
+                                "redistribute":{
+                                "connected":{}
+                                }
+                                }
+                        }
+                        ],
+                        "ipv6":[
+                        {
+                                "af-name":"unicast",
+                                "ipv6-unicast":{
+                                "neighbor":[
+                                {{ range $index, $endpoint := .BGPEndpoints6 }}
+                                        {
+                                                "id":"{{ $endpoint.PeerIP }}",
+                                                "activate":[
+                                                null
+                                                ]
+                                        }
+                                {{ if (notEndOfSlice $.BGPEndpoints6 $index) }},{{ end }}
                                 {{ end }}
                                 ],
                                 "redistribute":{
