@@ -7,7 +7,7 @@
   - name: delete a previous software vrf if exists
     ignore_errors: yes
     uri:
-      url: http://localhost/restconf/data/sico-ipsec:api/vrf=3
+      url: http://{{ host }}/restconf/data/sico-ipsec:api/vrf=3
       method: DELETE
       force_basic_auth: yes
       user: "{{ sico_username }}"
@@ -20,7 +20,7 @@
 
   - name: create a software vrf
     uri:
-      url: http://localhost/restconf/data/sico-ipsec:api/vrf
+      url: http://{{ host }}/restconf/data/sico-ipsec:api/vrf
       method: POST
       status_code: [200, 201]
       force_basic_auth: yes

@@ -1,105 +1,89 @@
 #!/usr/bin/python3
-import requests, time, subprocess, sys, urllib3, atexit
+import argparse, subprocess, sys, urllib3, atexit
 
-app_processes = []
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--csr-vm", action="store_true", help="run tests with csr vm")
+parser.add_argument(
+    "-k",
+    nargs=1,
+    type=str,
+    metavar="EXPRESSION",
+    help="pytest flag: only run tests which match the given substring expression. \
+        Example: -k 'test_method or test_other' matches all test functions and classes whose name contains'test_method'",
+)
+args = parser.parse_args()
+
+processes = []
+
+
 @atexit.register
 def my_except_hook():
-    for process in app_processes:
+    for process in processes:
         process.terminate()
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-basicAuth = ('admin', 'cisco123')
-
 
 def main():
-    run_python_test_cases()
-    terminate_app_processes()
-    run_ansible_test_cases()
-    terminate_app_processes()
-
-
-def run_python_test_cases():
+    subprocess.run(
+        "exec docker build -f ./test/Dockerfile -t sico_test .", shell=True, check=True
+    )
     run_app()
-
-    if subprocess.run('./test/run_test.sh', shell=True).returncode:
-        subprocess.run('docker exec sico_api /bin/sh -c "cat /opt/logs/api.log"', shell=True)
-        sys.exit(1)
-
-
-def run_ansible_test_cases():
-    wait_for_csr_vm()
-    run_app()
-    wait_for_app()
-
-    if (subprocess.run('ansible-playbook ./ipsec-backend/ansible/psk/playbook.yml', shell=True).returncode or
-        subprocess.run('ansible-playbook ./ipsec-backend/ansible/x509/playbook.yml', shell=True).returncode):
-        subprocess.run('docker exec sico_api /bin/sh -c "cat /opt/logs/api.log"', shell=True)
-        sys.exit(1)
+    run_dev_env()
+    run_test_cases()
+    terminate_app_processes()
 
 
 def run_app():
-    app_processes.append(subprocess.Popen('exec ./run_api.sh', shell=True))
-    app_processes.append(subprocess.Popen('exec ./run_net.sh', shell=True))
+    processes.append(
+        subprocess.Popen(
+            "exec ./run_api.sh",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+    )
+    processes.append(
+        subprocess.Popen(
+            "exec ./run_net.sh",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+    )
 
 
-def wait_for_app():
-    wait_for_sico_api()
-    wait_for_sico_net()
+def run_dev_env():
+    processes.append(
+        subprocess.Popen(
+            "exec docker-compose -f ./dev-env/docker-compose.yml up",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+    )
 
 
-def wait_for_sico_api():
-    while True:
-        print("waiting for sico_api...")
-        try:
-            r = requests.get("http://localhost/restconf/data/sico-ipsec:api/vrf", auth=basicAuth)
-            if r.status_code < 400:
-                return
-        except:
-            time.sleep(3)
-            continue
-
-
-def wait_for_sico_net():
-    while True:
-        print("waiting for sico_net...")
-        if(not subprocess.run('docker exec sico_net /bin/sh -c "ls \"/opt/super_net/supervisord.sock\""', shell=True).returncode and
-           not subprocess.run('docker exec sico_net /bin/sh -c "ls \"/opt/ipsec/conf/charon.vici\""', shell=True).returncode):
-            return
-        time.sleep(3)
-
-
-def wait_for_csr_vm():
-    headers = {
-        'Accept': 'application/yang-data+json',
-        'Content-Type': 'application/yang-data+json',
-    }
-    proposal_data = '{"proposal": {"name": "hardware","encryption": {"aes-cbc-128": [null]},"integrity": {"sha256": [null]},"prf": {"sha256": [null]},"group": {"fourteen": [null]}}}'
-    proposal_url = 'https://10.69.0.10/restconf/data/Cisco-IOS-XE-native:native/crypto/ikev2/proposal'
-
-    while True:
-        try:
-            response = requests.patch(proposal_url, headers=headers, data=proposal_data, verify=False, auth=basicAuth)
-            if response.status_code == 204:
-                print("CSR-VM is ready")
-                return
-            print("Waiting for CSR-VM: " + str(response))
-            time.sleep(5)
-        except requests.ConnectionError:
-            print("Waiting for CSR-VM: No route to CSR-VM")
-            time.sleep(5)
-            continue
-        except Exception as e:
-            print("UNKNOWN EXCEPTION")
-            print(e)
-            raise e
+def run_test_cases():
+    run_command = ""
+    if args.csr_vm:
+        run_command = "exec ./test/run_test.sh"
+    else:
+        run_command = "exec ./test/run_test.sh -k 'not hardware'"
+    if subprocess.run(run_command, shell=True).returncode:
+        sys.exit(1)
 
 
 def terminate_app_processes():
-    for process in app_processes:
+    print("terminate app process")
+    for process in processes:
         process.terminate()
+        print("waiting...")
         process.communicate()
-    app_processes.clear()
+    processes.clear()
+    print("done")
 
 
 if __name__ == "__main__":

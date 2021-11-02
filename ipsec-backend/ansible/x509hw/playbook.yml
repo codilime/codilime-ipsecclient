@@ -4,10 +4,10 @@
   vars_files: ../vars.yml
   tasks:
 
-  - name: template the configuration json
-    ansible.builtin.template:
-      src: sw_create.json.j2
-      dest: sw_create.json
+  # - name: template the configuration json
+  #   ansible.builtin.template:
+  #     src: sw_create.json.j2
+  #     dest: sw_create.json
 
   - name: patch the hardware vrf
     uri:
