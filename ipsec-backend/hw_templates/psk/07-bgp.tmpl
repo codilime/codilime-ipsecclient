@@ -54,7 +54,7 @@ Cisco-IOS-XE-native:native/router/bgp={{ .Vrf.LocalAs }}
                                 {{ if (notEndOfSlice $.BGPEndpoints6 $index) }},{{ end }}
                                 {{ end }}
                                 ],
-                                "redistribute":{
+                                "redistribute-v6":{
                                 "connected":{}
                                 }
                                 }

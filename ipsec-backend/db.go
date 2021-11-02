@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"gorm.io/datatypes"
@@ -55,6 +56,10 @@ type Endpoint struct {
 	BGP             bool         `json:"bgp"`
 	SourceInterface string       `json:"source_interface"`
 	Authentication  EndpointAuth `json:"authentication"`
+}
+
+func (e *Endpoint) IsIpv6() bool {
+	return strings.Contains(e.LocalIP, ":") && strings.Contains(e.PeerIP, ":")
 }
 
 type Vrf struct {
