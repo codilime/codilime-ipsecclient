@@ -38,7 +38,17 @@ export const Vlan: FC<VlanType> = ({ setValue, errorSchema }) => {
         </table>
         <div className="vlan__box">
           <VlanInput
-            {...{ name: 'vlan', text: 'Vlan', type: 'number', onChange: handleChangeInputValue, value: vlanInterface.vlan, error, tooltip: 'VLAN number (1-4094) that will be terminated inside APP' }}
+            {...{
+              name: 'vlan',
+              text: 'Vlan',
+              type: 'number',
+              placeholder: '0',
+              onChange: handleChangeInputValue,
+              value: vlanInterface.vlan || '',
+              error,
+              min: '0',
+              tooltip: 'VLAN number (1-4094) that will be terminated inside APP'
+            }}
           />
           <VlanInput
             {...{
@@ -46,6 +56,7 @@ export const Vlan: FC<VlanType> = ({ setValue, errorSchema }) => {
               text: 'Lan IP',
               onChange: handleChangeInputValue,
               value: vlanInterface.lan_ip,
+              placeholder: '10.10.10.10/32',
               error,
               tooltip: 'Local address (IPv4/IPv6) and mask for VLAN interface inside application (i.e 10.0.0.1/24 or fc00::c0d1:1/64)'
             }}

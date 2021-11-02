@@ -22,7 +22,9 @@ export const Field: FC<FieldType> = ({ text, type, name, placeholder, register, 
       [className]: className
     })}
   >
-    <label className={classNames('field__label', { field__label__checkbox: type === 'checkbox' })}>{text}</label>
+    <label htmlFor={name} className={classNames('field__label', { field__label__checkbox: type === 'checkbox' })}>
+      {text}
+    </label>
     <Input {...{ type, name, placeholder, register, setting, validate, vlan }} />
     {error && <p className={classNames('field__error', { field__error__setting: setting })}>{error.message}</p>}
   </div>

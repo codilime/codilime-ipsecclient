@@ -19,7 +19,7 @@ export const Input: FC<InputTypes> = ({ type, name, placeholder, register, setti
   return (
     <input
       className={classNames('field__input', { input__checkbox: type === 'checkbox', field__input__setting: setting, field__vlan: vlan })}
-      {...{ type, name, placeholder, readOnly, onKeyPress: validated, ...register }}
+      {...{ id: name, type, name, placeholder, readOnly, onKeyPress: validated, ...register }}
     />
   );
 };
