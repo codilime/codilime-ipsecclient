@@ -10,9 +10,17 @@ import './styles.scss';
 export const SideBar: FC = () => {
   const { vrf } = useGetVrfs();
   const { currentLocation } = useGetLocation();
+
+  const listVrf = vrf.length
+    ? vrf.sort((a, b): any => {
+        if (a.id && b.id) {
+          return a.id - b.id;
+        }
+      })
+    : vrf;
   
   const listContext = vrf ? (
-    vrf.map(({ client_name, id }) => (
+    listVrf.map(({ client_name, id }) => (
       <li className={classNames('sideBar__eachVrf', { sideBar__eachVrf__active: id == parseInt(currentLocation) })} key={id}>
         <Link to={`/vrf/${id}`} className={classNames('sideBar__link')}>
           {client_name} {id === parseInt(HardwareId) && <IoHardwareChip className="sideBar__icon" />}
