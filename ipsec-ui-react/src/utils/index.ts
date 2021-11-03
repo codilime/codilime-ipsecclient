@@ -31,9 +31,7 @@ export function handleTakeTime() {
   return dateTime;
 }
 
-export const pkcs12ToBase64 = (el: any) => {
-  return util.encode64(el);
-};
+export const pkcs12ToBase64 = (el: any) => util.encode64(el);
 
 export const decodeX509 = (x509: string) => {
   if (x509 !== '' && x509.includes('CERTIFICATE')) {
