@@ -1,0 +1,40 @@
+Cisco-IOS-XE-native:native/interface
+{{ range $index, $endpoint := .EndpointSubset }}Cisco-IOS-XE-native:native/interface/Tunnel={{$endpoint.ID}} {{end}}
+{
+        "interface": [
+        {{ range $index, $endpoint := .EndpointSubset }}
+                {
+                        "Tunnel": {
+                        "name": {{ $endpoint.ID }},
+                        "description": "hardware_certs{{ $index }}",
+                        "ip": {
+                        "address": {
+                        "primary": {
+                                "address": "{{ $endpoint.LocalIP }}",
+                                "mask": "255.255.255.252"
+                        }
+                        }
+                        },
+                        "Cisco-IOS-XE-tunnel:tunnel": {
+                        "source": "{{ $endpoint.SourceInterface }}",
+                        "destination-config": {
+                        "ipv4": "{{ $endpoint.RemoteIPSec }}"
+                        },
+                        "mode": {
+                        "ipsec": {
+                                "ipv4": {}
+                        }
+                        },
+                        "protection": {
+                        "Cisco-IOS-XE-crypto:ipsec": {
+                                "profile-option": {
+                                "name": "hardware_certs{{ $endpoint.ID }}"
+                                }
+                        }
+                        }
+                        }
+                        }
+                } {{ if (notEndOfSlice $.EndpointSubset $index) }},{{ end }}
+        {{ end }}
+        ]
+}
