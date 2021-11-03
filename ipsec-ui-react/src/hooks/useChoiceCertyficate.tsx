@@ -3,6 +3,7 @@ import { EndpointInput, Button, UploadCertificates } from 'common/';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
 import { EndpointsType } from 'interface/index';
+import { useVrfLogic } from 'hooks/';
 import { decodeX509 } from 'utils/';
 
 interface HookType {
@@ -12,15 +13,24 @@ interface HookType {
   endpoints: EndpointsType;
 }
 
+interface fileNameType {
+  key: string;
+  certificate: string;
+  peerCertificate: string;
+  pkcs12_base64: string;
+}
+
 export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: HookType) => {
-  const [fileName, setFileName] = useState<{ key: string; certificate: string; peerCertificate: string }>({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' });
+  const [fileName, setFileName] = useState<fileNameType>({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File', pkcs12_base64: 'Attach File' });
   const {
     authentication: { type, psk, private_key, local_cert, remote_cert }
   } = endpoints;
+  const { hardware } = useVrfLogic();
 
   const key = useRef<HTMLInputElement>(null);
   const certificate = useRef<HTMLInputElement>(null);
   const peerCertificate = useRef<HTMLInputElement>(null);
+  const pkcs12 = useRef<HTMLInputElement>(null);
 
   const handleUploadFile = (name: string) => {
     switch (name) {
@@ -30,6 +40,8 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
         return certificate.current?.click();
       case 'remote_cert':
         return peerCertificate.current?.click();
+      case 'pkcs12':
+        return pkcs12.current?.click();
       default:
         return;
     }
@@ -58,7 +70,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
     const { name, value } = e.target;
     switch (name) {
       case 'psk':
-        setFileName({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' });
+        setFileName({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File', pkcs12_base64: 'Attach File' });
         return setEndpoint((prev) => ({
           ...prev,
           authentication: {
@@ -66,6 +78,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
             private_key: '',
             local_cert: '',
             remote_cert: '',
+            pkcs12_base64: '',
             [name]: value
           }
         }));
@@ -75,6 +88,8 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
         return handleChangeValueFile(e, setEndpoint, certificate);
       case 'remote_cert':
         return handleChangeValueFile(e, setEndpoint, peerCertificate);
+      case 'pkcs12_base64':
+        return handleChangeValueFile(e, setEndpoint, pkcs12);
       default:
         return;
     }
@@ -143,38 +158,70 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
 
   const displayCerts = UploadCaSchema.map((ca) => <UploadCertificates key={ca.name} {...ca} />);
 
+  const initOptions = (el: any) => {
+    return (
+      <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
+        <div className="table__center">
+          <button className="table__psk__btn" onClick={() => handleChooseAuthentication('psk')}>
+            Enter PSK
+          </button>
+        </div>
+        <span className="table__text">or</span>
+        <div className="table__center">
+          <Button className="table__btn" onClick={() => handleChooseAuthentication('certs')}>
+            X509
+          </Button>
+        </div>
+      </td>
+    );
+  };
+
+  const initPskOption = (el: any) => {
+    return (
+      <td key={el.name} className={classNames('table__column', 'table__psk')}>
+        <EndpointInput {...{ ...el, onChange: handleUpdateEndpoint, edit, error, value: psk }} />
+        <div className="table__iconBox">{edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}</div>
+      </td>
+    );
+  };
+
+  const initCertsOption = (el: any) => {
+    if (hardware) {
+      return (
+        <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
+          <UploadCertificates
+            {...{
+              key: el.name,
+              type: 'file',
+              name: 'pkcs12_base64',
+              label: 'Password',
+              text: fileName.pkcs12_base64,
+              edit,
+              references: key,
+              onChange: handleUpdateEndpoint,
+              handleUploadFile,
+              className: 'table__certificates__hardware'
+            }}
+          />
+          <EndpointInput {...{ ...el, onChange: handleUpdateEndpoint, edit, error, value: psk, hardware }} />
+          {edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}
+        </td>
+      );
+    } else
+      <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
+        {displayCerts}
+        {edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}
+      </td>;
+  };
+
   const handleGeneratePskField = (el: any) => {
     switch (type) {
       case 'psk':
-        return (
-          <td key={el.name} className={classNames('table__column', 'table__psk')}>
-            <EndpointInput {...{ ...el, onChange: handleUpdateEndpoint, edit, error, value: psk }} />
-            <div className="table__iconBox">{edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}</div>
-          </td>
-        );
+        return initPskOption(el);
       case 'certs':
-        return (
-          <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
-            {displayCerts}
-            {edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}
-          </td>
-        );
+        return initCertsOption(el);
       default:
-        return (
-          <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
-            <div className="table__center">
-              <button className="table__psk__btn" onClick={() => handleChooseAuthentication('psk')}>
-                Enter PSK
-              </button>
-            </div>
-            <span className="table__text">or</span>
-            <div className="table__center">
-              <Button className="table__btn" onClick={() => handleChooseAuthentication('certs')}>
-                X509
-              </Button>
-            </div>
-          </td>
-        );
+        return initOptions(el);
     }
   };
 

@@ -108,7 +108,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    &__hardware {
+      width: 80%;
+    }
   }
+
   &__icon {
     position: absolute;
     right: 5px;

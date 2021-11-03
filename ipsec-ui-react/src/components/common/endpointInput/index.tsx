@@ -17,11 +17,18 @@ type ErrorProps = {
 interface EndpointInputTypes extends InputType {
   edit?: boolean;
   error?: keyof ErrorProps | any;
+  hardware?: boolean;
 }
 
-export const EndpointInput: FC<EndpointInputTypes> = ({ type, placeholder, name, value, edit, onChange, onClick, checked, error, references }) => {
+export const EndpointInput: FC<EndpointInputTypes> = ({ type, placeholder, name, value, edit, onChange, onClick, checked, error, references, hardware }) => {
   const { open, handleToggle } = useToggle();
-  const icon = open && edit ? <BsEyeSlashFill className="endpointInput__icon" onClick={handleToggle} /> : <IoEyeSharp className="endpointInput__icon" onClick={handleToggle} />;
+  
+  const icon =
+    open && edit ? (
+      <BsEyeSlashFill className={classNames('endpointInput__icon', { endpointInput__icon__hardware: hardware })} onClick={handleToggle} />
+    ) : (
+      <IoEyeSharp className={classNames('endpointInput__icon', { endpointInput__icon__hardware: hardware })} onClick={handleToggle} />
+    );
 
   const showEyes = type === 'password' && edit ? <>{icon}</> : null;
 
@@ -33,7 +40,8 @@ export const EndpointInput: FC<EndpointInputTypes> = ({ type, placeholder, name,
           endpointInput__active: edit && type !== 'file',
           endpointInput__error: error && error[name],
           endpointInput__radio: type === 'radio',
-          endpointInput__file: type === 'file'
+          endpointInput__file: type === 'file',
+          endpointInput__hardware: hardware
         })}
         {...{ type: open && edit ? 'text' : type, name, placeholder, value, onChange, onClick, onKeyPress: validateDataInput, checked, disabled: !edit, ref: references }}
       />

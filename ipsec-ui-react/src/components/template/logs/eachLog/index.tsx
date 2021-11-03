@@ -46,9 +46,8 @@ export const EachLog: FC<EachLogType> = ({ title, activePopup, log }) => {
     [title]
   );
 
-  const logs = useMemo(() => <LogData {...{ log, loading, autoScroll }} />, [log]);
-  console.log('render');
-  
+  const logs = useMemo(() => <LogData {...{ log, loading, autoScroll }} />, [log, autoScroll]);
+
   return (
     <li className="logs__each">
       {logHeader}
