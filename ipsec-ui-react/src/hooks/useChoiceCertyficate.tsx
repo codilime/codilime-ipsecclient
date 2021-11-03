@@ -4,7 +4,7 @@ import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
 import { EndpointsType } from 'interface/index';
 import { useVrfLogic } from 'hooks/';
-import { decodeX509 } from 'utils/';
+import { decodeX509, pkcs12ToBase64 } from 'utils/';
 
 interface HookType {
   edit: boolean;
@@ -23,7 +23,7 @@ interface fileNameType {
 export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: HookType) => {
   const [fileName, setFileName] = useState<fileNameType>({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File', pkcs12_base64: 'Attach File' });
   const {
-    authentication: { type, psk, private_key, local_cert, remote_cert }
+    authentication: { type, psk, private_key, local_cert, remote_cert, pkcs12_base64 }
   } = endpoints;
   const { hardware } = useVrfLogic();
 
@@ -40,7 +40,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
         return certificate.current?.click();
       case 'remote_cert':
         return peerCertificate.current?.click();
-      case 'pkcs12':
+      case 'pkcs12_base64':
         return pkcs12.current?.click();
       default:
         return;
@@ -52,49 +52,105 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
 
     if (!ref.current?.files) return;
     const reader = new FileReader();
-
-    reader.onload = (e) => {
-      setEndpoint((prev: EndpointsType) => ({
-        ...prev,
-        authentication: {
-          ...prev.authentication,
-          psk: '',
-          [name]: e.target?.result
-        }
-      }));
-    };
-    reader.readAsText(ref.current.files[0]);
+    if (name !== 'pkcs12_base64')
+      reader.onload = (e) => {
+        setEndpoint((prev: EndpointsType) => ({
+          ...prev,
+          authentication: {
+            ...prev.authentication,
+            psk: '',
+            [name]: e.target?.result
+          }
+        }));
+      };
+    if (name === 'pkcs12_base64') {
+      reader.onload = (e) => {
+        const base64 = pkcs12ToBase64(e.target?.result);
+        setEndpoint((prev: EndpointsType) => ({
+          ...prev,
+          authentication: {
+            ...prev.authentication,
+            psk: '',
+            [name]: base64
+          }
+        }));
+      };
+      reader.readAsBinaryString(ref.current.files[0]);
+    }
   };
 
   const handleUpdateEndpoint = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    switch (name) {
-      case 'psk':
-        setFileName({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File', pkcs12_base64: 'Attach File' });
-        return setEndpoint((prev) => ({
-          ...prev,
-          authentication: {
-            ...prev.authentication,
-            private_key: '',
-            local_cert: '',
-            remote_cert: '',
-            pkcs12_base64: '',
-            [name]: value
+    if (hardware) {
+      switch (name) {
+        case 'psk':
+          if (type === 'certs') {
+            return setEndpoint((prev) => ({
+              ...prev,
+              authentication: {
+                ...prev.authentication,
+                private_key: '',
+                local_cert: '',
+                remote_cert: '',
+                [name]: value
+              }
+            }));
+          } else {
+            setFileName((prev) => ({ ...prev, pkcs12_base64: 'Attach File' }));
+            return setEndpoint((prev) => ({
+              ...prev,
+              authentication: {
+                ...prev.authentication,
+                private_key: '',
+                local_cert: '',
+                remote_cert: '',
+                pkcs12_base64: '',
+                [name]: value
+              }
+            }));
           }
-        }));
-      case 'private_key':
-        return handleChangeValueFile(e, setEndpoint, key);
-      case 'local_cert':
-        return handleChangeValueFile(e, setEndpoint, certificate);
-      case 'remote_cert':
-        return handleChangeValueFile(e, setEndpoint, peerCertificate);
-      case 'pkcs12_base64':
-        return handleChangeValueFile(e, setEndpoint, pkcs12);
-      default:
-        return;
-    }
+        case 'pkcs12_base64':
+          return handleChangeValueFile(e, setEndpoint, pkcs12);
+        default:
+          return;
+      }
+    } else
+      switch (name) {
+        case 'psk':
+          setFileName((prev) => ({ ...prev, key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' }));
+          return setEndpoint((prev) => ({
+            ...prev,
+            authentication: {
+              ...prev.authentication,
+              private_key: '',
+              local_cert: '',
+              remote_cert: '',
+              [name]: value
+            }
+          }));
+        case 'private_key':
+          return handleChangeValueFile(e, setEndpoint, key);
+        case 'local_cert':
+          return handleChangeValueFile(e, setEndpoint, certificate);
+        case 'remote_cert':
+          return handleChangeValueFile(e, setEndpoint, peerCertificate);
+        case 'pkcs12_base64':
+          return handleChangeValueFile(e, setEndpoint, pkcs12);
+        default:
+          return;
+      }
   };
-
+  useEffect(() => {
+    if (hardware) {
+      setEndpoint((prev) => ({
+        ...prev,
+        authentication: {
+          ...prev.authentication,
+          psk: ''
+        }
+      }));
+    }
+  }, [type]);
   const handleChooseAuthentication = (name: string) => {
     return setEndpoint((prev) => ({
       ...prev,
@@ -117,11 +173,14 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       const decode = decodeX509(remote_cert);
       if (decode) setFileName((prev) => ({ ...prev, peerCertificate: decode.CN }));
     }
+    if (pkcs12_base64) {
+      setFileName((prev) => ({ ...prev, pkcs12_base64: 'Complete' }));
+    }
   };
 
   useEffect(() => {
     handleUpdateFileName();
-  }, [private_key, local_cert, remote_cert]);
+  }, [private_key, local_cert, remote_cert, pkcs12_base64]);
 
   const UploadCaSchema = [
     {
@@ -197,7 +256,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
               label: 'Password',
               text: fileName.pkcs12_base64,
               edit,
-              references: key,
+              references: pkcs12,
               onChange: handleUpdateEndpoint,
               handleUploadFile,
               className: 'table__certificates__hardware'
@@ -208,10 +267,12 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
         </td>
       );
     } else
-      <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
-        {displayCerts}
-        {edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}
-      </td>;
+      return (
+        <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
+          {displayCerts}
+          {edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}
+        </td>
+      );
   };
 
   const handleGeneratePskField = (el: any) => {

@@ -227,7 +227,8 @@ export const EndpointSchema: EndpointsType = {
     psk: '',
     local_cert: '',
     remote_cert: '',
-    private_key: ''
+    private_key: '',
+    pkcs12_base64:'',
   },
   remote_as: 0,
   source_interface: '',
@@ -235,21 +236,6 @@ export const EndpointSchema: EndpointsType = {
   bgp: false
 };
 
-export const emptyHardwareSchema: EndpointsType = {
-  remote_ip_sec: '',
-  local_ip: '',
-  peer_ip: '',
-  authentication: {
-    type: '',
-    psk: '',
-    local_cert: '',
-    remote_cert: '',
-    private_key: ''
-  },
-  remote_as: 0,
-  source_interface: '',
-  bgp: false
-};
 
 export const endpointInputSchema: EndpointSchemaType[] = [
   { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },

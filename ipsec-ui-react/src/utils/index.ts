@@ -1,4 +1,4 @@
-import { pki } from 'node-forge';
+import { pki, util } from 'node-forge';
 
 export const validateDataInput = (event: any) => {
   const { name } = event.target;
@@ -30,6 +30,10 @@ export function handleTakeTime() {
   const dateTime = currentData + ' ' + time;
   return dateTime;
 }
+
+export const pkcs12ToBase64 = (el: any) => {
+  return util.encode64(el);
+};
 
 export const decodeX509 = (x509: string) => {
   if (x509 !== '' && x509.includes('CERTIFICATE')) {
