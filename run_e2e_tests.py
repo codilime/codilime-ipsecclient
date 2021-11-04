@@ -66,7 +66,7 @@ def run_dev_env():
     )
 
 
-def run_test_cases(run_command):
+def run_test_cases():
     run_command = ""
     if args.csr_vm:
         run_command = "exec ./test/run_test.sh"
