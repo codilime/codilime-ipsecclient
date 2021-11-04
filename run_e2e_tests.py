@@ -31,13 +31,8 @@ def main():
         "exec docker build -f ./test/Dockerfile -t sico_test .", shell=True, check=True
     )
     run_app()
-    if args.csr_vm:
-        run_test_cases("exec ./test/run_test.sh -k 'hardware'")
-    else:
-
-        run_test_cases("exec ./test/run_test.sh -k 'not hardware'")
-    run_test_cases()
     run_dev_env()
+    run_test_cases()
     terminate_app_processes()
 
 
