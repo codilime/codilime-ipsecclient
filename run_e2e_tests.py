@@ -31,8 +31,11 @@ def main():
         "exec docker build -f ./test/Dockerfile -t sico_test .", shell=True, check=True
     )
     run_app()
-    run_dev_env()
-    run_test_cases()
+    if args.csr_vm:
+        run_test_cases("exec ./test/run_test.sh -k 'hardware'")
+    else:
+        run_dev_env()
+        run_test_cases("exec ./test/run_test.sh -k 'not hardware'")
     terminate_app_processes()
 
 
@@ -64,12 +67,7 @@ def run_dev_env():
     )
 
 
-def run_test_cases():
-    run_command = ""
-    if args.csr_vm:
-        run_command = "exec ./test/run_test.sh -k 'hardware'"
-    else:
-        run_command = "exec ./test/run_test.sh -k 'not hardware'"
+def run_test_cases(run_command):
     if subprocess.run(run_command, shell=True).returncode:
         sys.exit(1)
 
