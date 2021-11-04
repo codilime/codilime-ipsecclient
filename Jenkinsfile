@@ -11,12 +11,7 @@ pipeline {
                 sh './run_api_ut.sh'
             }
         }
-        stage('Run e2e tests (without csr-vm)') {
-            steps {
-                sh 'python3 -u run_e2e_tests.py'
-            }
-        }
-        stage('Run e2e tests (with csr-vm)') {
+        stage('Run e2e tests') {
             steps {
                 sh 'python3 -u run_e2e_tests.py --csr-vm'
             }
