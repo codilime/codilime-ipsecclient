@@ -91,7 +91,7 @@ func GetStrongswanSingleState(n string) (*sico_yang.SicoIpsec_Api_Monitoring, er
 	for k, v := range statuses {
 		if strings.Contains(k, name) {
 			ret.Endpoint[v.ID] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
-				LocalIp: stringPointer(v.localAddr),
+				LocalIp: stringPointer(normalizeLocalIP(v.localAddr, v.remoteAddr)),
 				PeerIp:  stringPointer(v.remoteAddr),
 				Status:  stringPointer(normalizeStatus(v.status)),
 				Id:      uint32Pointer(v.ID),

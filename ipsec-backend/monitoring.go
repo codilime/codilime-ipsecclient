@@ -5,6 +5,7 @@ import (
 	"ipsec_backend/sico_yang"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/openconfig/ygot/ygot"
@@ -17,6 +18,16 @@ func normalizeStatus(status string) string {
 	} else {
 		return "down"
 	}
+}
+
+func normalizeLocalIP(localIp, remoteIp string) string {
+	if localIp == "%any" {
+		if strings.Contains(remoteIp, ":") {
+			return "::"
+		}
+		return "0.0.0.0"
+	}
+	return localIp
 }
 
 func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
@@ -95,7 +106,7 @@ func (a *App) getHWMetrics() (*sico_yang.SicoIpsec_Api_Monitoring, error) {
 		remoteIp := identData["remote-endpt-addr"].(string)
 		saStatus := identData["inbound-esp-sa"].(map[string]interface{})["sa-status"].(string)
 		monitoring.Endpoint[uint32(endpointID)] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
-			LocalIp: stringPointer(localIp),
+			LocalIp: stringPointer(normalizeLocalIP(localIp, remoteIp)),
 			PeerIp:  stringPointer(remoteIp),
 			Status:  stringPointer(normalizeStatus(saStatus)),
 			Id:      uint32Pointer(uint32(endpointID)),
