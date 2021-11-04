@@ -60,8 +60,6 @@ def run_dev_env():
         subprocess.Popen(
             "exec docker-compose -f ./dev-env/docker-compose.yml up",
             shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
         )
     )
 
@@ -69,7 +67,7 @@ def run_dev_env():
 def run_test_cases():
     run_command = ""
     if args.csr_vm:
-        run_command = "exec ./test/run_test.sh"
+        run_command = "exec ./test/run_test.sh -k 'hardware'"
     else:
         run_command = "exec ./test/run_test.sh -k 'not hardware'"
     if subprocess.run(run_command, shell=True).returncode:
