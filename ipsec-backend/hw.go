@@ -49,6 +49,9 @@ func (a *App) doTemplateFolderCreate(folderName string, client *http.Client, vrf
 	bgpEndpoints = append(bgpEndpoints, bgpEndpointsIpv6...)
 
 	for _, file := range files {
+		if len(bgpEndpoints) == 0 && strings.Contains(file.Name(), "bgp") {
+			continue // don't to bgp if not needed
+		}
 		bytes, err := ioutil.ReadFile(hwTemplatesDir + "/" + folderName + "/" + file.Name())
 		if err != nil {
 			return ReturnError(err)
