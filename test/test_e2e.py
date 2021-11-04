@@ -100,7 +100,7 @@ def wait_for_dev_env():
 )
 def test_hardware_vrf(json_file):
     wait_for_csr_vm()
-
+    time.sleep(5)
     with open(json_file) as hw_file:
         hw_data = hw_file.read()
         create_response = requests.patch(VRFS_URL + "=1", data=hw_data, auth=basicAuth)
