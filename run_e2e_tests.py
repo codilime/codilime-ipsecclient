@@ -61,7 +61,8 @@ def run_app():
 def run_dev_env():
     processes.append(
         subprocess.Popen(
-            "exec docker-compose -f ./dev-env/docker-compose.yml up", shell=True
+            "exec /usr/bin/docker-compose -f ./dev-env/docker-compose.yml up",
+            shell=True,
         )
     )
 
