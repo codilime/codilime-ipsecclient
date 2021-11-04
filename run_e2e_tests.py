@@ -34,8 +34,10 @@ def main():
     if args.csr_vm:
         run_test_cases("exec ./test/run_test.sh -k 'hardware'")
     else:
-        run_dev_env()
+
         run_test_cases("exec ./test/run_test.sh -k 'not hardware'")
+    run_test_cases()
+    run_dev_env()
     terminate_app_processes()
 
 
@@ -63,13 +65,21 @@ def run_dev_env():
         subprocess.Popen(
             "exec docker-compose -f ./dev-env/docker-compose.yml up",
             shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
         )
     )
 
 
 def run_test_cases(run_command):
-    if subprocess.run(run_command, shell=True).returncode:
-        sys.exit(1)
+    run_command = ""
+    if args.csr_vm:
+        run_command = "exec ./test/run_test.sh"
+    else:
+        run_command = "exec ./test/run_test.sh -k 'not hardware'"
+    returncode = subprocess.run(run_command, shell=True).returncode
+    if returncode:
+        sys.exit(returncode)
 
 
 def terminate_app_processes():
