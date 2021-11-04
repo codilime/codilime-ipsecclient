@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import argparse, subprocess, sys, urllib3, atexit
+import argparse, subprocess, sys, urllib3, atexit, time
 
 
 parser = argparse.ArgumentParser()
@@ -61,8 +61,7 @@ def run_app():
 def run_dev_env():
     processes.append(
         subprocess.Popen(
-            "exec docker-compose -f ./dev-env/docker-compose.yml up",
-            shell=True,
+            "exec docker-compose -f ./dev-env/docker-compose.yml up", shell=True
         )
     )
 

@@ -603,17 +603,11 @@ type handler func(Vrf) error
 func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
-	if id == 1 {
-		fmt.Printf("HARDWARE REQUST %+v\n", r)
-	}
 	if err != nil {
 		a.respondWithError(w, http.StatusBadRequest, "Invalid vrf ID")
 		return
 	}
 	body, err := ioutil.ReadAll(r.Body)
-	if id == 1 {
-		fmt.Printf("HARDWARE REQUST BODY %s\n", body)
-	}
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return

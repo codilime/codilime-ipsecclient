@@ -95,13 +95,10 @@ def wait_for_dev_env():
 
 
 @pytest.mark.filterwarnings("ignore::urllib3.exceptions.InsecureRequestWarning")
-@pytest.mark.parametrize(
-    "json_file", [("./ansible/psk/hw.json"), ("./ansible/x509hw/sw_create.json")]
-)
-def test_hardware_vrf(json_file):
+def test_hardware_vrf():
     wait_for_csr_vm()
     time.sleep(5)
-    with open(json_file) as hw_file:
+    with open("./ansible/x509hw/sw_create.json") as hw_file:
         hw_data = hw_file.read()
         create_response = requests.patch(VRFS_URL + "=1", data=hw_data, auth=basicAuth)
         check_status_code(create_response, HTTPStatus.NO_CONTENT)
