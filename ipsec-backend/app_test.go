@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -12,14 +13,17 @@ import (
 	"testing"
 	"unicode"
 
+	"github.com/go-test/deep"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 const decryptedPsk = "psk23"
 const encryptedPsk = "UrO4Jx0D6USzyds2yFMd/VdIczYc4/oxFPbPTl2jQOv4"
 
 var a App
-var mock MockGenerator
+var mockGenerator MockGenerator
+var mockErrorsRotationHandler MockErrorsRotationHandler
 
 type MockGenerator struct {
 	genCalled int
@@ -41,12 +45,34 @@ func (m *MockGenerator) reset() {
 	m.genCalled = 0
 }
 
+type MockErrorsRotationHandler struct {
+	byDateCalled       int
+	bySizeOrDateCalled int
+}
+
+func (m *MockErrorsRotationHandler) rotateByDate(db *gorm.DB) {
+	m.byDateCalled++
+}
+
+func (m *MockErrorsRotationHandler) rotateBySizeOrDate(db *gorm.DB) {
+	m.bySizeOrDateCalled++
+}
+
+func (m *MockErrorsRotationHandler) reset() {
+	m.byDateCalled = 0
+	m.bySizeOrDateCalled = 0
+}
+
 func TestMain(m *testing.M) {
+	DBError, _ = initializeDB("file::memory:?cache=shared")
+
 	log.SetFormatter(&ErrorFormatter{})
 	dbName := "file::memory:?cache=shared"
 	a.Initialize(dbName)
-	mock = MockGenerator{}
-	a.Generator = &mock
+	mockGenerator = MockGenerator{}
+	a.Generator = &mockGenerator
+	mockErrorsRotationHandler = MockErrorsRotationHandler{}
+	a.errorsRotationHandler = &mockErrorsRotationHandler
 	code := m.Run()
 	os.Exit(code)
 }
@@ -197,9 +223,7 @@ func TestGetVrf(t *testing.T) {
 	expectedVrf.Vlans = []byte{}
 	receivedVrf.Vrf.Vlans = []byte{}
 
-	if !reflect.DeepEqual(expectedVrf, receivedVrf.Vrf) {
-		t.Fatalf("Expected vrf to be '%v'. Got '%v'\n", expectedVrf, receivedVrf.Vrf)
-	}
+	compare(expectedVrf, receivedVrf.Vrf, "vrf", t)
 }
 
 func TestUpdateVrf(t *testing.T) {
@@ -244,9 +268,7 @@ func TestUpdateVrf(t *testing.T) {
 	var vrfs []Vrf
 	a.DB.Preload("Endpoints").Find(&vrfs)
 
-	if !reflect.DeepEqual(expectedVrf, vrfs[1]) {
-		t.Fatalf("Expected %+v got %+v", expectedVrf, vrfs[1])
-	}
+	compare(expectedVrf, vrfs[1], "vrf", t)
 }
 
 func TestVrfActivation(t *testing.T) {
@@ -255,43 +277,43 @@ func TestVrfActivation(t *testing.T) {
 	testVrf := createTestVrf()
 	addVrfToDB(t, testVrf)
 
-	mock.reset()
+	mockGenerator.reset()
 
 	req := createActivationRequest(testVrf, false)
 	response := executeRequest(req)
 	checkResponseCode(t, http.StatusNoContent, response.Code)
 
-	if mock.genCalled != 0 {
-		t.Fatalf("Expected generator to not be called, got %d", mock.genCalled)
+	if mockGenerator.genCalled != 0 {
+		t.Fatalf("Expected generator to not be called, got %d", mockGenerator.genCalled)
 	}
-	if mock.delCalled != 1 {
-		t.Fatalf("Expected delete to be called once, got %d", mock.delCalled)
+	if mockGenerator.delCalled != 1 {
+		t.Fatalf("Expected delete to be called once, got %d", mockGenerator.delCalled)
 	}
 
-	mock.reset()
+	mockGenerator.reset()
 
 	req = createActivationRequest(testVrf, true)
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusNoContent, response.Code)
 
-	if mock.genCalled != 1 {
-		t.Fatalf("Expected generator to be called once, got %d", mock.genCalled)
+	if mockGenerator.genCalled != 1 {
+		t.Fatalf("Expected generator to be called once, got %d", mockGenerator.genCalled)
 	}
-	if mock.delCalled != 0 {
-		t.Fatalf("Expected delete to not be called, got %d", mock.delCalled)
+	if mockGenerator.delCalled != 0 {
+		t.Fatalf("Expected delete to not be called, got %d", mockGenerator.delCalled)
 	}
 
-	mock.reset()
+	mockGenerator.reset()
 
 	req = createActivationRequest(testVrf, true)
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusNoContent, response.Code)
 
-	if mock.genCalled != 1 {
-		t.Fatalf("Expected generator to be called once, got %d", mock.genCalled)
+	if mockGenerator.genCalled != 1 {
+		t.Fatalf("Expected generator to be called once, got %d", mockGenerator.genCalled)
 	}
-	if mock.delCalled != 1 {
-		t.Fatalf("Expected delete to be called once, got %d", mock.delCalled)
+	if mockGenerator.delCalled != 1 {
+		t.Fatalf("Expected delete to be called once, got %d", mockGenerator.delCalled)
 	}
 }
 
@@ -315,23 +337,49 @@ func TestDeleteVrf(t *testing.T) {
 
 func TestErrorDatabase(t *testing.T) {
 	clearTable()
-	expectedErrorMessage := "no basic auth"
+	mockErrorsRotationHandler.reset()
 	expectedNumberOfErrors := 1
+	expectedErrorMessage := "no basic auth"
 
 	req, err := http.NewRequest(http.MethodGet, vrfPath, nil)
 	if err != nil {
 		t.Fatalf("error during create request %v\n", err)
 	}
 	response := executeRequest(req)
-
 	checkResponseCode(t, http.StatusUnauthorized, response.Code)
+	compare(mockErrorsRotationHandler.bySizeOrDateCalled, 1, "mock", t)
+	compare(mockErrorsRotationHandler.byDateCalled, 0, "mock", t)
+	mockErrorsRotationHandler.reset()
 
-	var errors []StoredError
-	if result := a.DB.Find(&errors); int64(expectedNumberOfErrors) != result.RowsAffected {
-		t.Fatalf("Expected number of errors to be %v got %v", expectedNumberOfErrors, result.RowsAffected)
+	req, err = http.NewRequest(http.MethodGet, errorPath, nil)
+	req.SetBasicAuth("admin", "cisco123")
+	if err != nil {
+		t.Fatalf("error during create request %v\n", err)
 	}
-	if storedError := errors[len(errors)-1]; storedError.Message != expectedErrorMessage {
-		t.Fatalf("Expected error message to be %v, got %v", expectedErrorMessage, storedError.Message)
+	response = executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+	compare(mockErrorsRotationHandler.bySizeOrDateCalled, 0, "mock", t)
+	compare(mockErrorsRotationHandler.byDateCalled, 1, "mock", t)
+
+	body, _ := ioutil.ReadAll(response.Body)
+
+	var receivedErrorsJson map[string]interface{}
+	if err := json.Unmarshal(body, &receivedErrorsJson); err != nil {
+		t.Fatalf("error during unmarshal %v", err)
+	}
+	receivedErrors := receivedErrorsJson["error"].([]interface{})
+	compare(expectedNumberOfErrors, len(receivedErrors), "number of errors", t)
+	compare(expectedErrorMessage, receivedErrors[0].(map[string]interface{})["message"], "error message", t)
+
+	var databaseErrors []StoredError
+	a.DB.Find(&databaseErrors)
+	compare(expectedNumberOfErrors, len(databaseErrors), "number of errors", t)
+	compare(expectedErrorMessage, databaseErrors[0].Message, "error message", t)
+}
+
+func compare(a, b interface{}, errorMessage string, t *testing.T) {
+	if diff := deep.Equal(a, b); diff != nil {
+		t.Fatalf("Expected "+errorMessage+" to be '%+v'. Got '%+v'. Diff %+v\n", a, b, diff)
 	}
 }
 
@@ -360,9 +408,7 @@ func checkVlans(expectedVrf, receivedVrf Vrf, t *testing.T) {
 	if err := json.Unmarshal(expectedVrf.Vlans, &expectedVlans); err != nil {
 		t.Fatalf("error during unmarshal %v", err)
 	}
-	if !reflect.DeepEqual(receivedVlans, expectedVlans) {
-		t.Fatalf("Expected vlans of vrf to be '%v'. Got '%v'\n", createTestVrf().Vlans, receivedVrf.Vlans)
-	}
+	compare(expectedVlans, receivedVlans, "vlans of vrf", t)
 }
 
 func createTestVrf() Vrf {

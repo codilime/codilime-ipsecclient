@@ -28,6 +28,7 @@ const (
 	vrfIDPath        = vrfPath + "={id:[0-9]+}"
 	monitoringPath   = restconfBasePath + "/monitoring={id:[0-9]+}"
 	logPath          = restconfBasePath + "/log"
+	errorPath        = restconfBasePath + "/error"
 	CAPath           = restconfBasePath + "/ca"
 	settingNamePath  = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
 	passPath         = restconfBasePath + "/password"
@@ -39,6 +40,10 @@ const (
 	CAsDir            = "/opt/ipsec/x509ca"
 
 	lastLogBytes = 65536
+
+	timeFormat = "2006-01-02 15:04:01 -0700"
+
+	defaultErrorsRotationDays = 7
 )
 
 type Generator interface {
@@ -46,12 +51,18 @@ type Generator interface {
 	DeleteTemplates(v Vrf) error
 }
 
+type ErrorsRotationHandlerInt interface {
+	rotateByDate(db *gorm.DB)
+	rotateBySizeOrDate(db *gorm.DB)
+}
+
 type App struct {
-	Router         *mux.Router
-	DB             *gorm.DB
-	Generator      Generator
-	switchUsername string
-	switchPassword string
+	Router                *mux.Router
+	DB                    *gorm.DB
+	Generator             Generator
+	errorsRotationHandler ErrorsRotationHandlerInt
+	switchUsername        string
+	switchPassword        string
 }
 
 func (a *App) ensureHWVRF() error {
@@ -83,7 +94,6 @@ func (a *App) Initialize(dbName string) error {
 	}
 
 	a.Generator = FileGenerator{}
-
 	a.initializeRoutes()
 
 	err = a.setDefaultPasswords()
@@ -94,6 +104,17 @@ func (a *App) Initialize(dbName string) error {
 	if err := a.ensureHWVRF(); err != nil {
 		return ReturnError(err)
 	}
+
+	errRotDaysStr, ok := os.LookupEnv("ERR_ROT_DAYS")
+	if !ok {
+		errRotDaysStr = ""
+	}
+
+	errRotSizeStr, ok := os.LookupEnv("ERR_ROT_SIZE")
+	if !ok {
+		errRotSizeStr = ""
+	}
+	a.errorsRotationHandler = newErrorsRotationHandler(errRotDaysStr, errRotSizeStr)
 
 	return ReturnError(ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644))
 }
@@ -142,6 +163,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc(vrfIDPath, a.deleteVrf).Methods(http.MethodDelete)
 	a.Router.HandleFunc(monitoringPath, a.monitoring).Methods(http.MethodGet)
 	a.Router.HandleFunc(logPath, a.getLogs).Methods(http.MethodGet)
+	a.Router.HandleFunc(errorPath, a.getErrors).Methods(http.MethodGet)
 	a.Router.HandleFunc(settingNamePath, a.apiGetSetting).Methods(http.MethodGet)
 	a.Router.HandleFunc(settingNamePath, a.apiSetSetting).Methods(http.MethodPost)
 	a.Router.HandleFunc(passPath, a.changePassword).Methods(http.MethodPost)
@@ -798,6 +820,36 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 	respondWithMarshalledJSON(w, http.StatusOK, json)
 }
 
+func (a *App) getErrors(w http.ResponseWriter, r *http.Request) {
+	a.errorsRotationHandler.rotateByDate(a.DB)
+
+	storedErrors, err := getStoredErrors(a.DB)
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	yangErrors := []*sico_yang.SicoIpsec_Api_Error{}
+	for _, storedError := range storedErrors {
+		yangErrors = append(yangErrors, storedError.ToYang())
+	}
+
+	fmt.Printf("erorrs to send: %+v\n", yangErrors)
+
+	api := sico_yang.SicoIpsec_Api{
+		Error: yangErrors,
+	}
+
+	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, json)
+}
+
 func (a *App) respondWithError(w http.ResponseWriter, code int, message string) {
 	a.storeError(message)
 	returnErrorEx(2, fmt.Errorf(message))
@@ -805,9 +857,10 @@ func (a *App) respondWithError(w http.ResponseWriter, code int, message string) 
 }
 
 func (a *App) storeError(message string) {
-	newError := StoredError{}
-	newError.Message = message
-	newError.ErrorTime = time.Now()
+	newError := StoredError{Message: message, ErrorTime: time.Now()}
+
+	a.errorsRotationHandler.rotateBySizeOrDate(a.DB)
+
 	newError.createError(a.DB)
 }
 

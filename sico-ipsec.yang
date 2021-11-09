@@ -211,6 +211,21 @@ module sico-ipsec {
                 mandatory "true";
             }
         }
+        list error {
+            config false;
+            leaf id {
+                type uint32;
+                mandatory "true";
+            }
+            leaf message {
+                type string;
+                mandatory "true";
+            }
+            leaf time {
+                type string;
+                mandatory "true";
+            }
+        }
         list monitoring {
             config false;
             key "id";

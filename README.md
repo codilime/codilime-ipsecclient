@@ -14,14 +14,16 @@ The app should be available on http://localhost:80
 ## enviroment variables for ipsec_backend binary
 
 - `LOG_LEVEL` - specify logging level. Three levels available : error, info, debug.
-
-## building docker for API unit tests
-
-`docker build -t sico_api_ut -f sico_api_ut.dockerfile .`
+- `TZ` - specify time zone. You can do it by specifying exact time zone `TZ=America/Los_Angeles` or get the time zone from `/etc/timezone` `TZ=$(cat /etc/timezone)`. Time zone is used in the error time. 
+- `ERR_ROT_DAYS` - error rotation - days. This value is used to trigger rotation based on days.
+- `ERR_ROT_SIZE` - error rotation - database size in KB. This value is used to trigger rotation based on database size.
 
 ## running API unit tests
 
-`./run_api_ut.sh`
+`docker build -t sico_api_ut -f sico_api_ut.dockerfile .`  
+`./run_api_ut.sh`  
+or  
+inside `ipsec-backend` directory run `CGO_CPPFLAGS="-DSQLITE_ENABLE_DBSTAT_VTAB=1" CGO_LDFLAGS="-lm" go test -v`
 
 ## additional scripts
 

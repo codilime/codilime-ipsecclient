@@ -158,3 +158,11 @@ func respondWithMarshalledJSON(w http.ResponseWriter, code int, response string)
 		ReturnNewError("Error while writing the response: " + err.Error())
 	}
 }
+
+func (e *StoredError) ToYang() *sico_yang.SicoIpsec_Api_Error {
+	return &sico_yang.SicoIpsec_Api_Error{
+		Id:      uint32Pointer(e.ID),
+		Message: stringPointer(e.Message),
+		Time:    stringPointer(e.ErrorTime.Format(timeFormat)),
+	}
+}

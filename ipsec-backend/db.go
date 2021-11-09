@@ -106,9 +106,9 @@ type CertificateAuthority struct {
 }
 
 type StoredError struct {
-	ID        int64
+	ID        uint32
 	Message   string
-	ErrorTime time.Time
+	ErrorTime time.Time `json:"time"`
 }
 
 func initializeDB(dbName string) (*gorm.DB, error) {
@@ -189,4 +189,11 @@ func (s *Setting) createSetting(db *gorm.DB) error {
 
 func (e *StoredError) createError(db *gorm.DB) error {
 	return ReturnError(db.Create(e).Error)
+}
+
+func getStoredErrors(db *gorm.DB) ([]StoredError, error) {
+	var storedErrors []StoredError
+	res := db.Find(&storedErrors)
+	fmt.Printf("getStoredErrors: %+v\n", storedErrors)
+	return storedErrors, ReturnError(res.Error)
 }
