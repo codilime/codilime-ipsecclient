@@ -218,16 +218,20 @@ def test_error_handling():
     expected_number_of_errors = 1
     expected_error_message = "masterpass cannot be used as a setting name"
 
-    initial_number_of_errors = len(get_errors_from_database())
+    initial_number_of_errors = len(
+        requests.get(BASE_URL + "/error", auth=basicAuth).json()["error"]
+    )
 
     response = requests.post(
         BASE_URL + "/setting=masterpass", data="test_value", auth=basicAuth
     )
     check_status_code(response, HTTPStatus.BAD_REQUEST)
 
-    errors = get_errors_from_database()
+    errors = requests.get(BASE_URL + "/error", auth=basicAuth).json()["error"]
 
     number_of_errors = len(errors) - initial_number_of_errors
+    error_message = errors[-1]["message"]
+
     assert expected_number_of_errors == number_of_errors, (
         "Expected number of errors: "
         + str(expected_number_of_errors)
@@ -235,7 +239,6 @@ def test_error_handling():
         + str(number_of_errors)
     )
 
-    error_message = errors[-2].split("|")[1]
     assert expected_error_message == error_message, (
         "Expected error message: " + expected_error_message + " got: " + error_message
     )
@@ -351,13 +354,3 @@ def check_cas(expected_cas):
     received_cas = json.loads(response.text)
     diff = DeepDiff(expected_cas, received_cas, ignore_order=True)
     assert not diff, "CAs don't match: " + diff
-
-
-def get_errors_from_database():
-    return subprocess.run(
-        r'docker -H "unix:///var/run/docker.sock" exec sico_api /bin/sh -c "sqlite3 /iox_data/appdata/ipsec.db \"select * from stored_errors;\""',
-        shell=True,
-        check=True,
-        stdout=subprocess.PIPE,
-        universal_newlines=True,
-    ).stdout.split("\n")
