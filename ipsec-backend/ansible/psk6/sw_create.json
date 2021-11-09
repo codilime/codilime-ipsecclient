@@ -1,6 +1,5 @@
 {
   "vrf": {
-    "id": 2,
     "client_name": "ansible_psk6",
     "vlan": [
       {
@@ -15,11 +14,9 @@
     "local_as": 65001,
     "endpoint": [
       {
-        "id": 10,
-        "vrf_id": 2,
         "remote_ip_sec": "10.200.1.254",
-        "local_ip": "2012::1",
-        "peer_ip": "2012::2",
+        "local_ip": "4012:dfff::1",
+        "peer_ip": "4012:dfff::2",
         "remote_as": 65002,
         "nat": false,
         "bgp": false,

@@ -85,6 +85,17 @@ module sico-ipsec {
           "An IPv4 or IPv6 prefix.";
     }
 
+    typedef ip-address-mask-optional {
+        type union {
+            type ipv4-address;
+            type ipv6-address;
+            type ipv4-prefix;
+            type ipv6-prefix;
+        }
+        description
+          "An IPv4 or IPv6 address with optional prefix.";
+    }
+
     typedef authentication-type {
         type string {
             pattern
@@ -123,7 +134,7 @@ module sico-ipsec {
                       "vlan number";
                 }
                 leaf lan_ip {
-                    type ip-prefix;
+                    type ip-address-mask-optional;
                     mandatory "true";
                     description
                       "lan ip with mask for the vlan";
