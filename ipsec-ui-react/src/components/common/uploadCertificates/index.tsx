@@ -9,12 +9,13 @@ interface UploadCertificates extends InputType {
   text: string;
   className?: string;
   handleUploadFile: (name: string) => void;
+  error?: any;
 }
 
-export const UploadCertificates: FC<UploadCertificates> = ({ type, name, onChange, edit, references, value, label, text, handleUploadFile, className = '' }) => (
+export const UploadCertificates: FC<UploadCertificates> = ({ type, name, onChange, edit, references, value, label, text, handleUploadFile, className = '', error }) => (
   <div className={classNames('table__certificates', { [className]: className })}>
     <EndpointInput {...{ type, name, onChange, edit, references, value }} />
     {label && <p className="table__title">{label}</p>}
-    <UploadButton {...{ onClick: () => handleUploadFile(name), name, edit }}>{text}</UploadButton>
+    <UploadButton {...{ onClick: () => handleUploadFile(name), name, edit, error }}>{text}</UploadButton>
   </div>
 );

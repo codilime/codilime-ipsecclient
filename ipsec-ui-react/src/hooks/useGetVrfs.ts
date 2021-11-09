@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect,useLayoutEffect } from 'react';
 import { useGetLocation, useAppContext } from 'hooks/';
 import { HardwareId } from 'constant/';
 import { defaultVrf } from 'db';
@@ -26,7 +26,7 @@ export const useGetVrfs = (vrfId?: string) => {
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (currentLocation === HardwareId) {
       setContext((prev) => ({ ...prev, hardware: true }));
     } else {
@@ -34,7 +34,7 @@ export const useGetVrfs = (vrfId?: string) => {
     }
   }, [currentLocation]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (currentLocation) findActiveVrfPage();
   }, [currentLocation, vrf]);
 

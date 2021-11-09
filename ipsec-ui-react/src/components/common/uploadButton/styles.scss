@@ -13,4 +13,7 @@
   &__disabled {
     background-color: $gray02;
   }
+  &__error {
+    background-color: red;
+  }
 }

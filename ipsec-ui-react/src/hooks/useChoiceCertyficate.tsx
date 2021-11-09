@@ -140,22 +140,13 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
           return;
       }
   };
-  useEffect(() => {
-    if (hardware) {
-      setEndpoint((prev) => ({
-        ...prev,
-        authentication: {
-          ...prev.authentication,
-          psk: ''
-        }
-      }));
-    }
-  }, [type]);
+
   const handleChooseAuthentication = (name: string) => {
     return setEndpoint((prev) => ({
       ...prev,
       authentication: {
         ...prev.authentication,
+        psk: '',
         type: name
       }
     }));
@@ -189,6 +180,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       label: 'key',
       text: fileName.key,
       edit,
+      error,
       references: key,
       onChange: handleUpdateEndpoint,
       handleUploadFile
@@ -199,6 +191,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       label: 'Certificate',
       text: fileName.certificate,
       edit,
+      error,
       references: certificate,
       onChange: handleUpdateEndpoint,
       handleUploadFile
@@ -209,6 +202,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       label: 'Peer Certificate',
       text: fileName.peerCertificate,
       edit,
+      error,
       references: peerCertificate,
       onChange: handleUpdateEndpoint,
       handleUploadFile
@@ -259,6 +253,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
               references: pkcs12,
               onChange: handleUpdateEndpoint,
               handleUploadFile,
+              error,
               className: 'table__certificates__hardware'
             }}
           />

@@ -1,8 +1,7 @@
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent, useLayoutEffect } from 'react';
 import { FieldValues, UseFormSetValue } from 'react-hook-form';
 import { useAppContext } from 'hooks/';
 import { VlanInterface } from 'interface/index';
-
 export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
   const {
     context: { data }
@@ -13,32 +12,32 @@ export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
   const [vlanInterface, setVlanInterface] = useState<VlanInterface>({ vlan: 0, lan_ip: '' });
 
   const checkLanIpValue = (value: string) => {
-    const arrayOfValue = value.split('.');
-    const validateIP = arrayOfValue.reduce((total: string[], value) => {
-      if (parseInt(value) > 255 || parseInt(value) < 0) {
-        return [...total, value];
+    const ipv4_regex = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/;
+    const ipv6_regex =
+      /^(?:(?:[a-fA-F\d]{1,4}:){7}(?:[a-fA-F\d]{1,4}|:)|(?:[a-fA-F\d]{1,4}:){6}(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|:[a-fA-F\d]{1,4}|:)|(?:[a-fA-F\d]{1,4}:){5}(?::(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|(?::[a-fA-F\d]{1,4}){1,2}|:)|(?:[a-fA-F\d]{1,4}:){4}(?:(?::[a-fA-F\d]{1,4}){0,1}:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|(?::[a-fA-F\d]{1,4}){1,3}|:)|(?:[a-fA-F\d]{1,4}:){3}(?:(?::[a-fA-F\d]{1,4}){0,2}:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|(?::[a-fA-F\d]{1,4}){1,4}|:)|(?:[a-fA-F\d]{1,4}:){2}(?:(?::[a-fA-F\d]{1,4}){0,3}:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|(?::[a-fA-F\d]{1,4}){1,5}|:)|(?:[a-fA-F\d]{1,4}:){1}(?:(?::[a-fA-F\d]{1,4}){0,4}:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|(?::[a-fA-F\d]{1,4}){1,6}|:)|(?::(?:(?::[a-fA-F\d]{1,4}){0,5}:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|(?::[a-fA-F\d]{1,4}){1,7}|:)))(?:%[0-9a-zA-Z]{1,})?$/;
+    const ipValue = value.split('/')[0];
+    if (ipv4_regex.test(ipValue)) {
+      const mask = value.split('/')[1];
+      if (parseInt(mask[1]) > 32 || parseInt(mask[1]) < 0) {
+        return false;
       }
-      if (value.includes('/')) {
-        const mask = value.split('/');
-
-        if (parseInt(mask[0]) > 255 || parseInt(mask[0]) < 0) {
-          return [...total, value];
-        }
-        if (parseInt(mask[1]) > 32 || parseInt(mask[1]) < 0) {
-          return [...total, value];
-        }
+      return true;
+    } else if (ipv6_regex.test(ipValue)) {
+      const mask = value.split('/')[1];
+      if (parseInt(mask[1]) > 128 || parseInt(mask[1]) < 0) {
+        console.log(false);
+        return false;
       }
-      return [...total];
-    }, []);
-
-    return !validateIP.length && arrayOfValue.length === 4 ? false : true;
+      return true;
+    }
+    return false;
   };
 
   useEffect(() => {
     if (vlan.length) setValue('vlan', [...vlan], { shouldDirty: true });
   }, [vlan]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (data.vlan) {
       setVlan(data.vlan);
     }
@@ -58,7 +57,7 @@ export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
 
   const handleAddNewVlan = () => {
     const validate = checkLanIpValue(vlanInterface.lan_ip);
-    if (validate || vlanInterface.vlan <= 1) return setError(true);
+    if (!validate || vlanInterface.vlan <= 0) return setError(true);
     setVlanInterface({ vlan: 0, lan_ip: '' });
     setVlan((prev) => [...prev, vlanInterface]);
   };
