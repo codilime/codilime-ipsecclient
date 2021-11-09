@@ -1,7 +1,7 @@
 FROM alpine:latest
 ARG CONFIG
 
-RUN apk add --no-cache strongswan 
+RUN apk add --no-cache strongswan
 
 COPY content/$CONFIG/entrypoint.sh /
 RUN chmod 0755 /entrypoint.sh
