@@ -833,8 +833,6 @@ func (a *App) getErrors(w http.ResponseWriter, r *http.Request) {
 		yangErrors = append(yangErrors, storedError.ToYang())
 	}
 
-	fmt.Printf("erorrs to send: %+v\n", yangErrors)
-
 	api := sico_yang.SicoIpsec_Api{
 		Error: yangErrors,
 	}

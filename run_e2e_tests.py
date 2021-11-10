@@ -7,6 +7,7 @@ parser.add_argument("--csr-vm", action="store_true", help="run tests with csr vm
 parser.add_argument(
     "-k",
     nargs=1,
+    type=str,
     metavar="EXPRESSION",
     help="pytest flag: only run tests which match the given substring expression. \
         Example: -k 'test_method or test_other' matches all test functions and classes whose name contains'test_method'",

@@ -24,11 +24,22 @@ func prepareStoredErrors(db *gorm.DB) []StoredError {
 	return storedErrors
 }
 
-func TestRotationDefault(t *testing.T) {
+func TestRotationSizeOrDateDefault(t *testing.T) {
 	clearTableErrors()
 	handler := newErrorsRotationHandler("", "")
 	storedErrors := prepareStoredErrors(DBError)
 	handler.rotateBySizeOrDate(DBError)
+
+	var databaseErrors []StoredError
+	DBError.Find(&databaseErrors)
+	compare(databaseErrors, storedErrors[44:50], "errors", t)
+}
+
+func TestRotationDateDefault(t *testing.T) {
+	clearTableErrors()
+	handler := newErrorsRotationHandler("", "")
+	storedErrors := prepareStoredErrors(DBError)
+	handler.rotateByDate(DBError)
 
 	var databaseErrors []StoredError
 	DBError.Find(&databaseErrors)
@@ -46,18 +57,18 @@ func TestRotationSize(t *testing.T) {
 	compare(databaseErrors, storedErrors[22:50], "errors", t)
 }
 
-func TestRotationDays(t *testing.T) {
+func TestRotationDate(t *testing.T) {
 	clearTableErrors()
 	handler := newErrorsRotationHandler("15", "")
 	storedErrors := prepareStoredErrors(DBError)
-	handler.rotateBySizeOrDate(DBError)
+	handler.rotateByDate(DBError)
 
 	var databaseErrors []StoredError
 	DBError.Find(&databaseErrors)
 	compare(databaseErrors, storedErrors[36:50], "errors", t)
 }
 
-func TestRotationSizeAndDays(t *testing.T) {
+func TestRotationSizeOrDate(t *testing.T) {
 	clearTableErrors()
 	handler := newErrorsRotationHandler("15", "5")
 	storedErrors := prepareStoredErrors(DBError)
