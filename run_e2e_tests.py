@@ -69,9 +69,18 @@ def run_dev_env():
 def run_test_cases():
     run_command = ""
     if args.csr_vm:
-        run_command = "exec ./test/run_test.sh"
+        if args.k:
+            run_command = "exec ./test/run_test.sh -k " + args.k[0]
+        else:
+            run_command = "exec ./test/run_test.sh"
     else:
-        run_command = "exec ./test/run_test.sh -k 'not hardware'"
+        if args.k:
+            run_command = (
+                "exec ./test/run_test.sh -k 'not hardware and " + args.k[0] + "'"
+            )
+        else:
+            run_command = "exec ./test/run_test.sh -k 'not hardware'"
+
     returncode = subprocess.run(run_command, shell=True).returncode
     if returncode:
         sys.exit(returncode)

@@ -12,6 +12,8 @@ RUN npm run build
 
 ### STAGE 1b: Build API ###
 FROM golang:1.16.3-alpine3.13 AS middleware-build
+ENV CGO_CPPFLAGS="-DSQLITE_ENABLE_DBSTAT_VTAB=1"
+ENV CGO_LDFLAGS="-lm"
 WORKDIR /usr/src/app
 RUN apk add build-base
 COPY ipsec-backend/go.mod .
@@ -25,7 +27,7 @@ RUN go build
 FROM alpine:3.13 AS sico_api
 
 #Packages
-RUN apk add --no-cache nginx gettext supervisor curl sqlite
+RUN apk add --no-cache nginx gettext supervisor curl sqlite tzdata
 
 #API
 RUN mkdir -p /iox_data/appdata
