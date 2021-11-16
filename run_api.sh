@@ -21,7 +21,6 @@ exec docker run --name sico_api \
         -e SWITCH_USERNAME=admin \
         -e SWITCH_PASSWORD=cisco123 \
         -e LOG_LEVEL=info \
-        -e DOLLAR='$' \
         --network ipsec \
         --publish 80:80 \
         --publish 443:443 \
