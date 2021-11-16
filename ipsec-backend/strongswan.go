@@ -10,13 +10,6 @@ import (
 
 const socketPath = "/opt/ipsec/conf/charon.vici"
 
-func ReloadStrongSwan() error {
-	if err := RestartSupervisorProcess(supervisorNetSocketPath, "strongswan_reload"); err != nil {
-		return ReturnError(err)
-	}
-	return nil
-}
-
 type monitoringEndpoint struct {
 	localAddr  string
 	remoteAddr string
