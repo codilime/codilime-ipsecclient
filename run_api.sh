@@ -23,4 +23,5 @@ exec docker run --name sico_api \
         -e LOG_LEVEL=info \
         --network ipsec \
         --publish 80:80 \
+        --publish 443:443 \
         sico_api

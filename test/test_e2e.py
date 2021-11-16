@@ -1,10 +1,10 @@
 import requests, time, json, logging, os, subprocess, urllib3, pytest
 from http import HTTPStatus
 from deepdiff import DeepDiff
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
+urllib3.disable_warnings()
 
-BASE_URL = "http://sico_api/restconf/data/sico-ipsec:api"
+BASE_URL = "https://sico_api/restconf/data/sico-ipsec:api"
 
 VRFS_URL = BASE_URL + "/vrf"
 SETTINGS_URL = BASE_URL + "/setting=siemka"
@@ -21,7 +21,7 @@ def wait_for_sico_api():
     while True:
         log.info("waiting for sico_api...")
         try:
-            r = requests.get(VRFS_URL, auth=basicAuth)
+            r = requests.get(VRFS_URL, auth=basicAuth, verify=False)
             if r.status_code < 400:
                 return
         except:
@@ -103,7 +103,7 @@ def test_hardware_vrf(json_file):
     time.sleep(5)
     with open(json_file) as hw_file:
         hw_data = hw_file.read()
-        create_response = requests.patch(VRFS_URL + "=1", data=hw_data, auth=basicAuth)
+        create_response = requests.patch(VRFS_URL + "=1", data=hw_data, auth=basicAuth, verify=False)
         check_status_code(create_response, HTTPStatus.NO_CONTENT)
 
 
@@ -185,7 +185,7 @@ def test_change_pass():
     new_password = "innehaslo"
 
     response = requests.post(
-        CHANGE_PASS_URL, auth=basicAuth, json={"password": new_password}
+        CHANGE_PASS_URL, auth=basicAuth, json={"password": new_password}, verify=False
     )
     check_status_code(response, HTTPStatus.NO_CONTENT)
 
@@ -193,6 +193,7 @@ def test_change_pass():
         CHANGE_PASS_URL,
         auth=(basicAuth[0], new_password),
         json={"password": basicAuth[1]},
+        verify=False
     )
     check_status_code(response, HTTPStatus.NO_CONTENT)
 
@@ -219,15 +220,15 @@ def test_error_handling():
     expected_error_message = "masterpass cannot be used as a setting name"
 
     initial_number_of_errors = len(
-        requests.get(BASE_URL + "/error", auth=basicAuth).json()["error"]
+        requests.get(BASE_URL + "/error", auth=basicAuth, verify=False).json()["error"]
     )
 
     response = requests.post(
-        BASE_URL + "/setting=masterpass", data="test_value", auth=basicAuth
+        BASE_URL + "/setting=masterpass", data="test_value", auth=basicAuth, verify=False
     )
     check_status_code(response, HTTPStatus.BAD_REQUEST)
 
-    errors = requests.get(BASE_URL + "/error", auth=basicAuth).json()["error"]
+    errors = requests.get(BASE_URL + "/error", auth=basicAuth, verify=False).json()["error"]
 
     number_of_errors = len(errors) - initial_number_of_errors
     error_message = errors[-1]["message"]
@@ -256,7 +257,7 @@ def check_status_code(response, expected_status_code):
 
 
 def check_monitoring(vrf_id):
-    monitoring_response = requests.get(MONITORING_URL + vrf_id, auth=basicAuth)
+    monitoring_response = requests.get(MONITORING_URL + vrf_id, auth=basicAuth, verify=False)
     check_status_code(monitoring_response, HTTPStatus.OK)
 
     try:
@@ -270,7 +271,7 @@ def check_monitoring(vrf_id):
 
 
 def create_vrf(vrf_json):
-    create_response = requests.post(VRFS_URL, json=vrf_json, auth=basicAuth)
+    create_response = requests.post(VRFS_URL, json=vrf_json, auth=basicAuth, verify=False)
     check_status_code(create_response, HTTPStatus.CREATED)
 
     return create_response.headers["Location"].split("=")[1]
@@ -287,7 +288,7 @@ def check_vrf_diff(expected_vrf, received_vrf):
 
 
 def check_vrf(vrf_id, expected_vrf):
-    get_response = requests.get(VRFS_URL + "=" + vrf_id, auth=basicAuth)
+    get_response = requests.get(VRFS_URL + "=" + vrf_id, auth=basicAuth, verify=False)
     check_status_code(get_response, HTTPStatus.OK)
     get_response_json = json.loads(get_response.text)
 
@@ -302,7 +303,7 @@ def get_vrf_by_id(vrf_list, vrf_id):
 
 
 def check_vrfs(vrf_id, expected_vrf):
-    get_vrfs_response = requests.get(VRFS_URL, auth=basicAuth)
+    get_vrfs_response = requests.get(VRFS_URL, auth=basicAuth, verify=False)
     check_status_code(get_vrfs_response, HTTPStatus.OK)
     get_vrfs_response_json = json.loads(get_vrfs_response.text)
 
@@ -313,28 +314,28 @@ def check_vrfs(vrf_id, expected_vrf):
 
 def update_vrf(vrf_id, updated_vrf):
     update_response = requests.patch(
-        VRFS_URL + "=" + vrf_id, json=updated_vrf, auth=basicAuth
+        VRFS_URL + "=" + vrf_id, json=updated_vrf, auth=basicAuth, verify=False
     )
     check_status_code(update_response, HTTPStatus.NO_CONTENT)
 
 
 def delete_vrf(vrf_id):
-    delete_response = requests.delete(VRFS_URL + "=" + vrf_id, auth=basicAuth)
+    delete_response = requests.delete(VRFS_URL + "=" + vrf_id, auth=basicAuth, verify=False)
     check_status_code(delete_response, HTTPStatus.NO_CONTENT)
 
 
 def check_deleted_vrf(vrf_id):
-    get_response = requests.get(VRFS_URL + "=" + vrf_id, auth=basicAuth)
+    get_response = requests.get(VRFS_URL + "=" + vrf_id, auth=basicAuth, verify=False)
     check_status_code(get_response, HTTPStatus.NOT_FOUND)
 
 
 def set_setting(setting):
-    response = requests.post(SETTINGS_URL, auth=basicAuth, json=setting)
+    response = requests.post(SETTINGS_URL, auth=basicAuth, json=setting, verify=False)
     check_status_code(response, HTTPStatus.CREATED)
 
 
 def check_setting(expected_setting):
-    response = requests.get(SETTINGS_URL, auth=basicAuth)
+    response = requests.get(SETTINGS_URL, auth=basicAuth, verify=False)
     check_status_code(response, HTTPStatus.OK)
 
     received_setting = json.loads(response.text)
@@ -343,14 +344,15 @@ def check_setting(expected_setting):
 
 
 def set_cas(cas):
-    response = requests.post(CAS_URL, auth=basicAuth, json=cas)
+    response = requests.post(CAS_URL, auth=basicAuth, json=cas, verify=False)
     check_status_code(response, HTTPStatus.NO_CONTENT)
 
 
 def check_cas(expected_cas):
-    response = requests.get(CAS_URL, auth=basicAuth)
+    response = requests.get(CAS_URL, auth=basicAuth, verify=False)
     check_status_code(response, HTTPStatus.OK)
 
     received_cas = json.loads(response.text)
     diff = DeepDiff(expected_cas, received_cas, ignore_order=True)
     assert not diff, "CAs don't match: " + diff
+
