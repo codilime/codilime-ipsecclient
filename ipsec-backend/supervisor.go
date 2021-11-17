@@ -11,6 +11,7 @@ const supervisorApiSocketPath = "/opt/super_api/supervisord.sock"
 
 type Supervisor struct{}
 
+//go:generate mockgen -source=supervisor.go -destination=mock/supervisor_mock.go -package mock
 type SupervisorInterface interface {
 	ReloadSupervisor() error
 	ReloadStrongswan() error
