@@ -245,6 +245,23 @@ def test_error_handling():
     )
 
 
+def test_vlans():
+    vrf_json = {
+        "vrf": {
+            "client_name": "test",
+            "vlan": [{"vlan": 123, "lan_ip": "10.0.0.0/24"}, {"vlan": 123, "lan_ip": "11.0.0.0/24"}],
+            "crypto_ph1": "aes-cbc-128.sha256.modp_2048",
+            "crypto_ph2": "esp-gcm.fourteen",
+            "physical_interface": "eth0",
+            "active": False,
+            "local_as": 123,
+            "endpoint": [],
+        }
+    }
+    create_response = requests.post(VRFS_URL, json=vrf_json, auth=basicAuth, verify=False)
+    check_status_code(create_response, HTTPStatus.BAD_REQUEST)
+
+
 def check_status_code(response, expected_status_code):
     assert response.status_code == expected_status_code, (
         "Expected status code to be: "

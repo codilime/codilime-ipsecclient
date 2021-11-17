@@ -5,8 +5,11 @@ RUN apk add nginx build-base tzdata
 
 ENV CGO_CPPFLAGS="-DSQLITE_ENABLE_DBSTAT_VTAB=1"
 ENV CGO_LDFLAGS="-lm"
-COPY ipsec-backend /run
 WORKDIR /run
+COPY ipsec-backend/go.mod .
+COPY ipsec-backend/go.sum .
+RUN go mod download
+COPY ipsec-backend /run
 RUN go build
 
 CMD go test -v

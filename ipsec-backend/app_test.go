@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 	"unicode"
@@ -188,6 +189,19 @@ func TestCreateVrf(t *testing.T) {
 	storedVrf.CryptoPh1 = []byte(MarshalCryptoPh1(storedVrf))
 	storedVrf.CryptoPh2 = []byte(MarshalCryptoPh2(storedVrf))
 
+	vlans := []Vlan{}
+	if err := json.Unmarshal(storedVrf.Vlans, &vlans); err != nil {
+		t.Fatalf("error during unmarshaling vlans %v\n", err)
+	}
+	sort.SliceStable(vlans, func(i, j int) bool {
+		return vlans[i].Vlan < vlans[j].Vlan
+	})
+	vlansMarshalled, err := json.Marshal(vlans)
+	if err != nil {
+		t.Fatalf("error during encode data %v\n", err)
+	}
+	storedVrf.Vlans = vlansMarshalled
+
 	if !reflect.DeepEqual(expectedVrf, storedVrf) {
 		t.Fatalf("Expected stored vrf to be '%v'. Got '%v'\n", expectedVrf, storedVrf)
 	}
@@ -237,7 +251,7 @@ func TestUpdateVrf(t *testing.T) {
 
 	setCryptoYang(&expectedVrf, cryptoAlgorythms, t)
 	expectedVrf.ClientName = `changed name`
-	expectedVrf.Vlans = []byte(`[{"vlan":1000,"lan_ip":"10"}]`)
+	expectedVrf.Vlans = []byte(`[{"vlan":1000,"lan_ip":"10.0.0.0/24"}]`)
 	expectedVrf.PhysicalInterface = `changed interface name`
 	expectedVrf.Endpoints = []Endpoint{}
 
@@ -269,6 +283,39 @@ func TestUpdateVrf(t *testing.T) {
 	a.DB.Preload("Endpoints").Find(&vrfs)
 
 	compare(expectedVrf, vrfs[1], "vrf", t)
+}
+
+func TestVlans(t *testing.T) {
+	clearTable()
+	testVrf := createTestVrf()
+	const origin = "test-origin"
+	data := map[string]interface{}{
+		"vrf": map[string]interface{}{
+			"client_name":        "vlans_test",
+			"vlan":               []byte(`[{"vlan":1000,"lan_ip":"11.11.0.0/30"},{"vlan":1000,"lan_ip":"22.22.0.0/30"}]`),
+			"crypto_ph1":         testVrf.CryptoPh1,
+			"crypto_ph2":         testVrf.CryptoPh2,
+			"physical_interface": testVrf.PhysicalInterface,
+			"active":             testVrf.Active,
+			"local_as":           testVrf.LocalAs,
+			"endpoint":           []map[string]interface{}{},
+		},
+	}
+	dataJSON, err := json.Marshal(data)
+	if err != nil {
+		t.Fatalf("error during encode data %v\n", err)
+	}
+
+	req, err := http.NewRequest(http.MethodPost, vrfPath, bytes.NewBuffer(dataJSON))
+	if err != nil {
+		t.Fatalf("error during create request %v\n", err)
+	}
+	req.SetBasicAuth("admin", "cisco123")
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Origin", origin)
+
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusBadRequest, response.Code)
 }
 
 func TestVrfActivation(t *testing.T) {

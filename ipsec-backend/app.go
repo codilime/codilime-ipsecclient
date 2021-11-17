@@ -96,7 +96,7 @@ func (a *App) Initialize(dbName string) error {
 	a.Generator = FileGenerator{}
 	a.initializeRoutes()
 
-	err = a.setDefaultPasswords()
+	err = a.initializeSettings()
 	if err != nil {
 		Fatal(err)
 	}
@@ -119,7 +119,7 @@ func (a *App) Initialize(dbName string) error {
 	return ReturnError(ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644))
 }
 
-func (a *App) setDefaultPasswords() error {
+func (a *App) initializeSettings() error {
 	password := "cisco123"
 	if err := htpasswd.SetPassword(nginxPasswordFile, username, password, htpasswd.HashBCrypt); err != nil {
 		return ReturnError(err)
@@ -128,6 +128,7 @@ func (a *App) setDefaultPasswords() error {
 		a.ensureMasterPass(password, randString(32)),
 		a.setSetting(password, "switch_username", "admin"),
 		a.setSetting(password, "switch_password", "cisco123"),
+		a.setSetting(password, "system_name", os.Getenv("CAF_SYSTEM_NAME")),
 	)
 }
 
@@ -203,6 +204,10 @@ func (a *App) changePassword(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	if err := api.Validate(); err != nil {
+		a.respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 	if err := a._changePassword(oldPass, *api.Password); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -264,6 +269,10 @@ func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 	err = sico_yang.Unmarshal(body, &api, nil)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := api.Validate(); err != nil {
+		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 	cas := []CertificateAuthority{}
@@ -344,6 +353,10 @@ func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
 	}
 	setting := sico_yang.SicoIpsec_Api_Setting{}
 	if err := sico_yang.Unmarshal(settingJson, &setting); err != nil {
+		a.respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := setting.Validate(); err != nil {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -548,6 +561,41 @@ func (a *App) _updateBackends(key string, vrf, oldVrf *Vrf) error {
 	return nil
 }
 
+func vrfSubJsonValid(vrfSubJson interface{}) error {
+	vrf, ok := vrfSubJson.(map[string]interface{})
+	if !ok {
+		return ReturnNewError("wrong vrfSubJson type")
+	}
+	vlans, ok := vrf["vlan"]
+	if !ok {
+		return ReturnNewError("no vlans")
+	}
+	vlansList, ok := vlans.([]interface{})
+	if !ok {
+		return ReturnNewError("wrong vlans type")
+	}
+	vlanIds := map[float64]int{}
+	for _, v := range vlansList {
+		vlan := v.(map[string]interface{})
+		if !ok {
+			return ReturnNewError("wrong vlan type")
+		}
+		vlanId, ok := vlan["vlan"]
+		if !ok {
+			return ReturnNewError("no vlan id")
+		}
+		vlanIdFloat, ok := vlanId.(float64)
+		if !ok {
+			return ReturnNewError("wrong vlan id type")
+		}
+		vlanIds[vlanIdFloat]++
+		if vlanIds[vlanIdFloat] > 1 {
+			return ReturnNewError(fmt.Sprintf("vlan %f appears more than once, %d times", vlanIdFloat, vlanIds[vlanIdFloat]))
+		}
+	}
+	return nil
+}
+
 func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -559,13 +607,26 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	vrfJson, err := json.Marshal(j["vrf"])
+	vrfSubJson, ok := j["vrf"]
+	if !ok {
+		a.respondWithError(w, http.StatusBadRequest, "malformed json")
+		return
+	}
+	if err := vrfSubJsonValid(vrfSubJson); err != nil {
+		a.respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	vrfJson, err := json.Marshal(vrfSubJson)
 	if err != nil {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 	yangVrf := sico_yang.SicoIpsec_Api_Vrf{}
 	if err := sico_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
+		a.respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := yangVrf.Validate(); err != nil {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -639,13 +700,26 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	vrfJson, err := json.Marshal(j["vrf"])
+	vrfSubJson, ok := j["vrf"]
+	if !ok {
+		a.respondWithError(w, http.StatusBadRequest, "malformed json")
+		return
+	}
+	if err := vrfSubJsonValid(vrfSubJson); err != nil {
+		a.respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	vrfJson, err := json.Marshal(vrfSubJson)
 	if err != nil {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 	yangVrf := sico_yang.SicoIpsec_Api_Vrf{}
 	if err := sico_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
+		a.respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := yangVrf.Validate(); err != nil {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
