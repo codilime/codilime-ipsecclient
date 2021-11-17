@@ -584,17 +584,13 @@ func vrfSubJsonValid(vrfSubJson interface{}) error {
 		if !ok {
 			return ReturnNewError("no vlan id")
 		}
-		vlanIdInt, ok := vlanId.(float64)
+		vlanIdFloat, ok := vlanId.(float64)
 		if !ok {
 			return ReturnNewError("wrong vlan id type")
 		}
-		count, _ := vlanIds[vlanIdInt]
-		count++
-		vlanIds[vlanIdInt] = count
-	}
-	for vlanId, count := range vlanIds {
-		if count > 1 {
-			return ReturnNewError(fmt.Sprintf("vlan %f appears more than once, %d times", vlanId, count))
+		vlanIds[vlanIdFloat]++
+		if vlanIds[vlanIdFloat] > 1 {
+			return ReturnNewError(fmt.Sprintf("vlan %f appears more than once, %d times", vlanIdFloat, vlanIds[vlanIdFloat]))
 		}
 	}
 	return nil
