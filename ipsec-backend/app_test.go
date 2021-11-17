@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 	"unicode"
@@ -187,6 +188,19 @@ func TestCreateVrf(t *testing.T) {
 
 	storedVrf.CryptoPh1 = []byte(MarshalCryptoPh1(storedVrf))
 	storedVrf.CryptoPh2 = []byte(MarshalCryptoPh2(storedVrf))
+
+	vlans := []Vlan{}
+	if err := json.Unmarshal(storedVrf.Vlans, &vlans); err != nil {
+		t.Fatalf("error during unmarshaling vlans %v\n", err)
+	}
+	sort.SliceStable(vlans, func(i, j int) bool {
+		return vlans[i].Vlan < vlans[j].Vlan
+	})
+	vlansMarshalled, err := json.Marshal(vlans)
+	if err != nil {
+		t.Fatalf("error during encode data %v\n", err)
+	}
+	storedVrf.Vlans = vlansMarshalled
 
 	if !reflect.DeepEqual(expectedVrf, storedVrf) {
 		t.Fatalf("Expected stored vrf to be '%v'. Got '%v'\n", expectedVrf, storedVrf)
