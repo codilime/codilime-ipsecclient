@@ -460,6 +460,7 @@ func checkVlans(expectedVrf, receivedVrf Vrf, t *testing.T) {
 
 func createTestVrf() Vrf {
 	active := true
+	disablePeerIps := false
 	return Vrf{
 		2,
 		"test vrf",
@@ -469,6 +470,7 @@ func createTestVrf() Vrf {
 		"test_interface",
 		&active,
 		3,
+		&disablePeerIps,
 		[]Endpoint{{
 			1,
 			2,

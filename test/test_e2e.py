@@ -128,6 +128,7 @@ def test_vrf_scenario():
             "crypto_ph2": "esp-gcm.fourteen",
             "physical_interface": "eth0",
             "active": False,
+            "disable_peer_ips": False,
             "local_as": 123,
             "endpoint": [
                 {
