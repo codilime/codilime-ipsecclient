@@ -19,7 +19,7 @@
         "vrf_id": 2,
         "remote_ip_sec": "10.69.0.10",
         "local_ip": "192.168.1.1",
-        "peer_ip": "",
+        "peer_ip": "192.168.1.2",
         "remote_as": 65002,
         "nat": false,
         "bgp": true,

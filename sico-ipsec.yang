@@ -111,6 +111,12 @@ module sico-ipsec {
                 description
                   "local autonomous system number for the bgp session";
             }
+            leaf disable_peer_ips {
+                type boolean;
+                mandatory "false";
+                description
+                    "don't use peer IPs and instead route the traffic directly to the interfaces";
+            }
             list endpoint {
                 key "remote_ip_sec";
                 leaf id {

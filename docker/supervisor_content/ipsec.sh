@@ -116,18 +116,28 @@ for IP in $XFRM_IP; do
   ip link add $INTERFACE type xfrm dev lo if_id $ENDPOINT_ID 2>&1 | logs_err
   ip link set dev $INTERFACE master vrf-$VRF_ID 2>&1 | logs_err
   ip link set dev $INTERFACE up 2>&1 | logs_err
-  if [ -z $PEER_IP ]
+  if [ $DISABLE_PEER_IPS = "true" ]; then
     ip addr add $LOCAL_IP/32 dev $INTERFACE 2>&1 | logs_err
-    ip route 0.0.0.0/0 dev $INTERFACE 2>&1 | logs_err
   else
     ip addr add $LOCAL_IP peer $PEER_IP dev $INTERFACE 2>&1 | logs_err
   fi
+  
   if [ `echo $NAT|awk {'print $'$ITER}` == "YES" ]; then
     iptables -w -t nat -A VRF${VRF_ID}-nat -o $INTERFACE -j MASQUERADE 2>&1 | logs_err
   fi
   
   ITER=$(( $ITER + 1 ))
 done 
+if [ $DISABLE_PEER_IPS = "true" ]; then
+  cmd="ip route add vrf vrf-$VRF_ID 0.0.0.0/0"
+  ITER=1
+  for IP in $XFRM_IP; do
+    INTERFACE="ipsec-$VRF_ID`printf %02d $ITER`"
+    cmd="${cmd} nexthop dev $INTERFACE"
+    ITER=$(( $ITER + 1 ))
+  done
+  eval $cmd
+fi
 logs " ...done"
 
 logs "All done, wating for SIGTERM to finish"

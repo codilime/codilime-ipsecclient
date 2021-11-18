@@ -100,6 +100,7 @@ func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 		CryptoPh2:         stringPointer(ph2),
 		LocalAs:           uint32Pointer(v.LocalAs),
 		PhysicalInterface: stringPointer(v.PhysicalInterface),
+		DisablePeerIps:    boolPointer(*v.DisablePeerIps),
 		Endpoint:          endpoints,
 		Vlan:              vlansMap,
 	}, nil
@@ -143,6 +144,7 @@ func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
 	v.PhysicalInterface = *vrfYang.PhysicalInterface
 	v.Active = vrfYang.Active
 	v.LocalAs = *vrfYang.LocalAs
+	v.DisablePeerIps = vrfYang.DisablePeerIps
 	for _, e := range vrfYang.Endpoint {
 		end := Endpoint{}
 		end.FromYang(e)

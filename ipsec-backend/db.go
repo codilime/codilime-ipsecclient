@@ -66,6 +66,7 @@ type Vrf struct {
 	PhysicalInterface string         `json:"physical_interface"`
 	Active            *bool          `json:"active"` // pointer, otherwise it is impossible to set value to false
 	LocalAs           uint32         `json:"local_as"`
+	DisablePeerIps    *bool          `json:"disable_peer_ips"`
 	Endpoints         []Endpoint     `json:"endpoint"`
 }
 
