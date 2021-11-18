@@ -9,7 +9,16 @@ import (
 const supervisorNetSocketPath = "/opt/super_net/supervisord.sock"
 const supervisorApiSocketPath = "/opt/super_api/supervisord.sock"
 
-func ReloadSupervisor() error {
+type Supervisor struct{}
+
+//go:generate mockgen -source=supervisor.go -destination=mock/supervisor_mock.go -package mock
+type SupervisorInterface interface {
+	ReloadSupervisor() error
+	ReloadStrongswan() error
+	ReloadVtysh() error
+}
+
+func (s *Supervisor) ReloadSupervisor() error {
 	client, err := supervisord.NewUnixSocketClient(supervisorNetSocketPath)
 	if err != nil {
 		return ReturnError(err)
@@ -28,7 +37,21 @@ func ReloadSupervisor() error {
 	return nil
 }
 
-func RestartSupervisorProcess(socketPath, process string) error {
+func (s *Supervisor) ReloadStrongswan() error {
+	if err := s.RestartSupervisor(supervisorNetSocketPath, "strongswan_reload"); err != nil {
+		return ReturnError(err)
+	}
+	return nil
+}
+
+func (s *Supervisor) ReloadVtysh() error {
+	if err := s.RestartSupervisor(supervisorNetSocketPath, "reload_vtysh"); err != nil {
+		return ReturnError(err)
+	}
+	return nil
+}
+
+func (s *Supervisor) RestartSupervisor(socketPath, process string) error {
 	client, err := supervisord.NewUnixSocketClient(socketPath)
 	if err != nil {
 		return ReturnError(err)

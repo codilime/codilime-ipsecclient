@@ -31,12 +31,12 @@ type MockGenerator struct {
 	delCalled int
 }
 
-func (m *MockGenerator) GenerateTemplates(v Vrf) error {
+func (m *MockGenerator) GenerateConfigs(v Vrf) error {
 	m.genCalled++
 	return nil
 }
 
-func (m *MockGenerator) DeleteTemplates(v Vrf) error {
+func (m *MockGenerator) DeleteConfigs(v Vrf) error {
 	m.delCalled++
 	return nil
 }

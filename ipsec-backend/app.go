@@ -42,13 +42,11 @@ const (
 	lastLogBytes = 65536
 
 	timeFormat = "2006-01-02 15:04:01 -0700"
-
-	defaultErrorsRotationDays = 7
 )
 
 type Generator interface {
-	GenerateTemplates(v Vrf) error
-	DeleteTemplates(v Vrf) error
+	GenerateConfigs(v Vrf) error
+	DeleteConfigs(v Vrf) error
 }
 
 type ErrorsRotationHandlerInt interface {
@@ -93,7 +91,7 @@ func (a *App) Initialize(dbName string) error {
 		Fatal(err)
 	}
 
-	a.Generator = FileGenerator{}
+	a.Generator = &FileGenerator{&FileHandler{}, &Supervisor{}}
 	a.initializeRoutes()
 
 	err = a.initializeSettings()
@@ -786,7 +784,7 @@ func (a *App) getHandlers(key string, vrf Vrf) (handler, handler, error) {
 	if vrf.ID == hardwareVrfID {
 		return a.restconfCreate, a.restconfDelete, a.getSwitchCreds(key)
 	} else {
-		return a.Generator.GenerateTemplates, a.Generator.DeleteTemplates, nil
+		return a.Generator.GenerateConfigs, a.Generator.DeleteConfigs, nil
 	}
 }
 
