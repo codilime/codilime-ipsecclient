@@ -116,8 +116,12 @@ for IP in $XFRM_IP; do
   ip link add $INTERFACE type xfrm dev lo if_id $ENDPOINT_ID 2>&1 | logs_err
   ip link set dev $INTERFACE master vrf-$VRF_ID 2>&1 | logs_err
   ip link set dev $INTERFACE up 2>&1 | logs_err
-  ip addr add $LOCAL_IP peer $PEER_IP dev $INTERFACE 2>&1 | logs_err
-  
+  if [ -z $PEER_IP ]
+    ip addr add $LOCAL_IP/32 dev $INTERFACE 2>&1 | logs_err
+    ip route 0.0.0.0/0 dev $INTERFACE 2>&1 | logs_err
+  else
+    ip addr add $LOCAL_IP peer $PEER_IP dev $INTERFACE 2>&1 | logs_err
+  fi
   if [ `echo $NAT|awk {'print $'$ITER}` == "YES" ]; then
     iptables -w -t nat -A VRF${VRF_ID}-nat -o $INTERFACE -j MASQUERADE 2>&1 | logs_err
   fi

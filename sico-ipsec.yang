@@ -43,6 +43,15 @@ module sico-ipsec {
           "the type of tunnel status as seen in monitoring";
     }
 
+    typedef dotted-quad-or-nothing {
+        type union {
+            type dotted-quad;
+            type string {
+                pattern '';
+            }
+        }
+    }
+
     container api {
         list vrf {
             key "client_name";
@@ -127,7 +136,7 @@ module sico-ipsec {
                       "local ip of the tunnel interface";
                 }
                 leaf peer_ip {
-                    type dotted-quad;
+                    type dotted-quad-or-nothing;
                     mandatory "true";
                     description
                       "peer ip of the tunnel interface";
