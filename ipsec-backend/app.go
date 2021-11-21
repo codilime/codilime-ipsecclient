@@ -1,15 +1,15 @@
 package main
 
 import (
-	"context"
-	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"ipsec_backend/config"
+	"ipsec_backend/db"
+	"ipsec_backend/logger"
 	"ipsec_backend/sico_yang"
 	"net/http"
-	"net/http/httptrace"
 	"os"
 	"os/exec"
 	"path"
@@ -43,41 +43,26 @@ const (
 	CAsDir            = "/opt/ipsec/x509ca"
 
 	lastLogBytes = 65536
-
-	timeFormat = "2006-01-02 15:04:01 -0700"
 )
 
-type Generator interface {
-	GenerateConfigs(v Vrf) error
-	DeleteConfigs(v Vrf) error
-}
-
-type ErrorsRotationHandlerInt interface {
-	rotateByDate(db *gorm.DB)
-	rotateBySizeOrDate(db *gorm.DB)
-}
-
 type App struct {
-	Router                *mux.Router
-	DB                    *gorm.DB
-	Generator             Generator
-	errorsRotationHandler ErrorsRotationHandlerInt
-	switchUsername        string
-	switchPassword        string
-	localAddr             string
+	router            *mux.Router
+	db                db.DBinterface
+	softwareGenerator config.Generator
+	hardwareGenerator config.Generator
 }
 
 func (a *App) ensureHWVRF() error {
-	hwVrf := Vrf{
-		ID:         hardwareVrfID,
+	hwVrf := db.Vrf{
+		ID:         db.HardwareVrfID,
 		ClientName: "hardware",
 		CryptoPh1:  []byte("[\"aes-cbc-128\", \"sha256\", \"fourteen\"]"),
 		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
-		Active:     boolPointer(false),
-		Endpoints:  []Endpoint{},
+		Active:     db.BoolPointer(false),
+		Endpoints:  []db.Endpoint{},
 		Vlans:      []byte("[]"),
 	}
-	err := hwVrf.createVrf(a.DB)
+	err := a.db.Create(&hwVrf)
 	if err == nil {
 		return nil
 	}
@@ -85,142 +70,84 @@ func (a *App) ensureHWVRF() error {
 		"UNIQUE constraint failed: vrfs.id") {
 		return nil
 	}
-	return ReturnError(err)
+	return logger.ReturnError(err)
 }
 
-func (a *App) Initialize(dbName string) error {
-	var err error
-	a.DB, err = initializeDB(dbName)
-	if err != nil {
-		Fatal(err)
+func NewApp(dbInstance db.DBinterface, softwareGenerator, hardwareGenerator config.Generator, switchCreds db.SwitchCreds) (*App, error) {
+	app := new(App)
+
+	app.db = dbInstance
+	app.softwareGenerator = softwareGenerator
+	app.hardwareGenerator = hardwareGenerator
+	app.initializeRoutes()
+
+	if err := app.initializeSettings(switchCreds); err != nil {
+		return nil, logger.ReturnError(err)
 	}
 
-	a.Generator = &FileGenerator{&FileHandler{}, &Supervisor{}}
-	a.initializeRoutes()
-
-	err = a.initializeSettings()
-	if err != nil {
-		Fatal(err)
+	if err := app.ensureHWVRF(); err != nil {
+		return nil, logger.ReturnError(err)
 	}
 
-	if err := a.ensureHWVRF(); err != nil {
-		return ReturnError(err)
-	}
-
-	errRotDaysStr, ok := os.LookupEnv("ERR_ROT_DAYS")
-	if !ok {
-		errRotDaysStr = ""
-	}
-
-	errRotSizeStr, ok := os.LookupEnv("ERR_ROT_SIZE")
-	if !ok {
-		errRotSizeStr = ""
-	}
-	a.errorsRotationHandler = newErrorsRotationHandler(errRotDaysStr, errRotSizeStr)
-
-	localAddr, err := a.getLocalAddrToSwitch()
-	if err != nil {
-		return ReturnError(err)
-	}
-	a.localAddr = localAddr
-
-	return ReturnError(ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644))
+	return app, logger.ReturnError(ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644))
 }
 
-func (a *App) getLocalAddrToSwitch() (string, error) {
-	localAddr := ""
-	clientTrace := &httptrace.ClientTrace{
-		GotConn: func(info httptrace.GotConnInfo) {
-			l := strings.Split(info.Conn.LocalAddr().String(), ":")
-			localAddr = l[0]
-		},
-	}
-	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		},
-	}
-	traceCtx := httptrace.WithClientTrace(context.Background(), clientTrace)
-
-	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + "/.well-known/host-meta"
-	req, err := http.NewRequestWithContext(traceCtx, http.MethodGet, fullPath, nil)
-	if err != nil {
-		return "", ReturnError(err)
-	}
-	req.Header.Add("Content-Type", "application/yang-data+json")
-	req.Header.Add("Accept", "application/yang-data+json")
-	req.SetBasicAuth(a.switchUsername, a.switchPassword)
-	_, err = client.Do(req)
-	if err != nil {
-		return "", ReturnError(err)
-	}
-	return localAddr, nil
-}
-
-func (a *App) initializeSettings() error {
+func (a *App) initializeSettings(switchCreds db.SwitchCreds) error {
 	password := "cisco123"
 	if err := htpasswd.SetPassword(nginxPasswordFile, username, password, htpasswd.HashBCrypt); err != nil {
-		return ReturnError(err)
+		return logger.ReturnError(err)
 	}
-	return ReturnError(
-		a.ensureMasterPass(password, randString(32)),
-		a.setSetting(password, "switch_username", "admin"),
-		a.setSetting(password, "switch_password", "cisco123"),
-		a.setSetting(password, "system_name", os.Getenv("CAF_SYSTEM_NAME")),
+	return logger.ReturnError(
+		a.db.SetSetting(password, "switch_username", switchCreds.Username),
+		a.db.SetSetting(password, "switch_password", switchCreds.Password),
+		a.db.SetSetting(password, "system_name", os.Getenv("CAF_SYSTEM_NAME")),
 	)
 }
 
 func (a *App) _changePassword(oldPass, newPass string) error {
 	log.Infof("changing pass from %s to %s", oldPass, newPass)
 	if err := htpasswd.SetPassword(nginxPasswordFile, username, newPass, htpasswd.HashBCrypt); err != nil {
-		return ReturnError(err)
+		return logger.ReturnError(err)
 	}
 	cmd := exec.Command("nginx", "-s", "reload")
 	if _, err := cmd.Output(); err != nil {
-		return ReturnError(err)
+		return logger.ReturnError(err)
 	}
-	masterpass, err := a.getMasterpass(oldPass)
-	if err != nil {
-		return ReturnError(err)
-	}
-	return ReturnError(
-		a.DB.Where("1 = 1").Delete(&Masterpass{}).Error,
-		a.ensureMasterPass(newPass, masterpass),
-	)
+	return logger.ReturnError(a.db.ChangePassword(oldPass, newPass))
 }
 
 func (a *App) Run(addr string) {
-	Fatal(http.ListenAndServe(addr, a.Router))
+	logger.Fatal(http.ListenAndServe(addr, a.router))
 }
 
 func (a *App) initializeRoutes() {
-	a.Router = mux.NewRouter()
-	a.Router.HandleFunc(vrfPath, a.getVrfs).Methods(http.MethodGet)
-	a.Router.HandleFunc(vrfPath, a.createVrf).Methods(http.MethodPost)
-	a.Router.HandleFunc(vrfIDPath, a.getVrf).Methods(http.MethodGet)
-	a.Router.HandleFunc(vrfIDPath, a.updateVrf).Methods(http.MethodPatch)
-	a.Router.HandleFunc(vrfIDPath, a.deleteVrf).Methods(http.MethodDelete)
-	a.Router.HandleFunc(monitoringPath, a.monitoring).Methods(http.MethodGet)
-	a.Router.HandleFunc(logPath, a.getLogs).Methods(http.MethodGet)
-	a.Router.HandleFunc(errorPath, a.getErrors).Methods(http.MethodGet)
-	a.Router.HandleFunc(settingNamePath, a.apiGetSetting).Methods(http.MethodGet)
-	a.Router.HandleFunc(settingNamePath, a.apiSetSetting).Methods(http.MethodPost)
-	a.Router.HandleFunc(passPath, a.changePassword).Methods(http.MethodPost)
-	a.Router.HandleFunc(CAPath, a.setCAs).Methods(http.MethodPost)
-	a.Router.HandleFunc(CAPath, a.getCAs).Methods(http.MethodGet)
-	a.Router.HandleFunc(pkcs12Path, a.getPkcs12).Methods(http.MethodGet)
+	a.router = mux.NewRouter()
+	a.router.HandleFunc(vrfPath, a.getVrfs).Methods(http.MethodGet)
+	a.router.HandleFunc(vrfPath, a.createVrf).Methods(http.MethodPost)
+	a.router.HandleFunc(vrfIDPath, a.getVrf).Methods(http.MethodGet)
+	a.router.HandleFunc(vrfIDPath, a.updateVrf).Methods(http.MethodPatch)
+	a.router.HandleFunc(vrfIDPath, a.deleteVrf).Methods(http.MethodDelete)
+	a.router.HandleFunc(monitoringPath, a.monitoring).Methods(http.MethodGet)
+	a.router.HandleFunc(logPath, a.getLogs).Methods(http.MethodGet)
+	a.router.HandleFunc(errorPath, a.getErrors).Methods(http.MethodGet)
+	a.router.HandleFunc(settingNamePath, a.apiGetSetting).Methods(http.MethodGet)
+	a.router.HandleFunc(settingNamePath, a.apiSetSetting).Methods(http.MethodPost)
+	a.router.HandleFunc(passPath, a.changePassword).Methods(http.MethodPost)
+	a.router.HandleFunc(CAPath, a.setCAs).Methods(http.MethodPost)
+	a.router.HandleFunc(CAPath, a.getCAs).Methods(http.MethodGet)
+	a.router.HandleFunc(pkcs12Path, a.getPkcs12).Methods(http.MethodGet)
 }
 
 func getPassFromHeader(header http.Header) (string, error) {
 	authHeader := header["Authorization"]
 	if len(authHeader) == 0 {
-		return "", ReturnNewError("no basic auth")
+		return "", logger.ReturnNewError("no basic auth")
 	}
 	prefixLen := len("Basic ")
 	based := strings.TrimRight(authHeader[0][prefixLen:], "=")
 	decodedBasicAuth, err := base64.RawStdEncoding.DecodeString(based)
 	if err != nil {
-		return "", ReturnError(err)
+		return "", logger.ReturnError(err)
 	}
 	return strings.Split(string(decodedBasicAuth), ":")[1], nil
 }
@@ -259,12 +186,12 @@ func (a *App) getPkcs12(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, 500, err.Error())
 		return
 	}
-	hwVrf := Vrf{ID: hardwareVrfID}
-	if err := hwVrf.getVrf(a.DB); err != nil {
+	hwVrf := db.Vrf{ID: db.HardwareVrfID}
+	if err := a.db.GetVrf(&hwVrf); err != nil {
 		a.respondWithError(w, 500, err.Error())
 		return
 	}
-	decBytes, err := base64.RawStdEncoding.WithPadding('=').DecodeString(hwVrf.endpointByID(uint32(endpointID)).Authentication.Pkcs12Base64)
+	decBytes, err := base64.RawStdEncoding.WithPadding('=').DecodeString(hwVrf.EndpointByID(uint32(endpointID)).Authentication.Pkcs12Base64)
 	if err != nil {
 		a.respondWithError(w, 500, err.Error())
 		return
@@ -277,24 +204,24 @@ func (a *App) getPkcs12(w http.ResponseWriter, r *http.Request) {
 func ClearCAs() error {
 	dir, err := ioutil.ReadDir(CAsDir)
 	if err != nil {
-		return ReturnError(err)
+		return logger.ReturnError(err)
 	}
 	errs := []error{}
 	for _, d := range dir {
 		errs = append(errs, os.RemoveAll(path.Join([]string{CAsDir, d.Name()}...)))
 	}
-	return ReturnError(errs...)
+	return logger.ReturnError(errs...)
 }
 
-func writeCAs(cas []CertificateAuthority) error {
+func writeCAs(cas []db.CertificateAuthority) error {
 	if err := ClearCAs(); err != nil {
-		return ReturnError(err)
+		return logger.ReturnError(err)
 	}
 	errs := []error{}
 	for _, ca := range cas {
 		errs = append(errs, ioutil.WriteFile(fmt.Sprintf("%s/%d.pem", CAsDir, ca.ID), []byte(ca.CA), 0644))
 	}
-	return ReturnError(errs...)
+	return logger.ReturnError(errs...)
 }
 
 func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
@@ -313,18 +240,18 @@ func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	cas := []CertificateAuthority{}
+	cas := []db.CertificateAuthority{}
 	for _, caYang := range api.Ca {
-		ca := CertificateAuthority{}
+		ca := db.CertificateAuthority{}
 		ca.FromYang(caYang)
 		cas = append(cas, ca)
 	}
-	if err := a.DB.Where("1=1").Delete(&CertificateAuthority{}).Error; err != nil {
+	if err := a.db.DeleteCAs(); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	if len(cas) > 0 {
-		if err := a.DB.Create(&cas).Error; err != nil {
+		if err := a.db.Create(cas); err != nil {
 			a.respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -333,13 +260,13 @@ func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	InfoDebug("Set CAs completed", fmt.Sprintf("Set CAs completed|CAs: %v", cas))
+	logger.InfoDebug("Set CAs completed", fmt.Sprintf("Set CAs completed|CAs: %v", cas))
 	respondWithJSON(w, http.StatusNoContent, nil)
 }
 
 func (a *App) getCAs(w http.ResponseWriter, r *http.Request) {
-	cas := []CertificateAuthority{}
-	if err := a.DB.Find(&cas).Error; err != nil {
+	cas, err := a.db.GetCAs()
+	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -398,11 +325,11 @@ func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := a.setSetting(key, name, *setting.Value); err != nil {
+	if err := a.db.SetSetting(key, name, *setting.Value); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	InfoDebug("Set setting completed", fmt.Sprintf("Set Setting completed|key: %s|value: %s", key, *setting.Value))
+	logger.InfoDebug("Set setting completed", fmt.Sprintf("Set Setting completed|key: %s|value: %s", key, *setting.Value))
 
 	respondWithJSON(w, http.StatusCreated, nil)
 }
@@ -419,14 +346,14 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	value, err := a.getSetting(key, name)
+	value, err := a.db.GetSetting(key, name)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	setting := sico_yang.SicoIpsec_Api_Setting{
-		Name:  stringPointer(name),
-		Value: stringPointer(value),
+		Name:  db.StringPointer(name),
+		Value: db.StringPointer(value),
 	}
 	json, err := ygot.EmitJSON(&setting, &ygot.EmitJSONConfig{
 		Format: ygot.RFC7951,
@@ -443,7 +370,7 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 	vrfsMap := map[string]*sico_yang.SicoIpsec_Api_Vrf{}
-	vrfs, err := getVrfs(a.DB)
+	vrfs, err := a.db.GetVrfs()
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -454,7 +381,7 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for _, v := range vrfs {
-		if err := a.decryptPSK(key, &v); err != nil {
+		if err := a.db.DecryptPSK(key, &v); err != nil {
 			a.respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -487,9 +414,8 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, "Invalid vrf ID")
 		return
 	}
-
-	vrf := Vrf{ID: uint32(id)}
-	if err := vrf.getVrf(a.DB); err != nil {
+	vrf := db.Vrf{ID: uint32(id)}
+	if err := a.db.GetVrf(&vrf); err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			a.respondWithError(w, http.StatusNotFound, "Vrf not found")
@@ -503,11 +429,10 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	if err := a.decryptPSK(key, &vrf); err != nil {
+	if err := a.db.DecryptPSK(key, &vrf); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
 	vrfYang, err := vrf.ToYang()
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -527,27 +452,27 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithMarshalledJSON(w, http.StatusOK, `{"vrf":`+json+`}`)
 }
 
-func vrfUpdateValid(vrf Vrf) (bool, error) {
-	if vrf.ID == hardwareVrfID {
+func vrfUpdateValid(vrf db.Vrf) (bool, error) {
+	if vrf.ID == db.HardwareVrfID {
 		return true, nil
 	}
 	return vrfValid(vrf)
 }
 
-func vrfCreateValid(vrf Vrf) (bool, error) {
-	if vrf.ID == hardwareVrfID {
+func vrfCreateValid(vrf db.Vrf) (bool, error) {
+	if vrf.ID == db.HardwareVrfID {
 		return false, nil
 	}
 	return vrfValid(vrf)
 }
 
-func vrfValid(vrf Vrf) (bool, error) {
+func vrfValid(vrf db.Vrf) (bool, error) {
 	if vrf.PhysicalInterface == "" {
 		return false, nil
 	}
-	vlans, err := vrf.getVlans()
+	vlans, err := vrf.GetVlans()
 	if err != nil {
-		return false, ReturnError(err)
+		return false, logger.ReturnError(err)
 	}
 	for _, v := range vlans {
 		if v.Vlan <= 0 {
@@ -557,43 +482,38 @@ func vrfValid(vrf Vrf) (bool, error) {
 	return true, nil
 }
 
-func (a *App) _updateBackends(key string, vrf, oldVrf *Vrf) error {
-	createHandler, deleteHandler, err := a.getHandlers(key, *vrf)
-	if err != nil {
-		return ReturnError(err)
-	}
-
+func (a *App) _updateBackends(key string, vrf, oldVrf *db.Vrf) error {
 	// save and retrieve the vrf to update the endpoints ids
-	if err := a.encryptPSK(key, vrf); err != nil {
-		return ReturnError(err)
+	if err := a.db.EncryptPSK(key, vrf); err != nil {
+		return logger.ReturnError(err)
 	}
-	if err := vrf.updateVrf(a.DB); err != nil {
-		return ReturnError(err)
+	if err := a.db.UpdateVrf(vrf); err != nil {
+		return logger.ReturnError(err)
 	}
-	if err := vrf.getVrf(a.DB); err != nil {
-		return ReturnError(err)
+	if err := a.db.GetVrf(vrf); err != nil {
+		return logger.ReturnError(err)
 	}
-	if err := a.decryptPSK(key, vrf); err != nil {
-		return ReturnError(err)
+	if err := a.db.DecryptPSK(key, vrf); err != nil {
+		return logger.ReturnError(err)
 	}
 
 	// handle backends
 	if *oldVrf.Active != *vrf.Active {
 		if *vrf.Active {
-			if err := createHandler(*vrf); err != nil {
-				return ReturnError(err)
+			if err := a.generateConfigs(key, *vrf); err != nil {
+				return logger.ReturnError(err)
 			}
 		} else {
-			if err := deleteHandler(*oldVrf); err != nil {
-				return ReturnError(err)
+			if err := a.deleteConfigs(key, *vrf); err != nil {
+				return logger.ReturnError(err)
 			}
 		}
 	} else if *vrf.Active {
-		if err := deleteHandler(*oldVrf); err != nil {
-			return ReturnError(err)
+		if err := a.deleteConfigs(key, *vrf); err != nil {
+			return logger.ReturnError(err)
 		}
-		if err := createHandler(*vrf); err != nil {
-			return ReturnError(err)
+		if err := a.generateConfigs(key, *vrf); err != nil {
+			return logger.ReturnError(err)
 		}
 	}
 	return nil
@@ -602,33 +522,33 @@ func (a *App) _updateBackends(key string, vrf, oldVrf *Vrf) error {
 func vrfSubJsonValid(vrfSubJson interface{}) error {
 	vrf, ok := vrfSubJson.(map[string]interface{})
 	if !ok {
-		return ReturnNewError("wrong vrfSubJson type")
+		return logger.ReturnNewError("wrong vrfSubJson type")
 	}
 	vlans, ok := vrf["vlan"]
 	if !ok {
-		return ReturnNewError("no vlans")
+		return logger.ReturnNewError("no vlans")
 	}
 	vlansList, ok := vlans.([]interface{})
 	if !ok {
-		return ReturnNewError("wrong vlans type")
+		return logger.ReturnNewError("wrong vlans type")
 	}
 	vlanIds := map[float64]int{}
 	for _, v := range vlansList {
 		vlan := v.(map[string]interface{})
 		if !ok {
-			return ReturnNewError("wrong vlan type")
+			return logger.ReturnNewError("wrong vlan type")
 		}
 		vlanId, ok := vlan["vlan"]
 		if !ok {
-			return ReturnNewError("no vlan id")
+			return logger.ReturnNewError("no vlan id")
 		}
 		vlanIdFloat, ok := vlanId.(float64)
 		if !ok {
-			return ReturnNewError("wrong vlan id type")
+			return logger.ReturnNewError("wrong vlan id type")
 		}
 		vlanIds[vlanIdFloat]++
 		if vlanIds[vlanIdFloat] > 1 {
-			return ReturnNewError(fmt.Sprintf("vlan %f appears more than once, %d times", vlanIdFloat, vlanIds[vlanIdFloat]))
+			return logger.ReturnNewError(fmt.Sprintf("vlan %d appears more than once, %d times", int(vlanIdFloat), vlanIds[vlanIdFloat]))
 		}
 	}
 	return nil
@@ -668,7 +588,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	vrf := Vrf{}
+	vrf := db.Vrf{}
 	vrf.FromYang(&yangVrf)
 	valid, err := vrfCreateValid(vrf)
 	if err != nil {
@@ -679,7 +599,6 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, "vrf invalid")
 		return
 	}
-
 	if vrf.Active == nil {
 		vrf.Active = new(bool)
 	}
@@ -688,27 +607,27 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	if err := a.encryptPSK(key, &vrf); err != nil {
+	if err := a.db.EncryptPSK(key, &vrf); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	if err := vrf.createVrf(a.DB); err != nil {
+	if err := a.db.Create(&vrf); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	if err := a.decryptPSK(key, &vrf); err != nil {
+	if err := a.db.DecryptPSK(key, &vrf); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	if err := a._updateBackends(key, &vrf, &Vrf{
+	if err := a._updateBackends(key, &vrf, &db.Vrf{
 		ID:     vrf.ID,
-		Active: boolPointer(false),
+		Active: db.BoolPointer(false),
 	}); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	InfoDebug("Create vrf completed", fmt.Sprintf("Create vrf completed|vrf: %v", vrf))
+	logger.InfoDebug("Create vrf completed", fmt.Sprintf("Create vrf completed|vrf: %v", vrf))
 
 	if len(r.Header["Origin"]) < 1 {
 		w.Header().Set("Location", fmt.Sprintf("%s=%d", vrfPath, vrf.ID))
@@ -719,7 +638,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusCreated, nil)
 }
 
-type handler func(Vrf) error
+type handler func(db.Vrf) error
 
 func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -766,7 +685,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	vrf := Vrf{}
+	vrf := db.Vrf{}
 	vrf.ID = uint32(id)
 	vrf.FromYang(&yangVrf)
 
@@ -779,15 +698,15 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, "vrf invalid")
 		return
 	}
-	var oldVrf Vrf
+	var oldVrf db.Vrf
 	oldVrf.ID = uint32(id)
 
-	if err := oldVrf.getVrf(a.DB); err != nil {
+	if err := a.db.GetVrf(&oldVrf); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	if vrf.ID == hardwareVrfID && vrf.ClientName != oldVrf.ClientName {
+	if vrf.ID == db.HardwareVrfID && vrf.ClientName != oldVrf.ClientName {
 		// can't change the hardware vrf name
 		a.respondWithError(w, http.StatusBadRequest, "Cannot change the hardware vrf name")
 		return
@@ -802,29 +721,45 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	InfoDebug("Update vrf completed", fmt.Sprintf("Update vrf completed|old vrf: %v|updated vrf: %v", oldVrf, vrf))
+	logger.InfoDebug("Update vrf completed", fmt.Sprintf("Update vrf completed|old vrf: %v|updated vrf: %v", oldVrf, vrf))
 
 	respondWithJSON(w, http.StatusNoContent, nil)
 }
 
-func (a *App) getSwitchCreds(key string) error {
+func (a *App) getSwitchCreds(key string) (*db.SwitchCreds, error) {
 	var err error
-	a.switchUsername, err = a.getSetting(key, "switch_username")
+	username, err := a.db.GetSetting(key, "switch_username")
 	if err != nil {
-		return ReturnError(err)
+		return nil, logger.ReturnError(err)
 	}
-	a.switchPassword, err = a.getSetting(key, "switch_password")
+	password, err := a.db.GetSetting(key, "switch_password")
 	if err != nil {
-		return ReturnError(err)
+		return nil, logger.ReturnError(err)
 	}
-	return nil
+	return &db.SwitchCreds{username, password}, nil
 }
 
-func (a *App) getHandlers(key string, vrf Vrf) (handler, handler, error) {
-	if vrf.ID == hardwareVrfID {
-		return a.restconfCreate, a.restconfDelete, a.getSwitchCreds(key)
+func (a *App) generateConfigs(key string, vrf db.Vrf) error {
+	if vrf.ID == db.HardwareVrfID {
+		switchCreds, err := a.getSwitchCreds(key)
+		if err != nil {
+			return err
+		}
+		return a.hardwareGenerator.GenerateConfigs(vrf, *switchCreds)
 	} else {
-		return a.Generator.GenerateConfigs, a.Generator.DeleteConfigs, nil
+		return a.softwareGenerator.GenerateConfigs(vrf)
+	}
+}
+
+func (a *App) deleteConfigs(key string, vrf db.Vrf) error {
+	if vrf.ID == db.HardwareVrfID {
+		switchCreds, err := a.getSwitchCreds(key)
+		if err != nil {
+			return err
+		}
+		return a.hardwareGenerator.DeleteConfigs(vrf, *switchCreds)
+	} else {
+		return a.softwareGenerator.DeleteConfigs(vrf)
 	}
 }
 
@@ -842,24 +777,23 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vrf := Vrf{ID: uint32(id)}
-	if err := vrf.getVrf(a.DB); err != nil {
+	vrf := db.Vrf{ID: uint32(id)}
+	if err := a.db.GetVrf(&vrf); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	_, deleteHandler, err := a.getHandlers(key, vrf)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	err = ReturnError(
+	err = logger.ReturnError(
 		func() error {
-			return deleteHandler(vrf)
+			return a.generateConfigs(key, vrf)
 		}(),
-		vrf.deleteVrf(a.DB),
+		a.db.DeleteVrf(&vrf),
 		func() error {
-			if id == hardwareVrfID {
+			if id == db.HardwareVrfID {
 				return a.ensureHWVRF()
 			}
 			return nil
@@ -868,7 +802,7 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 	}
-	InfoDebug("Delete vrf completed", fmt.Sprintf("Delete vrf completed|deleted vrf: %v", vrf))
+	logger.InfoDebug("Delete vrf completed", fmt.Sprintf("Delete vrf completed|deleted vrf: %v", vrf))
 	respondWithJSON(w, http.StatusNoContent, nil)
 }
 
@@ -882,26 +816,26 @@ func min(a, b int64) int64 {
 func getLastBytesOfFile(fname string, maxBytes int64) ([]byte, error) {
 	file, err := os.Open(fname)
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, logger.ReturnError(err)
 	}
 	defer file.Close()
 
 	stat, err := os.Stat(fname)
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, logger.ReturnError(err)
 	}
 	bytes := min(maxBytes, stat.Size())
 	buf := make([]byte, bytes)
 	start := stat.Size() - bytes
 	_, err = file.ReadAt(buf, start)
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, logger.ReturnError(err)
 	}
 	return buf, nil
 }
 
 func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
-	processInfos, err := GetProcessInfos()
+	processInfos, err := config.GetProcessInfos()
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -916,8 +850,8 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		api.Log[info.Name] = &sico_yang.SicoIpsec_Api_Log{
-			Name: stringPointer(info.Name),
-			Log:  stringPointer(string(log)),
+			Name: db.StringPointer(info.Name),
+			Log:  db.StringPointer(string(log)),
 		}
 	}
 
@@ -933,9 +867,7 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) getErrors(w http.ResponseWriter, r *http.Request) {
-	a.errorsRotationHandler.rotateByDate(a.DB)
-
-	storedErrors, err := getStoredErrors(a.DB)
+	storedErrors, err := a.db.GetStoredErrors()
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -960,18 +892,25 @@ func (a *App) getErrors(w http.ResponseWriter, r *http.Request) {
 	respondWithMarshalledJSON(w, http.StatusOK, json)
 }
 
+func respondWithMarshalledJSON(w http.ResponseWriter, code int, response string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	if _, err := w.Write([]byte(response)); err != nil {
+		logger.ReturnNewError("Error while writing the response: " + err.Error())
+	}
+}
+
 func (a *App) respondWithError(w http.ResponseWriter, code int, message string) {
 	a.storeError(message)
-	returnErrorEx(2, fmt.Errorf(message))
+	logger.ReturnErrorEx(2, fmt.Errorf(message))
 	respondWithJSON(w, code, map[string]string{"result": "error", "error": message})
 }
 
 func (a *App) storeError(message string) {
-	newError := StoredError{Message: message, ErrorTime: time.Now()}
+	newError := db.StoredError{Message: message, ErrorTime: time.Now()}
 
-	a.errorsRotationHandler.rotateBySizeOrDate(a.DB)
-
-	newError.createError(a.DB)
+	a.db.RotateErrorsBySizeOrDate()
+	a.db.Create(&newError)
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
@@ -981,7 +920,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.WriteHeader(code)
 	if payload != nil {
 		if _, err := w.Write(response); err != nil {
-			ReturnNewError("Error while writing the response: " + err.Error())
+			logger.ReturnNewError("Error while writing the response: " + err.Error())
 		}
 	}
 }

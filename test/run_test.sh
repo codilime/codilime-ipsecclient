@@ -5,7 +5,7 @@ set -e
 docker stop sico_test || true
 docker rm sico_test || true
 
-docker run --name sico_test \
+exec docker run --name sico_test \
         --network ipsec \
         --mount type=volume,source=ipsec,destination=/opt/ipsec/ \
         --mount type=volume,source=frr,destination=/opt/frr/ \

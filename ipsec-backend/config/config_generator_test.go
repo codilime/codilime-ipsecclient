@@ -1,6 +1,7 @@
-package main
+package config
 
 import (
+	"ipsec_backend/db"
 	"ipsec_backend/mock"
 	"os"
 	"testing"
@@ -108,11 +109,9 @@ secrets {
 	supervisor.EXPECT().ReloadStrongswan().Return(nil)
 
 	vrf := createTestVrf()
-	vrf.CryptoPh1 = []byte(`["aes128","sha256","modp2048"]`)
-	vrf.CryptoPh2 = []byte(`["cast128","sha512","modp1024"]`)
 	vrf.Endpoints[0].Authentication.Type = "psk"
 
-	generator := FileGenerator{fileHandler, supervisor}
+	generator := SoftwareGenerator{fileHandler, supervisor}
 
 	generator.GenerateConfigs(vrf)
 }
@@ -195,14 +194,12 @@ secrets {
 	supervisor.EXPECT().ReloadStrongswan().Return(nil)
 
 	vrf := createTestVrf()
-	vrf.CryptoPh1 = []byte(`["aes128","sha256","modp2048"]`)
-	vrf.CryptoPh2 = []byte(`["cast128","sha512","modp1024"]`)
 	vrf.Endpoints[0].Authentication.Type = "certs"
 	vrf.Endpoints[0].Authentication.LocalCert = localCert
 	vrf.Endpoints[0].Authentication.RemoteCert = remoteCert
 	vrf.Endpoints[0].Authentication.PrivateKey = privateKey
 
-	generator := FileGenerator{fileHandler, supervisor}
+	generator := SoftwareGenerator{fileHandler, supervisor}
 
 	generator.GenerateConfigs(vrf)
 }
@@ -243,7 +240,7 @@ func TestDeleteTemplateCert(t *testing.T) {
 	vrf := createTestVrf()
 	vrf.Endpoints[0].Authentication.Type = "certs"
 
-	generator := FileGenerator{fileHandler, supervisor}
+	generator := SoftwareGenerator{fileHandler, supervisor}
 
 	generator.DeleteConfigs(vrf)
 }
@@ -272,7 +269,31 @@ func TestDeleteTemplatePsk(t *testing.T) {
 	vrf := createTestVrf()
 	vrf.Endpoints[0].Authentication.Type = "psk"
 
-	generator := FileGenerator{fileHandler, supervisor}
+	generator := SoftwareGenerator{fileHandler, supervisor}
 
 	generator.DeleteConfigs(vrf)
+}
+
+func createTestVrf() db.Vrf {
+	active := true
+	return db.Vrf{
+		2,
+		"test vrf",
+		[]byte(`[{"vlan":1000,"lan_ip":"11.11.0.0/30"},{"vlan":2000,"lan_ip":"22.22.0.0/30"}]`),
+		[]byte(`["aes128","sha256","modp2048"]`),
+		[]byte(`["cast128","sha512","modp1024"]`),
+		"test_interface",
+		&active,
+		3,
+		[]db.Endpoint{{
+			1,
+			2,
+			"192.168.0.1",
+			"0.0.0.1",
+			"10.42.0.1",
+			3,
+			true,
+			false,
+			"eth3",
+			db.EndpointAuth{"psk", "psk23", "", "", "", ""}}}}
 }

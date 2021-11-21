@@ -23,7 +23,7 @@ The app should be available on http://localhost:80
 `docker build -t sico_api_ut -f sico_api_ut.dockerfile .`  
 `./run_api_ut.sh`  
 or  
-inside `ipsec-backend` directory run `CGO_CPPFLAGS="-DSQLITE_ENABLE_DBSTAT_VTAB=1" CGO_LDFLAGS="-lm" go test -v`
+inside `ipsec-backend` directory run `CGO_CPPFLAGS="-DSQLITE_ENABLE_DBSTAT_VTAB=1" CGO_LDFLAGS="-lm" go test -v ./...`
 
 ## additional scripts
 

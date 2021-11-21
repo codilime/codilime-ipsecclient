@@ -12,4 +12,4 @@ RUN go mod download
 COPY ipsec-backend /run
 RUN go build
 
-CMD go test -v
+CMD go test -v ./...
