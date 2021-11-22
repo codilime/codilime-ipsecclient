@@ -33,11 +33,6 @@ def main():
     run_app()
     run_dev_env()
     run_test_cases()
-    subprocess.run(
-        'exec docker exec -it sico_api /bin/sh -c "cat /opt/logs/api.log"',
-        shell=True,
-        check=True,
-    )
     terminate_app_processes()
 
 
@@ -88,11 +83,6 @@ def run_test_cases():
 
     returncode = subprocess.run(run_command, shell=True).returncode
     if returncode:
-        subprocess.run(
-            'exec docker exec -it sico_api /bin/sh -c "cat /opt/logs/api.log"',
-            shell=True,
-            check=True,
-        )
         sys.exit(returncode)
 
 

@@ -12,6 +12,18 @@ import (
 	"gorm.io/gorm"
 )
 
+func (a *App) getMonitoring(key string, vrf db.Vrf) (*sico_yang.SicoIpsec_Api_Monitoring, error) {
+	if vrf.ID == db.HardwareVrfID {
+		switchCreds, err := a.getSwitchCreds(key)
+		if err != nil {
+			return nil, err
+		}
+		return a.hardwareGenerator.GetMonitoring(nil, *switchCreds)
+	} else {
+		return a.softwareGenerator.GetMonitoring(&vrf.ClientName)
+	}
+}
+
 func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
@@ -35,26 +47,13 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	switchCreds, err := a.getSwitchCreds(key)
+
+	monitoring, err := a.getMonitoring(key, vrf)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		a.respondWithError(w, 500, err.Error())
 		return
 	}
 
-	var monitoring *sico_yang.SicoIpsec_Api_Monitoring
-	if vrf.ID != db.HardwareVrfID {
-		monitoring, err = a.softwareGenerator.GetMonitoring(&vrf.ClientName)
-		if err != nil {
-			a.respondWithError(w, 500, err.Error())
-			return
-		}
-	} else {
-		monitoring, err = a.hardwareGenerator.GetMonitoring(nil, *switchCreds)
-		if err != nil {
-			a.respondWithError(w, 500, err.Error())
-			return
-		}
-	}
 	monitoring.Id = db.Uint32Pointer(uint32(id))
 	api := sico_yang.SicoIpsec_Api{
 		Monitoring: map[uint32]*sico_yang.SicoIpsec_Api_Monitoring{
