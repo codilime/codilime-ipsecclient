@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
+	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"ipsec_backend/sico_yang"
 	"net/http"
+	"net/http/httptrace"
 	"os"
 	"os/exec"
 	"path"
@@ -61,6 +64,7 @@ type App struct {
 	errorsRotationHandler ErrorsRotationHandlerInt
 	switchUsername        string
 	switchPassword        string
+	localAddr             string
 }
 
 func (a *App) ensureHWVRF() error {
@@ -114,7 +118,43 @@ func (a *App) Initialize(dbName string) error {
 	}
 	a.errorsRotationHandler = newErrorsRotationHandler(errRotDaysStr, errRotSizeStr)
 
+	localAddr, err := a.getLocalAddrToSwitch()
+	if err != nil {
+		return ReturnError(err)
+	}
+	a.localAddr = localAddr
+
 	return ReturnError(ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644))
+}
+
+func (a *App) getLocalAddrToSwitch() (string, error) {
+	localAddr := ""
+	clientTrace := &httptrace.ClientTrace{
+		GotConn: func(info httptrace.GotConnInfo) {
+			l := strings.Split(info.Conn.LocalAddr().String(), ":")
+			localAddr = l[0]
+		},
+	}
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	traceCtx := httptrace.WithClientTrace(context.Background(), clientTrace)
+
+	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + "/.well-known/host-meta"
+	req, err := http.NewRequestWithContext(traceCtx, http.MethodGet, fullPath, nil)
+	if err != nil {
+		return "", ReturnError(err)
+	}
+	req.Header.Add("Content-Type", "application/yang-data+json")
+	req.Header.Add("Accept", "application/yang-data+json")
+	req.SetBasicAuth(a.switchUsername, a.switchPassword)
+	_, err = client.Do(req)
+	if err != nil {
+		return "", ReturnError(err)
+	}
+	return localAddr, nil
 }
 
 func (a *App) initializeSettings() error {

@@ -170,7 +170,7 @@ func (a *App) insertPkcs12(vrf VrfWithCryptoSlices, client *http.Client) error {
 		"input": {
 			"pki":{
 				"import": {
-					"pkcs12": "http://10.69.0.1/pkcs12/`+strconv.Itoa(int(e.ID))+`",
+					"pkcs12": "http://`+a.localAddr+`/pkcs12/`+strconv.Itoa(int(e.ID))+`",
 					"name-drop-node-name": "hardware_certs`+strconv.Itoa(int(e.ID))+`",
 					"password": "`+e.Authentication.PSK+`"
 				}
