@@ -28,7 +28,7 @@ pipeline {
                 if (env.BRANCH == null) // null = master
                 {
                     sh '''
-                        rm out/*
+                        rm -f out/*
                         python3 -u build.py --pack
                     '''
                     archiveArtifacts 'out/*.tar.gz'
