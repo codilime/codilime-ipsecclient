@@ -22,4 +22,9 @@ pipeline {
             }
         }
     }
+    post {
+        success {
+            archiveArtifacts 'out/*.tar.gz'
+        }
+    }
 }

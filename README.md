@@ -18,6 +18,10 @@ The app should be available on http://localhost:80
 - `ERR_ROT_DAYS` - error rotation - days. This value is used to trigger rotation based on days.
 - `ERR_ROT_SIZE` - error rotation - database size in KB. This value is used to trigger rotation based on database size.
 
+## check version of the app
+
+`docker inspect -f {{.Config.Labels.APP_VERSION}} sico_api`
+
 ## running API unit tests
 
 `docker build -t sico_api_ut -f sico_api_ut.dockerfile .`  
