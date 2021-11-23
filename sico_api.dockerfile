@@ -26,6 +26,10 @@ RUN go build
 
 FROM alpine:3.13 AS sico_api
 
+ARG VERSION=unspecified
+LABEL APP_VERSION=$VERSION
+ENV APP_VERSION=$VERSION
+
 #Packages
 RUN apk add --no-cache nginx gettext supervisor curl sqlite tzdata
 
