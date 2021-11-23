@@ -20,7 +20,7 @@ The app should be available on http://localhost:80
 
 ## check version of the app
 
-`docker inspect -f {{.Config.Labels.APP_VERSION}} sico_api`
+`docker inspect -f {{.Config.Labels.APP_VERSION}} sico_api`  
 `docker inspect -f {{.Config.Labels.APP_VERSION}} sico_net`
 
 ## running API unit tests
