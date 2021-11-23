@@ -113,8 +113,8 @@ if args.pack:
     package_name = "sico_ipsec-" + package_version
     package = "out/" + package_name + ".tar.gz"
     images_path = "out/images/"
-    image_api = package_name + "/sico_api.tar"
-    image_net = package_name + "/sico_net.tar"
+    image_api = package_name + "/sico_api-" + package_version + ".tar"
+    image_net = package_name + "/sico_net-" + package_version + ".tar"
     Path("out/images/" + package_name).mkdir(parents=True, exist_ok=True)
 
     subprocess.run(
