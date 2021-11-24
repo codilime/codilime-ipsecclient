@@ -167,6 +167,7 @@ func (a *App) initializeSettings() error {
 		a.setSetting(password, "switch_username", "admin"),
 		a.setSetting(password, "switch_password", "cisco123"),
 		a.setSetting(password, "system_name", os.Getenv("CAF_SYSTEM_NAME")),
+		a.setSetting(password, "app_version", os.Getenv("APP_VERSION")),
 	)
 }
 

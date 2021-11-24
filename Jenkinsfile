@@ -22,4 +22,18 @@ pipeline {
             }
         }
     }
+    post {
+        success {
+            script {
+                if (env.BRANCH == null) // null = master
+                {
+                    sh '''
+                        rm -f out/*
+                        python3 -u build.py --pack
+                    '''
+                    archiveArtifacts 'out/*.tar.gz'
+                }
+            }
+        }
+    }
 }

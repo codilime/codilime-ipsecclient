@@ -1,5 +1,8 @@
 FROM alpine:3.13 AS sico_net
 
+ARG VERSION=unspecified
+LABEL APP_VERSION=$VERSION
+
 #Packages
 RUN apk add --no-cache strongswan supervisor jq tcpdump
 

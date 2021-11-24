@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-import subprocess, sys, argparse, atexit, time
+import subprocess, sys, argparse, atexit, time, shutil
+from pathlib import Path
 
 
 parser = argparse.ArgumentParser()
@@ -11,6 +12,11 @@ parser.add_argument(
 )
 parser.add_argument(
     "--clean", action="store_true", help="clean docker images and containters"
+)
+parser.add_argument(
+    "--pack",
+    action="store_true",
+    help="create package in the out directory",
 )
 args = parser.parse_args()
 
@@ -54,14 +60,28 @@ if args.csr_vm:
         if csr_vm.returncode:
             sys.exit("Unable to run CSR-VM")
 
+version = subprocess.run(
+    r"git describe --tag --long --abbrev=40",
+    shell=True,
+    check=True,
+    stdout=subprocess.PIPE,
+    universal_newlines=True,
+).stdout.split("\n")[0]
+
 build_processes.append(
     subprocess.Popen(
-        "exec docker build -t sico_api -f sico_api.dockerfile .", shell=True
+        "exec docker build -t sico_api --build-arg VERSION="
+        + version
+        + " -f sico_api.dockerfile .",
+        shell=True,
     )
 )
 build_processes.append(
     subprocess.Popen(
-        "exec docker build -t sico_net -f sico_net.dockerfile .", shell=True
+        "exec docker build -t sico_net --build-arg VERSION="
+        + version
+        + " -f sico_net.dockerfile .",
+        shell=True,
     )
 )
 build_processes.append(
@@ -81,3 +101,44 @@ while build_processes:
         else:
             build_processes.remove(process)
             break
+
+if args.pack:
+    package_version = subprocess.run(
+        r'exec git describe --tags --long | sed "s/\(.*\)-.*/\1/"',
+        shell=True,
+        check=True,
+        stdout=subprocess.PIPE,
+        universal_newlines=True,
+    ).stdout.split("\n")[0]
+    package_name = "sico_ipsec-" + package_version
+    package = "out/" + package_name + ".tar.gz"
+    images_path = "out/images/"
+    image_api = package_name + "/sico_api-" + package_version + ".tar"
+    image_net = package_name + "/sico_net-" + package_version + ".tar"
+    Path("out/images/" + package_name).mkdir(parents=True, exist_ok=True)
+
+    subprocess.run(
+        "exec docker save --output " + images_path + image_api + " sico_api",
+        shell=True,
+        check=True,
+    )
+    subprocess.run(
+        "exec docker save --output " + images_path + image_net + " sico_net",
+        shell=True,
+        check=True,
+    )
+
+    subprocess.run(
+        "tar -czvf "
+        + package
+        + " --directory="
+        + images_path
+        + " "
+        + image_api
+        + " "
+        + image_net,
+        shell=True,
+        check=True,
+    )
+    shutil.rmtree(images_path)
+    print("created package: " + package)
