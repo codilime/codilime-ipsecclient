@@ -18,7 +18,7 @@ const (
 	supervisorConfig = `[program:test vrf]
 command=/usr/local/sbin/ipsec.sh
 # todo: fix this
-environment=PHYS_IF="test_interface", VRF_ID="2", XFRM_IP="0.0.0.1", XFRM_PEER="10.42.0.1", NAT="YES", VLANS_IPS="1000 11.11.0.0/30 2000 22.22.0.0/30 ", ENDPOINT_IDS="1"
+environment=PHYS_IF="test_interface", VRF_ID="2", XFRM_IP="0.0.0.1", XFRM_PEER="10.42.0.1", NAT="YES", VLANS_IPS="1000 11.11.0.0/30 2000 22.22.0.0/30 ", ENDPOINT_IDS="1", DISABLE_PEER_IPS="false"
 redirect_stderr=true
 stdout_logfile=/opt/logs/test vrf.log
 #stdout_logfile_maxbytes = 0

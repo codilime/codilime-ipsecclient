@@ -515,6 +515,11 @@ func vrfValid(vrf Vrf) (bool, error) {
 			return false, nil
 		}
 	}
+	for _, e := range vrf.Endpoints {
+		if vrf.DisablePeerIps != nil && *vrf.DisablePeerIps && e.BGP {
+			return false, nil
+		}
+	}
 	return true, nil
 }
 
