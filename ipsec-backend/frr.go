@@ -21,6 +21,18 @@ func (f *FileGenerator) storeFRRConfig(tmpFile string) error {
 	return nil
 }
 
+type frrTemplateData struct {
+	Vrf
+	VlanList []Vlan
+}
+
+func (d frrTemplateData) HasOSPF() bool {
+	if d.OSPF == nil {
+		return false
+	}
+	return *d.OSPF
+}
+
 func (f *FileGenerator) generateFRRConfig(vrf Vrf) error {
 	bytes, err := ioutil.ReadFile(templatesFolder + "frr.template")
 	if err != nil {
@@ -35,12 +47,9 @@ func (f *FileGenerator) generateFRRConfig(vrf Vrf) error {
 	if err != nil {
 		return ReturnError(err)
 	}
-	if err = t.Execute(&builder, struct {
-		Vrf
-		VlanList []Vlan
-	}{
-		vrf,
-		vlanList,
+	if err = t.Execute(&builder, frrTemplateData{
+		Vrf:      vrf,
+		VlanList: vlanList,
 	}); err != nil {
 		return ReturnError(err)
 	}

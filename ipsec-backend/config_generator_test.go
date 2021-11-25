@@ -36,6 +36,8 @@ address-family ipv4 unicast
 address-family ipv6 unicast
     redistribute connected
     neighbor ipsec activate
+
+
 `
 	frrConfigRemove = `no router bgp 3 vrf vrf-2
 `

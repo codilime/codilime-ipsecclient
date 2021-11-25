@@ -12,7 +12,7 @@ address-family ipv6 unicast
     redistribute connected
     neighbor ipsec activate
 
-{{ if $.OSPF }}
+{{ if $.HasOSPF }}
 
 {{ range $index, $vlan := .VlanList }}
 interface eth0.{{ $vlan.Vlan }} vrf vrf-{{ $.ID }}
