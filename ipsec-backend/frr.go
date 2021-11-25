@@ -31,7 +31,17 @@ func (f *FileGenerator) generateFRRConfig(vrf Vrf) error {
 		return ReturnError(err)
 	}
 	builder := strings.Builder{}
-	if err = t.Execute(&builder, vrf); err != nil {
+	vlanList, err := vrf.getVlans()
+	if err != nil {
+		return ReturnError(err)
+	}
+	if err = t.Execute(&builder, struct {
+		Vrf
+		VlanList []Vlan
+	}{
+		vrf,
+		vlanList,
+	}); err != nil {
 		return ReturnError(err)
 	}
 	template := builder.String()

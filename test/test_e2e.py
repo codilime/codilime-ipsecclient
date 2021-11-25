@@ -130,6 +130,7 @@ def test_vrf_scenario():
             "active": False,
             "disable_peer_ips": False,
             "local_as": 123,
+            "ospf": False,
             "endpoint": [
                 {
                     "remote_ip_sec": "10.1.0.1",

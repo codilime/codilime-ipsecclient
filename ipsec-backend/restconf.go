@@ -108,6 +108,7 @@ func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 		DisablePeerIps:    boolPointer(v.DisablePeerIps),
 		Endpoint:          endpoints,
 		Vlan:              vlansMap,
+		Ospf:              boolPointer(v.OSPF),
 	}, nil
 }
 
@@ -155,6 +156,7 @@ func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
 		end.FromYang(e)
 		v.Endpoints = append(v.Endpoints, end)
 	}
+	v.OSPF = vrfYang.Ospf
 	return nil
 }
 

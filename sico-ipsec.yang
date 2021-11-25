@@ -105,6 +105,11 @@ module sico-ipsec {
                   "a flag whether this vrf is active or is just stored in
                    the database for later";
             }
+            leaf ospf {
+                type boolean;
+                description
+                  "a flag whether this vrf has ospf enabled";
+            }
             leaf local_as {
                 type uint32;
                 mandatory "true";

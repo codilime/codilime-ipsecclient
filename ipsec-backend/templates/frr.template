@@ -11,3 +11,16 @@ address-family ipv4 unicast
 address-family ipv6 unicast
     redistribute connected
     neighbor ipsec activate
+
+{{ if $.OSPF }}
+
+{{ range $index, $vlan := .VlanList }}
+interface eth0.{{ $vlan.Vlan }} vrf vrf-{{ $.ID }}
+    ip ospf area 0
+{{ end }}
+
+router ospf vrf {{ $.ClientName }}
+    redistribute connected
+    redistribute bgp
+
+{{ end }}
