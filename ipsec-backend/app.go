@@ -121,6 +121,7 @@ func (a *App) Initialize(dbName string) error {
 	localAddr, err := a.getLocalAddrToSwitch()
 	if err != nil {
 		Error(err)
+		log.Errorf("cannot connect to switch: %s", err.Error())
 	}
 	a.localAddr = localAddr
 
