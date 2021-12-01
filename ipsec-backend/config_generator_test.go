@@ -24,11 +24,19 @@ stdout_logfile=/opt/logs/test vrf.log
 #stdout_logfile_maxbytes = 0
 `
 	frrConfigCreate = `router bgp 3 vrf vrf-2
-  no bgp ebgp-requires-policy
-  neighbor 10.42.0.1 remote-as external
-  address-family ipv4 unicast
+    no bgp ebgp-requires-policy
+    neighbor ipsec peer-group
+    neighbor ipsec remote-as external
+    
+    neighbor 10.42.0.1 peer-group ipsec
+    
+address-family ipv4 unicast
     redistribute connected
-  exit-address-family`
+    neighbor ipsec activate
+address-family ipv6 unicast
+    redistribute connected
+    neighbor ipsec activate
+`
 	frrConfigRemove = `no router bgp 3 vrf vrf-2
 `
 

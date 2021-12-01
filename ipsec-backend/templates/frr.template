@@ -1,7 +1,6 @@
 router bgp {{ .LocalAs }} vrf vrf-{{ .ID }}
     no bgp ebgp-requires-policy
     neighbor ipsec peer-group
-    neighbor ens4 interface peer-group ipsec
     neighbor ipsec remote-as external
     {{ range $index, $endpoint := .Endpoints }}
     neighbor {{ $endpoint.PeerIP }} peer-group ipsec
