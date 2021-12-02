@@ -68,12 +68,13 @@ type App struct {
 }
 
 func (a *App) ensureHWVRF() error {
+	active := false
 	hwVrf := Vrf{
 		ID:         hardwareVrfID,
 		ClientName: "hardware",
 		CryptoPh1:  []byte("[\"aes-cbc-128\", \"sha256\", \"fourteen\"]"),
 		CryptoPh2:  []byte("[\"esp-aes\", \"esp-sha-hmac\", \"group14\"]"),
-		Active:     boolPointer(false),
+		Active:     boolPointer(&active),
 		Endpoints:  []Endpoint{},
 		Vlans:      []byte("[]"),
 	}
@@ -555,6 +556,11 @@ func vrfValid(vrf Vrf) (bool, error) {
 			return false, nil
 		}
 	}
+	for _, e := range vrf.Endpoints {
+		if vrf.DisablePeerIps != nil && *vrf.DisablePeerIps && e.BGP {
+			return false, nil
+		}
+	}
 	return true, nil
 }
 
@@ -702,9 +708,10 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	active := false
 	if err := a._updateBackends(key, &vrf, &Vrf{
 		ID:     vrf.ID,
-		Active: boolPointer(false),
+		Active: boolPointer(&active),
 	}); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return

@@ -11,8 +11,13 @@ func uint32Pointer(i uint32) *uint32 {
 	return &i
 }
 
-func boolPointer(b bool) *bool {
-	return &b
+func boolPointer(b *bool) *bool {
+	ret := false
+	if b == nil {
+		return &ret
+	}
+	ret = *b
+	return &ret
 }
 
 func stringPointer(s string) *string {
@@ -23,9 +28,9 @@ func (e *Endpoint) ToYang() *sico_yang.SicoIpsec_Api_Vrf_Endpoint {
 	return &sico_yang.SicoIpsec_Api_Vrf_Endpoint{
 		Id:              uint32Pointer(e.ID),
 		VrfId:           uint32Pointer(e.VrfID),
-		Bgp:             boolPointer(e.BGP),
+		Bgp:             boolPointer(&e.BGP),
 		LocalIp:         stringPointer(e.LocalIP),
-		Nat:             boolPointer(e.NAT),
+		Nat:             boolPointer(&e.NAT),
 		PeerIp:          stringPointer(e.PeerIP),
 		RemoteAs:        uint32Pointer(e.RemoteAS),
 		RemoteIpSec:     stringPointer(e.RemoteIPSec),
@@ -94,12 +99,13 @@ func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 	}
 	return &sico_yang.SicoIpsec_Api_Vrf{
 		Id:                uint32Pointer(v.ID),
-		Active:            boolPointer(*v.Active),
+		Active:            boolPointer(v.Active),
 		ClientName:        stringPointer(v.ClientName),
 		CryptoPh1:         stringPointer(ph1),
 		CryptoPh2:         stringPointer(ph2),
 		LocalAs:           uint32Pointer(v.LocalAs),
 		PhysicalInterface: stringPointer(v.PhysicalInterface),
+		DisablePeerIps:    boolPointer(v.DisablePeerIps),
 		Endpoint:          endpoints,
 		Vlan:              vlansMap,
 	}, nil
@@ -143,6 +149,7 @@ func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
 	v.PhysicalInterface = *vrfYang.PhysicalInterface
 	v.Active = vrfYang.Active
 	v.LocalAs = *vrfYang.LocalAs
+	v.DisablePeerIps = vrfYang.DisablePeerIps
 	for _, e := range vrfYang.Endpoint {
 		end := Endpoint{}
 		end.FromYang(e)
