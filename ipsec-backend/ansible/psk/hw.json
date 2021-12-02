@@ -13,6 +13,7 @@
     "physical_interface": "eth0",
     "active": true,
     "local_as": 65002,
+    "ospf": false,
     "endpoint": [
       {
         "id": 6,
