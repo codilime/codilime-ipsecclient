@@ -1,0 +1,13 @@
+router bgp {{ .LocalAs }} vrf vrf-{{ .ID }}
+    no bgp ebgp-requires-policy
+    neighbor ipsec peer-group
+    neighbor ipsec remote-as external
+    {{ range $index, $endpoint := .Endpoints }}
+    neighbor {{ $endpoint.PeerIP }} peer-group ipsec
+    {{ end }}
+address-family ipv4 unicast
+    redistribute connected
+    neighbor ipsec activate
+address-family ipv6 unicast
+    redistribute connected
+    neighbor ipsec activate
