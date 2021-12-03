@@ -130,6 +130,7 @@ def test_vrf_scenario():
             "active": False,
             "disable_peer_ips": False,
             "local_as": 123,
+            "ospf": False,
             "endpoint": [
                 {
                     "remote_ip_sec": "10.1.0.1",
@@ -275,17 +276,17 @@ def check_status_code(response, expected_status_code):
 
 
 def check_monitoring(vrf_id):
-    monitoring_response = requests.get(MONITORING_URL + vrf_id, auth=basicAuth, verify=False)
-    check_status_code(monitoring_response, HTTPStatus.OK)
-
-    try:
-        assert (
-            monitoring_response.json()["monitoring"][0]["endpoint"][0]["status"] == "up"
-        )
-    except (KeyError, IndexError) as e:
-        pytest.fail("Wrong monitoring response" + e)
-    except Exception as e:
-        pytest.fail("unknown exception " + e)
+    retries = 5
+    for i in range(retries):
+        monitoring_response = requests.get(MONITORING_URL + vrf_id, auth=basicAuth, verify=False)
+        check_status_code(monitoring_response, HTTPStatus.OK)
+        monitoring_response = monitoring_response.json()["monitoring"][0]["endpoint"][0]["status"]
+        if monitoring_response != "up":
+            log.info("monitoring_response was %s, will retry %d more times", str(monitoring_response), retries-i+1)
+            time.sleep(1)
+        else:
+            return
+    pytest.fail("Wrong monitoring response", monitoring_response)
 
 
 def create_vrf(vrf_json):

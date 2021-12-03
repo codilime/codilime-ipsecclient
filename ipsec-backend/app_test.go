@@ -89,7 +89,7 @@ func removeWhitespace(str string) string {
 
 func TestEmptyTable(t *testing.T) {
 	clearTable()
-	expectedBody := `{"vrf":[{"active":false,"client_name":"hardware","crypto_ph1":"aes-cbc-128.sha256.fourteen","crypto_ph2":"esp-aes.esp-sha-hmac.group14","disable_peer_ips":false,"endpoint":[],"id":1,"local_as":0,"physical_interface":"","vlan":[]}]}`
+	expectedBody := `{"vrf":[{"active":false,"client_name":"hardware","crypto_ph1":"aes-cbc-128.sha256.fourteen","crypto_ph2":"esp-aes.esp-sha-hmac.group14","disable_peer_ips":false,"endpoint":[],"id":1,"local_as":0,"ospf":false,"physical_interface":"","vlan":[]}]}`
 
 	req, _ := http.NewRequest(http.MethodGet, vrfPath, nil)
 	req.SetBasicAuth("admin", "cisco123")
@@ -148,6 +148,7 @@ func TestCreateVrf(t *testing.T) {
 			"active":             expectedVrf.Active,
 			"local_as":           expectedVrf.LocalAs,
 			"disable_peer_ips":   expectedVrf.DisablePeerIps,
+			"ospf":               expectedVrf.OSPF,
 			"endpoint": []map[string]interface{}{{
 				"remote_ip_sec":    expectedVrf.Endpoints[0].RemoteIPSec,
 				"local_ip":         expectedVrf.Endpoints[0].LocalIP,
@@ -462,6 +463,7 @@ func checkVlans(expectedVrf, receivedVrf Vrf, t *testing.T) {
 func createTestVrf() Vrf {
 	active := true
 	disablePeerIps := false
+	ospf := false
 	return Vrf{
 		2,
 		"test vrf",
@@ -472,6 +474,7 @@ func createTestVrf() Vrf {
 		&active,
 		3,
 		&disablePeerIps,
+		&ospf,
 		[]Endpoint{{
 			1,
 			2,
