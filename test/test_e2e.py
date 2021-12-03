@@ -103,7 +103,9 @@ def test_hardware_vrf(json_file):
     time.sleep(5)
     with open(json_file) as hw_file:
         hw_data = hw_file.read()
-        create_response = requests.patch(VRFS_URL + "=1", data=hw_data, auth=basicAuth, verify=False)
+        create_response = requests.patch(
+            VRFS_URL + "=1", data=hw_data, auth=basicAuth, verify=False
+        )
         check_status_code(create_response, HTTPStatus.NO_CONTENT)
 
 
@@ -195,7 +197,7 @@ def test_change_pass():
         CHANGE_PASS_URL,
         auth=(basicAuth[0], new_password),
         json={"password": basicAuth[1]},
-        verify=False
+        verify=False,
     )
     check_status_code(response, HTTPStatus.NO_CONTENT)
 
@@ -226,11 +228,16 @@ def test_error_handling():
     )
 
     response = requests.post(
-        BASE_URL + "/setting=masterpass", data="test_value", auth=basicAuth, verify=False
+        BASE_URL + "/setting=masterpass",
+        data="test_value",
+        auth=basicAuth,
+        verify=False,
     )
     check_status_code(response, HTTPStatus.BAD_REQUEST)
 
-    errors = requests.get(BASE_URL + "/error", auth=basicAuth, verify=False).json()["error"]
+    errors = requests.get(BASE_URL + "/error", auth=basicAuth, verify=False).json()[
+        "error"
+    ]
 
     number_of_errors = len(errors) - initial_number_of_errors
     error_message = errors[-1]["message"]
@@ -251,7 +258,10 @@ def test_vlans():
     vrf_json = {
         "vrf": {
             "client_name": "test",
-            "vlan": [{"vlan": 123, "lan_ip": "10.0.0.0/24"}, {"vlan": 123, "lan_ip": "11.0.0.0/24"}],
+            "vlan": [
+                {"vlan": 123, "lan_ip": "10.0.0.0/24"},
+                {"vlan": 123, "lan_ip": "11.0.0.0/24"},
+            ],
             "crypto_ph1": "aes-cbc-128.sha256.modp_2048",
             "crypto_ph2": "esp-gcm.fourteen",
             "physical_interface": "eth0",
@@ -260,7 +270,10 @@ def test_vlans():
             "endpoint": [],
         }
     }
-    create_response = requests.post(VRFS_URL, json=vrf_json, auth=basicAuth, verify=False)
+
+    create_response = requests.post(
+        VRFS_URL, json=vrf_json, auth=basicAuth, verify=False
+    )
     check_status_code(create_response, HTTPStatus.BAD_REQUEST)
 
 
@@ -278,11 +291,19 @@ def check_status_code(response, expected_status_code):
 def check_monitoring(vrf_id):
     retries = 5
     for i in range(retries):
-        monitoring_response = requests.get(MONITORING_URL + vrf_id, auth=basicAuth, verify=False)
+        monitoring_response = requests.get(
+            MONITORING_URL + vrf_id, auth=basicAuth, verify=False
+        )
         check_status_code(monitoring_response, HTTPStatus.OK)
-        monitoring_response = monitoring_response.json()["monitoring"][0]["endpoint"][0]["status"]
+        monitoring_response = monitoring_response.json()["monitoring"][0]["endpoint"][
+            0
+        ]["status"]
         if monitoring_response != "up":
-            log.info("monitoring_response was %s, will retry %d more times", str(monitoring_response), retries-i+1)
+            log.info(
+                "monitoring_response was %s, will retry %d more times",
+                str(monitoring_response),
+                retries - i + 1,
+            )
             time.sleep(1)
         else:
             return
@@ -290,7 +311,9 @@ def check_monitoring(vrf_id):
 
 
 def create_vrf(vrf_json):
-    create_response = requests.post(VRFS_URL, json=vrf_json, auth=basicAuth, verify=False)
+    create_response = requests.post(
+        VRFS_URL, json=vrf_json, auth=basicAuth, verify=False
+    )
     check_status_code(create_response, HTTPStatus.CREATED)
 
     return create_response.headers["Location"].split("=")[1]
@@ -303,7 +326,7 @@ def check_vrf_diff(expected_vrf, received_vrf):
         ignore_order=True,
         exclude_regex_paths={r"\['endpoint'\]\[\d+\]\['id'\]"},
     )
-    assert not diff, "Vrfs don't match: " + diff
+    assert not diff, "Vrfs don't match: " + str(diff)
 
 
 def check_vrf(vrf_id, expected_vrf):
@@ -339,7 +362,9 @@ def update_vrf(vrf_id, updated_vrf):
 
 
 def delete_vrf(vrf_id):
-    delete_response = requests.delete(VRFS_URL + "=" + vrf_id, auth=basicAuth, verify=False)
+    delete_response = requests.delete(
+        VRFS_URL + "=" + vrf_id, auth=basicAuth, verify=False
+    )
     check_status_code(delete_response, HTTPStatus.NO_CONTENT)
 
 
@@ -359,7 +384,7 @@ def check_setting(expected_setting):
 
     received_setting = json.loads(response.text)
     diff = DeepDiff(expected_setting, received_setting, ignore_order=True)
-    assert not diff, "Settings don't match: " + diff
+    assert not diff, "Settings don't match: " + str(diff)
 
 
 def set_cas(cas):
@@ -373,5 +398,4 @@ def check_cas(expected_cas):
 
     received_cas = json.loads(response.text)
     diff = DeepDiff(expected_cas, received_cas, ignore_order=True)
-    assert not diff, "CAs don't match: " + diff
-
+    assert not diff, "CAs don't match: " + str(diff)
