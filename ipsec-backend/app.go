@@ -252,7 +252,7 @@ func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(cas) > 0 {
-		if err := a.db.Create(cas); err != nil {
+		if err := a.db.Create(&cas); err != nil {
 			a.respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}

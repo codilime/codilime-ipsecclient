@@ -31,15 +31,7 @@ func main() {
 		panic(err)
 	}
 
-	errRotDaysStr, ok := os.LookupEnv("ERR_ROT_DAYS")
-	if !ok {
-		errRotDaysStr = ""
-	}
-	errRotSizeStr, ok := os.LookupEnv("ERR_ROT_SIZE")
-	if !ok {
-		errRotSizeStr = ""
-	}
-	dbInstance, err := db.MakeDB("/iox_data/appdata/ipsec.db", errRotDaysStr, errRotSizeStr)
+	dbInstance, err := db.MakeDB("/iox_data/appdata/ipsec.db", os.Getenv("ERR_ROT_DAYS"), os.Getenv("ERR_ROT_SIZE"))
 	if err != nil {
 		panic(err)
 	}
