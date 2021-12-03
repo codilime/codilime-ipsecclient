@@ -1,11 +1,11 @@
-package main
+package config
 
 import (
 	"io/ioutil"
 	"os"
 )
 
-//go:generate mockgen -source=file_handler.go -destination=mock/file_handler_mock.go -package mock
+//go:generate mockgen -source=file_handler.go -destination=../mock/file_handler_mock.go -package mock
 type FileHandlerInterface interface {
 	WriteFile(name string, data []byte, perm os.FileMode) error
 	RemoveAll(path string) error

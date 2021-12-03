@@ -1,6 +1,9 @@
 package main
 
 import (
+	"ipsec_backend/config"
+	"ipsec_backend/db"
+	"ipsec_backend/logger"
 	"os"
 
 	log "github.com/sirupsen/logrus"
@@ -17,11 +20,23 @@ func main() {
 		parsedLvl = log.InfoLevel
 	}
 
-	log.SetFormatter(&ErrorFormatter{})
+	log.SetFormatter(&logger.ErrorFormatter{})
 	log.SetLevel(parsedLvl)
 
-	app := App{}
-	err = app.Initialize("/iox_data/appdata/ipsec.db")
+	switchCreds := db.SwitchCreds{os.Getenv("SWITCH_USERNAME"), os.Getenv("SWITCH_PASSWORD")}
+
+	softwareGenerator := &config.SoftwareGenerator{&config.FileHandler{}, &config.Supervisor{}}
+	hardwareGenerator, err := config.NewHardwareGenerator(switchCreds)
+	if err != nil {
+		panic(err)
+	}
+
+	dbInstance, err := db.MakeDB("/iox_data/appdata/ipsec.db", os.Getenv("ERR_ROT_DAYS"), os.Getenv("ERR_ROT_SIZE"))
+	if err != nil {
+		panic(err)
+	}
+
+	app, err := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds)
 	if err != nil {
 		panic(err)
 	}
