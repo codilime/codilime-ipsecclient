@@ -1,4 +1,4 @@
-package main
+package logger
 
 import (
 	"errors"
@@ -69,7 +69,7 @@ func (f *ErrorFormatter) Format(entry *log.Entry) ([]byte, error) {
 
 //Fatal logs error and fails
 func Fatal(errs ...error) {
-	returnErrorEx(2, errs...) // ignore the return value
+	ReturnErrorEx(2, errs...) // ignore the return value
 	fmt.Println("FATAL EXIT")
 	os.Exit(1)
 }
@@ -100,10 +100,10 @@ func InfoDebug(info, debug string) {
 
 //ReturnError logs error, but returns it, allowing returning of errors to be chained in a "stack trace"
 func ReturnError(errs ...error) error {
-	return returnErrorEx(2, errs...)
+	return ReturnErrorEx(2, errs...)
 }
 
-func returnErrorEx(caller int, errs ...error) error {
+func ReturnErrorEx(caller int, errs ...error) error {
 	empty := true
 	for _, v := range errs {
 		if v != nil {
@@ -140,5 +140,5 @@ func returnErrorEx(caller int, errs ...error) error {
 }
 
 func ReturnNewError(err string) error {
-	return returnErrorEx(2, errors.New(err))
+	return ReturnErrorEx(2, errors.New(err))
 }

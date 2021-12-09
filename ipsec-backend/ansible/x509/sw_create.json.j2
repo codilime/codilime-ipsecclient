@@ -1,6 +1,5 @@
 {
   "vrf": {
-    "id": 3,
     "client_name": "ansible_x509",
     "vlan": [
       {
@@ -17,13 +16,29 @@
     "physical_interface": "eth0",
     "active": true,
     "local_as": 65001,
+    "disable_peer_ips": false,
+    "ospf": false,
     "endpoint": [
       {
-        "id": 1,
-        "vrf_id": 3,
         "remote_ip_sec": "10.69.0.101",
         "local_ip": "10.0.1.1",
         "peer_ip": "10.0.1.2",
+        "remote_as": 0,
+        "nat": false,
+        "bgp": true,
+        "source_interface": "GigabitEthernet1",
+        "authentication": {
+          "type": "certs",
+          "psk": "",
+          "local_cert": "{{ lookup("file", "local_cert.pem") | replace("\n", "\\n") }}",
+          "remote_cert": "{{ lookup("file", "remote_cert.pem") | replace("\n", "\\n") }}",
+          "private_key": "{{ lookup("file", "private_key.pem") | replace("\n", "\\n") }}"
+        }
+      },
+      {
+        "remote_ip_sec": "10.69.0.102",
+        "local_ip": "10.0.2.1",
+        "peer_ip": "10.0.2.2",
         "remote_as": 0,
         "nat": false,
         "bgp": true,

@@ -43,6 +43,15 @@ module sico-ipsec {
           "the type of tunnel status as seen in monitoring";
     }
 
+    typedef dotted-quad-or-nothing {
+        type union {
+            type dotted-quad;
+            type string {
+                pattern '';
+            }
+        }
+    }
+
     container api {
         list vrf {
             key "client_name";
@@ -96,11 +105,22 @@ module sico-ipsec {
                   "a flag whether this vrf is active or is just stored in
                    the database for later";
             }
+            leaf ospf {
+                type boolean;
+                description
+                  "a flag whether this vrf has ospf enabled";
+            }
             leaf local_as {
                 type uint32;
                 mandatory "true";
                 description
                   "local autonomous system number for the bgp session";
+            }
+            leaf disable_peer_ips {
+                type boolean;
+                mandatory "false";
+                description
+                    "don't use peer IPs and instead route the traffic directly to the interfaces";
             }
             list endpoint {
                 key "remote_ip_sec";
@@ -127,7 +147,7 @@ module sico-ipsec {
                       "local ip of the tunnel interface";
                 }
                 leaf peer_ip {
-                    type dotted-quad;
+                    type dotted-quad-or-nothing;
                     mandatory "true";
                     description
                       "peer ip of the tunnel interface";
@@ -207,6 +227,21 @@ module sico-ipsec {
                 type string;
             }
             leaf log {
+                type string;
+                mandatory "true";
+            }
+        }
+        list error {
+            config false;
+            leaf id {
+                type uint32;
+                mandatory "true";
+            }
+            leaf message {
+                type string;
+                mandatory "true";
+            }
+            leaf time {
                 type string;
                 mandatory "true";
             }

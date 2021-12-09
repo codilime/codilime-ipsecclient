@@ -1,21 +1,18 @@
-package main
+package config
 
 import (
+	"errors"
 	"ipsec_backend/sico_yang"
 	"strconv"
 	"strings"
+
+	"ipsec_backend/db"
+	"ipsec_backend/logger"
 
 	"github.com/strongswan/govici/vici"
 )
 
 const socketPath = "/opt/ipsec/conf/charon.vici"
-
-func ReloadStrongSwan() error {
-	if err := RestartSupervisorProcess(supervisorNetSocketPath, "strongswan_reload"); err != nil {
-		return ReturnError(err)
-	}
-	return nil
-}
 
 type monitoringEndpoint struct {
 	localAddr  string
@@ -24,34 +21,60 @@ type monitoringEndpoint struct {
 	ID         uint32
 }
 
+func (f *SoftwareGenerator) GetMonitoring(clientName *string, _ ...db.SwitchCreds) (*sico_yang.SicoIpsec_Api_Monitoring, error) {
+	if clientName == nil {
+		return nil, logger.ReturnError(errors.New("wrong monitoring parameter"))
+	}
+	name := strings.Replace(*clientName, "-", "_", 1)
+	statuses, err := getStrongswanState()
+	if err != nil {
+		return nil, logger.ReturnError(err)
+	}
+	ret := sico_yang.SicoIpsec_Api_Monitoring{
+		Endpoint: map[uint32]*sico_yang.SicoIpsec_Api_Monitoring_Endpoint{},
+	}
+	for k, v := range statuses {
+		if strings.Contains(k, name) {
+			ret.Endpoint[v.ID] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
+				LocalIp: db.StringPointer(normalizeAddress(v.localAddr)),
+				PeerIp:  db.StringPointer(normalizeAddress(v.remoteAddr)),
+				Status:  db.StringPointer(normalizeStatus(v.status)),
+				Id:      db.Uint32Pointer(v.ID),
+			}
+		}
+	}
+
+	return &ret, nil
+}
+
 func endpointIDFromKey(key string) (int, error) {
 	l := strings.Split(key, "_")
 	return strconv.Atoi(l[len(l)-1])
 }
 
-func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
+func getStrongswanState() (map[string]*monitoringEndpoint, error) {
 	options := vici.WithSocketPath(socketPath)
 	session, err := vici.NewSession(options)
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, logger.ReturnError(err)
 	}
 	defer session.Close()
 
 	m := vici.NewMessage()
 	err = m.Set("noblock", "yes")
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, logger.ReturnError(err)
 	}
 	ms, err := session.StreamedCommandRequest("list-conns", "list-conn", m)
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, logger.ReturnError(err)
 	}
 	endpoints := map[string]*monitoringEndpoint{}
 	for _, m = range ms.Messages() {
 		for _, key := range m.Keys() {
 			id, err := endpointIDFromKey(key)
 			if err != nil {
-				return nil, ReturnError(err)
+				return nil, logger.ReturnError(err)
 			}
 			e := &monitoringEndpoint{
 				status: "DOWN",
@@ -65,11 +88,11 @@ func GetStrongswanState() (map[string]*monitoringEndpoint, error) {
 	m = vici.NewMessage()
 	err = m.Set("noblock", "yes")
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, logger.ReturnError(err)
 	}
 	ms, err = session.StreamedCommandRequest("list-sas", "list-sa", m)
 	if err != nil {
-		return nil, ReturnError(err)
+		return nil, logger.ReturnError(err)
 	}
 	for _, m = range ms.Messages() {
 		for _, key := range m.Keys() {
@@ -84,27 +107,4 @@ func normalizeAddress(addr string) string {
 		return "0.0.0.0"
 	}
 	return addr
-}
-
-func GetStrongswanSingleState(n string) (*sico_yang.SicoIpsec_Api_Monitoring, error) {
-	name := strings.Replace(n, "-", "_", 1)
-	statuses, err := GetStrongswanState()
-	if err != nil {
-		return nil, ReturnError(err)
-	}
-	ret := sico_yang.SicoIpsec_Api_Monitoring{
-		Endpoint: map[uint32]*sico_yang.SicoIpsec_Api_Monitoring_Endpoint{},
-	}
-	for k, v := range statuses {
-		if strings.Contains(k, name) {
-			ret.Endpoint[v.ID] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
-				LocalIp: stringPointer(normalizeAddress(v.localAddr)),
-				PeerIp:  stringPointer(normalizeAddress(v.remoteAddr)),
-				Status:  stringPointer(normalizeStatus(v.status)),
-				Id:      uint32Pointer(v.ID),
-			}
-		}
-	}
-
-	return &ret, nil
 }

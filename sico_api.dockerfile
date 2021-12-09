@@ -12,6 +12,8 @@ RUN npm run build
 
 ### STAGE 1b: Build API ###
 FROM golang:1.16.3-alpine3.13 AS middleware-build
+ENV CGO_CPPFLAGS="-DSQLITE_ENABLE_DBSTAT_VTAB=1"
+ENV CGO_LDFLAGS="-lm"
 WORKDIR /usr/src/app
 RUN apk add build-base
 COPY ipsec-backend/go.mod .
@@ -24,20 +26,27 @@ RUN go build
 
 FROM alpine:3.13 AS sico_api
 
+ARG VERSION=unspecified
+LABEL APP_VERSION=$VERSION
+ENV APP_VERSION=$VERSION
+
 #Packages
-RUN apk add --no-cache nginx gettext supervisor curl sqlite
+RUN apk add --no-cache nginx gettext supervisor curl sqlite tzdata
 
 #API
 RUN mkdir -p /iox_data/appdata
-COPY ipsec-backend/templates /templates
-COPY ipsec-backend/hw_templates /hw_templates
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
+COPY ipsec-backend/config/templates /templates
+COPY ipsec-backend/hw_templates /hw_templates
 COPY --from=middleware-build /usr/src/app/ipsec_backend /usr/local/sbin/ipsec_api
 COPY docker/api.ini /etc/supervisor.d/
 
 #Front
 RUN mkdir /run/nginx
 COPY ipsec-ui-react/nginx.conf /etc/nginx/conf.d/default.conf.template
+COPY ipsec-ui-react/selfsigned.crt /etc/ssl/certs/nginx-selfsigned.crt
+COPY ipsec-ui-react/selfsigned.key /etc/ssl/private/nginx-selfsigned.key
+COPY ipsec-ui-react/dhparam.pem /etc/ssl/certs/dhparam.pem
 COPY --from=frontend-build /usr/src/app/dist/ /usr/share/nginx/html
 COPY docker/front.ini /etc/supervisor.d/
 COPY docker/nginx.sh /usr/local/sbin/

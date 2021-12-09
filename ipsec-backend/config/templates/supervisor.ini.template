@@ -1,0 +1,7 @@
+[program:{{ $.ClientName }}]
+command=/usr/local/sbin/ipsec.sh
+# todo: fix this
+environment=PHYS_IF="{{ $.PhysicalInterface }}", VRF_ID="{{ $.ID }}", XFRM_IP="{{ $.LocalIPs }}", XFRM_PEER="{{ $.PeerIPs }}", NAT="{{ $.Nats }}", VLANS_IPS="{{ $.Vlans }}", ENDPOINT_IDS="{{ $.EndpointIDs }}", DISABLE_PEER_IPS="{{ $.DisablePeerIps }}"
+redirect_stderr=true
+stdout_logfile=/opt/logs/{{ $.ClientName }}.log
+#stdout_logfile_maxbytes = 0

@@ -11,7 +11,7 @@ docker network create \
                --subnet=10.69.0.0/24 \
                ipsec || true
 
-docker run --name sico_api \
+exec docker run --name sico_api \
         --mount type=volume,source=ipsec,destination=/opt/ipsec/ \
         --mount type=volume,source=frr,destination=/opt/frr/ \
         --mount type=volume,source=super_net,destination=/opt/super_net/ \
@@ -20,7 +20,8 @@ docker run --name sico_api \
         -e SWITCH_ADDRESS=10.69.0.10 \
         -e SWITCH_USERNAME=admin \
         -e SWITCH_PASSWORD=cisco123 \
-        -e LOG_LEVEL=info \
+        -e LOG_LEVEL=debug \
         --network ipsec \
         --publish 80:80 \
+        --publish 443:443 \
         sico_api

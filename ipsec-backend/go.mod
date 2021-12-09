@@ -7,7 +7,10 @@ require (
 	github.com/czerwonk/testutils v0.0.0-20170526233935-dd9dabe360d4 // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/foomo/htpasswd v0.0.0-20200116085101-e3a90e78da9c
+	github.com/go-test/deep v1.0.8 // indirect
+	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.0
+	github.com/jinzhu/copier v0.3.2 // indirect
 	github.com/kolo/xmlrpc v0.0.0-20201022064351-38db28db192b // indirect
 	github.com/mattn/go-sqlite3 v1.14.7
 	github.com/openconfig/goyang v0.2.9

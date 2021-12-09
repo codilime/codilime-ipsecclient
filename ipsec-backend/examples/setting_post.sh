@@ -1,9 +1,10 @@
 #!/bin/bash
 
-curl -v -XPOST http://localhost/restconf/data/sico-ipsec:api/setting=siemka -u "admin:cisco123" -d @- << EOF
+curl -k -v -XPOST https://localhost/restconf/data/sico-ipsec:api/setting=test_name -u "admin:cisco123" -d @- << EOF
 {
-        "setting": {
-                "name": "siemka",
-                "value": "tasiemka"
-        }
+   "setting": {
+      "name":"test_name",
+      "value":"test_value"
+   }
 }
+EOF
