@@ -75,18 +75,33 @@ module.exports = {
   },
   output: {
     path: OUTPUT_PATH,
-    filename: 'bundle.js',
-    publicPath: OUTPUT_PATH
+    filename: '[name].bundle.js',
+    publicPath: OUTPUT_PATH,
+    // chunkFilename: '[id].[chunkhash].js'
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all'
+        }
+      }
+    },
+    runtimeChunk: {
+      name: 'manifest'
+    }
   },
   plugins: [new webpack.HotModuleReplacementPlugin(), new HtmlWebpackPlugin({ template: './src/index.html' }), new CleanWebpackPlugin(), new NodePolyfillPlugin()],
   devServer: {
+    https: true,
     proxy: {
       '/restconf/data/sico-ipsec:api': {
-        target: 'http://0.0.0.0:80',
+        target: 'https://0.0.0.0:443',
         secure: false
       }
     },
-
     historyApiFallback: {
       index: OUTPUT_PATH
     },

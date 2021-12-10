@@ -73,14 +73,29 @@ module.exports = {
   },
   output: {
     path: OUTPUT_PATH,
-    filename: 'bundle.js',
+    filename: '[name].[chunkhash].js',
     publicPath: '/'
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all'
+        }
+      }
+    },
+    runtimeChunk: {
+      name: 'manifest'
+    }
   },
   plugins: [new HtmlWebpackPlugin({ template: './src/index.html' }), new CleanWebpackPlugin(), new NodePolyfillPlugin()],
   devServer: {
+    https: true,
     proxy: {
       '/api': {
-        target: 'http://0.0.0.0:80',
+        target: 'https://0.0.0.0:443',
         secure: false
       }
     },
