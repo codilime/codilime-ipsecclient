@@ -1,3 +1,4 @@
+curl -k -v -XPOST https://localhost/restconf/data/sico-ipsec:api/vrf -u "admin:cisco123" -d @- << EOF
 {
   "vrf": {
     "client_name": "umbrella",
@@ -33,3 +34,4 @@
     ]
   }
 }
+EOF
