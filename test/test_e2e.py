@@ -141,6 +141,7 @@ def test_vrf_scenario():
                     "authentication": {
                         "type": "psk",
                         "psk": "asdasdasdasd",
+                        "local_id": "test@codilime.com",
                         "local_cert": "",
                         "pkcs12_base64": "",
                         "private_key": "",

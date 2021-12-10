@@ -187,6 +187,11 @@ module sico-ipsec {
                         description
                           "in case of 'psk' authentication, this holds the password";
                     }
+                    leaf local_id {
+                        type string;
+                        description
+                          "in case of 'psk' authentication, this holds the local id";
+                    }
                     leaf local_cert {
                         type string;
                         description

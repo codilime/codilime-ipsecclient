@@ -25,7 +25,10 @@ func main() {
 
 	switchCreds := db.SwitchCreds{os.Getenv("SWITCH_USERNAME"), os.Getenv("SWITCH_PASSWORD")}
 
-	softwareGenerator := &config.SoftwareGenerator{&config.FileHandler{}, &config.Supervisor{}}
+	softwareGenerator, err := config.NewSoftwareGenerator(&config.FileHandler{}, &config.Supervisor{})
+	if err != nil {
+		panic(err)
+	}
 	hardwareGenerator, err := config.NewHardwareGenerator(switchCreds)
 	if err != nil {
 		panic(err)
