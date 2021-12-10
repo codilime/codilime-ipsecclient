@@ -51,6 +51,8 @@ address-family ipv6 unicast
 	localCertPath  = "/opt/ipsec/x509/test vrf-0.0.0.1.pem"
 	remoteCertPath = "/opt/ipsec/x509/test vrf-10.42.0.1.pem"
 	privateKeyPath = "/opt/ipsec/rsa/test vrf-10.42.0.1.key.pem"
+
+	remote_ip_sec = "192.168.0.1"
 )
 
 const config_psk = `connections {
@@ -118,7 +120,6 @@ func _testGenerateTemplatePsk(vrf db.Vrf, vrfConf []byte, t *testing.T) {
 
 func TestGenerateTemplatePsk(t *testing.T) {
 	local_id := ""
-	remote_ip_sec := "192.168.0.1"
 
 	vrf := createTestVrf()
 	vrf.Endpoints[0].RemoteIPSec = remote_ip_sec
@@ -131,7 +132,6 @@ func TestGenerateTemplatePsk(t *testing.T) {
 
 func TestGenerateTemplatePskLocalId(t *testing.T) {
 	local_id := "test@codilime.com"
-	remote_ip_sec := "192.168.0.1"
 
 	vrf := createTestVrf()
 	vrf.Endpoints[0].RemoteIPSec = remote_ip_sec
