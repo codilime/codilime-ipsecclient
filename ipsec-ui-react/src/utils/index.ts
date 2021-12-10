@@ -1,4 +1,4 @@
-import { pki } from 'node-forge';
+import { pki, util } from 'node-forge';
 
 export const validateDataInput = (event: any) => {
   const { name } = event.target;
@@ -31,12 +31,15 @@ export function handleTakeTime() {
   return dateTime;
 }
 
+export const pkcs12ToBase64 = (el: any) => util.encode64(el);
+
 export const decodeX509 = (x509: string) => {
   if (x509 !== '' && x509.includes('CERTIFICATE')) {
     const cert = pki.certificateFromPem(x509);
     const { value: CN } = cert.subject.attributes.filter((attr) => attr.shortName === 'CN')[0];
     const { value: ON } = cert.subject.attributes.filter((attr) => attr.shortName === 'O')[0];
-    if (CN === typeof 'string' && ON === typeof 'string') {
+
+    if (typeof CN === 'string' && typeof ON === 'string') {
       const decode: { CN: string; ON: string } = { CN, ON };
       return decode;
     }

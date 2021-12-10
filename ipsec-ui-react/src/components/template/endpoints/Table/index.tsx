@@ -2,11 +2,11 @@ import { FC } from 'react';
 import { EndpointButton } from 'common/';
 import { EachEndpoint, Wrapper } from 'template';
 import { useCreateEndpointTable } from 'hooks/';
-import { newVrf, endpointTableConst } from 'constant/';
+import { newVrf, EndpointTableConst } from 'constant/';
 import classNames from 'classnames';
 import './styles.scss';
 
-const { pskCertificates, nat, bgp, action, remote } = endpointTableConst;
+const { pskCertificates, nat, bgp, action, remote } = EndpointTableConst;
 
 export const Endpoints: FC = () => {
   const { currentLocation, open, EndpointSchema, vrfEndpoints, headerSchema, handleActionVrfEndpoints, handleToggle } = useCreateEndpointTable();

@@ -3,7 +3,8 @@ import { EndpointInput, Button, UploadCertificates } from 'common/';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
 import { EndpointsType } from 'interface/index';
-import { decodeX509 } from 'utils/';
+import { useVrfLogic } from 'hooks/';
+import { decodeX509, pkcs12ToBase64 } from 'utils/';
 
 interface HookType {
   edit: boolean;
@@ -12,15 +13,24 @@ interface HookType {
   endpoints: EndpointsType;
 }
 
+interface fileNameType {
+  key: string;
+  certificate: string;
+  peerCertificate: string;
+  pkcs12_base64: string;
+}
+
 export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: HookType) => {
-  const [fileName, setFileName] = useState<{ key: string; certificate: string; peerCertificate: string }>({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' });
+  const [fileName, setFileName] = useState<fileNameType>({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File', pkcs12_base64: 'Attach File' });
   const {
-    authentication: { type, psk, private_key, local_cert, remote_cert }
+    authentication: { type, psk, private_key, local_cert, remote_cert, pkcs12_base64 }
   } = endpoints;
+  const { hardware } = useVrfLogic();
 
   const key = useRef<HTMLInputElement>(null);
   const certificate = useRef<HTMLInputElement>(null);
   const peerCertificate = useRef<HTMLInputElement>(null);
+  const pkcs12 = useRef<HTMLInputElement>(null);
 
   const handleUploadFile = (name: string) => {
     switch (name) {
@@ -30,6 +40,8 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
         return certificate.current?.click();
       case 'remote_cert':
         return peerCertificate.current?.click();
+      case 'pkcs12_base64':
+        return pkcs12.current?.click();
       default:
         return;
     }
@@ -40,44 +52,93 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
 
     if (!ref.current?.files) return;
     const reader = new FileReader();
-
-    reader.onload = (e) => {
-      setEndpoint((prev: EndpointsType) => ({
-        ...prev,
-        authentication: {
-          ...prev.authentication,
-          psk: '',
-          [name]: e.target?.result
-        }
-      }));
-    };
-    reader.readAsText(ref.current.files[0]);
+    if (name !== 'pkcs12_base64')
+      reader.onload = (e) => {
+        setEndpoint((prev: EndpointsType) => ({
+          ...prev,
+          authentication: {
+            ...prev.authentication,
+            psk: '',
+            [name]: e.target?.result
+          }
+        }));
+      };
+    if (name === 'pkcs12_base64') {
+      reader.onload = (e) => {
+        const base64 = pkcs12ToBase64(e.target?.result);
+        setEndpoint((prev: EndpointsType) => ({
+          ...prev,
+          authentication: {
+            ...prev.authentication,
+            psk: '',
+            [name]: base64
+          }
+        }));
+      };
+      reader.readAsBinaryString(ref.current.files[0]);
+    }
   };
 
   const handleUpdateEndpoint = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    switch (name) {
-      case 'psk':
-        setFileName({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' });
-        return setEndpoint((prev) => ({
-          ...prev,
-          authentication: {
-            ...prev.authentication,
-            private_key: '',
-            local_cert: '',
-            remote_cert: '',
-            [name]: value
+    if (hardware) {
+      switch (name) {
+        case 'psk':
+          if (type === 'certs') {
+            return setEndpoint((prev) => ({
+              ...prev,
+              authentication: {
+                ...prev.authentication,
+                private_key: '',
+                local_cert: '',
+                remote_cert: '',
+                [name]: value
+              }
+            }));
+          } else {
+            setFileName((prev) => ({ ...prev, pkcs12_base64: 'Attach File' }));
+            return setEndpoint((prev) => ({
+              ...prev,
+              authentication: {
+                ...prev.authentication,
+                private_key: '',
+                local_cert: '',
+                remote_cert: '',
+                pkcs12_base64: '',
+                [name]: value
+              }
+            }));
           }
-        }));
-      case 'private_key':
-        return handleChangeValueFile(e, setEndpoint, key);
-      case 'local_cert':
-        return handleChangeValueFile(e, setEndpoint, certificate);
-      case 'remote_cert':
-        return handleChangeValueFile(e, setEndpoint, peerCertificate);
-      default:
-        return;
-    }
+        case 'pkcs12_base64':
+          return handleChangeValueFile(e, setEndpoint, pkcs12);
+        default:
+          return;
+      }
+    } else
+      switch (name) {
+        case 'psk':
+          setFileName((prev) => ({ ...prev, key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' }));
+          return setEndpoint((prev) => ({
+            ...prev,
+            authentication: {
+              ...prev.authentication,
+              private_key: '',
+              local_cert: '',
+              remote_cert: '',
+              [name]: value
+            }
+          }));
+        case 'private_key':
+          return handleChangeValueFile(e, setEndpoint, key);
+        case 'local_cert':
+          return handleChangeValueFile(e, setEndpoint, certificate);
+        case 'remote_cert':
+          return handleChangeValueFile(e, setEndpoint, peerCertificate);
+        case 'pkcs12_base64':
+          return handleChangeValueFile(e, setEndpoint, pkcs12);
+        default:
+          return;
+      }
   };
 
   const handleChooseAuthentication = (name: string) => {
@@ -85,6 +146,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       ...prev,
       authentication: {
         ...prev.authentication,
+        psk: '',
         type: name
       }
     }));
@@ -102,11 +164,14 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       const decode = decodeX509(remote_cert);
       if (decode) setFileName((prev) => ({ ...prev, peerCertificate: decode.CN }));
     }
+    if (pkcs12_base64) {
+      setFileName((prev) => ({ ...prev, pkcs12_base64: 'Complete' }));
+    }
   };
 
   useEffect(() => {
     handleUpdateFileName();
-  }, [private_key, local_cert, remote_cert]);
+  }, [private_key, local_cert, remote_cert, pkcs12_base64]);
 
   const UploadCaSchema = [
     {
@@ -115,6 +180,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       label: 'key',
       text: fileName.key,
       edit,
+      error,
       references: key,
       onChange: handleUpdateEndpoint,
       handleUploadFile
@@ -125,6 +191,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       label: 'Certificate',
       text: fileName.certificate,
       edit,
+      error,
       references: certificate,
       onChange: handleUpdateEndpoint,
       handleUploadFile
@@ -135,6 +202,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       label: 'Peer Certificate',
       text: fileName.peerCertificate,
       edit,
+      error,
       references: peerCertificate,
       onChange: handleUpdateEndpoint,
       handleUploadFile
@@ -143,38 +211,73 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
 
   const displayCerts = UploadCaSchema.map((ca) => <UploadCertificates key={ca.name} {...ca} />);
 
+  const initOptions = (el: any) => {
+    return (
+      <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
+        <div className="table__center">
+          <button className="table__psk__btn" onClick={() => handleChooseAuthentication('psk')}>
+            Enter PSK
+          </button>
+        </div>
+        <span className="table__text">or</span>
+        <div className="table__center">
+          <Button className="table__btn" onClick={() => handleChooseAuthentication('certs')}>
+            X509
+          </Button>
+        </div>
+      </td>
+    );
+  };
+
+  const initPskOption = (el: any) => {
+    return (
+      <td key={el.name} className={classNames('table__column', 'table__psk')}>
+        <EndpointInput {...{ ...el, onChange: handleUpdateEndpoint, edit, error, value: psk }} />
+        <div className="table__iconBox">{edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}</div>
+      </td>
+    );
+  };
+
+  const initCertsOption = (el: any) => {
+    if (hardware) {
+      return (
+        <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
+          <UploadCertificates
+            {...{
+              key: el.name,
+              type: 'file',
+              name: 'pkcs12_base64',
+              label: 'Password',
+              text: fileName.pkcs12_base64,
+              edit,
+              references: pkcs12,
+              onChange: handleUpdateEndpoint,
+              handleUploadFile,
+              error,
+              className: 'table__certificates__hardware'
+            }}
+          />
+          <EndpointInput {...{ ...el, onChange: handleUpdateEndpoint, edit, error, value: psk, hardware }} />
+          {edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}
+        </td>
+      );
+    } else
+      return (
+        <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
+          {displayCerts}
+          {edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}
+        </td>
+      );
+  };
+
   const handleGeneratePskField = (el: any) => {
     switch (type) {
       case 'psk':
-        return (
-          <td key={el.name} className={classNames('table__column', 'table__psk')}>
-            <EndpointInput {...{ ...el, onChange: handleUpdateEndpoint, edit, error, value: psk }} />
-            <div className="table__iconBox">{edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}</div>
-          </td>
-        );
+        return initPskOption(el);
       case 'certs':
-        return (
-          <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
-            {displayCerts}
-            {edit && <AiFillCloseCircle className="table__icon table__icon__change" onClick={() => handleChooseAuthentication('')} />}
-          </td>
-        );
+        return initCertsOption(el);
       default:
-        return (
-          <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
-            <div className="table__center">
-              <button className="table__psk__btn" onClick={() => handleChooseAuthentication('psk')}>
-                Enter PSK
-              </button>
-            </div>
-            <span className="table__text">or</span>
-            <div className="table__center">
-              <Button className="table__btn" onClick={() => handleChooseAuthentication('certs')}>
-                X509
-              </Button>
-            </div>
-          </td>
-        );
+        return initOptions(el);
     }
   };
 

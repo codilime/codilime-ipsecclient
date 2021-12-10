@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { EndpointInput, UploadButton } from 'common/';
 import { InputType } from 'interface/components';
+import classNames from 'classnames';
 
 interface UploadCertificates extends InputType {
   edit: boolean;
@@ -8,14 +9,13 @@ interface UploadCertificates extends InputType {
   text: string;
   className?: string;
   handleUploadFile: (name: string) => void;
+  error?: any;
 }
 
-export const UploadCertificates: FC<UploadCertificates> = ({ type, name, onChange, edit, references, value, label, text, handleUploadFile, className = '' }) => {
-  return (
-    <div className="table__certificates">
-      <EndpointInput {...{ type, name, onChange, edit, references, value }} />
-      {label && <p className="table__title">{label}</p>}
-      <UploadButton {...{ onClick: () => handleUploadFile(name), name, edit, className }}>{text}</UploadButton>
-    </div>
-  );
-};
+export const UploadCertificates: FC<UploadCertificates> = ({ type, name, onChange, edit, references, value, label, text, handleUploadFile, className = '', error }) => (
+  <div className={classNames('table__certificates', { [className]: className })}>
+    <EndpointInput {...{ type, name, onChange, edit, references, value }} />
+    {label && <p className="table__title">{label}</p>}
+    <UploadButton {...{ onClick: () => handleUploadFile(name), name, edit, error }}>{text}</UploadButton>
+  </div>
+);

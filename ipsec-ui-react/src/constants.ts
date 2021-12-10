@@ -5,7 +5,7 @@ export const maxValueForRemoteAS = 4094;
 export const newVrf = 'create';
 export const HardwareId = '1';
 
-export enum endpointTableConst {
+export enum EndpointTableConst {
   nat = 'NAT',
   bgp = 'BGP',
   action = 'ACTION',

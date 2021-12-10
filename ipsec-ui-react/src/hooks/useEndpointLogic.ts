@@ -16,7 +16,6 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
   const [endpoints, setEndpoint] = useState<EndpointsType>(EndpointSchema);
   const [edit, setEdit] = useState(active);
   const { handleGeneratePskField } = useChoiceCertyficate({ edit, error, setEndpoint, endpoints });
-
   const handleActiveEdit = () => setEdit((prev) => !prev);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {

@@ -6,6 +6,7 @@ interface AuthenticationType {
   local_cert: string;
   remote_cert: string;
   private_key: string;
+  pkcs12_base64: string;
 }
 
 export interface EndpointsType {

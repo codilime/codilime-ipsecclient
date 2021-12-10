@@ -24,7 +24,6 @@ export const VlanInput: FC<VlanInput> = ({ text, type, name, placeholder, value,
         placeholder,
         min,
         className: classNames('vlan__input', { vlan__error: error, vlan__input__vlan: name === 'vlan' }),
-        onKeyPress: validateDataInput,
         value,
         onChange
       }}
