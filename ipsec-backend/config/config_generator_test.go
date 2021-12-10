@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"ipsec_backend/db"
 	"ipsec_backend/mock"
 	"os"
@@ -50,24 +51,21 @@ address-family ipv6 unicast
 	localCertPath  = "/opt/ipsec/x509/test vrf-0.0.0.1.pem"
 	remoteCertPath = "/opt/ipsec/x509/test vrf-10.42.0.1.pem"
 	privateKeyPath = "/opt/ipsec/rsa/test vrf-10.42.0.1.key.pem"
+
+	remote_ip_sec = "192.168.0.1"
 )
 
-func TestGenerateTemplatePsk(t *testing.T) {
-	vrfConf := []byte(`connections {
+const config_psk = `connections {
 
     test vrf_1 {
-        remote_addrs = 192.168.0.1
+        remote_addrs = %s
         local {
-            
                 auth = psk
-                id = 192.168.0.1
-            
+                    id = %s
         }
         remote {
-            
                 auth = psk
-                id = 192.168.0.1
-            
+                id = %s
         }
         children {
             site-cisco_1 {
@@ -77,7 +75,7 @@ func TestGenerateTemplatePsk(t *testing.T) {
                 if_id_out = 1
                 esp_proposals = cast128-sha512-modp1024
                 start_action = start
-                updown=/usr/local/bin/status.sh test vrf-1-192.168.0.1
+                updown=/usr/local/bin/status.sh test vrf-1-%s
                 copy_dscp = out
             }
         }
@@ -87,17 +85,15 @@ func TestGenerateTemplatePsk(t *testing.T) {
 
 }
 secrets {
-
     ike-test vrf_1 {
-        
-            id = 192.168.0.1
+                id = %s
             secret = psk23
-        
     }
 
 }
-`)
+`
 
+func _testGenerateTemplatePsk(vrf db.Vrf, vrfConf []byte, t *testing.T) {
 	ctrl := gomock.NewController(t)
 	fileHandler := mock.NewMockFileHandlerInterface(ctrl)
 	supervisor := mock.NewMockSupervisorInterface(ctrl)
@@ -118,12 +114,32 @@ secrets {
 	supervisor.EXPECT().ReloadSupervisor().Return(nil)
 	supervisor.EXPECT().ReloadStrongswan().Return(nil)
 
-	vrf := createTestVrf()
-	vrf.Endpoints[0].Authentication.Type = "psk"
-
 	generator := SoftwareGenerator{fileHandler, supervisor}
-
 	generator.GenerateConfigs(vrf)
+}
+
+func TestGenerateTemplatePsk(t *testing.T) {
+	local_id := ""
+
+	vrf := createTestVrf()
+	vrf.Endpoints[0].RemoteIPSec = remote_ip_sec
+	vrf.Endpoints[0].Authentication.Type = "psk"
+	vrf.Endpoints[0].Authentication.LocalID = local_id
+
+	vrfConf := []byte(fmt.Sprintf(config_psk, remote_ip_sec, remote_ip_sec, remote_ip_sec, remote_ip_sec, remote_ip_sec))
+	_testGenerateTemplatePsk(vrf, vrfConf, t)
+}
+
+func TestGenerateTemplatePskLocalId(t *testing.T) {
+	local_id := "test@codilime.com"
+
+	vrf := createTestVrf()
+	vrf.Endpoints[0].RemoteIPSec = remote_ip_sec
+	vrf.Endpoints[0].Authentication.Type = "psk"
+	vrf.Endpoints[0].Authentication.LocalID = local_id
+
+	vrfConf := []byte(fmt.Sprintf(config_psk, remote_ip_sec, local_id, remote_ip_sec, remote_ip_sec, local_id))
+	_testGenerateTemplatePsk(vrf, vrfConf, t)
 }
 
 func TestGenerateTemplateCert(t *testing.T) {
@@ -132,16 +148,12 @@ func TestGenerateTemplateCert(t *testing.T) {
     test vrf_1 {
         remote_addrs = 192.168.0.1
         local {
-            
                 auth = pubkey
                 certs = test vrf-0.0.0.1.pem
-            
         }
         remote {
-            
                 auth = pubkey
                 certs = test vrf-10.42.0.1.pem
-            
         }
         children {
             site-cisco_1 {
@@ -161,11 +173,8 @@ func TestGenerateTemplateCert(t *testing.T) {
 
 }
 secrets {
-
     ike-test vrf_1 {
-        
             file = test vrf-10.42.0.1.key.pem
-        
     }
 
 }
@@ -309,5 +318,5 @@ func createTestVrf() db.Vrf {
 			true,
 			false,
 			"eth3",
-			db.EndpointAuth{"psk", "psk23", "", "", "", ""}}}}
+			db.EndpointAuth{"psk", "psk23", "", "", "", "", ""}}}}
 }

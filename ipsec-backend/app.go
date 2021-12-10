@@ -89,7 +89,7 @@ func NewApp(dbInstance db.DBinterface, softwareGenerator, hardwareGenerator conf
 		return nil, logger.ReturnError(err)
 	}
 
-	return app, logger.ReturnError(ioutil.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644))
+	return app, nil
 }
 
 func (a *App) initializeSettings(switchCreds db.SwitchCreds) error {

@@ -28,6 +28,13 @@ type SoftwareGenerator struct {
 	Supervisor  SupervisorInterface
 }
 
+func NewSoftwareGenerator(FileHandler FileHandlerInterface, Supervisor SupervisorInterface) (*SoftwareGenerator, error) {
+	if err := FileHandler.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644); err != nil {
+		return nil, err
+	}
+	return &SoftwareGenerator{FileHandler, Supervisor}, nil
+}
+
 func (f *SoftwareGenerator) GenerateConfigs(vrf db.Vrf, _ ...db.SwitchCreds) error {
 	log.Infof("generating templates")
 	if err := f.saveCerts(&vrf); err != nil {

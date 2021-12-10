@@ -3,22 +3,26 @@ connections {
     {{ $.ClientName }}_{{ $endpoint.ID }} {
         remote_addrs = {{ $endpoint.RemoteIPSec }}
         local {
-            {{ if $endpoint.IsPSK }}
+            {{- if $endpoint.IsPSK }}
                 auth = psk
-                id = {{ $endpoint.RemoteIPSec }}
-            {{ else if $endpoint.IsCerts }}
+                {{- if $endpoint.Authentication.LocalID }}
+                    id = {{ $endpoint.Authentication.LocalID }}
+                {{- else }}
+                    id = {{ $endpoint.RemoteIPSec }}
+                {{- end }}
+            {{- else if $endpoint.IsCerts }}
                 auth = pubkey
                 certs = {{$.ClientName}}-{{$endpoint.LocalIP}}.pem
-            {{ end }}
+            {{- end }}
         }
         remote {
-            {{ if $endpoint.IsPSK }}
+            {{- if $endpoint.IsPSK }}
                 auth = psk
                 id = {{ $endpoint.RemoteIPSec }}
-            {{ else if $endpoint.IsCerts }}
+            {{- else if $endpoint.IsCerts }}
                 auth = pubkey
                 certs = {{$.ClientName}}-{{$endpoint.PeerIP}}.pem
-            {{ end }}
+            {{- end }}
         }
         children {
             site-cisco_{{ $endpoint.ID }} {
@@ -38,14 +42,18 @@ connections {
 {{ end }}
 }
 secrets {
-{{ range $index, $endpoint := .Endpoints }}
+{{- range $index, $endpoint := .Endpoints }}
     ike-{{ $.ClientName }}_{{ $endpoint.ID }} {
-        {{ if $endpoint.IsPSK }}
-            id = {{ $endpoint.RemoteIPSec }}
+        {{- if $endpoint.IsPSK }}
+            {{- if $endpoint.Authentication.LocalID }}
+                id = {{ $endpoint.Authentication.LocalID }}
+            {{- else }}
+                id = {{ $endpoint.RemoteIPSec }}
+            {{- end }}
             secret = {{ $endpoint.Authentication.PSK }}
-        {{ else if $endpoint.IsCerts }}
+        {{- else if $endpoint.IsCerts }}
             file = {{$.ClientName}}-{{$endpoint.PeerIP}}.key.pem
-        {{ end }}
+        {{- end }}
     }
 {{ end }}
 }

@@ -51,6 +51,7 @@ type DB struct {
 type EndpointAuth struct {
 	Type         string `json:"type"`
 	PSK          string `json:"psk"`
+	LocalID      string `json:"local_id"`
 	LocalCert    string `json:"local_cert"`
 	RemoteCert   string `json:"remote_cert"`
 	PrivateKey   string `json:"private_key"`

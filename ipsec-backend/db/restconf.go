@@ -40,6 +40,7 @@ func (e *Endpoint) ToYang() *sico_yang.SicoIpsec_Api_Vrf_Endpoint {
 		Authentication: &sico_yang.SicoIpsec_Api_Vrf_Endpoint_Authentication{
 			LocalCert:    StringPointer(e.Authentication.LocalCert),
 			PrivateKey:   StringPointer(e.Authentication.PrivateKey),
+			LocalId:      StringPointer(e.Authentication.LocalID),
 			Psk:          StringPointer(e.Authentication.PSK),
 			RemoteCert:   StringPointer(e.Authentication.RemoteCert),
 			Pkcs12Base64: StringPointer(e.Authentication.Pkcs12Base64),
@@ -66,6 +67,7 @@ func (e *Endpoint) FromYang(endVrf *sico_yang.SicoIpsec_Api_Vrf_Endpoint) {
 	e.Authentication = EndpointAuth{
 		Type:         stringIfNotNil(endVrf.Authentication.Type),
 		PSK:          stringIfNotNil(endVrf.Authentication.Psk),
+		LocalID:      stringIfNotNil(endVrf.Authentication.LocalId),
 		LocalCert:    stringIfNotNil(endVrf.Authentication.LocalCert),
 		RemoteCert:   stringIfNotNil(endVrf.Authentication.RemoteCert),
 		PrivateKey:   stringIfNotNil(endVrf.Authentication.PrivateKey),
