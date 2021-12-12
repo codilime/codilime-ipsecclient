@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import { RouteComponentProps } from 'react-router';
 
 interface AuthenticationType {
@@ -22,7 +23,7 @@ export interface EndpointsType {
   vrf_id?: number;
 }
 
-export interface vrfDataTypes {
+export interface VrfDataTypes {
   client_name: string;
   vlan: VlanInterface[];
   crypto_ph1: string;
@@ -56,11 +57,11 @@ export interface NotificationsType {
 }
 
 export interface ContextProps {
-  data: vrfDataTypes;
+  data: VrfDataTypes;
   softwareCrypto: CryptoTypes;
   hardwareCrypto: CryptoTypes;
   certificates: CertificatesType[];
-  vrf: vrfDataTypes[] | [];
+  vrf: VrfDataTypes[] | [];
   notifications: NotificationsType[];
   loading: boolean;
   hardware: boolean;
@@ -138,4 +139,10 @@ export interface ChangePasswordType {
 export interface VlanInterface {
   vlan: number;
   lan_ip: string;
+}
+
+export interface AppTheme {
+  dark: CSSProperties;
+  light: CSSProperties;
+  common?: CSSProperties;
 }

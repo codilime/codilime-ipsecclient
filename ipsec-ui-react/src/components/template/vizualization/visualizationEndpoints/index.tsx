@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { vrfDataTypes } from 'interface/index';
+import { VrfDataTypes } from 'interface/index';
 import { Stage, Layer } from 'react-konva';
 import { MetricsType } from 'interface/index';
 import { VisualizationIcon, VisualizationLine, VisualizationVrf, Cube } from 'template';
@@ -7,7 +7,7 @@ import { VisualizationIcon, VisualizationLine, VisualizationVrf, Cube } from 'te
 interface VisualizationEndpoints {
   dimensions: number;
   hardware: boolean;
-  data: vrfDataTypes;
+  data: VrfDataTypes;
   monitoring: MetricsType[];
 }
 

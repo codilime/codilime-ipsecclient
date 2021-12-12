@@ -18,7 +18,6 @@ export const useLoginLogic = () => {
 
   const handleChangeGlobalPassword = async (data: ChangePasswordType) => {
     const status: boolean = await client('password', { password: data.password }, { method: 'POST' });
-    console.log(status);
     if (status) {
       setLogged(true);
       setDescription({ result: 'success', message: 'Successful change. New variables saved' });

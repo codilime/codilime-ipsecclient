@@ -2,6 +2,8 @@ import { useState, FC } from 'react';
 import Logo from 'images/Logo.png';
 import { Button } from 'common/';
 import { Notification, Logout, Setting, PopupLogs } from 'template';
+import { useThemeContext } from 'hooks/';
+import { Theme } from '../../../appTheme';
 import './styles.scss';
 
 interface TopBarTypes {
@@ -9,6 +11,7 @@ interface TopBarTypes {
 }
 
 export const TopBar: FC<TopBarTypes> = ({ productName }) => {
+  const { theme } = useThemeContext();
   const [openPopup, setOpenPopup] = useState({ setting: false, notice: false, logs: false });
 
   const handleOpenAction = (name: string) => {
@@ -21,9 +24,11 @@ export const TopBar: FC<TopBarTypes> = ({ productName }) => {
         return setOpenPopup((prev) => ({ notice: !prev.notice, setting: false, logs: false }));
     }
   };
-
+  const themeStyle = Theme[theme];
+  console.log(themeStyle);
+  
   return (
-    <header className="topBar">
+    <header className="topBar" style={{}}>
       <div className="topBar__right">
         <img src={Logo} alt="cisco logo" className="topBar__image" />
         <p className="topBar__productName">{productName}</p>

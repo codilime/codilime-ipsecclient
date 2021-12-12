@@ -53,18 +53,15 @@ export const useValidateEndpoint = () => {
     }
 
     const checkLocal = checkIpValue(local_ip);
-    console.log(checkLocal);
     if (local_ip === '' || !checkLocal) {
       setError((prev) => ({ ...prev, local_ip: true }));
       return false;
     }
     const checkPeer = checkIpValue(peer_ip);
-    console.log(checkPeer);
     if (local_ip === '' || !checkPeer) {
       setError((prev) => ({ ...prev, peer_ip: true }));
       return false;
     }
-    console.log(checkPeer, checkLocal);
     if (checkPeer !== checkLocal) {
       setError((prev) => ({ ...prev, peer_ip: true, local_ip: true }));
       return false;
