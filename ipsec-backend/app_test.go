@@ -409,7 +409,7 @@ func createTestVrf() db.Vrf {
 			true,
 			false,
 			"eth3",
-			db.EndpointAuth{"psk", "psk23", "", "", "", ""}}}}
+			db.EndpointAuth{"psk", "psk23", "test@codilime.com", "", "", "", ""}}}}
 }
 
 func getCreatedVrf(vrf db.Vrf, vrfId, endpointId int) db.Vrf {
