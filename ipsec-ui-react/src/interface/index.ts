@@ -8,6 +8,7 @@ interface AuthenticationType {
   remote_cert: string;
   private_key: string;
   pkcs12_base64: string;
+  local_id: string;
 }
 
 export interface EndpointsType {
@@ -25,13 +26,14 @@ export interface EndpointsType {
 
 export interface VrfDataTypes {
   client_name: string;
-  vlan: VlanInterface[];
+  vlan: VlanInterface[] | [];
   crypto_ph1: string;
   crypto_ph2: string;
   physical_interface: string;
   active: boolean;
   local_as: number;
   endpoint: EndpointsType[] | [];
+  ospf: boolean;
   id?: number;
 }
 
@@ -76,6 +78,7 @@ type NameProps = {
   local_as: 'local_as';
   crypto_ph2: 'crypto_ph2';
   active: 'active';
+  ospf: 'ospf';
 };
 export interface DetailsTypes {
   name: keyof NameProps;
@@ -89,6 +92,7 @@ type EndpointNameProps = {
   local_ip: 'local_ip';
   peer_ip: 'peer_ip';
   psk: 'psk';
+  local_id: 'local_id';
   remote_as: 'remote_as';
   source_interface: 'source_interface';
   nat: 'nat';

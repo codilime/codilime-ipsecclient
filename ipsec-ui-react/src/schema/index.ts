@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import { maxValueForLocalAS } from '../constants';
 
 export const vrfSchema = yup.object().shape({
   client_name: yup.string().min(5, 'Name should consist of at least 5 characters').max(28, 'Name should consist of maximum 28 characters').required('Please provide valid name for VRF'),
@@ -8,7 +7,8 @@ export const vrfSchema = yup.object().shape({
   endpoint: yup.array(),
   vlan: yup.array(),
   crypto_ph1: yup.string(),
-  crypto_ph2: yup.string()
+  crypto_ph2: yup.string(),
+  ospf: yup.boolean()
 });
 
 export const newLoginSchema = yup.object().shape({

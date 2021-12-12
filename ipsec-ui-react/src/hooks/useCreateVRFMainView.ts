@@ -27,15 +27,15 @@ export const useCreateVRFMainView = () => {
   }, [reset, currentLocation, data]);
 
   const submit = async (data: VrfDataTypes) => {
+    if (!data.vlan) data.vlan = [];
     if (data.id) return patchVrfData({ vrf: data });
     const res = await postVrfData({ vrf: data });
     if (res) return history.push(`/vrf/${vrf.length + 1}`);
   };
 
   const crypto = hardware ? hardwareCrypto : softwareCrypto;
-  const details = hardware ? DynamicVrfHardwareDetails : DynamicVrfDetails;
 
-  const formAttributes = { crypto, details, data, isValid, isDirty, setValue, register };
+  const formAttributes = { crypto, details: DynamicVrfDetails, data, isValid, isDirty, setValue, register };
 
   return { errors, hardware, handleSubmit, submit, reset, formAttributes };
 };

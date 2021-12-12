@@ -8,6 +8,7 @@ const validateStatus = {
   type: false,
   local_ip: false,
   peer_ip: false,
+  local_id: false,
   source_interface: false,
   remote_as: false,
   local_cert: false,

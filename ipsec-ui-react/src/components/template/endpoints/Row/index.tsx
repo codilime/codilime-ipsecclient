@@ -37,6 +37,13 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
           </td>
         );
       }
+      case 'local_id': {
+        return (
+          <td key={el.name} className={classNames('table__column')}>
+            <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints.authentication[el.name] }} />
+          </td>
+        );
+      }
       default:
         return (
           <td key={el.name} className={classNames('table__column', { table__bool: el.name === 'remote_as' })}>
