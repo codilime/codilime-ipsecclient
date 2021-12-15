@@ -236,6 +236,12 @@ module sico-ipsec {
                 mandatory "true";
             }
         }
+        list source_interface {
+            config false;
+            leaf name {
+                type string;
+            }
+        }
         list error {
             config false;
             leaf id {

@@ -2,8 +2,6 @@ import requests, time, json, logging, os, subprocess, urllib3, pytest
 from http import HTTPStatus
 from deepdiff import DeepDiff
 
-urllib3.disable_warnings()
-
 BASE_URL = "https://sico_api/restconf/data/sico-ipsec:api"
 
 VRFS_URL = BASE_URL + "/vrf"
@@ -40,6 +38,7 @@ def wait_for_sico_net():
 
 
 def setup_module():
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     wait_for_sico_api()
     wait_for_sico_net()
 
@@ -98,9 +97,9 @@ def wait_for_dev_env():
 @pytest.mark.parametrize(
     "json_file", [("./ansible/psk/hw.json"), ("./ansible/x509hw/hw_create.json")]
 )
-def test_hardware_vrf(json_file):
+def test_csr_vm_hardware_vrf(json_file):
     wait_for_csr_vm()
-    time.sleep(5)
+    time.sleep(3)
     with open(json_file) as hw_file:
         hw_data = hw_file.read()
         create_response = requests.patch(
@@ -276,6 +275,21 @@ def test_vlans():
         VRFS_URL, json=vrf_json, auth=basicAuth, verify=False
     )
     check_status_code(create_response, HTTPStatus.BAD_REQUEST)
+
+
+def test_csr_vm_get_source_interfaces():
+    wait_for_csr_vm()
+    time.sleep(3)
+    source_interfaces_response = requests.get(
+        BASE_URL + "/source-interface", auth=basicAuth, verify=False
+    )
+    check_status_code(source_interfaces_response, HTTPStatus.OK)
+    source_interfaces = source_interfaces_response.json()["source_interface"]
+    assert {
+        "name": "GigabitEthernet1"
+    } in source_interfaces, "Expected GigabitEthernet1 in the source interfaces got: " + str(
+        source_interfaces
+    )
 
 
 def check_status_code(response, expected_status_code):
