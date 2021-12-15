@@ -3,9 +3,6 @@ import subprocess, sys, argparse, atexit, time, shutil
 from pathlib import Path
 
 
-mock = "mock"
-yang = "yang"
-
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--mock",
