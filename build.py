@@ -8,7 +8,7 @@ parser.add_argument(
     "--csr-vm",
     nargs=2,
     metavar=("<csr-vm path>", "<csr_config.iso path>"),
-    help="start csr-vm - pass csr-vm and csr_config.iso paths",
+    help="start csr-vm - pass path to csr-vm and csr_config.iso",
 )
 parser.add_argument(
     "--clean", action="store_true", help="clean docker images and containters"
