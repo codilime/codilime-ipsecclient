@@ -76,8 +76,7 @@ module.exports = {
   output: {
     path: OUTPUT_PATH,
     filename: '[name].bundle.js',
-    publicPath: OUTPUT_PATH,
-    // chunkFilename: '[id].[chunkhash].js'
+    publicPath: OUTPUT_PATH
   },
   optimization: {
     splitChunks: {

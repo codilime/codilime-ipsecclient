@@ -182,6 +182,7 @@ export const defaultVrf: ContextProps = {
     crypto_ph2: '',
     physical_interface: 'eth0',
     active: false,
+    ospf: false,
     local_as: 0,
     endpoint: []
   },
@@ -202,6 +203,7 @@ export const tableSoftwareHeaderSchema = [
   { header: 'Tunnel local IP' },
   { header: 'Tunnel peer IP' },
   { header: 'PSK / Certificates' },
+  { header: 'LOCAL ID' },
   { header: 'NAT' },
   { header: 'BGP' },
   { header: 'ACTION' }
@@ -212,6 +214,7 @@ export const tableHardwaHeaderSchema = [
   { header: 'Tunnel local IP' },
   { header: 'Tunnel peer IP' },
   { header: 'PSK / Certificates' },
+  { header: 'LOCAL ID' },
   { header: 'Remote AS' },
   { header: 'Source interface' },
   { header: 'BGP' },
@@ -228,7 +231,8 @@ export const EndpointSchema: EndpointsType = {
     local_cert: '',
     remote_cert: '',
     private_key: '',
-    pkcs12_base64:'',
+    pkcs12_base64: '',
+    local_id: ''
   },
   remote_as: 0,
   source_interface: '',
@@ -236,12 +240,12 @@ export const EndpointSchema: EndpointsType = {
   bgp: false
 };
 
-
 export const endpointInputSchema: EndpointSchemaType[] = [
   { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
   { type: 'text', name: 'local_ip', placeholder: 'Enter local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
   { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor. ' },
   { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
+  { type: 'text', name: 'local_id', placeholder: 'Enter Local id' },
   { type: 'checkbox', name: 'nat' },
   { type: 'checkbox', name: 'bgp' }
 ];
@@ -250,6 +254,7 @@ export const endpointHardwareSchema: EndpointSchemaType[] = [
   { type: 'text', name: 'local_ip', placeholder: 'Enter local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
   { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor.' },
   { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
+  { type: 'text', name: 'local_id', placeholder: 'Enter Local id' },
   { type: 'number', name: 'remote_as', placeholder: '0', tooltip: 'Remote BGP AS' },
   { type: 'text', name: 'source_interface', placeholder: 'Enter source interface', tooltip: 'Cisco physical interfaces to which IPSEC tunnel is attached (i.e. Vlan100 , GigabitEthernet1/1)' },
   { type: 'checkbox', name: 'bgp' }
@@ -265,7 +270,8 @@ export const DynamicVrfDetails: DetailsTypes[] = [
   { name: 'crypto_ph1', text: 'Crypto phase 1' },
   { name: 'local_as', type: 'text', text: 'BGP Local AS' },
   { name: 'crypto_ph2', text: 'Crypto phase 2' },
-  { name: 'active', type: 'checkbox', text: 'Active' }
+  { name: 'active', type: 'checkbox', text: 'Active' },
+  { name: 'ospf', type: 'checkbox', text: 'Ospf' }
 ];
 
 export const DynamicVrfHardwareDetails: DetailsTypes[] = [
@@ -273,7 +279,8 @@ export const DynamicVrfHardwareDetails: DetailsTypes[] = [
   { name: 'crypto_ph1', text: 'Crypto phase 1' },
   { name: 'local_as', type: 'text', text: 'BGP Local AS' },
   { name: 'crypto_ph2', text: 'Crypto phase 2' },
-  { name: 'active', type: 'checkbox', text: 'Active' }
+  { name: 'active', type: 'checkbox', text: 'Active' },
+  { name: 'ospf', type: 'checkbox', text: 'Ospf' }
 ];
 
 export const DynamicLoginForm = [

@@ -21,6 +21,15 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name, checked, type } = e.target;
     setError((prev) => ({ ...prev, [name]: false }));
+    if (name === 'local_id') {
+      return setEndpoint((prev) => ({
+        ...prev,
+        authentication: {
+          ...prev.authentication,
+          [name]: value
+        }
+      }));
+    }
     switch (type) {
       case 'checkbox':
         return setEndpoint((prev) => ({

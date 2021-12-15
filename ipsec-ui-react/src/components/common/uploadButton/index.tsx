@@ -16,11 +16,8 @@ interface UploadButtonTypes extends ButtonType {
   error?: keyof ErrorProps | any;
 }
 
-export const UploadButton: FC<UploadButtonTypes> = ({ onClick, children, name, edit, className = '', error }) => {
-  console.log(error);
-  return (
-    <button {...{ onClick, name, disabled: !edit }} className={classNames('uploadButton', { uploadButton__disabled: !edit, [className]: className, uploadButton__error: error && error[name] })}>
-      {children}
-    </button>
-  );
-};
+export const UploadButton: FC<UploadButtonTypes> = ({ onClick, children, name, edit, className = '', error }) => (
+  <button {...{ onClick, name, disabled: !edit }} className={classNames('uploadButton', { uploadButton__disabled: !edit, [className]: className, uploadButton__error: error && error[name] })}>
+    {children}
+  </button>
+);

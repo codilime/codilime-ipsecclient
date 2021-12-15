@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { vrfSchema } from 'schema/';
 import { useFetchData, useGetLocation, useAppContext } from 'hooks/';
-import { vrfDataTypes } from 'interface/index';
+import { VrfDataTypes } from 'interface/index';
 
 export const useCreateVRFMainView = () => {
   const { context } = useAppContext();
@@ -18,7 +18,7 @@ export const useCreateVRFMainView = () => {
     formState: { errors, isDirty, isValid },
     reset,
     setValue
-  } = useForm<vrfDataTypes>({
+  } = useForm<VrfDataTypes>({
     resolver: yupResolver(vrfSchema)
   });
 
@@ -26,16 +26,16 @@ export const useCreateVRFMainView = () => {
     reset(data);
   }, [reset, currentLocation, data]);
 
-  const submit = async (data: vrfDataTypes) => {
+  const submit = async (data: VrfDataTypes) => {
+    if (!data.vlan) data.vlan = [];
     if (data.id) return patchVrfData({ vrf: data });
     const res = await postVrfData({ vrf: data });
     if (res) return history.push(`/vrf/${vrf.length + 1}`);
   };
 
   const crypto = hardware ? hardwareCrypto : softwareCrypto;
-  const details = hardware ? DynamicVrfHardwareDetails : DynamicVrfDetails;
 
-  const formAttributes = { crypto, details, data, isValid, isDirty, setValue, register };
+  const formAttributes = { crypto, details: DynamicVrfDetails, data, isValid, isDirty, setValue, register };
 
   return { errors, hardware, handleSubmit, submit, reset, formAttributes };
 };
