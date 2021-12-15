@@ -34,13 +34,20 @@ inside `ipsec-backend` directory run `CGO_CPPFLAGS="-DSQLITE_ENABLE_DBSTAT_VTAB=
 
 Build the dockers:  
   
-`./build.py [-h] [--csr-vm <csr-vm path> <csr_config.iso path>] [--clean] [--pack]`
+`./build.py [-h] [--csr-vm <csr-vm path> <csr_config.iso path>] [--clean] [--pack] [--ut]`
 - `--csr-vm <csr-vm path> <csr_config.iso path>` - run csr-vm
 - `--clean` - remove docker images and containers
 - `--pack` - create package in the `out` directory
+- `--ut` - build api unit tests
 
 Build and run e2e tests:  
   
 `./run_e2e_tests.py [-h] [--csr-vm] [-k EXPRESSION]`
 - `--csr-vm` - run test cases with csr-vm
 - `-k EXPRESSION` pytest flag: only run tests which match the given substring expression. Example: -k 'test_method or test_other' matches all test functions and classes whose name contains 'test_method' or 'test_other'.
+
+Generate mocks and yang Go structures:
+
+`./ipsec-backend/generate.py [-h] [--mock] [--yang <ygot generator binary path>]`
+- `--mock` - generate mocks using https://github.com/golang/mock project
+- `--yang` - generate Go structures from yang model using https://github.com/openconfig/ygot project - pass path to the ygot generator binary
