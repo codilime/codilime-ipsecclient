@@ -96,7 +96,7 @@ def wait_for_dev_env():
 
 @pytest.mark.filterwarnings("ignore::urllib3.exceptions.InsecureRequestWarning")
 @pytest.mark.parametrize(
-    "json_file", [("./ansible/psk/hw.json"), ("./ansible/x509hw/sw_create.json")]
+    "json_file", [("./ansible/psk/hw.json"), ("./ansible/x509hw/hw_create.json")]
 )
 def test_hardware_vrf(json_file):
     wait_for_csr_vm()
@@ -305,7 +305,7 @@ def check_monitoring(vrf_id):
                 str(monitoring_response),
                 retries - i + 1,
             )
-            time.sleep(1)
+            time.sleep(3)
         else:
             return
     pytest.fail("Wrong monitoring response", monitoring_response)

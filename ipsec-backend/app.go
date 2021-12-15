@@ -654,6 +654,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	body, err := ioutil.ReadAll(r.Body)
+	log.Debugf("request %s\n", body)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
