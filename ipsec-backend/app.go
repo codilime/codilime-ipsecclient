@@ -654,6 +654,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	body, err := ioutil.ReadAll(r.Body)
+	log.Debugf("request %s\n", body)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -668,9 +669,11 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, "malformed json")
 		return
 	}
-	if err := vrfSubJsonValid(vrfSubJson); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error())
-		return
+	if id != db.HardwareVrfID {
+		if err := vrfSubJsonValid(vrfSubJson); err != nil {
+			a.respondWithError(w, http.StatusBadRequest, err.Error())
+			return
+		}
 	}
 	vrfJson, err := json.Marshal(vrfSubJson)
 	if err != nil {
