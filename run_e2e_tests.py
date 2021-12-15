@@ -76,10 +76,10 @@ def run_test_cases():
     else:
         if args.k:
             run_command = (
-                "exec ./test/run_test.sh -k 'not hardware and " + args.k[0] + "'"
+                "exec ./test/run_test.sh -k 'not csr_vm and " + args.k[0] + "'"
             )
         else:
-            run_command = "exec ./test/run_test.sh -k 'not hardware'"
+            run_command = "exec ./test/run_test.sh -k 'not csr_vm'"
 
     returncode = subprocess.run(run_command, shell=True).returncode
     if returncode:

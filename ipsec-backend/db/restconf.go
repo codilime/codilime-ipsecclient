@@ -171,3 +171,11 @@ func (e *StoredError) ToYang() *sico_yang.SicoIpsec_Api_Error {
 		Time:    StringPointer(e.ErrorTime.Format(timeFormat)),
 	}
 }
+
+func SourceInterfacesToYang(sourceInterfaces []string) []*sico_yang.SicoIpsec_Api_SourceInterface {
+	yangSourceInterface := []*sico_yang.SicoIpsec_Api_SourceInterface{}
+	for _, sourceInterface := range sourceInterfaces {
+		yangSourceInterface = append(yangSourceInterface, &sico_yang.SicoIpsec_Api_SourceInterface{Name: StringPointer(sourceInterface)})
+	}
+	return yangSourceInterface
+}

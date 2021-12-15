@@ -380,7 +380,7 @@ func (h *HardwareGenerator) GetMonitoring(_ *string, switchCredsList ...db.Switc
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	res, err := h.restconfGetData("Cisco-IOS-XE-crypto-oper:crypto-oper-data/crypto-ipsec-ident", client, switchCredsList[0])
+	res, err := restconfGetData("Cisco-IOS-XE-crypto-oper:crypto-oper-data/crypto-ipsec-ident", client, switchCredsList[0])
 	if err != nil {
 		return nil, logger.ReturnError(err)
 	}
@@ -409,7 +409,42 @@ func (h *HardwareGenerator) GetMonitoring(_ *string, switchCredsList ...db.Switc
 	return &monitoring, nil
 }
 
-func (h *HardwareGenerator) restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds) (map[string]interface{}, error) {
+func GetSourceInterfaces(switchCreds db.SwitchCreds) ([]string, error) {
+	sourceInterfaces := []string{}
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	res, err := restconfGetData("Cisco-IOS-XE-native:native/interface", client, switchCreds)
+	fmt.Printf("naglik >>> res %+v\n", res)
+	if err != nil {
+		return nil, logger.ReturnError(err)
+	}
+	if res == nil {
+		return sourceInterfaces, nil
+	}
+
+	if interfacesInt, ok := res["Cisco-IOS-XE-native:interface"]; ok {
+		if interfaces, ok := interfacesInt.(map[string]interface{}); ok {
+			for interfaceName, interfaceBodyList_ := range interfaces {
+				if interfaceBodyList, ok := interfaceBodyList_.([]interface{}); ok {
+					for _, interfaceBody := range interfaceBodyList {
+						interfaceId, ok := interfaceBody.(map[string]interface{})["name"].(string)
+						if !ok {
+							break
+						}
+						sourceInterfaces = append(sourceInterfaces, interfaceName+interfaceId)
+					}
+					return sourceInterfaces, nil
+				}
+			}
+		}
+	}
+	return sourceInterfaces, logger.ReturnError(fmt.Errorf("cannot get source interfaces from the switch - malformed response"))
+}
+
+func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds) (map[string]interface{}, error) {
 	log.Debugf("GET: %s\n", path)
 	ret := map[string]interface{}{}
 	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + path

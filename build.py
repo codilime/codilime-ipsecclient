@@ -8,7 +8,7 @@ parser.add_argument(
     "--csr-vm",
     nargs=2,
     metavar=("<csr-vm path>", "<csr_config.iso path>"),
-    help="csr-vm and csr_config.iso paths",
+    help="start csr-vm - pass csr-vm and csr_config.iso paths",
 )
 parser.add_argument(
     "--clean", action="store_true", help="clean docker images and containters"
@@ -17,6 +17,11 @@ parser.add_argument(
     "--pack",
     action="store_true",
     help="create package in the out directory",
+)
+parser.add_argument(
+    "--ut",
+    action="store_true",
+    help="build api unit tests",
 )
 args = parser.parse_args()
 
@@ -84,11 +89,12 @@ build_processes.append(
         shell=True,
     )
 )
-build_processes.append(
-    subprocess.Popen(
-        "exec docker build -t sico_api_ut -f sico_api_ut.dockerfile .", shell=True
+if args.ut:
+    build_processes.append(
+        subprocess.Popen(
+            "exec docker build -t sico_api_ut -f sico_api_ut.dockerfile .", shell=True
+        )
     )
-)
 
 while build_processes:
     time.sleep(1)

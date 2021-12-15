@@ -26,15 +26,16 @@ import (
 )
 
 const (
-	restconfBasePath = "/restconf/data/sico-ipsec:api"
-	vrfPath          = restconfBasePath + "/vrf"
-	vrfIDPath        = vrfPath + "={id:[0-9]+}"
-	monitoringPath   = restconfBasePath + "/monitoring={id:[0-9]+}"
-	logPath          = restconfBasePath + "/log"
-	errorPath        = restconfBasePath + "/error"
-	CAPath           = restconfBasePath + "/ca"
-	settingNamePath  = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
-	passPath         = restconfBasePath + "/password"
+	restconfBasePath    = "/restconf/data/sico-ipsec:api"
+	vrfPath             = restconfBasePath + "/vrf"
+	vrfIDPath           = vrfPath + "={id:[0-9]+}"
+	monitoringPath      = restconfBasePath + "/monitoring={id:[0-9]+}"
+	sourceInterfacePath = restconfBasePath + "/source-interface"
+	logPath             = restconfBasePath + "/log"
+	errorPath           = restconfBasePath + "/error"
+	CAPath              = restconfBasePath + "/ca"
+	settingNamePath     = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
+	passPath            = restconfBasePath + "/password"
 
 	pkcs12Path = "/pkcs12/{id:[0-9]+}"
 
@@ -129,6 +130,7 @@ func (a *App) initializeRoutes() {
 	a.router.HandleFunc(vrfIDPath, a.updateVrf).Methods(http.MethodPatch)
 	a.router.HandleFunc(vrfIDPath, a.deleteVrf).Methods(http.MethodDelete)
 	a.router.HandleFunc(monitoringPath, a.monitoring).Methods(http.MethodGet)
+	a.router.HandleFunc(sourceInterfacePath, a.getSourceInterfaces).Methods(http.MethodGet)
 	a.router.HandleFunc(logPath, a.getLogs).Methods(http.MethodGet)
 	a.router.HandleFunc(errorPath, a.getErrors).Methods(http.MethodGet)
 	a.router.HandleFunc(settingNamePath, a.apiGetSetting).Methods(http.MethodGet)
@@ -888,6 +890,37 @@ func (a *App) getErrors(w http.ResponseWriter, r *http.Request) {
 
 	api := sico_yang.SicoIpsec_Api{
 		Error: yangErrors,
+	}
+
+	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, json)
+}
+
+func (a *App) getSourceInterfaces(w http.ResponseWriter, r *http.Request) {
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		a.respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	switchCreds, err := a.getSwitchCreds(key)
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	sourceInterfaces, err := config.GetSourceInterfaces(*switchCreds)
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	api := sico_yang.SicoIpsec_Api{
+		SourceInterface: db.SourceInterfacesToYang(sourceInterfaces),
 	}
 
 	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
