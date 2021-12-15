@@ -6,8 +6,8 @@
 
   - name: template the configuration json
     ansible.builtin.template:
-      src: sw_create.json.j2
-      dest: sw_create.json
+      src: hw_create.json.j2
+      dest: hw_create.json
 
   - name: patch the hardware vrf
     uri:
@@ -17,5 +17,5 @@
       force_basic_auth: yes
       user: "{{ sico_username }}"
       password: "{{ sico_password }}"
-      src: sw_create.json
+      src: hw_create.json
       validate_certs: no
