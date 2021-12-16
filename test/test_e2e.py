@@ -150,6 +150,7 @@ def test_vrf_scenario():
                     "bgp": True,
                     "remote_as": 321,
                     "source_interface": "",
+                    "local_id": "test@codilime.com",
                 }
             ],
         }
@@ -305,7 +306,7 @@ def check_status_code(response, expected_status_code):
 
 def check_monitoring(vrf_id):
     retries = 5
-    for i in range(retries):
+    for i in range(retries, -1, -1):
         monitoring_response = requests.get(
             MONITORING_URL + vrf_id, auth=basicAuth, verify=False
         )
@@ -314,12 +315,13 @@ def check_monitoring(vrf_id):
             0
         ]["status"]
         if monitoring_response != "up":
-            log.info(
-                "monitoring_response was %s, will retry %d more times",
-                str(monitoring_response),
-                retries - i + 1,
-            )
-            time.sleep(3)
+            if i > 0:
+                log.info(
+                    "monitoring_response was %s, will retry %d more times",
+                    str(monitoring_response),
+                    i,
+                )
+                time.sleep(3)
         else:
             return
     pytest.fail("Wrong monitoring response", monitoring_response)
@@ -329,6 +331,7 @@ def create_vrf(vrf_json):
     create_response = requests.post(
         VRFS_URL, json=vrf_json, auth=basicAuth, verify=False
     )
+    print(create_response)
     check_status_code(create_response, HTTPStatus.CREATED)
 
     return create_response.headers["Location"].split("=")[1]

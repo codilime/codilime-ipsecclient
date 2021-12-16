@@ -1,4 +1,6 @@
-curl -v -XPOST http://localhost/restconf/data/sico-ipsec:api/ca -u "admin:cisco123" -d @- << EOF
+curl -v -XPOST\
+  http://localhost/restconf/data/sico-ipsec:api/ca\
+  -u "admin:cisco123" -d @- << EOF
 {
         "ca":[
                 {"id": 1, "ca_file": "-----BEGIN CERTIFICATE-----\nMIIDFjCCAf6gAwIBAgIIGAF4idq1jLUwDQYJKoZIhvcNAQELBQAwOjELMAkGA1UE\nBhMCQ0gxEzARBgNVBAoTCnN0cm9uZ1N3YW4xFjAUBgNVBAMTDXN0cm9uZ1N3YW4g\nQ0EwHhcNMjEwODI1MTI0NjMxWhcNMzEwODIzMTI0NjMxWjA3MQswCQYDVQQGEwJD\nSDETMBEGA1UEChMKc3Ryb25nU3dhbjETMBEGA1UEAxMKcGVlci0xLXJlbTCCASIw\nDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAO4YHIqS4ud2LGQl+uV8pdrPuIkA\nst6lA9NcApgWz0CPDD7XTsvsNldrLh6vH+X8TUHmnTyQ4Xa4cSsjeEFfaEDQrFFO\nnEZh4nEZbd+bh5KjfzIN4661o\/VLdsmuQA9UUfsAmY678q\/hNEaae0kkXVcyjpTr\nPyT0K2qH7mF1dfvj55o6B71rT5ncHF6bZlAxt0rBBxn\/oAwuZZBhZkJm5b7yHpv8\nhJv7RdbkAQPrC\/dOGMxye4MpZpd+RR0iCBIUVWPs9XmgRwvx4ZQZgc5n34hOdZ4R\ni8G9AoHO0rNGGJjz0NtWSSDtFfnqCvO70luhXKwqyGWLPRtlIQ0tFYZTWi0CAwEA\nAaMjMCEwHwYDVR0jBBgwFoAUfsr+ZvfNY8G04Qg+QT5gk3VvnxowDQYJKoZIhvcN\nAQELBQADggEBAE2Ofjpd74qAvU+IGpCMC9xkHX8roS++TsAt3m1ZAnHcuxAYdbQx\nqx79DqC3kSuxiDmN8tmPeEgvoZ1bP4ovsCnGHY0kMR8YTD8VfXgPRP\/80hBGIH\/+\nlhLEAm8hdFvRZl05\/0LMuve8yxPGYPvnw\/ujAVNM20WaSgxQV5sK3lDz\/DWOEUJ+\n4Jvi\/8GMZ1jHBVCN47pmnXWu6s0MdBMmLBVQXSPoEodaR3UJX0zp083G5DFRUg4m\n8MCbtqwFlNDjRzl55MqvH2q\/ISLr4o+Oce7ZoQnhT+9wtC0jnnU6YhsW9S6\/GVMY\n4D1Bn7sTKVqwBm\/xdbdUU1V25R29ySsdJMk=\n-----END CERTIFICATE-----"},

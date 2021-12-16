@@ -1,29 +1,38 @@
 Cisco-IOS-XE-native:native/crypto/ikev2/profile
-Cisco-IOS-XE-native:native/crypto/ikev2/profile=hardware_psk
+{{ range $index, $endpoint := .EndpointSubset }}Cisco-IOS-XE-native:native/crypto/ikev2/profile=hardware_psk{{ $endpoint.ID }} {{end}}
 {
-        "profile": {
-                "name": "hardware_psk",
-                "authentication": {
-                "local": {
-                "pre-share": {}
-                },
-                "remote": {
-                "pre-share": {}
-                }
-                },
-                "keyring": {
-                "local": {
-                "name": "hardware_psk"
-                }
-                },
-                "match": {
-                "identity": {
-                "remote": {
-                "any": [
-                        null
-                ]
-                }
-                }
-                }
-        }
+        "profile": [
+        {{ range $index, $endpoint := .EndpointSubset }}
+                {
+                        "name": "hardware_psk{{ $endpoint.ID }}",
+                        "authentication": {
+                        "local": {
+                        "pre-share": {}
+                        },
+                        "remote": {
+                        "pre-share": {}
+                        }
+                        },
+                        "keyring": {
+                        "local": {
+                        "name": "hardware_psk"
+                        }
+                        },
+                        "identity": {
+                        "local": {
+                        "{{ transformLocalIDType $endpoint }}": "{{ $endpoint.Authentication.LocalID }}"
+                        }
+                        },
+                        "match": {
+                        "identity": {
+                        "remote": {
+                        "any": [
+                                null
+                        ]
+                        }
+                        }
+                        }
+                } {{ if (notEndOfSlice $.EndpointSubset $index) }},{{ end }}
+        {{ end }}
+        ]
 }

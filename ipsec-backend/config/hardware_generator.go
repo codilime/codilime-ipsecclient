@@ -11,6 +11,7 @@ import (
 	"ipsec_backend/db"
 	"ipsec_backend/logger"
 	"ipsec_backend/sico_yang"
+	"net"
 	"net/http"
 	"net/http/httptrace"
 	"os"
@@ -194,6 +195,12 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 				}
 				return "tunnel"
 			},
+			"transformLocalIDType": func(endpoint db.Endpoint) string {
+				return transformLocalIDType(endpoint.Authentication.LocalID)
+			},
+			"transformLocalID": func(endpoint db.Endpoint) string {
+				return transformLocalID(endpoint.Authentication.LocalID)
+			},
 		}).Parse(templ)
 		if err != nil {
 			return logger.ReturnError(err)
@@ -215,6 +222,46 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 		}
 	}
 	return nil
+}
+
+func transformLocalIDType(localID string) string {
+	if strings.Contains(localID, "=") {
+		return "dn"
+	}
+	if strings.Contains(localID, "@") {
+		if localID[0:2] == "@#" {
+			return "key-id"
+		}
+		if localID[0:1] == "@" {
+			return "fqdn"
+		}
+		return "email"
+	}
+	if strings.Contains(localID, ":") {
+		if net.ParseIP(localID) != nil {
+			return "address"
+		}
+		return "key-id"
+	}
+	if net.ParseIP(localID) != nil {
+		return "address"
+	}
+	return "fqdn"
+}
+
+func transformLocalID(localID string) string {
+	if strings.Contains(localID, "=") {
+		return ""
+	}
+	if strings.Contains(localID, "@") {
+		if localID[0:2] == "@#" {
+			return localID[2:]
+		}
+		if localID[0:1] == "@" {
+			return localID[1:]
+		}
+	}
+	return localID
 }
 
 func reverseSlice(s []fs.FileInfo) []fs.FileInfo {
@@ -417,7 +464,6 @@ func GetSourceInterfaces(switchCreds db.SwitchCreds) ([]string, error) {
 		},
 	}
 	res, err := restconfGetData("Cisco-IOS-XE-native:native/interface", client, switchCreds)
-	fmt.Printf("naglik >>> res %+v\n", res)
 	if err != nil {
 		return nil, logger.ReturnError(err)
 	}

@@ -1,4 +1,6 @@
-curl -v -XPUT http://localhost/api/vrfs/1 -u "admin:cisco123" -d @- << EOF
+curl -v -XPUT\
+  http://localhost/api/vrfs/1\
+  -u "admin:cisco123" -d @- << EOF
 {
    "id":1,
    "client_name":"test",
