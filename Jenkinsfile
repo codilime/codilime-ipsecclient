@@ -29,7 +29,7 @@ pipeline {
                 {
                     sh '''
                         rm -f out/*
-                        python3 -u build.py --pack
+                        python3 -u build.py --pack /home/jenkins/credentials/credentials.json
                     '''
                     archiveArtifacts 'out/*.tar.gz'
                 }

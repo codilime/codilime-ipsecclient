@@ -1,6 +1,9 @@
 #!/usr/bin/python3
-import subprocess, sys, argparse, atexit, time, shutil
+import subprocess, sys, argparse, atexit, time, shutil, io, os.path
 from pathlib import Path
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseDownload
 
 
 parser = argparse.ArgumentParser()
@@ -15,7 +18,8 @@ parser.add_argument(
 )
 parser.add_argument(
     "--pack",
-    action="store_true",
+    nargs=1,
+    metavar=("<documentation download creds path>"),
     help="create package in the out directory",
 )
 parser.add_argument(
@@ -26,6 +30,28 @@ parser.add_argument(
 args = parser.parse_args()
 
 build_processes = []
+
+
+def download_documentation(out_file_path, creds_path):
+    creds = service_account.Credentials.from_service_account_file(
+        creds_path, scopes=["https://www.googleapis.com/auth/drive"]
+    )
+    drive_service = build("drive", "v3", credentials=creds)
+    file_request = drive_service.files().export(
+        fileId="16O-JMl2KWCWqJRBrQFFWVW7KaMAnbZtgVaxE7GLyVtE",
+        mimeType="application/pdf",
+    )
+    fh = io.BytesIO()
+    file_downloader = MediaIoBaseDownload(fd=fh, request=file_request)
+
+    done = False
+    while not done:
+        _, done = file_downloader.next_chunk()
+
+    fh.seek(0)
+    with open(os.path.join(out_file_path), "wb") as f:
+        f.write(fh.read())
+        f.close()
 
 
 @atexit.register
@@ -118,18 +144,21 @@ if args.pack:
     ).stdout.split("\n")[0]
     package_name = "sico_ipsec-" + package_version
     package = "out/" + package_name + ".tar.gz"
-    images_path = "out/images/"
+    content_path = "out/content/"
     image_api = package_name + "/sico_api-" + package_version + ".tar"
     image_net = package_name + "/sico_net-" + package_version + ".tar"
-    Path("out/images/" + package_name).mkdir(parents=True, exist_ok=True)
+    documentation = package_name + "/documentation.pdf"
+    Path(content_path + package_name).mkdir(parents=True, exist_ok=True)
+
+    download_documentation(content_path + documentation, creds_path=args.pack[0])
 
     subprocess.run(
-        "exec docker save --output " + images_path + image_api + " sico_api",
+        "exec docker save --output " + content_path + image_api + " sico_api",
         shell=True,
         check=True,
     )
     subprocess.run(
-        "exec docker save --output " + images_path + image_net + " sico_net",
+        "exec docker save --output " + content_path + image_net + " sico_net",
         shell=True,
         check=True,
     )
@@ -138,13 +167,15 @@ if args.pack:
         "tar -czvf "
         + package
         + " --directory="
-        + images_path
+        + content_path
         + " "
         + image_api
         + " "
-        + image_net,
+        + image_net
+        + " "
+        + documentation,
         shell=True,
         check=True,
     )
-    shutil.rmtree(images_path)
+    shutil.rmtree(content_path)
     print("created package: " + package)
