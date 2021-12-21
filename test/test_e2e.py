@@ -10,9 +10,13 @@ CHANGE_PASS_URL = BASE_URL + "/password"
 CAS_URL = BASE_URL + "/ca"
 MONITORING_URL = BASE_URL + "/monitoring="
 
+HARDWARE_VRF_ID = "1"
+
 basicAuth = ("admin", "cisco123")
 
 log = logging.getLogger(__name__)
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def wait_for_sico_api():
@@ -48,19 +52,19 @@ def wait_for_csr_vm():
         "Accept": "application/yang-data+json",
         "Content-Type": "application/yang-data+json",
     }
-    proposal_data = '{"proposal": {"name": "hardware","encryption": {"aes-cbc-128": [null]},"integrity": {"sha256": [null]},"prf": {"sha256": [null]},"group": {"fourteen": [null]}}}'
-    proposal_url = "https://10.69.0.10/restconf/data/Cisco-IOS-XE-native:native/crypto/ikev2/proposal"
+    proposal_url = (
+        "https://10.69.0.10/restconf/data/Cisco-IOS-XE-native:native/interface"
+    )
 
     while True:
         try:
-            response = requests.patch(
+            response = requests.get(
                 proposal_url,
                 headers=headers,
-                data=proposal_data,
                 verify=False,
                 auth=basicAuth,
             )
-            if response.status_code == 204:
+            if response.status_code == 200:
                 log.info("CSR-VM is ready")
                 return
             log.info("Waiting for CSR-VM: " + str(response))
@@ -93,22 +97,108 @@ def wait_for_dev_env():
     log.info("DEV ENV is ready")
 
 
-@pytest.mark.filterwarnings("ignore::urllib3.exceptions.InsecureRequestWarning")
-@pytest.mark.parametrize(
-    "json_file", [("./ansible/psk/hw.json"), ("./ansible/x509hw/hw_create.json")]
-)
-def test_csr_vm_hardware_vrf(json_file):
+def test_software_vrf_psk():
+    vrf_json = {
+        "vrf": {
+            "client_name": "test_psk",
+            "vlan": [{"vlan": 123, "lan_ip": "10.0.0.0/24"}],
+            "crypto_ph1": "aes128.sha256.modp2048",
+            "crypto_ph2": "aes128.sha256.modp2048",
+            "physical_interface": "eth0",
+            "active": True,
+            "disable_peer_ips": False,
+            "local_as": 0,
+            "ospf": False,
+            "endpoint": [
+                {
+                    "remote_ip_sec": "10.69.0.103",
+                    "local_ip": "10.0.3.1",
+                    "peer_ip": "10.0.3.2",
+                    "authentication": {
+                        "type": "psk",
+                        "psk": "Cisco-remote3",
+                        "local_id": "",
+                        "local_cert": "",
+                        "private_key": "",
+                        "remote_cert": "",
+                    },
+                    "nat": False,
+                    "bgp": False,
+                    "remote_as": 0,
+                    "source_interface": "",
+                },
+                {
+                    "remote_ip_sec": "10.69.0.104",
+                    "local_ip": "10.0.4.1",
+                    "peer_ip": "10.0.4.2",
+                    "authentication": {
+                        "type": "psk",
+                        "psk": "Cisco-remote4",
+                        "local_id": "",
+                        "local_cert": "",
+                        "private_key": "",
+                        "remote_cert": "",
+                    },
+                    "nat": False,
+                    "bgp": False,
+                    "remote_as": 0,
+                    "source_interface": "",
+                },
+            ],
+        }
+    }
+
+    vrf_id = create_vrf(vrf_json)
+    check_monitoring(vrf_id)
+
+    delete_vrf(vrf_id)
+
+
+def test_csr_vm_hardware_vrf_psk():
+    wait_for_dev_env()
     wait_for_csr_vm()
     time.sleep(3)
-    with open(json_file) as hw_file:
-        hw_data = hw_file.read()
-        create_response = requests.patch(
-            VRFS_URL + "=1", data=hw_data, auth=basicAuth, verify=False
-        )
-        check_status_code(create_response, HTTPStatus.NO_CONTENT)
+
+    vrf_json = {
+        "vrf": {
+            "client_name": "hardware",
+            "crypto_ph1": "aes-cbc-128.sha256.fourteen",
+            "crypto_ph2": "esp-aes.esp-sha256-hmac.group14",
+            "physical_interface": "eth0",
+            "active": True,
+            "disable_peer_ips": False,
+            "local_as": 65010,
+            "ospf": False,
+            "endpoint": [
+                {
+                    "remote_ip_sec": "10.69.0.103",
+                    "local_ip": "10.0.3.1",
+                    "peer_ip": "10.0.3.2",
+                    "authentication": {
+                        "type": "psk",
+                        "psk": "Cisco-remote3",
+                        "local_id": "",
+                        "local_cert": "",
+                        "private_key": "",
+                        "remote_cert": "",
+                    },
+                    "nat": False,
+                    "bgp": True,
+                    "remote_as": 65003,
+                    "source_interface": "GigabitEthernet1",
+                }
+            ],
+        }
+    }
+
+    create_response = requests.patch(
+        VRFS_URL + "=" + HARDWARE_VRF_ID, json=vrf_json, auth=basicAuth, verify=False
+    )
+    check_status_code(create_response, HTTPStatus.NO_CONTENT)
+    check_monitoring(HARDWARE_VRF_ID)
 
 
-def test_software_vrf():
+def test_software_vrf_cert():
     wait_for_dev_env()
 
     with open("./ansible/x509/sw_create.json") as sw_create:
@@ -118,6 +208,46 @@ def test_software_vrf():
         check_monitoring(vrf_id)
 
         delete_vrf(vrf_id)
+
+
+def test_csr_vm_hardware_vrf_cert():
+    wait_for_dev_env()
+    wait_for_csr_vm()
+    time.sleep(3)
+
+    with open("./ansible/x509hw/hw_create.json") as hw_file:
+        hw_data = hw_file.read()
+        create_response = requests.patch(
+            VRFS_URL + "=" + HARDWARE_VRF_ID, data=hw_data, auth=basicAuth, verify=False
+        )
+        check_status_code(create_response, HTTPStatus.NO_CONTENT)
+        check_monitoring(HARDWARE_VRF_ID)
+
+
+def test_software_vrf_psk_local_id():
+    wait_for_dev_env()
+
+    with open("./ansible/psk-local-id/sw/sw_create.json") as sw_create:
+        sw_create_json = json.load(sw_create)
+
+        vrf_id = create_vrf(sw_create_json)
+        check_monitoring(vrf_id)
+
+        delete_vrf(vrf_id)
+
+
+def test_csr_vm_hardware_vrf_psk_local_id():
+    wait_for_dev_env()
+    wait_for_csr_vm()
+    time.sleep(3)
+
+    with open("./ansible/psk-local-id/hw/hw.json") as hw_file:
+        hw_data = hw_file.read()
+        create_response = requests.patch(
+            VRFS_URL + "=" + HARDWARE_VRF_ID, data=hw_data, auth=basicAuth, verify=False
+        )
+        check_status_code(create_response, HTTPStatus.NO_CONTENT)
+        check_monitoring(HARDWARE_VRF_ID)
 
 
 def test_vrf_scenario():
@@ -150,7 +280,6 @@ def test_vrf_scenario():
                     "bgp": True,
                     "remote_as": 321,
                     "source_interface": "",
-                    "local_id": "test@codilime.com",
                 }
             ],
         }
@@ -304,34 +433,44 @@ def check_status_code(response, expected_status_code):
     )
 
 
+def _check_monitoring(vrf_id):
+    monitoring_response = requests.get(
+        MONITORING_URL + vrf_id, auth=basicAuth, verify=False
+    )
+    check_status_code(monitoring_response, HTTPStatus.OK)
+    monitoring_response_json = monitoring_response.json()
+    for endpoint in monitoring_response_json["monitoring"][0]["endpoint"]:
+        if endpoint["status"] != "up":
+            log.info(
+                "Wrong monitoring response:%s",
+                str(monitoring_response_json),
+            )
+            return endpoint["status"]
+
+    return None
+
+
 def check_monitoring(vrf_id):
     retries = 5
     for i in range(retries, -1, -1):
-        monitoring_response = requests.get(
-            MONITORING_URL + vrf_id, auth=basicAuth, verify=False
-        )
-        check_status_code(monitoring_response, HTTPStatus.OK)
-        monitoring_response = monitoring_response.json()["monitoring"][0]["endpoint"][
-            0
-        ]["status"]
-        if monitoring_response != "up":
+        status = _check_monitoring(vrf_id)
+        if status is not None:
             if i > 0:
                 log.info(
-                    "monitoring_response was %s, will retry %d more times",
-                    str(monitoring_response),
+                    "monitoring_response was '%s', will retry %d more times",
+                    str(status),
                     i,
                 )
-                time.sleep(3)
+                time.sleep(5)
         else:
             return
-    pytest.fail("Wrong monitoring response", monitoring_response)
+    pytest.fail("Wrong monitoring response")
 
 
 def create_vrf(vrf_json):
     create_response = requests.post(
         VRFS_URL, json=vrf_json, auth=basicAuth, verify=False
     )
-    print(create_response)
     check_status_code(create_response, HTTPStatus.CREATED)
 
     return create_response.headers["Location"].split("=")[1]

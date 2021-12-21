@@ -18,11 +18,13 @@ Cisco-IOS-XE-native:native/crypto/ikev2/profile
                         "name": "hardware_psk"
                         }
                         },
+                        {{ if $endpoint.Authentication.LocalID }}
                         "identity": {
                         "local": {
                         "{{ transformLocalIDType $endpoint }}": "{{ $endpoint.Authentication.LocalID }}"
                         }
                         },
+                        {{ end }}
                         "match": {
                         "identity": {
                         "remote": {

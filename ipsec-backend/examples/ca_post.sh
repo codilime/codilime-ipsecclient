@@ -1,4 +1,4 @@
-curl -v -XPOST\
+curl -v -k -XPOST\
   http://localhost/restconf/data/sico-ipsec:api/ca\
   -u "admin:cisco123" -d @- << EOF
 {

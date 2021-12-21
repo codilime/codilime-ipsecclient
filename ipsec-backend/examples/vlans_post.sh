@@ -1,4 +1,4 @@
-curl -v -XPOST\
+curl -v -k -XPOST\
   http://localhost:8000/api/vrfs -u\
   "admin:cisco123" -d @- << EOF
 {

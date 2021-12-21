@@ -1,6 +1,6 @@
 #!/bin/bash
 
-curl -v -XPOST\
+curl -v -k -XPOST\
   http://localhost/restconf/data/sico-ipsec:api/password\
   -u "admin:cisco123" -d @- << EOF
 {
