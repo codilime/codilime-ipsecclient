@@ -1,4 +1,6 @@
-curl -v -XPOST http://localhost/api/vrfs -u "admin:cisco123" -d @- << EOF
+curl -v -k -XPOST\
+   http://localhost/restconf/data/sico-ipsec:api/vrf\
+   -u "admin:cisco123" -d @- << EOF
 {
    "id":1,
    "client_name":"test",

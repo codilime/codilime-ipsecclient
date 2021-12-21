@@ -1,21 +1,25 @@
 Cisco-IOS-XE-native:native/crypto/ipsec/profile
-Cisco-IOS-XE-native:native/crypto/ipsec/profile=hardware_psk
+{{ range $index, $endpoint := .EndpointSubset }}Cisco-IOS-XE-native:native/crypto/ipsec/profile=hardware_psk{{ $endpoint.ID }} {{end}}
 {
-        "profile": {
-                "name": "hardware_psk",
-                "set": {
-                "ikev2-profile": "hardware_psk",
-                "pfs": {
-                "group": "{{ index .CryptoPh2Slice 2 }}"
-                },
-                "transform-set": [
-                "hardware_psk"
-                ],
-                "security-association": {
-                "lifetime": {
-                "kilobytes": "disable"
-                }
-                }
-                }
-        }
+        "profile": [
+        {{ range $index, $endpoint := .EndpointSubset }}
+                {
+                        "name": "hardware_psk{{ $endpoint.ID }}",
+                        "set": {
+                        "ikev2-profile": "hardware_psk{{ $endpoint.ID }}",
+                        "pfs": {
+                        "group": "{{ index $.CryptoPh2Slice 2 }}"
+                        },
+                        "transform-set": [
+                        "hardware_psk"
+                        ],
+                        "security-association": {
+                        "lifetime": {
+                        "kilobytes": "disable"
+                        }
+                        }
+                        }
+                } {{ if (notEndOfSlice $.EndpointSubset $index) }},{{ end }}
+        {{ end }}
+        ]
 }

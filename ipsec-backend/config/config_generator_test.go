@@ -293,6 +293,27 @@ func TestDeleteTemplatePsk(t *testing.T) {
 	generator.DeleteConfigs(vrf)
 }
 
+func TestTransformLocalID(t *testing.T) {
+	transformLocalIdMatrix := [][]string{
+		{"xyz=abc", "dn", ""},
+		{"@#newkeyid", "key-id", "newkeyid"},
+		{"@newfqdn", "fqdn", "newfqdn"},
+		{"test@codilime.com", "email", "test@codilime.com"},
+		{"2001:db8::1234:5678", "address", "2001:db8::1234:5678"},
+		{"2001:db8::1234:", "key-id", "2001:db8::1234:"},
+		{"127.10.10.20", "address", "127.10.10.20"},
+		{"newfqdn", "fqdn", "newfqdn"},
+	}
+	for _, data := range transformLocalIdMatrix {
+		if localIDtype := transformLocalIDType(data[0]); localIDtype != data[1] {
+			t.Fatalf("expected local id type: %s got: %s\n", data[1], localIDtype)
+		}
+		if localID := transformLocalID(data[0]); localID != data[2] {
+			t.Fatalf("expected local id: %s got: %s\n", data[2], localID)
+		}
+	}
+}
+
 func createTestVrf() db.Vrf {
 	active := true
 	disablePeerIps := false

@@ -30,9 +30,9 @@
         "authentication": {
           "type": "certs",
           "psk": "",
-          "local_cert": "{{ lookup("file", "local_cert.pem") | replace("\n", "\\n") }}",
-          "remote_cert": "{{ lookup("file", "remote_cert.pem") | replace("\n", "\\n") }}",
-          "private_key": "{{ lookup("file", "private_key.pem") | replace("\n", "\\n") }}"
+          "local_cert": "{{ lookup("file", "local_cert_1.pem") | replace("\n", "\\n") }}",
+          "remote_cert": "{{ lookup("file", "remote_cert_1.pem") | replace("\n", "\\n") }}",
+          "private_key": "{{ lookup("file", "private_key_1.pem") | replace("\n", "\\n") }}"
         }
       },
       {
@@ -46,9 +46,9 @@
         "authentication": {
           "type": "certs",
           "psk": "",
-          "local_cert": "{{ lookup("file", "local_cert.pem") | replace("\n", "\\n") }}",
-          "remote_cert": "{{ lookup("file", "remote_cert.pem") | replace("\n", "\\n") }}",
-          "private_key": "{{ lookup("file", "private_key.pem") | replace("\n", "\\n") }}"
+          "local_cert": "{{ lookup("file", "local_cert_2.pem") | replace("\n", "\\n") }}",
+          "remote_cert": "{{ lookup("file", "remote_cert_2.pem") | replace("\n", "\\n") }}",
+          "private_key": "{{ lookup("file", "private_key_2.pem") | replace("\n", "\\n") }}"
         }
       }
     ]

@@ -1,4 +1,6 @@
-curl -k -v -XPATCH https://localhost/restconf/data/sico-ipsec:api/vrf=2 -u "admin:cisco123" -d @- << EOF
+curl -k -v -XPATCH\
+  https://localhost/restconf/data/sico-ipsec:api/vrf=2\
+  -u "admin:cisco123" -d @- << EOF
 {
     "vrf": {
         "id":5,

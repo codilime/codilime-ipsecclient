@@ -52,6 +52,31 @@ services:
       ipsec:
         ipv4_address: 10.69.0.104
 
+  ipsec-5:
+    container_name: site5
+    build:
+      context: strongswan
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site5
+    privileged: yes
+    restart: always
+    networks:
+      ipsec:
+        ipv4_address: 10.69.0.105
+
+  ipsec-6:
+    container_name: site6
+    build:
+      context: strongswan
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site6
+    privileged: yes
+    restart: always
+    networks:
+      ipsec:
+        ipv4_address: 10.69.0.106
 
   bird-1:
     container_name: bird1
@@ -97,6 +122,28 @@ services:
       args:
         CONFIG: site4
 
+  bird-5:
+    container_name: bird5
+    pid: service:ipsec-5
+    network_mode: service:ipsec-5
+    privileged: yes
+    build:
+      context: bird
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site5
+
+  bird-6:
+    container_name: bird6
+    pid: service:ipsec-6
+    network_mode: service:ipsec-6
+    privileged: yes
+    build:
+      context: bird
+      dockerfile: Dockerfile
+      args:
+        CONFIG: site6
+
 networks:
   ipsec:
     name: ipsec
@@ -105,5 +152,5 @@ networks:
       com.docker.network.bridge.name: ipsec_br
       com.docker.network.bridge.enable_icc: "true"
     ipam:
-     config:
-       - subnet: 10.69.0.0/24
+      config:
+        - subnet: 10.69.0.0/24
