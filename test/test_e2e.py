@@ -102,9 +102,25 @@ def wait_for_dev_env():
     time.sleep(1)
 
 
-def test_software_vrf_psk():
+def _test_software_vrf(create_vrf_json):
     wait_for_dev_env()
-    vrf_json = {
+
+    vrf_id = create_vrf(create_vrf_json)
+    check_monitoring(vrf_id)
+
+    delete_vrf(vrf_id)
+
+
+def _test_hardware_vrf(update_vrf_json):
+    wait_for_dev_env()
+    wait_for_csr_vm()
+
+    update_hardware_vrf(update_vrf_json)
+    check_monitoring(HARDWARE_VRF_ID)
+
+
+def test_psk_software():
+    create_vrf_json = {
         "vrf": {
             "client_name": "test_psk",
             "vlan": [{"vlan": 123, "lan_ip": "10.0.0.0/24"}],
@@ -154,17 +170,11 @@ def test_software_vrf_psk():
         }
     }
 
-    vrf_id = create_vrf(vrf_json)
-    check_monitoring(vrf_id)
-
-    delete_vrf(vrf_id)
+    _test_software_vrf(create_vrf_json)
 
 
-def test_csr_vm_hardware_vrf_psk():
-    wait_for_dev_env()
-    wait_for_csr_vm()
-
-    vrf_json = {
+def test_psk_hardware_csr_vm():
+    update_vrf_json = {
         "vrf": {
             "client_name": "hardware",
             "crypto_ph1": "aes-cbc-128.sha256.fourteen",
@@ -196,61 +206,27 @@ def test_csr_vm_hardware_vrf_psk():
         }
     }
 
-    create_response = requests.patch(
-        VRFS_URL + "=" + HARDWARE_VRF_ID, json=vrf_json, auth=basicAuth, verify=False
-    )
-    check_status_code(create_response, HTTPStatus.NO_CONTENT)
-    check_monitoring(HARDWARE_VRF_ID)
+    _test_hardware_vrf(update_vrf_json)
 
 
-def test_software_vrf_cert():
-    wait_for_dev_env()
-
-    with open("./ansible/x509/sw_create.json") as sw_create:
-        sw_create_json = json.load(sw_create)
-
-        vrf_id = create_vrf(sw_create_json)
-        check_monitoring(vrf_id)
-
-        delete_vrf(vrf_id)
+def test_cert_software():
+    with open("./ansible/x509/sw/sw_create.json") as create_vrf:
+        _test_software_vrf(json.load(create_vrf))
 
 
-def test_csr_vm_hardware_vrf_cert():
-    wait_for_dev_env()
-    wait_for_csr_vm()
-
-    with open("./ansible/x509hw/hw_create.json") as hw_file:
-        hw_data = hw_file.read()
-        create_response = requests.patch(
-            VRFS_URL + "=" + HARDWARE_VRF_ID, data=hw_data, auth=basicAuth, verify=False
-        )
-        check_status_code(create_response, HTTPStatus.NO_CONTENT)
-        check_monitoring(HARDWARE_VRF_ID)
+def test_cert_hardware_csr_vm():
+    with open("./ansible/x509/hw/hw.json") as update_vrf:
+        _test_hardware_vrf(json.load(update_vrf))
 
 
-def test_software_vrf_psk_local_id():
-    wait_for_dev_env()
-
-    with open("./ansible/psk-local-id/sw/sw_create.json") as sw_create:
-        sw_create_json = json.load(sw_create)
-
-        vrf_id = create_vrf(sw_create_json)
-        check_monitoring(vrf_id)
-
-        delete_vrf(vrf_id)
+def test_psk_local_id_software():
+    with open("./ansible/psk-local-id/sw/sw_create.json") as create_vrf:
+        _test_software_vrf(json.load(create_vrf))
 
 
-def test_csr_vm_hardware_vrf_psk_local_id():
-    wait_for_dev_env()
-    wait_for_csr_vm()
-
-    with open("./ansible/psk-local-id/hw/hw.json") as hw_file:
-        hw_data = hw_file.read()
-        create_response = requests.patch(
-            VRFS_URL + "=" + HARDWARE_VRF_ID, data=hw_data, auth=basicAuth, verify=False
-        )
-        check_status_code(create_response, HTTPStatus.NO_CONTENT)
-        check_monitoring(HARDWARE_VRF_ID)
+def test_psk_local_id_hardware_csr_vm():
+    with open("./ansible/psk-local-id/hw/hw.json") as update_vrf:
+        _test_hardware_vrf(json.load(update_vrf))
 
 
 def test_vrf_scenario():
@@ -410,7 +386,7 @@ def test_vlans():
     check_status_code(create_response, HTTPStatus.BAD_REQUEST)
 
 
-def test_csr_vm_get_source_interfaces():
+def test_get_source_interfaces_csr_vm():
     wait_for_csr_vm()
     source_interfaces_response = requests.get(
         BASE_URL + "/source-interface", auth=basicAuth, verify=False
@@ -469,13 +445,24 @@ def check_monitoring(vrf_id):
     pytest.fail("Wrong monitoring response")
 
 
-def create_vrf(vrf_json):
+def create_vrf(create_vrf_json):
     create_response = requests.post(
-        VRFS_URL, json=vrf_json, auth=basicAuth, verify=False
+        VRFS_URL, json=create_vrf_json, auth=basicAuth, verify=False
     )
     check_status_code(create_response, HTTPStatus.CREATED)
 
     return create_response.headers["Location"].split("=")[1]
+
+
+def update_hardware_vrf(update_vrf_json):
+    update_response = requests.patch(
+        VRFS_URL + "=" + HARDWARE_VRF_ID,
+        json=update_vrf_json,
+        auth=basicAuth,
+        verify=False,
+    )
+    check_status_code(update_response, HTTPStatus.NO_CONTENT)
+    check_monitoring(HARDWARE_VRF_ID)
 
 
 def check_vrf_diff(expected_vrf, received_vrf):
