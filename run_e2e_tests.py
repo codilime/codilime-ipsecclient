@@ -82,16 +82,11 @@ def run_dev_env():
 
 def run_test_cases():
     run_command = ""
-    if args.csr_vm:
-        if args.k:
-            run_command = "exec ./test/run_test.sh -k " + args.k[0]
-        else:
-            run_command = "exec ./test/run_test.sh"
+    if args.k:
+        run_command = "exec ./test/run_test.sh -k " + args.k[0]
     else:
-        if args.k:
-            run_command = (
-                "exec ./test/run_test.sh -k 'not csr_vm and " + args.k[0] + "'"
-            )
+        if args.csr_vm:
+            run_command = "exec ./test/run_test.sh"
         else:
             run_command = "exec ./test/run_test.sh -k 'not csr_vm'"
 
