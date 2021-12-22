@@ -470,24 +470,16 @@ func GetSourceInterfaces(switchCreds db.SwitchCreds) ([]string, error) {
 	if res == nil {
 		return sourceInterfaces, nil
 	}
-	fmt.Printf("res: %+v\n\n", res)
 
 	if interfacesInt, ok := res["Cisco-IOS-XE-native:interface"]; ok {
-		fmt.Printf("interfacesInt: %+v\n\n", interfacesInt)
 		if interfaces, ok := interfacesInt.(map[string]interface{}); ok {
-			fmt.Printf("interfaces: %+v\n\n", interfaces)
 			for interfaceName, interfaceBodyList_ := range interfaces {
-				fmt.Printf("interfaceName: %+v\n\n", interfaceName)
-				fmt.Printf("interfaceBodyList_: %+v\n\n", interfaceBodyList_)
 				if interfaceBodyList, ok := interfaceBodyList_.([]interface{}); ok {
-					fmt.Printf("interfaceBodyList: %+v\n\n", interfaceBodyList)
 					for _, interfaceBody := range interfaceBodyList {
-						fmt.Printf("interfaceBody: %+v\n\n", interfaceBody)
 						interfaceId, ok := interfaceBody.(map[string]interface{})["name"].(string)
 						if !ok {
 							break
 						}
-						fmt.Printf("interfaceBody: %+v\n\n", interfaceId)
 						sourceInterfaces = append(sourceInterfaces, interfaceName+interfaceId)
 					}
 					return sourceInterfaces, nil
