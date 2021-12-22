@@ -25,7 +25,9 @@ def wait_for_sico_api():
         try:
             r = requests.get(VRFS_URL, auth=basicAuth, verify=False)
             if r.status_code < 400:
+                log.info("sico_api is ready")
                 return
+            time.sleep(3)
         except:
             time.sleep(3)
             continue
@@ -37,6 +39,7 @@ def wait_for_sico_net():
         if os.path.exists("/opt/super_net/supervisord.sock") and os.path.exists(
             "/opt/ipsec/conf/charon.vici"
         ):
+            log.info("sico_net is ready")
             return
         time.sleep(3)
 
@@ -66,6 +69,7 @@ def wait_for_csr_vm():
             )
             if response.status_code == 200:
                 log.info("CSR-VM is ready")
+                time.sleep(3)
                 return
             log.info("Waiting for CSR-VM: " + str(response))
             time.sleep(5)
@@ -95,9 +99,11 @@ def wait_for_dev_env():
         time.sleep(5)
 
     log.info("DEV ENV is ready")
+    time.sleep(1)
 
 
 def test_software_vrf_psk():
+    wait_for_dev_env()
     vrf_json = {
         "vrf": {
             "client_name": "test_psk",
@@ -157,7 +163,6 @@ def test_software_vrf_psk():
 def test_csr_vm_hardware_vrf_psk():
     wait_for_dev_env()
     wait_for_csr_vm()
-    time.sleep(3)
 
     vrf_json = {
         "vrf": {
@@ -213,7 +218,6 @@ def test_software_vrf_cert():
 def test_csr_vm_hardware_vrf_cert():
     wait_for_dev_env()
     wait_for_csr_vm()
-    time.sleep(3)
 
     with open("./ansible/x509hw/hw_create.json") as hw_file:
         hw_data = hw_file.read()
@@ -239,7 +243,6 @@ def test_software_vrf_psk_local_id():
 def test_csr_vm_hardware_vrf_psk_local_id():
     wait_for_dev_env()
     wait_for_csr_vm()
-    time.sleep(3)
 
     with open("./ansible/psk-local-id/hw/hw.json") as hw_file:
         hw_data = hw_file.read()
@@ -409,7 +412,6 @@ def test_vlans():
 
 def test_csr_vm_get_source_interfaces():
     wait_for_csr_vm()
-    time.sleep(3)
     source_interfaces_response = requests.get(
         BASE_URL + "/source-interface", auth=basicAuth, verify=False
     )
