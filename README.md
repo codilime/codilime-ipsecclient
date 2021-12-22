@@ -32,6 +32,9 @@ inside `ipsec-backend` directory run `CGO_CPPFLAGS="-DSQLITE_ENABLE_DBSTAT_VTAB=
 
 ## additional scripts
 
+NOTE Install python requirements:  
+`pip3 install -r ./helper-scripts/requirements.txt`
+
 Build the dockers:  
   
 `./build.py [-h] [--csr-vm <csr-vm path> <csr_config.iso path>] [--clean] [--pack] [--ut]`

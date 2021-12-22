@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import argparse, subprocess, sys, urllib3, atexit, time
+import argparse, subprocess, sys, urllib3, atexit
 
 
 parser = argparse.ArgumentParser()
