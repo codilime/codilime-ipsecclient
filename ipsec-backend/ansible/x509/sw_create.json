@@ -26,7 +26,7 @@
         "remote_as": 0,
         "nat": false,
         "bgp": true,
-        "source_interface": "GigabitEthernet1",
+        "source_interface": "",
         "authentication": {
           "type": "certs",
           "psk": "",
@@ -42,7 +42,7 @@
         "remote_as": 0,
         "nat": false,
         "bgp": true,
-        "source_interface": "GigabitEthernet1",
+        "source_interface": "",
         "authentication": {
           "type": "certs",
           "psk": "",
