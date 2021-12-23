@@ -120,7 +120,7 @@ for IP in $XFRM_IP; do
   ip link add $INTERFACE type xfrm dev lo if_id $ENDPOINT_ID 2>&1 | logs_err
   ip link set dev $INTERFACE master vrf-$VRF_ID 2>&1 | logs_err
   ip link set dev $INTERFACE up 2>&1 | logs_err
-  if [ $DISABLE_PEER_IPS = "true" ]; then
+  if [ $DISABLE_PEER_IPS = "true" ] || [ $PEER_IP = "empty" ]; then
     ip addr add $LOCAL_IP/32 dev $INTERFACE 2>&1 | logs_err
   else
     ip addr add $LOCAL_IP peer $PEER_IP dev $INTERFACE 2>&1 | logs_err
@@ -132,7 +132,8 @@ for IP in $XFRM_IP; do
   
   ITER=$(( $ITER + 1 ))
 done 
-if [ $DISABLE_PEER_IPS = "true" ]; then
+if [ $DISABLE_PEER_IPS = "true" ] || [ $PEER_IP = "empty" ]; then
+  logs "Route traffic to a local interface"
   cmd="ip route add vrf vrf-$VRF_ID 0.0.0.0/0"
   ITER=1
   for IP in $XFRM_IP; do
