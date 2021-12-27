@@ -84,7 +84,11 @@ do
   ip link set dev $PHYS_IF.${vlans_ips[$i]} master vrf-$VRF_ID 2>&1 | logs_err
   ip link set dev $PHYS_IF.${vlans_ips[$i]} up 2>&1 | logs_err
   #Assign IP
-  ip address add ${vlans_ips[$i+1]} dev $PHYS_IF.${vlans_ips[$i]} 2>&1 | logs_err
+  if [[ ${vlans_ips[$i+1]} == *":"* ]]; then
+    ip -6 address add ${vlans_ips[$i+1]} dev $PHYS_IF.${vlans_ips[$i]} 2>&1 | logs_err
+  else
+    ip address add ${vlans_ips[$i+1]} dev $PHYS_IF.${vlans_ips[$i]} 2>&1 | logs_err
+  fi
   logs " ...done"
 done
 logs "Creating iptables rules in raw table... "
@@ -112,7 +116,7 @@ for IP in $XFRM_IP; do
   LOCAL_IP=`echo $XFRM_IP|awk {'print $'$ITER}`
   PEER_IP=`echo $XFRM_PEER|awk {'print $'$ITER}`
   ENDPOINT_ID=`echo $ENDPOINT_IDS|awk {'print $'$ITER}`
-  logs " $INTERFACE"
+  logs " $INTERFACE $LOCAL_IP $PEER_IP $ENDPOINT_ID"
   ip link add $INTERFACE type xfrm dev lo if_id $ENDPOINT_ID 2>&1 | logs_err
   ip link set dev $INTERFACE master vrf-$VRF_ID 2>&1 | logs_err
   ip link set dev $INTERFACE up 2>&1 | logs_err

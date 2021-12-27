@@ -19,7 +19,6 @@ const (
 
 	supervisorConfig = `[program:test vrf]
 command=/usr/local/sbin/ipsec.sh
-# todo: fix this
 environment=PHYS_IF="test_interface", VRF_ID="2", XFRM_IP="0.0.0.1", XFRM_PEER="10.42.0.1", NAT="YES", VLANS_IPS="1000 11.11.0.0/30 2000 22.22.0.0/30 ", ENDPOINT_IDS="1", DISABLE_PEER_IPS="false"
 redirect_stderr=true
 stdout_logfile=/opt/logs/test vrf.log
@@ -69,8 +68,10 @@ const config_psk = `connections {
         }
         children {
             site-cisco_1 {
+                
                 remote_ts = 0.0.0.0/0
                 local_ts = 0.0.0.0/0
+                
                 if_id_in = 1
                 if_id_out = 1
                 esp_proposals = cast128-sha512-modp1024
@@ -157,8 +158,10 @@ func TestGenerateTemplateCert(t *testing.T) {
         }
         children {
             site-cisco_1 {
+                
                 remote_ts = 0.0.0.0/0
                 local_ts = 0.0.0.0/0
+                
                 if_id_in = 1
                 if_id_out = 1
                 esp_proposals = cast128-sha512-modp1024

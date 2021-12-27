@@ -7,6 +7,20 @@ Cisco-IOS-XE-native:native/interface
                         "Tunnel": {
                         "name": {{ $endpoint.ID }},
                         "description": "hardware_psk{{ $index }}",
+                        {{ if $endpoint.IsIpv6 }}
+                        "ipv6": {
+                                "address": {
+                                        "prefix-list": [
+                                                {
+                                                        "prefix": "{{ $endpoint.LocalIP }}/64"
+                                                }
+                                        ]
+                                },
+                                "enable": [
+                                        null
+                                ]
+                        },
+                        {{ else }}
                         "ip": {
                         "address": {
                         "primary": {
@@ -15,6 +29,7 @@ Cisco-IOS-XE-native:native/interface
                         }
                         }
                         },
+                        {{ end }}
                         "Cisco-IOS-XE-tunnel:tunnel": {
                         "source": "{{ $endpoint.SourceInterface }}",
                         "destination-config": {

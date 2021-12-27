@@ -249,6 +249,93 @@ func TestVlans(t *testing.T) {
 	checkResponseCode(t, http.StatusBadRequest, response.Code)
 }
 
+func _testIPv6(expectedErrorMsg string, req *http.Request, t *testing.T) {
+	app, _, _, dbInstance := createApp(t)
+
+	dbInstance.EXPECT().RotateErrorsBySizeOrDate()
+	dbInstance.EXPECT().Create(gomock.Any()).DoAndReturn(func(e *db.StoredError) error {
+		if e.Message != expectedErrorMsg {
+			t.Fatalf("Expected error msg to be: "+expectedErrorMsg+". Got: %s", e.Message)
+		}
+		return nil
+	})
+
+	req.SetBasicAuth("admin", "cisco123")
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Origin", "test-origin")
+
+	response := executeRequest(app, req)
+	checkResponseCode(t, http.StatusBadRequest, response.Code)
+}
+
+func _testIPv6Update(expectedErrorMsg string, endpoint map[string]interface{}, vrfId int, t *testing.T) {
+	data := map[string]interface{}{
+		"vrf": map[string]interface{}{
+			"endpoint": []map[string]interface{}{
+				endpoint,
+			},
+		},
+	}
+	dataJSON, err := json.Marshal(data)
+	if err != nil {
+		t.Fatalf("error during encode data %v\n", err)
+	}
+	req, err := http.NewRequest(http.MethodPatch, vrfPath+"="+strconv.Itoa(vrfId), bytes.NewBuffer(dataJSON))
+	if err != nil {
+		t.Fatalf("error during create request %v\n", err)
+	}
+
+	_testIPv6(expectedErrorMsg, req, t)
+}
+
+func _testIPv6Create(expectedErrorMsg string, endpoint map[string]interface{}, t *testing.T) {
+	data := map[string]interface{}{
+		"vrf": map[string]interface{}{
+			"endpoint": []map[string]interface{}{
+				endpoint,
+			},
+		},
+	}
+	dataJSON, err := json.Marshal(data)
+	if err != nil {
+		t.Fatalf("error during encode data %v\n", err)
+	}
+	req, err := http.NewRequest(http.MethodPost, vrfPath, bytes.NewBuffer(dataJSON))
+	if err != nil {
+		t.Fatalf("error during create request %v\n", err)
+	}
+
+	_testIPv6(expectedErrorMsg, req, t)
+}
+
+func TestIPv6Create(t *testing.T) {
+	_testIPv6Create("endpoint local ip: IPv6 not supported", map[string]interface{}{
+		"local_ip": "2001:db8::",
+	}, t)
+
+	_testIPv6Create("endpoint peer ip: IPv6 not supported", map[string]interface{}{
+		"peer_ip": "2001:db8::",
+	}, t)
+}
+
+func TestIPv6Update(t *testing.T) {
+	_testIPv6Update("endpoint local ip: IPv6 not supported", map[string]interface{}{
+		"local_ip": "2001:db8::",
+	}, vrfId, t)
+
+	_testIPv6Update("endpoint peer ip: IPv6 not supported", map[string]interface{}{
+		"peer_ip": "2001:db8::",
+	}, vrfId, t)
+
+	_testIPv6Update("endpoint local ip: IPv6 not supported", map[string]interface{}{
+		"local_ip": "2001:db8::",
+	}, db.HardwareVrfID, t)
+
+	_testIPv6Update("endpoint peer ip: IPv6 not supported", map[string]interface{}{
+		"peer_ip": "2001:db8::",
+	}, db.HardwareVrfID, t)
+}
+
 func executeUpdate(oldActive, newActive bool, t *testing.T) (*App, *http.Request, *mock.MockGenerator, db.Vrf) {
 	expectedVrf := createTestVrf()
 	expectedVrf.Active = db.BoolPointer(&newActive)
