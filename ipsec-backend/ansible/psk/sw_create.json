@@ -1,6 +1,5 @@
 {
   "vrf": {
-    "id": 2,
     "client_name": "ansible_test",
     "vlan": [
       {
@@ -8,14 +7,14 @@
         "lan_ip": "1.1.1.1/24"
       }
     ],
-    "crypto_ph1": "aes128.sha1.modp2048",
-    "crypto_ph2": "aes128.sha1.modp2048",
+    "crypto_ph1": "aes128.sha256.modp2048",
+    "crypto_ph2": "aes128.sha256.modp2048",
     "physical_interface": "eth0",
     "active": true,
     "local_as": 65001,
     "endpoint": [
       {
-        "remote_ip_sec": "10.200.1.254",
+        "remote_ip_sec": "10.69.0.10",
         "local_ip": "192.168.1.1",
         "peer_ip": "192.168.1.2",
         "remote_as": 65002,

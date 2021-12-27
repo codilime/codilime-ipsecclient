@@ -25,7 +25,7 @@ import (
 
 const (
 	password = "cisco123"
-	vrfId    = 4
+	vrfIdSW  = 4
 )
 
 var cryptoAlgorythms = []string{"aes123", "sha234", "modp345", "camellia456", "md567", "frodos678"}
@@ -86,7 +86,7 @@ func TestGetNonExistentVrf(t *testing.T) {
 
 	expectedErrorMsg := "Vrf not found"
 
-	dbInstance.EXPECT().GetVrf(vrfMatcher{db.Vrf{ID: vrfId}}).DoAndReturn(func(vrf *db.Vrf) error {
+	dbInstance.EXPECT().GetVrf(vrfMatcher{db.Vrf{ID: vrfIdSW}}).DoAndReturn(func(vrf *db.Vrf) error {
 		return gorm.ErrRecordNotFound
 	})
 	dbInstance.EXPECT().RotateErrorsBySizeOrDate()
@@ -96,7 +96,7 @@ func TestGetNonExistentVrf(t *testing.T) {
 		}
 		return nil
 	})
-	req, _ := http.NewRequest(http.MethodGet, vrfPath+"="+strconv.Itoa(vrfId), nil)
+	req, _ := http.NewRequest(http.MethodGet, vrfPath+"="+strconv.Itoa(vrfIdSW), nil)
 	req.SetBasicAuth(username, password)
 	response := executeRequest(app, req)
 
@@ -108,7 +108,7 @@ func TestCreateVrf(t *testing.T) {
 
 	const endpointId = 2
 	const origin = "test-origin"
-	expectedLocation := origin + "/restconf/data/sico-ipsec:api/vrf=" + strconv.Itoa(vrfId)
+	expectedLocation := origin + "/restconf/data/sico-ipsec:api/vrf=" + strconv.Itoa(vrfIdSW)
 
 	expectedVrf := createTestVrf()
 	setCryptoYang(&expectedVrf, cryptoAlgorythms, t)
@@ -138,7 +138,7 @@ func TestCreateVrf(t *testing.T) {
 	}
 	setCryptoDB(&expectedVrf, cryptoAlgorythms, t)
 
-	createdVrf := getCreatedVrf(expectedVrf, vrfId, endpointId)
+	createdVrf := getCreatedVrf(expectedVrf, vrfIdSW, endpointId)
 
 	dbInstance.EXPECT().EncryptPSK(gomock.Eq(password), vrfMatcher{expectedVrf}).Return(nil)
 	dbInstance.EXPECT().Create(vrfMatcher{expectedVrf}).DoAndReturn(func(vrf *db.Vrf) error {
@@ -181,13 +181,13 @@ func TestGetVrf(t *testing.T) {
 
 	expectedVrf := createTestVrf()
 	setCryptoDB(&expectedVrf, cryptoAlgorythms, t)
-	dbInstance.EXPECT().GetVrf(vrfMatcher{db.Vrf{ID: uint32(vrfId)}}).DoAndReturn(func(vrf *db.Vrf) error {
+	dbInstance.EXPECT().GetVrf(vrfMatcher{db.Vrf{ID: uint32(vrfIdSW)}}).DoAndReturn(func(vrf *db.Vrf) error {
 		*vrf = expectedVrf
 		return nil
 	})
 	dbInstance.EXPECT().DecryptPSK(gomock.Eq(password), vrfMatcher{expectedVrf}).Return(nil)
 
-	req, _ := http.NewRequest(http.MethodGet, vrfPath+"="+strconv.Itoa(vrfId), nil)
+	req, _ := http.NewRequest(http.MethodGet, vrfPath+"="+strconv.Itoa(vrfIdSW), nil)
 	req.SetBasicAuth(username, password)
 	response := executeRequest(app, req)
 
@@ -321,11 +321,11 @@ func TestIPv6Create(t *testing.T) {
 func TestIPv6Update(t *testing.T) {
 	_testIPv6Update("endpoint local ip: IPv6 not supported", map[string]interface{}{
 		"local_ip": "2001:db8::",
-	}, vrfId, t)
+	}, vrfIdSW, t)
 
 	_testIPv6Update("endpoint peer ip: IPv6 not supported", map[string]interface{}{
 		"peer_ip": "2001:db8::",
-	}, vrfId, t)
+	}, vrfIdSW, t)
 
 	_testIPv6Update("endpoint local ip: IPv6 not supported", map[string]interface{}{
 		"local_ip": "2001:db8::",

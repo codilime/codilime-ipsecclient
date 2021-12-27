@@ -527,7 +527,7 @@ func (a *App) _updateBackends(key string, vrf, oldVrf *db.Vrf) error {
 	return nil
 }
 
-func vrfSubJsonValid(vrfSubJson interface{}) error {
+func vrfSubJsonValidSW(vrfSubJson interface{}) error {
 	vrf, ok := vrfSubJson.(map[string]interface{})
 	if !ok {
 		return logger.ReturnNewError("wrong vrfSubJson type")
@@ -611,7 +611,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, "malformed json")
 		return
 	}
-	if err := vrfSubJsonValid(vrfSubJson); err != nil {
+	if err := vrfSubJsonValidSW(vrfSubJson); err != nil {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -705,7 +705,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if id != db.HardwareVrfID {
-		if err := vrfSubJsonValid(vrfSubJson); err != nil {
+		if err := vrfSubJsonValidSW(vrfSubJson); err != nil {
 			a.respondWithError(w, http.StatusBadRequest, err.Error())
 			return
 		}

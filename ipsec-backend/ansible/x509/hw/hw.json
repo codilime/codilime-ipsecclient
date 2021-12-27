@@ -1,6 +1,5 @@
 {
   "vrf": {
-    "id": 1,
     "client_name": "hardware",
     "crypto_ph1": "aes-cbc-128.sha256.fourteen",
     "crypto_ph2": "esp-aes.esp-sha256-hmac.group14",
@@ -10,8 +9,6 @@
     "ospf": false,
     "endpoint": [
       {
-        "id": 432,
-        "vrf_id": 1,
         "remote_ip_sec": "10.69.0.101",
         "local_ip": "10.0.1.1",
         "peer_ip": "10.0.1.2",
