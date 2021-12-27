@@ -532,23 +532,8 @@ func vrfSubJsonValid(vrfSubJson interface{}) error {
 	if !ok {
 		return logger.ReturnNewError("wrong vrfSubJson type")
 	}
-	endpoints, ok := vrf["endpoint"].([]interface{})
-	if !ok {
-		return logger.ReturnNewError("wrong endpoints json type")
-	}
-	for _, e := range endpoints {
-		if e, ok := e.(map[string]interface{}); ok {
-			local_ip, ok := e["local_ip"].(string)
-			if ok && strings.Contains(local_ip, ":") {
-				return logger.ReturnNewError("endpoint local ip: IPv6 not supported")
-			}
-			peer_ip, ok := e["peer_ip"].(string)
-			if ok && strings.Contains(peer_ip, ":") {
-				return logger.ReturnNewError("endpoint peer ip: IPv6 not supported")
-			}
-		} else {
-			return logger.ReturnNewError("wrong endpoint json type")
-		}
+	if err := verifyEnpoints(vrf); err != nil {
+		return err
 	}
 	vlans, ok := vrf["vlan"]
 	if !ok {
@@ -585,6 +570,10 @@ func vrfSubJsonValidHW(vrfSubJson interface{}) error {
 	if !ok {
 		return logger.ReturnNewError("wrong vrfSubJson type")
 	}
+	return verifyEnpoints(vrf)
+}
+
+func verifyEnpoints(vrf map[string]interface{}) error {
 	endpoints, ok := vrf["endpoint"].([]interface{})
 	if !ok {
 		return logger.ReturnNewError("wrong endpoints json type")
