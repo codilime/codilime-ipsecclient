@@ -574,7 +574,11 @@ func vrfSubJsonValidHW(vrfSubJson interface{}) error {
 }
 
 func verifyEnpoints(vrf map[string]interface{}) error {
-	endpoints, ok := vrf["endpoint"].([]interface{})
+	endpointInt, ok := vrf["endpoint"]
+	if !ok {
+		return nil
+	}
+	endpoints, ok := endpointInt.([]interface{})
 	if !ok {
 		return logger.ReturnNewError("wrong endpoints json type")
 	}

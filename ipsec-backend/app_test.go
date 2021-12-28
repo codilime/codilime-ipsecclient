@@ -229,7 +229,6 @@ func TestVlans(t *testing.T) {
 			"physical_interface": testVrf.PhysicalInterface,
 			"active":             testVrf.Active,
 			"local_as":           testVrf.LocalAs,
-			"endpoint":           []map[string]interface{}{},
 		},
 	}
 	dataJSON, err := json.Marshal(data)
