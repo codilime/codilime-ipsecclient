@@ -36,7 +36,7 @@ func TestMain(m *testing.M) {
 }
 
 func createApp(t *testing.T) (*App, *mock.MockGenerator, *mock.MockGenerator, *mock.MockDBinterface) {
-	switchCreds := db.SwitchCreds{"admin", "cisco123"}
+	switchCreds := db.SwitchCreds{username, password}
 
 	ctrl := gomock.NewController(t)
 	softwareGenerator := mock.NewMockGenerator(ctrl)
@@ -241,7 +241,7 @@ func TestVlans(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error during create request %v\n", err)
 	}
-	req.SetBasicAuth("admin", "cisco123")
+	req.SetBasicAuth(username, password)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Origin", "test-origin")
 
@@ -260,7 +260,7 @@ func _testIPv6(expectedErrorMsg string, req *http.Request, t *testing.T) {
 		return nil
 	})
 
-	req.SetBasicAuth("admin", "cisco123")
+	req.SetBasicAuth(username, password)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Origin", "test-origin")
 
@@ -358,7 +358,7 @@ func executeUpdate(oldActive, newActive bool, t *testing.T) (*App, *http.Request
 	dataJSON, _ := json.Marshal(data)
 
 	setCryptoDB(&expectedVrf, cryptoAlgorythms, t)
-	expectedVrf.ID = vrfId
+	expectedVrf.ID = vrfIdSW
 	dbInstance.EXPECT().GetVrf(gomock.Any()).DoAndReturn(func(vrf *db.Vrf) error {
 		vrf.Active = db.BoolPointer(&oldActive)
 		return nil
@@ -368,7 +368,7 @@ func executeUpdate(oldActive, newActive bool, t *testing.T) (*App, *http.Request
 	dbInstance.EXPECT().GetVrf(vrfMatcher{expectedVrf}).Return(nil)
 	dbInstance.EXPECT().DecryptPSK(gomock.Eq(password), vrfMatcher{expectedVrf}).Return(nil)
 
-	req, _ := http.NewRequest("PATCH", vrfPath+"="+strconv.Itoa(vrfId), bytes.NewBuffer(dataJSON))
+	req, _ := http.NewRequest("PATCH", vrfPath+"="+strconv.Itoa(vrfIdSW), bytes.NewBuffer(dataJSON))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth(username, password)
 	return app, req, softwareGenerator, expectedVrf
