@@ -527,10 +527,13 @@ func (a *App) _updateBackends(key string, vrf, oldVrf *db.Vrf) error {
 	return nil
 }
 
-func vrfSubJsonValid(vrfSubJson interface{}) error {
+func vrfSubJsonValidSW(vrfSubJson interface{}) error {
 	vrf, ok := vrfSubJson.(map[string]interface{})
 	if !ok {
 		return logger.ReturnNewError("wrong vrfSubJson type")
+	}
+	if err := verifyEnpoints(vrf); err != nil {
+		return err
 	}
 	vlans, ok := vrf["vlan"]
 	if !ok {
@@ -562,6 +565,40 @@ func vrfSubJsonValid(vrfSubJson interface{}) error {
 	return nil
 }
 
+func vrfSubJsonValidHW(vrfSubJson interface{}) error {
+	vrf, ok := vrfSubJson.(map[string]interface{})
+	if !ok {
+		return logger.ReturnNewError("wrong vrfSubJson type")
+	}
+	return verifyEnpoints(vrf)
+}
+
+func verifyEnpoints(vrf map[string]interface{}) error {
+	endpointInt, ok := vrf["endpoint"]
+	if !ok {
+		return nil
+	}
+	endpoints, ok := endpointInt.([]interface{})
+	if !ok {
+		return logger.ReturnNewError("wrong endpoints json type")
+	}
+	for _, e := range endpoints {
+		if e, ok := e.(map[string]interface{}); ok {
+			local_ip, ok := e["local_ip"].(string)
+			if ok && strings.Contains(local_ip, ":") {
+				return logger.ReturnNewError("endpoint local ip: IPv6 not supported")
+			}
+			peer_ip, ok := e["peer_ip"].(string)
+			if ok && strings.Contains(peer_ip, ":") {
+				return logger.ReturnNewError("endpoint peer ip: IPv6 not supported")
+			}
+		} else {
+			return logger.ReturnNewError("wrong endpoint json type")
+		}
+	}
+	return nil
+}
+
 func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -578,7 +615,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, "malformed json")
 		return
 	}
-	if err := vrfSubJsonValid(vrfSubJson); err != nil {
+	if err := vrfSubJsonValidSW(vrfSubJson); err != nil {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -672,7 +709,12 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if id != db.HardwareVrfID {
-		if err := vrfSubJsonValid(vrfSubJson); err != nil {
+		if err := vrfSubJsonValidSW(vrfSubJson); err != nil {
+			a.respondWithError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+	} else {
+		if err := vrfSubJsonValidHW(vrfSubJson); err != nil {
 			a.respondWithError(w, http.StatusBadRequest, err.Error())
 			return
 		}

@@ -1,21 +1,20 @@
 {
   "vrf": {
     "client_name": "hardware",
-    "crypto_ph1": "aes-cbc-128.sha256.fourteen",
-    "crypto_ph2": "esp-aes.esp-sha256-hmac.group14",
+    "crypto_ph1": "aes-cbc-128.sha1.fourteen",
+    "crypto_ph2": "esp-aes.esp-sha-hmac.group14",
     "physical_interface": "eth0",
     "active": true,
     "local_as": 65002,
-    "ospf": false,
     "endpoint": [
       {
-        "remote_ip_sec": "10.69.0.3",
-        "local_ip": "192.168.1.2",
-        "peer_ip": "192.168.1.1",
+        "remote_ip_sec": "10.200.1.1",
+        "local_ip": "2012::2",
+        "peer_ip": "2012::1",
         "remote_as": 65001,
         "nat": false,
-        "bgp": true,
-        "source_interface": "GigabitEthernet1",
+        "bgp": false,
+        "source_interface": "Vlan200",
         "authentication": {
           "type": "psk",
           "psk": "asdasdasd",

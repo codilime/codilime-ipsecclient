@@ -136,10 +136,10 @@ func (h *HardwareGenerator) DeleteConfigs(vrf db.Vrf, switchCredsList ...db.Swit
 	return nil
 }
 
-func bgpEndpointSubset(endpoints []db.Endpoint) []db.Endpoint {
+func bgpEndpointSubset(endpoints []db.Endpoint, ipv6 bool) []db.Endpoint {
 	bgpEndpoints := []db.Endpoint{}
 	for _, e := range endpoints {
-		if e.BGP {
+		if e.BGP && ipv6 == e.IsIpv6() {
 			bgpEndpoints = append(bgpEndpoints, e)
 		}
 	}
@@ -152,9 +152,16 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 		return logger.ReturnError(err)
 	}
 
-	bgpEndpoints := bgpEndpointSubset(endpoints)
+	bgpEndpointsIpv4 := bgpEndpointSubset(endpoints, false)
+	bgpEndpointsIpv6 := bgpEndpointSubset(endpoints, true)
+	bgpEndpoints := []db.Endpoint{}
+	bgpEndpoints = append(bgpEndpoints, bgpEndpointsIpv4...)
+	bgpEndpoints = append(bgpEndpoints, bgpEndpointsIpv6...)
 
 	for _, file := range files {
+		if len(bgpEndpoints) == 0 && strings.Contains(file.Name(), "bgp") {
+			continue // don't do bgp if not needed
+		}
 		bytes, err := ioutil.ReadFile(hwTemplatesDir + "/" + folderName + "/" + file.Name())
 		if err != nil {
 			return logger.ReturnError(err)
@@ -209,10 +216,14 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 		if err = t.Execute(&builder, struct {
 			VrfWithCryptoSlices
 			EndpointSubset    []db.Endpoint
+			BGPEndpoints4     []db.Endpoint
+			BGPEndpoints6     []db.Endpoint
 			BGPEndpointSubset []db.Endpoint
 		}{
 			vrf,
 			endpoints,
+			bgpEndpointsIpv4,
+			bgpEndpointsIpv6,
 			bgpEndpoints,
 		}); err != nil {
 			return logger.ReturnError(err)
@@ -283,7 +294,8 @@ func (h *HardwareGenerator) doTemplateFolderDelete(folderName string, client *ht
 	}
 
 	files = reverseSlice(files)
-	bgpEndpoints := bgpEndpointSubset(endpoints)
+	bgpEndpointsIpv4 := bgpEndpointSubset(endpoints, false)
+	bgpEndpointsIpv6 := bgpEndpointSubset(endpoints, true)
 
 	for _, file := range files {
 		bytes, err := ioutil.ReadFile(hwTemplatesDir + "/" + folderName + "/" + file.Name())
@@ -299,12 +311,14 @@ func (h *HardwareGenerator) doTemplateFolderDelete(folderName string, client *ht
 		builder := strings.Builder{}
 		if err = t.Execute(&builder, struct {
 			db.Vrf
-			EndpointSubset    []db.Endpoint
-			BGPEndpointSubset []db.Endpoint
+			EndpointSubset []db.Endpoint
+			BGPEndpoints4  []db.Endpoint
+			BGPEndpoints6  []db.Endpoint
 		}{
 			vrf,
 			endpoints,
-			bgpEndpoints,
+			bgpEndpointsIpv4,
+			bgpEndpointsIpv6,
 		}); err != nil {
 			return logger.ReturnError(err)
 		}
@@ -447,7 +461,7 @@ func (h *HardwareGenerator) GetMonitoring(_ *string, switchCredsList ...db.Switc
 		remoteIp := identData["remote-endpt-addr"].(string)
 		saStatus := identData["inbound-esp-sa"].(map[string]interface{})["sa-status"].(string)
 		monitoring.Endpoint[uint32(endpointID)] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
-			LocalIp: db.StringPointer(localIp),
+			LocalIp: db.StringPointer(normalizeLocalIP(localIp, remoteIp)),
 			PeerIp:  db.StringPointer(remoteIp),
 			Status:  db.StringPointer(normalizeStatus(saStatus)),
 			Id:      db.Uint32Pointer(uint32(endpointID)),

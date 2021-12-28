@@ -25,7 +25,7 @@ import (
 
 const (
 	password = "cisco123"
-	vrfId    = 4
+	vrfIdSW  = 4
 )
 
 var cryptoAlgorythms = []string{"aes123", "sha234", "modp345", "camellia456", "md567", "frodos678"}
@@ -36,7 +36,7 @@ func TestMain(m *testing.M) {
 }
 
 func createApp(t *testing.T) (*App, *mock.MockGenerator, *mock.MockGenerator, *mock.MockDBinterface) {
-	switchCreds := db.SwitchCreds{"admin", "cisco123"}
+	switchCreds := db.SwitchCreds{username, password}
 
 	ctrl := gomock.NewController(t)
 	softwareGenerator := mock.NewMockGenerator(ctrl)
@@ -86,7 +86,7 @@ func TestGetNonExistentVrf(t *testing.T) {
 
 	expectedErrorMsg := "Vrf not found"
 
-	dbInstance.EXPECT().GetVrf(vrfMatcher{db.Vrf{ID: vrfId}}).DoAndReturn(func(vrf *db.Vrf) error {
+	dbInstance.EXPECT().GetVrf(vrfMatcher{db.Vrf{ID: vrfIdSW}}).DoAndReturn(func(vrf *db.Vrf) error {
 		return gorm.ErrRecordNotFound
 	})
 	dbInstance.EXPECT().RotateErrorsBySizeOrDate()
@@ -96,7 +96,7 @@ func TestGetNonExistentVrf(t *testing.T) {
 		}
 		return nil
 	})
-	req, _ := http.NewRequest(http.MethodGet, vrfPath+"="+strconv.Itoa(vrfId), nil)
+	req, _ := http.NewRequest(http.MethodGet, vrfPath+"="+strconv.Itoa(vrfIdSW), nil)
 	req.SetBasicAuth(username, password)
 	response := executeRequest(app, req)
 
@@ -108,7 +108,7 @@ func TestCreateVrf(t *testing.T) {
 
 	const endpointId = 2
 	const origin = "test-origin"
-	expectedLocation := origin + "/restconf/data/sico-ipsec:api/vrf=" + strconv.Itoa(vrfId)
+	expectedLocation := origin + "/restconf/data/sico-ipsec:api/vrf=" + strconv.Itoa(vrfIdSW)
 
 	expectedVrf := createTestVrf()
 	setCryptoYang(&expectedVrf, cryptoAlgorythms, t)
@@ -138,7 +138,7 @@ func TestCreateVrf(t *testing.T) {
 	}
 	setCryptoDB(&expectedVrf, cryptoAlgorythms, t)
 
-	createdVrf := getCreatedVrf(expectedVrf, vrfId, endpointId)
+	createdVrf := getCreatedVrf(expectedVrf, vrfIdSW, endpointId)
 
 	dbInstance.EXPECT().EncryptPSK(gomock.Eq(password), vrfMatcher{expectedVrf}).Return(nil)
 	dbInstance.EXPECT().Create(vrfMatcher{expectedVrf}).DoAndReturn(func(vrf *db.Vrf) error {
@@ -181,13 +181,13 @@ func TestGetVrf(t *testing.T) {
 
 	expectedVrf := createTestVrf()
 	setCryptoDB(&expectedVrf, cryptoAlgorythms, t)
-	dbInstance.EXPECT().GetVrf(vrfMatcher{db.Vrf{ID: uint32(vrfId)}}).DoAndReturn(func(vrf *db.Vrf) error {
+	dbInstance.EXPECT().GetVrf(vrfMatcher{db.Vrf{ID: uint32(vrfIdSW)}}).DoAndReturn(func(vrf *db.Vrf) error {
 		*vrf = expectedVrf
 		return nil
 	})
 	dbInstance.EXPECT().DecryptPSK(gomock.Eq(password), vrfMatcher{expectedVrf}).Return(nil)
 
-	req, _ := http.NewRequest(http.MethodGet, vrfPath+"="+strconv.Itoa(vrfId), nil)
+	req, _ := http.NewRequest(http.MethodGet, vrfPath+"="+strconv.Itoa(vrfIdSW), nil)
 	req.SetBasicAuth(username, password)
 	response := executeRequest(app, req)
 
@@ -229,7 +229,6 @@ func TestVlans(t *testing.T) {
 			"physical_interface": testVrf.PhysicalInterface,
 			"active":             testVrf.Active,
 			"local_as":           testVrf.LocalAs,
-			"endpoint":           []map[string]interface{}{},
 		},
 	}
 	dataJSON, err := json.Marshal(data)
@@ -241,12 +240,99 @@ func TestVlans(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error during create request %v\n", err)
 	}
-	req.SetBasicAuth("admin", "cisco123")
+	req.SetBasicAuth(username, password)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Origin", "test-origin")
 
 	response := executeRequest(app, req)
 	checkResponseCode(t, http.StatusBadRequest, response.Code)
+}
+
+func _testIPv6(expectedErrorMsg string, req *http.Request, t *testing.T) {
+	app, _, _, dbInstance := createApp(t)
+
+	dbInstance.EXPECT().RotateErrorsBySizeOrDate()
+	dbInstance.EXPECT().Create(gomock.Any()).DoAndReturn(func(e *db.StoredError) error {
+		if e.Message != expectedErrorMsg {
+			t.Fatalf("Expected error msg to be: "+expectedErrorMsg+". Got: %s", e.Message)
+		}
+		return nil
+	})
+
+	req.SetBasicAuth(username, password)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Origin", "test-origin")
+
+	response := executeRequest(app, req)
+	checkResponseCode(t, http.StatusBadRequest, response.Code)
+}
+
+func _testIPv6Update(expectedErrorMsg string, endpoint map[string]interface{}, vrfId int, t *testing.T) {
+	data := map[string]interface{}{
+		"vrf": map[string]interface{}{
+			"endpoint": []map[string]interface{}{
+				endpoint,
+			},
+		},
+	}
+	dataJSON, err := json.Marshal(data)
+	if err != nil {
+		t.Fatalf("error during encode data %v\n", err)
+	}
+	req, err := http.NewRequest(http.MethodPatch, vrfPath+"="+strconv.Itoa(vrfId), bytes.NewBuffer(dataJSON))
+	if err != nil {
+		t.Fatalf("error during create request %v\n", err)
+	}
+
+	_testIPv6(expectedErrorMsg, req, t)
+}
+
+func _testIPv6Create(expectedErrorMsg string, endpoint map[string]interface{}, t *testing.T) {
+	data := map[string]interface{}{
+		"vrf": map[string]interface{}{
+			"endpoint": []map[string]interface{}{
+				endpoint,
+			},
+		},
+	}
+	dataJSON, err := json.Marshal(data)
+	if err != nil {
+		t.Fatalf("error during encode data %v\n", err)
+	}
+	req, err := http.NewRequest(http.MethodPost, vrfPath, bytes.NewBuffer(dataJSON))
+	if err != nil {
+		t.Fatalf("error during create request %v\n", err)
+	}
+
+	_testIPv6(expectedErrorMsg, req, t)
+}
+
+func TestIPv6Create(t *testing.T) {
+	_testIPv6Create("endpoint local ip: IPv6 not supported", map[string]interface{}{
+		"local_ip": "2001:db8::",
+	}, t)
+
+	_testIPv6Create("endpoint peer ip: IPv6 not supported", map[string]interface{}{
+		"peer_ip": "2001:db8::",
+	}, t)
+}
+
+func TestIPv6Update(t *testing.T) {
+	_testIPv6Update("endpoint local ip: IPv6 not supported", map[string]interface{}{
+		"local_ip": "2001:db8::",
+	}, vrfIdSW, t)
+
+	_testIPv6Update("endpoint peer ip: IPv6 not supported", map[string]interface{}{
+		"peer_ip": "2001:db8::",
+	}, vrfIdSW, t)
+
+	_testIPv6Update("endpoint local ip: IPv6 not supported", map[string]interface{}{
+		"local_ip": "2001:db8::",
+	}, db.HardwareVrfID, t)
+
+	_testIPv6Update("endpoint peer ip: IPv6 not supported", map[string]interface{}{
+		"peer_ip": "2001:db8::",
+	}, db.HardwareVrfID, t)
 }
 
 func executeUpdate(oldActive, newActive bool, t *testing.T) (*App, *http.Request, *mock.MockGenerator, db.Vrf) {
@@ -271,7 +357,7 @@ func executeUpdate(oldActive, newActive bool, t *testing.T) (*App, *http.Request
 	dataJSON, _ := json.Marshal(data)
 
 	setCryptoDB(&expectedVrf, cryptoAlgorythms, t)
-	expectedVrf.ID = vrfId
+	expectedVrf.ID = vrfIdSW
 	dbInstance.EXPECT().GetVrf(gomock.Any()).DoAndReturn(func(vrf *db.Vrf) error {
 		vrf.Active = db.BoolPointer(&oldActive)
 		return nil
@@ -281,7 +367,7 @@ func executeUpdate(oldActive, newActive bool, t *testing.T) (*App, *http.Request
 	dbInstance.EXPECT().GetVrf(vrfMatcher{expectedVrf}).Return(nil)
 	dbInstance.EXPECT().DecryptPSK(gomock.Eq(password), vrfMatcher{expectedVrf}).Return(nil)
 
-	req, _ := http.NewRequest("PATCH", vrfPath+"="+strconv.Itoa(vrfId), bytes.NewBuffer(dataJSON))
+	req, _ := http.NewRequest("PATCH", vrfPath+"="+strconv.Itoa(vrfIdSW), bytes.NewBuffer(dataJSON))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth(username, password)
 	return app, req, softwareGenerator, expectedVrf

@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"log"
 	"os"
@@ -88,6 +89,10 @@ type Endpoint struct {
 	BGP             bool         `json:"bgp"`
 	SourceInterface string       `json:"source_interface"`
 	Authentication  EndpointAuth `json:"authentication"`
+}
+
+func (e *Endpoint) IsIpv6() bool {
+	return strings.Contains(e.LocalIP, ":") && strings.Contains(e.PeerIP, ":")
 }
 
 func (e *Endpoint) IsPSK() string {

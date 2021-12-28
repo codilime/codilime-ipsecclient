@@ -3,6 +3,7 @@ package config
 import (
 	"ipsec_backend/db"
 	"ipsec_backend/sico_yang"
+	"strings"
 )
 
 //go:generate mockgen -source=generator.go -destination=../mock/generator_mock.go -package mock
@@ -18,4 +19,14 @@ func normalizeStatus(status string) string {
 	} else {
 		return "down"
 	}
+}
+
+func normalizeLocalIP(localIp, remoteIp string) string {
+	if localIp == "%any" {
+		if strings.Contains(remoteIp, ":") {
+			return "::"
+		}
+		return "0.0.0.0"
+	}
+	return localIp
 }

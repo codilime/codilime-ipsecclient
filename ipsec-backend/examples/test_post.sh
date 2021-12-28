@@ -3,7 +3,6 @@ curl -k -v -XPOST\
   -u "admin:cisco123" -d @- << EOF
 {
     "vrf": {
-        "id":5,
         "client_name":"test",
         "vlan":[
             {
