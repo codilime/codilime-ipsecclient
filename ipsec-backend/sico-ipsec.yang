@@ -35,6 +35,12 @@ module sico-ipsec {
            or mixed-shortened formats, using the default zone.";
     }
 
+    typedef empty-string {
+        type string { length "0"; }
+        description
+          "Empty string.";
+    }
+
     typedef ip-address {
         type union {
             type ipv4-address;
@@ -42,6 +48,15 @@ module sico-ipsec {
         }
         description
           "An IPv4 or IPv6 address with no prefix specified.";
+    }
+
+    typedef ip-address-or-empty {
+        type union {
+            type ip-address;
+            type empty-string;
+        }
+        description
+          "An IPv4 or IPv6 address with no prefix specified or empty string";
     }
 
     typedef ipv4-prefix {
@@ -209,7 +224,7 @@ module sico-ipsec {
                       "local ip of the tunnel interface";
                 }
                 leaf peer_ip {
-                    type ip-address;
+                    type ip-address-or-empty;
                     mandatory "true";
                     description
                       "peer ip of the tunnel interface";

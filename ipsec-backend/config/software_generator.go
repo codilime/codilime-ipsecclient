@@ -204,7 +204,11 @@ func executeSupervisorTemplate(vrf db.Vrf) (string, error) {
 	}
 	for _, endpoint := range vrf.Endpoints {
 		localIps = append(localIps, endpoint.LocalIP)
-		peerIps = append(peerIps, endpoint.PeerIP)
+		if endpoint.PeerIP == "" {
+			peerIps = append(peerIps, "empty")
+		} else {
+			peerIps = append(peerIps, endpoint.PeerIP)
+		}
 		ids = append(ids, strconv.Itoa(int(endpoint.ID)))
 		if endpoint.NAT {
 			nats = append(nats, "YES")
