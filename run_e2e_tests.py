@@ -80,7 +80,23 @@ def run_dev_env():
     )
 
 
+def check_if_processes_running():
+    for process in processes:
+        if process.poll() is not None:
+            stdout, stderr = process.communicate()
+            print(
+                "process failed: ",
+                "" if stdout is None else stdout.splitlines(),
+                "" if stderr is None else stderr.splitlines(),
+            )
+            processes.remove(process)
+            return False
+    return True
+
+
 def run_test_cases():
+    if not check_if_processes_running():
+        return
     run_command = ""
     if args.k:
         run_command = "exec ./test/run_test.sh -k " + args.k[0]
