@@ -1,0 +1,100 @@
+/* design pallet */
+$primary: #049fd9;
+$gray01: #f2f2f2;
+$gray02: #626469;
+$gray03: #39393b;
+$gray04: #dfdfdf;
+$gray05: #58585b;
+$white: #ffffff;
+$green: #6cc04a;
+
+$dark: #262626;
+$light: #ffffff;
+$lightDark: #2a2c34;
+$lightGray: #a0a3a9;
+$lightGray01: #595959;
+$lightGray02: #f2f5f8;
+$lightGray03: #f6f7fb;
+$lightGray04: #e0e0e0;
+$disabledGray: #eaeaea;
+$lightBlue: #3d89eb;
+$lightBgcBlue: #f6f7fb;
+$blue: #3d89eb;
+$green: #4caf50;
+$lightBgcGray: #fafafa;
+$red: #eb5757;
+$orange: #eb5757;
+$borderColor: #e0e0e0;
+
+/* Colors */
+$sidebar-background-color: $gray01;
+$sidebar-text-color: #ffffff;
+$breadcrumb-font-color: $primary;
+$gray-light-color: $gray01;
+$disactive-color: $red;
+$active-color: #6cc04a;
+$light-blue: lightblue;
+$blue: #3d89eb;
+$green: #4caf50;
+$lightBgcGray: #fafafa;
+
+$vrf-active: $primary;
+$hardware: $primary;
+
+/* Border */
+$wrapper-border: 0.5px solid $gray04;
+$info-border: 1px solid lightblue;
+$info-footer-border: 0.5px solid gray;
+$table-border-color: gray;
+$table-border: 0.5px solid $gray04;
+$sideBar-active-border: 3px solid $primary;
+$endpoint-input-focus: 0.5px solid $primary;
+$endpoint-input: 0.5px solid $gray03;
+
+/* Border-radius */
+$border-radius-sm: 4px;
+$border-radius-lg: 8px;
+$button-radius: 12px;
+$button-radius-secound: 100px;
+
+/* Background-color */
+$bgc-gray: $gray02;
+$bgc-info: lightblue;
+$bgc-disable: $gray01;
+$bgc-active: $gray03;
+$modal-background: #00000057;
+$bgc-delete: $red;
+
+/* Font-size */
+$small-size: 14px;
+$basic-size: 16px;
+$title-size: 18px;
+
+/* Font-family */
+$font-family: 'Cisco Sans', monospace;
+
+/* Font-weight */
+$title-weight: 600;
+$info-title-weight: 400;
+
+/* Padding */
+$wrapper-padding: 10px;
+$info-padding: 5px;
+$padding-sm: 5px;
+$padding-md: 10px;
+$padding-lg: 15px;
+$padding-xl: 20px;
+
+/* Margin */
+$wrapper-margin: 0px;
+$margin-sm: 5px;
+$margin-md: 10px;
+$margin-lg: 15px;
+$margin-xl: 20px;
+
+/* Transition */
+$transition: 0.3s linear all;
+
+/* Box-shadow */
+$endpoint-option-shadow: 0px 0px 5px -2px rgba(0, 0, 0, 0.35);
+$box-shadow: 0, 0, 4px, 0 rgba(24, 144, 255, 0.5);

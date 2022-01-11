@@ -1,0 +1,20 @@
+@import 'style/settings.scss';
+
+.uploadCertificate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: $basic-size;
+  &_hardware {
+    width: 80%;
+  }
+  &_title {
+    font-weight: 400px;
+  }
+  &_upload {
+    font-size: 24px;
+    color: $blue;
+    margin-left: 15px;
+    cursor: pointer;
+  }
+}

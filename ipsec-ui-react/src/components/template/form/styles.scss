@@ -4,16 +4,17 @@
   &__fieldset {
     display: flex;
     border: none;
-    border-bottom: $wrapper-border;
     align-items: flex-start;
-
+    flex-wrap: wrap;
     padding: 10px 0;
   }
   &__details {
-    width: 100%;
+    width: 70%;
     display: flex;
     flex-wrap: wrap;
-    margin: 0 10px;
+    &__hardware {
+      width: 100%;
+    }
   }
   &__column {
     padding: 0 $padding-md $padding-xl;
@@ -31,11 +32,14 @@
     width: 50%;
   }
   &__btn {
-    background-color: $primary;
+    background-color: $blue;
     color: white;
     padding: $padding-sm $padding-md;
-    min-width: 120px;
-    margin: $margin-md $margin-md;
+    min-width: 170px;
+  }
+  &__buttons {
+    margin-top: 16px;
+    width: 100%;
   }
 }
 

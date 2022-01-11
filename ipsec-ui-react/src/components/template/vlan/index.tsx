@@ -42,7 +42,6 @@ export const Vlan: FC<VlanType> = ({ setValue, errorSchema }) => {
               name: 'vlan',
               text: 'Vlan',
               type: 'number',
-              placeholder: '0',
               onChange: handleChangeInputValue,
               value: vlanInterface.vlan || '',
               error,
@@ -56,7 +55,6 @@ export const Vlan: FC<VlanType> = ({ setValue, errorSchema }) => {
               text: 'Lan IP',
               onChange: handleChangeInputValue,
               value: vlanInterface.lan_ip,
-              placeholder: '10.10.10.10/32',
               error,
               tooltip: 'Local address (IPv4/IPv6) and mask for VLAN interface inside application (i.e 10.0.0.1/24 or fc00::c0d1:1/64)'
             }}

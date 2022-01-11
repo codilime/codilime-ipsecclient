@@ -65,7 +65,7 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
   );
 
   return (
-    <tr className="table__row">
+    <tr className={classNames('table__row', { table__row__edit: edit })}>
       {displayEndpoint}
       <td className="table__column table__bool">
         {activeButton}

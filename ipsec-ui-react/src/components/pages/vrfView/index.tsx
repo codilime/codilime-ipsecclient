@@ -22,12 +22,7 @@ export const VrfView: FC<MatchProps> = ({ match }) => {
   return (
     <>
       <section className="vrf">
-        <header className="vrf__header">
-          <span className="vrf__breadcrumb">
-            VRFs / <span className="vrf__name">{vrfName}</span>
-          </span>
-          {deleteBtn}
-        </header>
+        <header className="vrf__header">{deleteBtn}</header>
         <article>
           <FormDetail />
           <Endpoints />

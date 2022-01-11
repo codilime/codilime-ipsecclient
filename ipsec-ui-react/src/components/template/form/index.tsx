@@ -3,6 +3,7 @@ import { useCreateVRFMainView } from 'hooks/';
 import { Wrapper, Vlan, CryptoField, Field, Spinner } from 'template';
 import { Button } from 'common/';
 import './styles.scss';
+import classNames from 'classnames';
 
 export const FormDetail: FC = () => {
   const { handleSubmit, submit, reset, hardware, errors, formAttributes } = useCreateVRFMainView();
@@ -19,12 +20,16 @@ export const FormDetail: FC = () => {
     <Wrapper title="VRF details">
       <form autoComplete="off" className="form" onSubmit={handleSubmit(submit)}>
         <fieldset className="form__fieldset">
-          <div className="form__details">{displayDetails}</div>
+          <div className={classNames('form__details', { form__details__hardware: hardware })}>
+            {displayDetails}
+            <div className="form__buttons">
+              <Button className="form__btn" disabled={!isDirty}>
+                Save changes
+              </Button>
+            </div>
+          </div>
           {!hardware && <Vlan {...{ setValue, reset, errorSchema: errors['vlan'] }} />}
         </fieldset>
-        <Button className="form__btn" disabled={!isDirty}>
-          Save changes
-        </Button>
       </form>
     </Wrapper>
   );

@@ -3,14 +3,13 @@
 .vlan {
   display: flex;
   flex-direction: column;
-  width: 45%;
+  width: 30%;
   max-width: 500px;
   padding: 0px $padding-md;
   font-size: 14px;
 
   &__wrapper {
     overflow: visible;
-    border: $wrapper-border;
   }
   &__column {
     min-width: 38px;
@@ -20,7 +19,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 2px 5px;
-    border-bottom: $wrapper-border;
+    border-bottom: 1px solid #e8e8e8;
   }
   &__label {
     position: absolute;
@@ -44,24 +43,25 @@
     outline: none;
   }
   &__btn {
-    color: $primary;
-    font-weight: bold;
+    color: $blue;
+    font-weight: 700;
     cursor: pointer;
     margin-right: 30px;
   }
   &__table {
+    border: none;
     color: $gray02;
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
   }
   &__head {
-    background-color: $gray01;
+    background-color: $lightBgcGray;
   }
   &__body {
     display: block;
     overflow-y: scroll;
-    height: 89px;
+    height: 152px;
   }
 
   &__row {
@@ -69,61 +69,75 @@
     padding: 5px 10px;
     justify-content: space-between;
     align-items: center;
-    border-bottom: $wrapper-border;
-
+    border-bottom: 1px solid #e8e8e8;
+    height: 38px;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: $lightGray01;
     &__header {
-      padding-right: 20px;
+      padding-right: 30px;
+      color: $dark;
     }
     &__empty {
       color: $gray02;
       display: flex;
       justify-content: center;
       align-items: center;
-      border-bottom: $wrapper-border;
       height: 100%;
     }
   }
   &__cancel {
     cursor: pointer;
     color: red;
-    font-weight: 700;
+    font-size: 20px;
+    margin-right: 15px;
+    margin-top: 5px;
   }
   &__box {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: $wrapper-border;
+    border-top: 1px solid #e8e8e8;
+    background-color: $lightBgcGray;
+    height: 56px;
   }
   &__field {
-    margin: 5px 15px 5px 5px;
+    margin: 8px 10px;
     position: relative;
   }
   &__label {
-    font-weight: 500;
-    order: 1;
-    padding: 3px 3px;
-    transform: translateY(-50%);
-    top: 45%;
-    border: none;
-    outline: none;
     position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    line-height: 24px;
+    font-size: $basic-size;
+    font-weight: 400;
+    color: $lightGray;
+    padding-left: 10px;
   }
   &__input {
-    padding: $padding-sm 20px $padding-sm 60px;
+    padding: $padding-sm 25px $padding-sm 70px;
     width: calc(100% - 10px);
-    border: none;
-    border-bottom: 2px solid $gray01;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    height: 40px;
+    border-radius: $border-radius-sm;
+    font-size: $basic-size;
+    &::placeholder {
+      font-size: $small-size;
+    }
     &__vlan {
-      padding-left: 45px;
+      padding-left: 55px;
     }
     &:focus {
-      border-bottom: 2px solid $primary;
-      color: $primary;
+      border: 1px solid $lightBlue;
+      box-shadow: 0px 0px 4px #1890ff80;
+      color: $lightBlue;
       outline: none;
     }
   }
   &__error {
-    color: red;
-    border-bottom: 2px solid red;
+    color: $red;
+    border: 1px solid $red;
   }
 }

@@ -1,8 +1,9 @@
 import { FC } from 'react';
-import { EndpointInput, UploadButton } from 'common/';
+import { EndpointInput } from 'common/';
 import { InputType } from 'interface/components';
 import classNames from 'classnames';
-
+import { AiOutlineUpload } from 'react-icons/ai';
+import './styles.scss';
 interface UploadCertificates extends InputType {
   edit: boolean;
   label: string;
@@ -12,10 +13,10 @@ interface UploadCertificates extends InputType {
   error?: any;
 }
 
-export const UploadCertificates: FC<UploadCertificates> = ({ type, name, onChange, edit, references, value, label, text, handleUploadFile, className = '', error }) => (
-  <div className={classNames('table__certificates', { [className]: className })}>
+export const UploadCertificates: FC<UploadCertificates> = ({ type, name, onChange, edit, references, value, label, handleUploadFile, className = '', error }) => (
+  <div className={classNames('uploadCertificate', { [className]: className })}>
     <EndpointInput {...{ type, name, onChange, edit, references, value }} />
-    {label && <p className="table__title">{label}</p>}
-    <UploadButton {...{ onClick: () => handleUploadFile(name), name, edit, error }}>{text}</UploadButton>
+    {label && <p className="uploadCertificate_title">{label}</p>}
+    <AiOutlineUpload onClick={() => handleUploadFile(name)} className="uploadCertificate_upload" />
   </div>
 );

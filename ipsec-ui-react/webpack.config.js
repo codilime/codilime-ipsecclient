@@ -59,7 +59,7 @@ module.exports = {
       template: path.resolve(__dirname, 'src/components/template'),
       layout: path.resolve(__dirname, 'src/components/layout'),
       pages: path.resolve(__dirname, 'src/components/pages'),
-      style: path.resolve(__dirname, 'src/scss'),
+      style: path.resolve(__dirname, 'src/styles'),
       fonts: path.resolve(__dirname, 'src/assets/fonts'),
       images: path.resolve(__dirname, 'src/assets/images'),
       db: path.resolve(__dirname, 'src/db'),

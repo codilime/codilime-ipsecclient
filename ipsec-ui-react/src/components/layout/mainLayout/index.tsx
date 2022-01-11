@@ -4,7 +4,7 @@ import './styles.scss';
 
 export const MainLayout: FC = ({ children }) => (
   <section className="mainLayout">
-    <TopBar productName="Codilime Ipsec Client" />
+    <TopBar />
     <SideBar />
     <article className="mainLayout__content">{children}</article>
   </section>

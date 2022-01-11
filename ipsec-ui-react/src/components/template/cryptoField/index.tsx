@@ -1,7 +1,8 @@
 import { FC } from 'react';
-import { useCryptoLogic } from 'hooks/';
+import { useAppContext, useCryptoLogic } from 'hooks/';
 import { FieldValues, UseFormSetValue } from 'react-hook-form';
 import './styles.scss';
+import classNames from 'classnames';
 
 interface CryptoType {
   encryption: string[];
@@ -20,6 +21,9 @@ interface CryptoFieldType {
 
 export const CryptoField: FC<CryptoFieldType> = ({ text, name, crypto, error, value, setValue }) => {
   const { handleSetCryptoData, cryptoData } = useCryptoLogic(name, value, setValue);
+  const {
+    context: { hardware }
+  } = useAppContext();
 
   const encryptionOption = crypto.encryption.map((el) => (
     <option key={el} value={el}>
@@ -39,7 +43,7 @@ export const CryptoField: FC<CryptoFieldType> = ({ text, name, crypto, error, va
 
   return (
     <>
-      <div className="crypto" {...{ name }}>
+      <div className={classNames('crypto', { crypto__hardware: hardware })} {...{ name }}>
         <label className="crypto__label">{text}</label>
         <select className="crypto__select" name="encryption" value={cryptoData.encryption} onChange={handleSetCryptoData}>
           {encryptionOption}

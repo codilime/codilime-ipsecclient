@@ -1,4 +1,4 @@
-import { ContextProps, EndpointsType, DetailsTypes, EndpointSchemaType, CryptoTypes, SoftwareCryptoDataTypes } from 'interface/index';
+import { ContextProps, EndpointsType, DetailsTypes, EndpointSchemaType, CryptoTypes, SoftwareCryptoDataTypes, HeadersLogsType } from 'interface/index';
 
 const softwareCryptoTypes: SoftwareCryptoDataTypes = {
   encryption: [
@@ -241,22 +241,22 @@ export const EndpointSchema: EndpointsType = {
 };
 
 export const endpointInputSchema: EndpointSchemaType[] = [
-  { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
-  { type: 'text', name: 'local_ip', placeholder: 'Enter local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
-  { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor. ' },
-  { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
-  { type: 'text', name: 'local_id', placeholder: 'Enter Local id' },
+  { type: 'text', name: 'remote_ip_sec', placeholder: 'Remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
+  { type: 'text', name: 'local_ip', placeholder: 'Local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
+  { type: 'text', name: 'peer_ip', placeholder: 'Peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor. ' },
+  { type: 'password', name: 'psk', placeholder: 'PSK' },
+  { type: 'text', name: 'local_id', placeholder: 'Local id' },
   { type: 'checkbox', name: 'nat' },
   { type: 'checkbox', name: 'bgp' }
 ];
 export const endpointHardwareSchema: EndpointSchemaType[] = [
-  { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
-  { type: 'text', name: 'local_ip', placeholder: 'Enter local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
-  { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor.' },
-  { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
-  { type: 'text', name: 'local_id', placeholder: 'Enter Local id' },
+  { type: 'text', name: 'remote_ip_sec', placeholder: 'Remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
+  { type: 'text', name: 'local_ip', placeholder: 'Local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
+  { type: 'text', name: 'peer_ip', placeholder: 'Peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor.' },
+  { type: 'password', name: 'psk', placeholder: 'PSK' },
+  { type: 'text', name: 'local_id', placeholder: ' Local id' },
   { type: 'number', name: 'remote_as', placeholder: '0', tooltip: 'Remote BGP AS' },
-  { type: 'text', name: 'source_interface', placeholder: 'Enter source interface', tooltip: 'Cisco physical interfaces to which IPSEC tunnel is attached (i.e. Vlan100 , GigabitEthernet1/1)' },
+  { type: 'text', name: 'source_interface', placeholder: 'Source interface', tooltip: 'Cisco physical interfaces to which IPSEC tunnel is attached (i.e. Vlan100 , GigabitEthernet1/1)' },
   { type: 'checkbox', name: 'bgp' }
 ];
 
@@ -291,3 +291,5 @@ export const DynamicRestConfForm = [
   { type: 'text', name: 'switch_username', placeholder: 'Login' },
   { type: 'password', name: 'switch_password', placeholder: 'Password' }
 ];
+
+export const headerLogs: HeadersLogsType[] = [{ name: 'api' }, { name: 'front' }, { name: 'frr' }, { name: 'reload_vtysh' }, { name: 'strongswan' }, { name: 'strongswan_reload' }, { name: 'vrfs' }];
