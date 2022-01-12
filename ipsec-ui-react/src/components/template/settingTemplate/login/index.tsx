@@ -8,7 +8,7 @@ export const Login: FC = () => {
   const { description, logged: active, handleChangeGlobalPassword, errors, handleSubmit, register } = useLoginLogic();
 
   return (
-    <Wrapper {...{ title: 'UI/API change password', className: 'loginForm__wrapper' }}>
+    <Wrapper {...{ title: 'UI/API change password', wrapperClass: 'loginForm__wrapper' }}>
       <LoginForm {...{ handleChangeGlobalPassword, errors, handleSubmit, register }} />
       <HoverPanel {...{ description, active }} />
     </Wrapper>

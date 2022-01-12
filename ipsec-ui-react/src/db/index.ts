@@ -271,7 +271,7 @@ export const DynamicVrfDetails: DetailsTypes[] = [
   { name: 'local_as', type: 'text', text: 'BGP Local AS' },
   { name: 'crypto_ph2', text: 'Crypto phase 2' },
   { name: 'active', type: 'checkbox', text: 'Active' },
-  { name: 'ospf', type: 'checkbox', text: 'Ospf' }
+  { name: 'ospf', type: 'checkbox', text: 'OSPF' }
 ];
 
 export const DynamicVrfHardwareDetails: DetailsTypes[] = [
@@ -284,12 +284,12 @@ export const DynamicVrfHardwareDetails: DetailsTypes[] = [
 ];
 
 export const DynamicLoginForm = [
-  { type: 'password', name: 'password', placeholder: 'New password' },
-  { type: 'password', name: 'newPasswordConfirmation', placeholder: 'Repeat new password' }
+  { type: 'password', name: 'password', text: 'Password', placeholder: 'Password' },
+  { type: 'password', name: 'newPasswordConfirmation', text: 'Repeat new Password', placeholder: 'Repeat password' }
 ];
 export const DynamicRestConfForm = [
-  { type: 'text', name: 'switch_username', placeholder: 'Login' },
-  { type: 'password', name: 'switch_password', placeholder: 'Password' }
+  { type: 'text', name: 'switch_username', text: 'Login', placeholder: 'Login' },
+  { type: 'password', name: 'switch_password', text: 'Password', placeholder: 'Password' }
 ];
 
 export const headerLogs: HeadersLogsType[] = [{ name: 'api' }, { name: 'front' }, { name: 'frr' }, { name: 'reload_vtysh' }, { name: 'strongswan' }, { name: 'strongswan_reload' }, { name: 'vrfs' }];

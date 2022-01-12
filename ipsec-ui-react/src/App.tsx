@@ -15,7 +15,7 @@ const App: FC = () => {
   useLayoutEffect(() => {
     if (!loading) fetchVrfData();
   }, [loading]);
-
+  console.log('app');
   return (
     <Router>
       <MainLayout>

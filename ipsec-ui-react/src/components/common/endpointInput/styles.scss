@@ -9,7 +9,6 @@
   outline: none;
   background-color: transparent;
   padding: $padding-sm 8px;
-  margin-right: 20px;
 
   height: 40px;
   &::placeholder {
@@ -17,6 +16,9 @@
     padding-left: $padding-sm;
     font-weight: 400;
     font-size: $basic-size;
+  }
+  &__psk {
+    margin-right: 20px;
   }
   &:focus {
     border: 1px solid $lightBlue;

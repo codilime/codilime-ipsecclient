@@ -1,62 +1,66 @@
 @import 'style/settings.scss';
 
-.table__setting {
-  &__column {
-    padding: $padding-md;
-    width: 100%;
-    border-right: $table-border;
-    font-size: 12px;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    &:last-of-type {
-      border-right: none;
+.table {
+  &__setting {
+    color: #595959;
+    &__header {
+      padding: 16px 12px;
+      width: 100%;
+      font-size: $basic-size;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      font-weight: 500;
+      &:last-of-type {
+        border-right: none;
+      }
+    }
+
+    &__column {
+      padding: $padding-md;
+      width: 100%;
+      font-size: $basic-size;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      &:last-of-type {
+        border-right: none;
+      }
+    }
+    &__checkbox {
+      cursor: pointer;
+    }
+    &__time {
+      width: 40%;
+    }
+    &__checked {
+      width: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    &__box {
+      padding: $padding-md;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      width: 100%;
     }
   }
-  &__checkbox {
-    cursor: pointer;
-  }
-  &__time {
-    width: 40%;
-  }
-  &__checked {
-    width: 80px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  &__box {
-    padding: $padding-md;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    width: 100%;
+  &__row:nth-child(even) {
+    background-color: #fafafa;
   }
 }
 
 .certificates {
-  &__box {
-    padding: 0 0 $padding-md;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
   &__wrapper {
+    display: none;
     overflow-y: scroll;
     max-height: 390px;
+    margin: 0;
+    padding: 0;
   }
-  &__button {
-    margin-left: $margin-md;
-    background-color: $primary;
-    color: white;
-  }
-  &__empty {
-    min-height: 150px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  &__input {
-    display: none;
+  &__active {
+    display: block;
   }
 }

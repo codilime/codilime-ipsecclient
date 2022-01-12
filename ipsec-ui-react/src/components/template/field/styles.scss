@@ -38,11 +38,7 @@
       outline: none;
     }
   }
-  &__input__setting {
-    padding: $padding-sm $padding-lg $padding-md;
-    margin: 0 10px;
-    width: calc(100% - 20px);
-  }
+
   &__vlan {
     padding: $padding-sm 40px $padding-md;
     width: calc(100% - 20px);

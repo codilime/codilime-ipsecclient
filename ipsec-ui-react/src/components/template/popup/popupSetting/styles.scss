@@ -2,28 +2,35 @@
 
 .setting {
   display: flex;
-  justify-content: stretch;
-  align-items: stretch;
-  height: 100%;
-
+  flex-direction: column;
+  min-width: 630px;
   &__nav {
-    background-color: white;
     color: #58585b;
-    min-width: 120px;
-    border-right: $wrapper-border;
+    min-width: 530px;
+    margin: 0 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  &__list {
+    display: flex;
+    flex-direction: row;
   }
   &__option {
+    padding: 18px 24px 18px 0px;
     list-style-type: none;
-    padding: $padding-md;
     cursor: pointer;
     text-decoration: none;
   }
+  &__icon {
+    margin: 0px 5px 0 0;
+    font-size: 20px;
+    vertical-align: bottom;
+  }
   &__active {
-    border-left: $sideBar-active-border;
-    background-color: $gray01;
+    color: #3d89eb;
+    border-bottom: 1px solid #3d89eb;
   }
   &__content {
-    padding: $padding-sm $padding-lg;
+    padding: 24px;
     width: 100%;
     display: none;
     transition: $transition;

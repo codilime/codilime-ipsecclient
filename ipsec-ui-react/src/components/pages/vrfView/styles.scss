@@ -1,10 +1,7 @@
 @import 'style/settings.scss';
 
 .vrf {
-  font-size: $standard-text-size;
-  &__breadcrumb {
-    font-size: $small-size;
-  }
+  font-size: $small-size;
   &__header {
     display: flex;
     justify-content: flex-end;
@@ -20,5 +17,9 @@
   }
   &__btn {
     height: 40px;
+    &__disabled {
+      background-color: $orange !important;
+      opacity: 0.3;
+    }
   }
 }

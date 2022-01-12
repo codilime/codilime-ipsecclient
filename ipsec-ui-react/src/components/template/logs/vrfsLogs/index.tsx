@@ -13,7 +13,6 @@ interface VrfsLogsType {
 
 export const VrfsLogs: FC<VrfsLogsType> = ({ vrfsLogs, activePage }) => {
   const { autoScroll, HandleDownloadTextFile, handleActioveScroll } = useLogsLogic();
-
   const [active, setActive] = useState<string>('');
 
   const vrfsLogList = vrfsLogs.map(({ name }) => (
@@ -22,7 +21,11 @@ export const VrfsLogs: FC<VrfsLogsType> = ({ vrfsLogs, activePage }) => {
     </li>
   ));
 
-  const vrfsLogContext = vrfsLogs.map(({ name, log }) => <div className={classNames('logsVrfs_context', { logsVrfs_active: active === name })}>{log}</div>);
+  const vrfsLogContext = vrfsLogs.map(({ name, log }) => (
+    <div key={name} className={classNames('logsVrfs_context', { logsVrfs_active: active === name })}>
+      {log}
+    </div>
+  ));
 
   useLayoutEffect(() => {
     if (vrfsLogs.length) setActive(vrfsLogs[0].name);

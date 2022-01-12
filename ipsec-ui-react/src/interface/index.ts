@@ -163,3 +163,9 @@ export type HeadersNameProps = {
 export interface HeadersLogsType {
   name: keyof HeadersNameProps;
 }
+
+export type SettingOptionType = {
+  Profile: 'Profile';
+  RestConf: 'RestConf';
+  Certificates: 'Certificates';
+};

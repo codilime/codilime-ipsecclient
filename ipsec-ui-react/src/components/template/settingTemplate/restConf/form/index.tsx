@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { restConfSchema } from 'schema/';
 import { RestConfType } from 'interface/index';
+import classNames from 'classnames';
 
 interface RestConfFormType {
   handleSendRestConf: (data: RestConfType) => void;
@@ -18,7 +19,9 @@ export const RestConfForm: FC<RestConfFormType> = ({ handleSendRestConf }) => {
     formState: { errors }
   } = useForm({ resolver: yupResolver(restConfSchema) });
 
-  const displayForm = DynamicRestConfForm.map((input) => <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register: register(input.name), validate: false }} />);
+  const displayForm = DynamicRestConfForm.map((input) => (
+    <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register: register(input.name), validate: false, className: 'loginForm__field' }} />
+  ));
 
   return (
     <form className="loginForm" onSubmit={handleSubmit(handleSendRestConf)}>
