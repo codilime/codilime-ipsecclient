@@ -17,13 +17,13 @@ interface VisualizationVrf extends Visualization {
 }
 
 export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, title, endpoint, dimensions, monitoring, hardware, vlan = [] }) => {
-  const { smHeightLabel, lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
+  const { lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
   const eachBreak = hardware ? 35 : 25;
 
-  const hardwareXLabel = hardware ? x + paddingBox + smWidthLabel + 10 : x + paddingBox + smWidthLabel + 30;
-  const hardwareSecoundLabel = hardware ? lgHeightLabel + 10 : heightHeader;
-  const hadwareYLabel = hardware ? y + height / 2 - hardwareSecoundLabel / 2 + paddingBox - 5 : y + height / 2 - hardwareSecoundLabel / 2 + paddingBox - 10;
-
+  const hardwareXLabel = hardware ? x + paddingBox + smWidthLabel + 20 : x + paddingBox + smWidthLabel + 30;
+  const hardwareSecoundLabel = hardware ? lgHeightLabel + 40 : heightHeader;
+  const hadwareYLabel = hardware ? y + height / 2 - hardwareSecoundLabel / 2 + 15 : y + height / 2 - hardwareSecoundLabel / 2 + paddingBox - 10;
+  console.log(height / 2);
   const secondLabel = {
     x: hardwareXLabel,
     y: hadwareYLabel,
@@ -33,7 +33,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     hardware
   };
 
-  const hightOfX = (height - 55) / 2 - (20 + mdHeightLabel / 2) + 7.5;
+  const hightOfX = (height - 100) / 2 - (20 + mdHeightLabel / 2) + 5;
 
   const findStatus = (id: number) => {
     return monitoring.filter((status: MetricsType) => status.id === id)[0];
@@ -56,15 +56,16 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   };
 
   const endpointStatus = endpoint.map((endpoint, index) => {
+    console.log(getCenterEndpoints());
     const hardwareLabel = hardware ? mdHeightLabel : lgHeightLabel;
-    const textY = y + heightHeader + paddingBox + index * 80 + getCenterEndpoints();
+    const textY = y + heightHeader + 25 + index * 100 + getCenterEndpoints();
     const textX = x + width - paddingBox - smWidthLabel;
     const centerX = textX - 40;
-    const centerY = y + height / 2 + smHeightLabel / 2 - 2.5;
-    const centerLabel = textY + lgHeightLabel / 2;
+    const centerY = y + height / 2 + hardwareLabel / 2 - 10;
+    const centerLabel = textY + hardwareLabel;
 
     const status = findStatus(endpoint.id!);
-    const hardwareYLabel = hardware ? textY + 10 : textY;
+    const hardwareYLabel = hardware ? textY + 25 : textY;
 
     const thirdLabel = {
       x: textX,
@@ -78,17 +79,19 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     };
 
     const line = {
+      y: 0,
+      x: 0,
       color: 'black',
       points: [centerX, centerY, centerX + eachBreak / 1.5, centerY, centerX + eachBreak / 1.5, centerLabel, centerX + eachBreak * 2, centerLabel]
     };
     const connectStatus = {
       x: x + width,
-      height: 70,
+      height: 90,
       lineStartX: textX + smWidthLabel,
       lineStartY: centerLabel,
       title: `Remote Site ${index + 1}`,
       endpoint,
-      lineWidth: dimensions - 700,
+      lineWidth: dimensions - 650,
       monitoring: status
     };
 
@@ -96,7 +99,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
       <Group key={index}>
         <VisualizationLine {...line} />
         <VisualizationThreeLabel {...thirdLabel} />
-         <VisualizationStatus {...connectStatus} /> 
+        <VisualizationStatus {...connectStatus} />
       </Group>
     );
   });
@@ -129,20 +132,21 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     });
 
   const hardwareLine = {
-    x: x + paddingBox + 60,
-    y: y + 50 + mdHeightLabel / 2,
+    x: x + paddingBox + 95,
+    y: y + 70 + hardwareSecoundLabel / 2,
     color: 'black',
-    points: [0, 0, 30, 0, 30, hightOfX - 2.5, 70, hightOfX - 2.5]
+    points: [0, 0, 15, 0, 15, hightOfX - 5, 40, hightOfX - 5]
   };
 
   const icon = {
-    x: x + paddingBox + 15,
-    y: y + heightHeader + paddingBox,
-    width: 45,
-    height: 45,
+    x: x + paddingBox + 30,
+    y: y + heightHeader + paddingBox + 10,
+    width: 40,
+    height: 40,
     color: '#c3d7df',
     text: 'Cat9300(X)'
   };
+
   if (hardware)
     return (
       <VisualizationBox {...{ x, y, width, height, title }}>

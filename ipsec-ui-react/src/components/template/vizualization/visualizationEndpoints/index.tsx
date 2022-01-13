@@ -24,18 +24,18 @@ export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimen
   };
 
   const icon = {
-    x: 30,
-    y: 30,
-    width: 45,
-    height: 45,
+    x: 45,
+    y: 10,
+    width: 40,
+    height: 40,
     color: '#c3d7df',
     text: 'Cat9300(X)'
   };
   const vrfBox = {
-    x: hardware ? 60 : icon.x + icon.width + 10,
-    y: hardware ? 40 : icon.y + icon.height + 40,
-    width: 380,
-    height: 40 + getAmount() * 80,
+    x: hardware ? 0 : icon.x + icon.width + 10,
+    y: hardware ? 0 : icon.y + icon.height + 40,
+    width: 420,
+    height: 100 + getAmount() * 100,
     title: client_name,
     size: 8,
     endpoint,
@@ -69,8 +69,8 @@ export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimen
   };
 
   const iconToVRfLine = {
-    x: icon.x + icon.width / 2,
-    y: icon.y + icon.height + 20,
+    x: icon.x + icon.width / 2 - 3,
+    y: icon.y + icon.height + 32,
     color: 'black',
     points: [0, 0, 0, endYOfVlans()]
   };
@@ -80,7 +80,7 @@ export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimen
   }
   if (hardware)
     return (
-      <Stage width={dimensions} height={endpoint!.length * 90 + 90}>
+      <Stage width={dimensions} height={endpoint!.length * 110 + 90}>
         <Layer>
           <VisualizationVrf {...{ ...vrfBox, hardware }} />
         </Layer>
@@ -88,9 +88,9 @@ export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimen
     );
 
   return (
-    <Stage width={dimensions} height={getVisualizationHeight() + 170}>
+    <Stage width={dimensions} height={getVisualizationHeight() + 225}>
       <Layer>
-        <VisualizationIcon {...{ ...icon, hardware }} />
+        <VisualizationIcon {...icon} />
         <VisualizationVrf {...{ ...vrfBox, hardware, vlan }} />
         <VisualizationLine {...iconToVRfLine} />
       </Layer>

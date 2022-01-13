@@ -24,7 +24,7 @@
       "template": ["src/components/template"],
       "layout/*": ["src/components/layout"],
       "pages/*": ["src/components/pages"],
-      "style/*": ["src/styles"],
+      "style/*": ["src/scss"],
       "fonts/*": ["src/assets/fonts"],
       "images/*": ["src/assets/images/*"],
       "db": ["src/db"],

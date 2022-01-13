@@ -10,9 +10,9 @@ interface VisualizationBoxType extends Visualization {
 export const VisualizationBox: FC<VisualizationBoxType> = ({ x, y, width, height, title, children }) => {
   return (
     <Group>
-      <Rect {...{ x, y, width, height }} fill="#f2f2f2" stroke={variable.bgcColor} strokeWidth={1} />
-      <Rect {...{ x, y, width }} height={variable.heightHeader} fill={variable.bgcColor} />
-      <Text {...{ text: title, x: x + 5, y, fill: 'white', width, height: variable.heightHeader, align: 'left', verticalAlign: 'middle', fontSize: 14 }} />
+      <Rect {...{ x, y, width, height }} stroke={variable.bgcColor} strokeWidth={1} cornerRadius={4} />
+      <Rect {...{ x, y, width }} height={variable.heightHeader} fill={variable.bgcColor} cornerRadius={4} />
+      <Text {...{ text: title, x: x + 10, y, fill: 'white', width, height: variable.heightHeader, align: 'left', verticalAlign: 'middle', fontSize: 16 }} />
       {children}
     </Group>
   );

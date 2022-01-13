@@ -39,7 +39,7 @@ export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, wid
 
   return (
     <Group>
-      <Circle {...{ x: x + width / 2 - 28, y: y - 4 }} align="center" radius={6} stroke={handleGetColor()} fill={handleGetColor()} />
+      <Circle {...{ x: x + width / 2, y: y - 4 }} align="center" radius={8} stroke={handleGetColor()} fill={handleGetColor()} />
       <Text
         {...{
           text: handleGetIcon(),
@@ -57,7 +57,7 @@ export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, wid
           letterSpacing: 1
         }}
       />
-      <Text {...{ text: handleGetText(), x: x + 20, y: y - 10, width: width - 15, height, align: 'center', verticalAlign: 'top', fill: handleGetColor(), fontStyle: 'bold', letterSpacing: 1 }} />
+      <Text {...{ text: handleGetText(), x, y: y - 30, width, height, align: 'center', verticalAlign: 'top', fill: handleGetColor(), fontStyle: '400', letterSpacing: 1, fontSize: 14 }} />
     </Group>
   );
 };

@@ -10,3 +10,4 @@ export * from './visualizationVrf';
 export * from './visualizationlabel';
 export * from './visualizationEndpoints';
 export * from './visualizationChecked';
+export * from './visualizationBoxLabel';
