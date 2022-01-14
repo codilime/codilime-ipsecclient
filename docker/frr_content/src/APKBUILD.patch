@@ -1,3 +1,8 @@
+#	Copyright (c) 2021 Cisco and/or its affiliates
+#
+#	This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+#	available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
 --- APKBUILD.in	2021-07-27 14:55:15.113886548 +0200
 +++ APKBUILD.in	2021-07-27 14:58:40.346285735 +0200
 @@ -47,7 +47,8 @@

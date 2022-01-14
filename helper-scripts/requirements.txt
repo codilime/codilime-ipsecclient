@@ -1,3 +1,8 @@
+#	Copyright (c) 2021 Cisco and/or its affiliates
+#
+#	This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+#	available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
 deepdiff==5.6.0
 google_api_python_client==2.33.0
 protobuf==3.19.1

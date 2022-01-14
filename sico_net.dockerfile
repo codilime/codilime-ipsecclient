@@ -1,3 +1,8 @@
+# 	Copyright (c) 2021 Cisco and/or its affiliates
+#
+# 	This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+# 	available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
 FROM alpine:3.13 AS sico_net
 
 ARG VERSION=unspecified
@@ -16,9 +21,9 @@ COPY docker/ipsec_reload.ini /etc/supervisor.d/
 COPY docker/ipsec_reload.sh /usr/local/sbin/
 
 RUN mkdir -p /opt/ipsec/conf && rm -rf /etc/swanctl/conf.d && ln -s /opt/ipsec/conf /etc/swanctl/conf.d && \
-        mkdir /opt/ipsec/x509ca && rm -rf /etc/swanctl/x509ca && ln -s /opt/ipsec/x509ca /etc/swanctl/x509ca && \
-        mkdir /opt/ipsec/x509 && rm -rf /etc/swanctl/x509 && ln -s /opt/ipsec/x509 /etc/swanctl/x509 && \
-        mkdir /opt/ipsec/rsa && rm -rf /etc/swanctl/rsa && ln -s /opt/ipsec/rsa /etc/swanctl/rsa
+    mkdir /opt/ipsec/x509ca && rm -rf /etc/swanctl/x509ca && ln -s /opt/ipsec/x509ca /etc/swanctl/x509ca && \
+    mkdir /opt/ipsec/x509 && rm -rf /etc/swanctl/x509 && ln -s /opt/ipsec/x509 /etc/swanctl/x509 && \
+    mkdir /opt/ipsec/rsa && rm -rf /etc/swanctl/rsa && ln -s /opt/ipsec/rsa /etc/swanctl/rsa
 
 RUN chown -R ipsec:ipsec /etc/swanctl
 
