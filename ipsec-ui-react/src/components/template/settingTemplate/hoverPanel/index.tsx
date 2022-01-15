@@ -10,14 +10,15 @@ interface HoverPanelType {
   handleReset?: () => void;
   title?: string;
   button?: string;
+  handleToggle?: () => void;
 }
 
-export const HoverPanel: FC<HoverPanelType> = ({ description, title, button, active, handleReset }) => {
+export const HoverPanel: FC<HoverPanelType> = ({ description, title, button, active, handleReset, handleToggle }) => {
   const { message, result } = description;
 
   const footer = button && (
     <div className="panel__footer">
-      <Button {...{ className: 'panel__cancel' }}>Cancel</Button>
+      <Button {...{ className: 'panel__cancel', onClick: handleToggle }}>Cancel</Button>
       <Button {...{ className: 'panel__btn', onClick: handleReset }}>{button}</Button>
     </div>
   );

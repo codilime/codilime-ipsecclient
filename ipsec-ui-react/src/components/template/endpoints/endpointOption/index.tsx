@@ -12,7 +12,7 @@ interface EndpointOptionType {
 
 export const EndpointOption: FC<EndpointOptionType> = ({ open, handleToggleModal, handleActiveEdit, handleToggle }) => (
   <div className={classNames('endpointOption', { endpointOption__active: open })} onMouseLeave={handleToggle}>
-    <ul>
+    <ul className="endpointOption__list">
       <li className="endpointOption__item" onClick={handleActiveEdit}>
         <IoPencil className="endpointOption__icon" /> Edit
       </li>

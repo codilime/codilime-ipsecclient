@@ -6,6 +6,7 @@ import { SettingOptionType } from 'interface/index';
 interface SettingContentType {
   activeSetting: keyof SettingOptionType;
   open: boolean;
+  handleToggle: () => void;
 }
 
 interface settingDataType {
@@ -13,19 +14,19 @@ interface settingDataType {
   component: ReactNode;
 }
 
-export const SettingContent: FC<SettingContentType> = ({ activeSetting, open }) => {
+export const SettingContent: FC<SettingContentType> = ({ activeSetting, open, handleToggle }) => {
   const settingData: settingDataType[] = [
     {
       option: 'Profile',
-      component: <Login />
+      component: <Login {...{ handleToggle }} />
     },
     {
       option: 'RestConf',
-      component: <RestConf {...{ open }} />
+      component: <RestConf {...{ open, handleToggle }} />
     },
     {
       option: 'Certificates',
-      component: <SettingCertificates />
+      component: <SettingCertificates {...{ handleToggle }} />
     }
   ];
 

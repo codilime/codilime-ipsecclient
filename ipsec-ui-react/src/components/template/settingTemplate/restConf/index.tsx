@@ -6,15 +6,16 @@ import classNames from 'classnames';
 
 interface RestConfType {
   open: boolean;
+  handleToggle: () => void;
 }
 
-export const RestConf: FC<RestConfType> = ({ open }) => {
+export const RestConf: FC<RestConfType> = ({ open, handleToggle }) => {
   const { handleSendRestConf, handleResetRestConf, active, description } = UseRestConfLogic(open);
 
   return (
     <>
       <Wrapper {...{ title: 'Cat 9300x Credentials', wrapperClass: classNames('loginForm__wrapper', { loginForm__disabled: active }) }}>
-        <RestConfForm {...{ handleSendRestConf }} />
+        <RestConfForm {...{ handleSendRestConf, handleToggle }} />
       </Wrapper>
       <HoverPanel
         {...{
@@ -22,7 +23,8 @@ export const RestConf: FC<RestConfType> = ({ open }) => {
           description,
           button: 'Reset',
           active,
-          handleReset: handleResetRestConf
+          handleReset: handleResetRestConf,
+          handleToggle
         }}
       />
     </>

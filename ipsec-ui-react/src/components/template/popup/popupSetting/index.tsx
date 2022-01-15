@@ -15,7 +15,7 @@ export const PopupSetting: FC<PopupSettingType> = ({ open, handleToggle, handleC
     <Popup {...{ open, handleToggle, title: 'Settings' }}>
       <section className="setting">
         <SettingOption {...{ handleChangeActiveSetting, activeSetting }} />
-        <SettingContent {...{ activeSetting, open }} />
+        <SettingContent {...{ activeSetting, open, handleToggle }} />
       </section>
     </Popup>
   );

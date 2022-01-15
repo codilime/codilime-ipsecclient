@@ -10,9 +10,10 @@ import classNames from 'classnames';
 
 interface RestConfFormType {
   handleSendRestConf: (data: RestConfType) => void;
+  handleToggle: () => void;
 }
 
-export const RestConfForm: FC<RestConfFormType> = ({ handleSendRestConf }) => {
+export const RestConfForm: FC<RestConfFormType> = ({ handleSendRestConf, handleToggle }) => {
   const {
     register,
     handleSubmit,
@@ -24,13 +25,18 @@ export const RestConfForm: FC<RestConfFormType> = ({ handleSendRestConf }) => {
   ));
 
   return (
-    <form className="loginForm" onSubmit={handleSubmit(handleSendRestConf)}>
-      <fieldset className="loginForm__fieldset">
-        {displayForm}
-        <div className="loginForm__submit">
-          <Button className="loginForm__btn">Save changes</Button>
-        </div>
-      </fieldset>
-    </form>
+    <>
+      <form className="loginForm">
+        <fieldset className="loginForm__fieldset">{displayForm}</fieldset>
+      </form>
+      <div className="loginForm__submit">
+        <Button className="loginForm__cancel" onClick={handleToggle}>
+          cancel
+        </Button>
+        <Button className="loginForm__btn" onClick={handleSubmit(handleSendRestConf)}>
+          Save changes
+        </Button>
+      </div>
+    </>
   );
 };

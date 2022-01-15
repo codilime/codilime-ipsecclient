@@ -1,10 +1,14 @@
 import { FC } from 'react';
-import { Wrapper, EachCertificate, UploadCertificates, HoverPanel } from 'template';
+import { EachCertificate, UploadCertificates, HoverPanel } from 'template';
 import { useCertificatesLogic } from 'hooks/';
 import classNames from 'classnames';
 import './styles.scss';
 
-export const SettingCertificates: FC = () => {
+interface SettingCertificatesType {
+  handleToggle: () => void;
+}
+
+export const SettingCertificates: FC<SettingCertificatesType> = ({ handleToggle }) => {
   const { certificates, uploadBtn, checkedCa, handleAddCerts, handleSaveNewCerts, handleCheckCerts, handleDeleteCerts } = useCertificatesLogic();
 
   const displayCertificates = certificates.map(({ ca_file, id }) => {
@@ -34,7 +38,7 @@ export const SettingCertificates: FC = () => {
           active: !certificates.length
         }}
       />
-      <UploadCertificates {...{ references: uploadBtn, onChange: handleSaveNewCerts, onClick: handleAddCerts, handleDeleteCerts, noExistCerts: !certificates.length }} />
+      <UploadCertificates {...{ references: uploadBtn, onChange: handleSaveNewCerts, onClick: handleAddCerts, handleDeleteCerts, noExistCerts: !certificates.length, handleToggle }} />
     </div>
   );
 };
