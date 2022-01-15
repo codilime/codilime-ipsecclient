@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { DynamicVrfHardwareDetails, DynamicVrfDetails } from 'db';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -17,16 +17,18 @@ export const useCreateVRFMainView = () => {
     handleSubmit,
     formState: { errors, isDirty, isValid },
     reset,
-    setValue
+    setValue,
+    watch
   } = useForm<VrfDataTypes>({
     resolver: yupResolver(vrfSchema)
   });
-
+  watch();
   useLayoutEffect(() => {
     reset(data);
   }, [reset, currentLocation, data]);
 
   const submit = async (data: VrfDataTypes) => {
+    console.log(data);
     if (!data.vlan) data.vlan = [];
     if (data.id) return patchVrfData({ vrf: data });
     const res = await postVrfData({ vrf: data });

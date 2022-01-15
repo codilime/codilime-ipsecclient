@@ -9,12 +9,12 @@ interface VisualizationCheckedType extends Visualization {
 }
 
 export const VisualizationChecked: FC<VisualizationCheckedType> = ({ x, y, status, width, height }) => {
-  const checked = status ? '✓' : '';
-  const fillColor = status ? 'green' : 'black';
+  const checked = status ? '✓' : 'x';
+  const fillColor = status ? 'green' : 'red';
   return (
     <Group>
       <Circle {...{ x: x + 6.5, y: y + 7, width, height, fill: fillColor }} />
-      <Text {...{ text: checked, x, y, width, height, align: 'center', verticalAlign: 'middle', fontSize: 15, fill: 'white' }} />
+      <Text {...{ text: checked, x: x - 1, y: checked === 'x' ? y - 1 : y, width, height, align: 'center', verticalAlign: 'middle', fontSize: 15, fill: 'white', fontStyle: 'bold' }} />
     </Group>
   );
 };

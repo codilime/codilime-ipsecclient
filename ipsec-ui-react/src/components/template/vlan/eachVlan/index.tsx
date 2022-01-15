@@ -10,8 +10,8 @@ export const EachVlan: FC<EachVlanType> = ({ vlan, lan_ip, onClick }) => (
   <tr className="vlan__row">
     <td className="vlan__column">{vlan}</td>
     <td className="vlan__column">{lan_ip}</td>
-    <td onClick={() => onClick(vlan)}>
-      <RiDeleteBin7Line className="vlan__cancel" />
+    <td>
+      <RiDeleteBin7Line className="vlan__cancel" onClick={() => onClick(vlan)} />
     </td>
   </tr>
 );

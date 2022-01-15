@@ -43,7 +43,7 @@ export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, wid
       <Text
         {...{
           text: handleGetIcon(),
-          x: x + width / 2 - 33.5,
+          x: x + width / 2 - 6,
           y: y - 9.5,
           width: 12,
           height: 12,
@@ -53,8 +53,7 @@ export const VisualizationStatusText: FC<VisualizationStatusText> = ({ x, y, wid
           fill: 'white',
           fontStyle: 'bold',
           stroke: '#fff',
-          strokeWidth: 1,
-          letterSpacing: 1
+          strokeWidth: 1
         }}
       />
       <Text {...{ text: handleGetText(), x, y: y - 30, width, height, align: 'center', verticalAlign: 'top', fill: handleGetColor(), fontStyle: '400', letterSpacing: 1, fontSize: 14 }} />

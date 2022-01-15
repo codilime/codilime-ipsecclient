@@ -14,6 +14,6 @@ export const VisualizationEndpointLabel: FC<VisualizationEndpointLabelType> = ({
   <Group>
     <Rect {...{ x, y, width, height, fill: color, cornerRadius: 4 }} />
     <Text {...{ x, y: y - 20, width, height: height / 2, align: 'start', text, verticalAlign: 'middle', fill: variable.textColor, fontSize: 14, letterSpacing: 1, fontStyle: '500' }} />
-    <Text {...{ x: x + 10, y, width, height, align: 'start', text: value, verticalAlign: 'middle', fill: 'black', fontSize: 14, fontStyle: '400', letterSpacing: 1 }} />
+    <Text {...{ x: x + 5, y, width, height, align: 'start', text: value, verticalAlign: 'middle', fill: 'black', fontSize: 14, fontStyle: '400', letterSpacing: 1 }} />
   </Group>
 );

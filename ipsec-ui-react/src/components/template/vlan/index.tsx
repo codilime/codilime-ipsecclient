@@ -2,10 +2,13 @@ import { FC } from 'react';
 import { useVlanLogic } from 'hooks/';
 import { EachVlan } from './eachVlan';
 import { VlanInput } from './vlanInput';
+import { FieldValues, UseFormSetValue } from 'react-hook-form';
+
 import './styles.scss';
+import { VrfDataTypes } from 'interface/index';
 
 interface VlanType {
-  setValue: any;
+  setValue: UseFormSetValue<VrfDataTypes>;
   errorSchema?: any;
 }
 

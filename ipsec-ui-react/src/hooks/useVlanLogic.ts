@@ -1,8 +1,9 @@
 import { useState, useEffect, ChangeEvent, useLayoutEffect } from 'react';
 import { FieldValues, UseFormSetValue } from 'react-hook-form';
 import { useAppContext } from 'hooks/';
-import { VlanInterface } from 'interface/index';
-export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
+import { VlanInterface, VrfDataTypes } from 'interface/index';
+
+export const useVlanLogic = (setValue: UseFormSetValue<VrfDataTypes>) => {
   const {
     context: { data }
   } = useAppContext();
@@ -32,15 +33,15 @@ export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
     return false;
   };
 
-  useEffect(() => {
-    if (vlan.length) setValue('vlan', [...vlan], { shouldDirty: true });
-  }, [vlan]);
-
   useLayoutEffect(() => {
     if (data.vlan) {
       setVlan(data.vlan);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (data.vlan !== vlan) return setValue('vlan', vlan, { shouldDirty: true });
+  }, [vlan, data.vlan]);
 
   useEffect(() => {
     if (error) setError(false);
@@ -63,6 +64,8 @@ export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
 
   const handleDeleteVlan = (value: number) => {
     const newVlan = vlan.filter((el) => el.vlan !== value);
+    setValue('vlan', newVlan, { shouldDirty: true });
+
     setVlan(newVlan);
   };
 
