@@ -1,0 +1,40 @@
+Cisco-IOS-XE-native:native/crypto/ikev2/profile
+{{ range $index, $endpoint := .EndpointSubset }}Cisco-IOS-XE-native:native/crypto/ikev2/profile=hardware_psk{{ $endpoint.ID }} {{end}}
+{
+        "profile": [
+        {{ range $index, $endpoint := .EndpointSubset }}
+                {
+                        "name": "hardware_psk{{ $endpoint.ID }}",
+                        "authentication": {
+                        "local": {
+                        "pre-share": {}
+                        },
+                        "remote": {
+                        "pre-share": {}
+                        }
+                        },
+                        "keyring": {
+                        "local": {
+                        "name": "hardware_psk"
+                        }
+                        },
+                        {{ if $endpoint.Authentication.LocalID }}
+                        "identity": {
+                        "local": {
+                        "{{ transformLocalIDType $endpoint }}": "{{ $endpoint.Authentication.LocalID }}"
+                        }
+                        },
+                        {{ end }}
+                        "match": {
+                        "identity": {
+                        "remote": {
+                        "any": [
+                                null
+                        ]
+                        }
+                        }
+                        }
+                } {{ if (notEndOfSlice $.EndpointSubset $index) }},{{ end }}
+        {{ end }}
+        ]
+}

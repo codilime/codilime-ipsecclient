@@ -36,8 +36,8 @@ func (f *SoftwareGenerator) GetMonitoring(clientName *string, _ ...db.SwitchCred
 	for k, v := range statuses {
 		if strings.Contains(k, name) {
 			ret.Endpoint[v.ID] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
-				LocalIp: db.StringPointer(normalizeAddress(v.localAddr)),
-				PeerIp:  db.StringPointer(normalizeAddress(v.remoteAddr)),
+				LocalIp: db.StringPointer(normalizeLocalIP(v.localAddr, v.remoteAddr)),
+				PeerIp:  db.StringPointer(v.remoteAddr),
 				Status:  db.StringPointer(normalizeStatus(v.status)),
 				Id:      db.Uint32Pointer(v.ID),
 			}
@@ -100,11 +100,4 @@ func getStrongswanState() (map[string]*monitoringEndpoint, error) {
 		}
 	}
 	return endpoints, nil
-}
-
-func normalizeAddress(addr string) string {
-	if addr == "%any" {
-		return "0.0.0.0"
-	}
-	return addr
 }

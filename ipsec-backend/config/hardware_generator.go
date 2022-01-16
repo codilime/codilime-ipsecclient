@@ -11,6 +11,7 @@ import (
 	"ipsec_backend/db"
 	"ipsec_backend/logger"
 	"ipsec_backend/sico_yang"
+	"net"
 	"net/http"
 	"net/http/httptrace"
 	"os"
@@ -135,10 +136,10 @@ func (h *HardwareGenerator) DeleteConfigs(vrf db.Vrf, switchCredsList ...db.Swit
 	return nil
 }
 
-func bgpEndpointSubset(endpoints []db.Endpoint) []db.Endpoint {
+func bgpEndpointSubset(endpoints []db.Endpoint, ipv6 bool) []db.Endpoint {
 	bgpEndpoints := []db.Endpoint{}
 	for _, e := range endpoints {
-		if e.BGP {
+		if e.BGP && ipv6 == e.IsIpv6() {
 			bgpEndpoints = append(bgpEndpoints, e)
 		}
 	}
@@ -151,9 +152,16 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 		return logger.ReturnError(err)
 	}
 
-	bgpEndpoints := bgpEndpointSubset(endpoints)
+	bgpEndpointsIpv4 := bgpEndpointSubset(endpoints, false)
+	bgpEndpointsIpv6 := bgpEndpointSubset(endpoints, true)
+	bgpEndpoints := []db.Endpoint{}
+	bgpEndpoints = append(bgpEndpoints, bgpEndpointsIpv4...)
+	bgpEndpoints = append(bgpEndpoints, bgpEndpointsIpv6...)
 
 	for _, file := range files {
+		if len(bgpEndpoints) == 0 && strings.Contains(file.Name(), "bgp") {
+			continue // don't do bgp if not needed
+		}
 		bytes, err := ioutil.ReadFile(hwTemplatesDir + "/" + folderName + "/" + file.Name())
 		if err != nil {
 			return logger.ReturnError(err)
@@ -194,6 +202,12 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 				}
 				return "tunnel"
 			},
+			"transformLocalIDType": func(endpoint db.Endpoint) string {
+				return transformLocalIDType(endpoint.Authentication.LocalID)
+			},
+			"transformLocalID": func(endpoint db.Endpoint) string {
+				return transformLocalID(endpoint.Authentication.LocalID)
+			},
 		}).Parse(templ)
 		if err != nil {
 			return logger.ReturnError(err)
@@ -202,10 +216,14 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 		if err = t.Execute(&builder, struct {
 			VrfWithCryptoSlices
 			EndpointSubset    []db.Endpoint
+			BGPEndpoints4     []db.Endpoint
+			BGPEndpoints6     []db.Endpoint
 			BGPEndpointSubset []db.Endpoint
 		}{
 			vrf,
 			endpoints,
+			bgpEndpointsIpv4,
+			bgpEndpointsIpv6,
 			bgpEndpoints,
 		}); err != nil {
 			return logger.ReturnError(err)
@@ -215,6 +233,46 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 		}
 	}
 	return nil
+}
+
+func transformLocalIDType(localID string) string {
+	if strings.Contains(localID, "=") {
+		return "dn"
+	}
+	if strings.Contains(localID, "@") {
+		if localID[0:2] == "@#" {
+			return "key-id"
+		}
+		if localID[0:1] == "@" {
+			return "fqdn"
+		}
+		return "email"
+	}
+	if strings.Contains(localID, ":") {
+		if net.ParseIP(localID) != nil {
+			return "address"
+		}
+		return "key-id"
+	}
+	if net.ParseIP(localID) != nil {
+		return "address"
+	}
+	return "fqdn"
+}
+
+func transformLocalID(localID string) string {
+	if strings.Contains(localID, "=") {
+		return ""
+	}
+	if strings.Contains(localID, "@") {
+		if localID[0:2] == "@#" {
+			return localID[2:]
+		}
+		if localID[0:1] == "@" {
+			return localID[1:]
+		}
+	}
+	return localID
 }
 
 func reverseSlice(s []fs.FileInfo) []fs.FileInfo {
@@ -236,7 +294,8 @@ func (h *HardwareGenerator) doTemplateFolderDelete(folderName string, client *ht
 	}
 
 	files = reverseSlice(files)
-	bgpEndpoints := bgpEndpointSubset(endpoints)
+	bgpEndpointsIpv4 := bgpEndpointSubset(endpoints, false)
+	bgpEndpointsIpv6 := bgpEndpointSubset(endpoints, true)
 
 	for _, file := range files {
 		bytes, err := ioutil.ReadFile(hwTemplatesDir + "/" + folderName + "/" + file.Name())
@@ -252,12 +311,14 @@ func (h *HardwareGenerator) doTemplateFolderDelete(folderName string, client *ht
 		builder := strings.Builder{}
 		if err = t.Execute(&builder, struct {
 			db.Vrf
-			EndpointSubset    []db.Endpoint
-			BGPEndpointSubset []db.Endpoint
+			EndpointSubset []db.Endpoint
+			BGPEndpoints4  []db.Endpoint
+			BGPEndpoints6  []db.Endpoint
 		}{
 			vrf,
 			endpoints,
-			bgpEndpoints,
+			bgpEndpointsIpv4,
+			bgpEndpointsIpv6,
 		}); err != nil {
 			return logger.ReturnError(err)
 		}
@@ -380,7 +441,7 @@ func (h *HardwareGenerator) GetMonitoring(_ *string, switchCredsList ...db.Switc
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	res, err := h.restconfGetData("Cisco-IOS-XE-crypto-oper:crypto-oper-data/crypto-ipsec-ident", client, switchCredsList[0])
+	res, err := restconfGetData("Cisco-IOS-XE-crypto-oper:crypto-oper-data/crypto-ipsec-ident", client, switchCredsList[0])
 	if err != nil {
 		return nil, logger.ReturnError(err)
 	}
@@ -400,7 +461,7 @@ func (h *HardwareGenerator) GetMonitoring(_ *string, switchCredsList ...db.Switc
 		remoteIp := identData["remote-endpt-addr"].(string)
 		saStatus := identData["inbound-esp-sa"].(map[string]interface{})["sa-status"].(string)
 		monitoring.Endpoint[uint32(endpointID)] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
-			LocalIp: db.StringPointer(localIp),
+			LocalIp: db.StringPointer(normalizeLocalIP(localIp, remoteIp)),
 			PeerIp:  db.StringPointer(remoteIp),
 			Status:  db.StringPointer(normalizeStatus(saStatus)),
 			Id:      db.Uint32Pointer(uint32(endpointID)),
@@ -409,7 +470,41 @@ func (h *HardwareGenerator) GetMonitoring(_ *string, switchCredsList ...db.Switc
 	return &monitoring, nil
 }
 
-func (h *HardwareGenerator) restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds) (map[string]interface{}, error) {
+func GetSourceInterfaces(switchCreds db.SwitchCreds) ([]string, error) {
+	sourceInterfaces := []string{}
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	res, err := restconfGetData("Cisco-IOS-XE-native:native/interface", client, switchCreds)
+	if err != nil {
+		return nil, logger.ReturnError(err)
+	}
+	if res == nil {
+		return sourceInterfaces, nil
+	}
+
+	if interfacesInt, ok := res["Cisco-IOS-XE-native:interface"]; ok {
+		if interfaces, ok := interfacesInt.(map[string]interface{}); ok {
+			for interfaceName, interfaceBodyList_ := range interfaces {
+				if interfaceBodyList, ok := interfaceBodyList_.([]interface{}); ok {
+					for _, interfaceBody := range interfaceBodyList {
+						interfaceId, ok := interfaceBody.(map[string]interface{})["name"].(string)
+						if !ok {
+							break
+						}
+						sourceInterfaces = append(sourceInterfaces, interfaceName+interfaceId)
+					}
+					return sourceInterfaces, nil
+				}
+			}
+		}
+	}
+	return sourceInterfaces, logger.ReturnError(fmt.Errorf("cannot get source interfaces from the switch - malformed response"))
+}
+
+func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds) (map[string]interface{}, error) {
 	log.Debugf("GET: %s\n", path)
 	ret := map[string]interface{}{}
 	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + path

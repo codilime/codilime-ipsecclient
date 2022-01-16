@@ -19,7 +19,6 @@ const (
 
 	supervisorConfig = `[program:test vrf]
 command=/usr/local/sbin/ipsec.sh
-# todo: fix this
 environment=PHYS_IF="test_interface", VRF_ID="2", XFRM_IP="0.0.0.1", XFRM_PEER="10.42.0.1", NAT="YES", VLANS_IPS="1000 11.11.0.0/30 2000 22.22.0.0/30 ", ENDPOINT_IDS="1", DISABLE_PEER_IPS="false"
 redirect_stderr=true
 stdout_logfile=/opt/logs/test vrf.log
@@ -69,8 +68,10 @@ const config_psk = `connections {
         }
         children {
             site-cisco_1 {
+                
                 remote_ts = 0.0.0.0/0
                 local_ts = 0.0.0.0/0
+                
                 if_id_in = 1
                 if_id_out = 1
                 esp_proposals = cast128-sha512-modp1024
@@ -157,8 +158,10 @@ func TestGenerateTemplateCert(t *testing.T) {
         }
         children {
             site-cisco_1 {
+                
                 remote_ts = 0.0.0.0/0
                 local_ts = 0.0.0.0/0
+                
                 if_id_in = 1
                 if_id_out = 1
                 esp_proposals = cast128-sha512-modp1024
@@ -291,6 +294,27 @@ func TestDeleteTemplatePsk(t *testing.T) {
 	generator := SoftwareGenerator{fileHandler, supervisor}
 
 	generator.DeleteConfigs(vrf)
+}
+
+func TestTransformLocalID(t *testing.T) {
+	transformLocalIdMatrix := [][]string{
+		{"xyz=abc", "dn", ""},
+		{"@#newkeyid", "key-id", "newkeyid"},
+		{"@newfqdn", "fqdn", "newfqdn"},
+		{"test@codilime.com", "email", "test@codilime.com"},
+		{"2001:db8::1234:5678", "address", "2001:db8::1234:5678"},
+		{"2001:db8::1234:", "key-id", "2001:db8::1234:"},
+		{"127.10.10.20", "address", "127.10.10.20"},
+		{"newfqdn", "fqdn", "newfqdn"},
+	}
+	for _, data := range transformLocalIdMatrix {
+		if localIDtype := transformLocalIDType(data[0]); localIDtype != data[1] {
+			t.Fatalf("expected local id type: %s got: %s\n", data[1], localIDtype)
+		}
+		if localID := transformLocalID(data[0]); localID != data[2] {
+			t.Fatalf("expected local id: %s got: %s\n", data[2], localID)
+		}
+	}
 }
 
 func createTestVrf() db.Vrf {

@@ -26,15 +26,16 @@ import (
 )
 
 const (
-	restconfBasePath = "/restconf/data/sico-ipsec:api"
-	vrfPath          = restconfBasePath + "/vrf"
-	vrfIDPath        = vrfPath + "={id:[0-9]+}"
-	monitoringPath   = restconfBasePath + "/monitoring={id:[0-9]+}"
-	logPath          = restconfBasePath + "/log"
-	errorPath        = restconfBasePath + "/error"
-	CAPath           = restconfBasePath + "/ca"
-	settingNamePath  = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
-	passPath         = restconfBasePath + "/password"
+	restconfBasePath    = "/restconf/data/sico-ipsec:api"
+	vrfPath             = restconfBasePath + "/vrf"
+	vrfIDPath           = vrfPath + "={id:[0-9]+}"
+	monitoringPath      = restconfBasePath + "/monitoring={id:[0-9]+}"
+	sourceInterfacePath = restconfBasePath + "/source-interface"
+	logPath             = restconfBasePath + "/log"
+	errorPath           = restconfBasePath + "/error"
+	CAPath              = restconfBasePath + "/ca"
+	settingNamePath     = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
+	passPath            = restconfBasePath + "/password"
 
 	pkcs12Path = "/pkcs12/{id:[0-9]+}"
 
@@ -129,6 +130,7 @@ func (a *App) initializeRoutes() {
 	a.router.HandleFunc(vrfIDPath, a.updateVrf).Methods(http.MethodPatch)
 	a.router.HandleFunc(vrfIDPath, a.deleteVrf).Methods(http.MethodDelete)
 	a.router.HandleFunc(monitoringPath, a.monitoring).Methods(http.MethodGet)
+	a.router.HandleFunc(sourceInterfacePath, a.getSourceInterfaces).Methods(http.MethodGet)
 	a.router.HandleFunc(logPath, a.getLogs).Methods(http.MethodGet)
 	a.router.HandleFunc(errorPath, a.getErrors).Methods(http.MethodGet)
 	a.router.HandleFunc(settingNamePath, a.apiGetSetting).Methods(http.MethodGet)
@@ -525,10 +527,13 @@ func (a *App) _updateBackends(key string, vrf, oldVrf *db.Vrf) error {
 	return nil
 }
 
-func vrfSubJsonValid(vrfSubJson interface{}) error {
+func vrfSubJsonValidSW(vrfSubJson interface{}) error {
 	vrf, ok := vrfSubJson.(map[string]interface{})
 	if !ok {
 		return logger.ReturnNewError("wrong vrfSubJson type")
+	}
+	if err := verifyEnpoints(vrf); err != nil {
+		return err
 	}
 	vlans, ok := vrf["vlan"]
 	if !ok {
@@ -560,6 +565,40 @@ func vrfSubJsonValid(vrfSubJson interface{}) error {
 	return nil
 }
 
+func vrfSubJsonValidHW(vrfSubJson interface{}) error {
+	vrf, ok := vrfSubJson.(map[string]interface{})
+	if !ok {
+		return logger.ReturnNewError("wrong vrfSubJson type")
+	}
+	return verifyEnpoints(vrf)
+}
+
+func verifyEnpoints(vrf map[string]interface{}) error {
+	endpointInt, ok := vrf["endpoint"]
+	if !ok {
+		return nil
+	}
+	endpoints, ok := endpointInt.([]interface{})
+	if !ok {
+		return logger.ReturnNewError("wrong endpoints json type")
+	}
+	for _, e := range endpoints {
+		if e, ok := e.(map[string]interface{}); ok {
+			local_ip, ok := e["local_ip"].(string)
+			if ok && strings.Contains(local_ip, ":") {
+				return logger.ReturnNewError("endpoint local ip: IPv6 not supported")
+			}
+			peer_ip, ok := e["peer_ip"].(string)
+			if ok && strings.Contains(peer_ip, ":") {
+				return logger.ReturnNewError("endpoint peer ip: IPv6 not supported")
+			}
+		} else {
+			return logger.ReturnNewError("wrong endpoint json type")
+		}
+	}
+	return nil
+}
+
 func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -576,7 +615,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, "malformed json")
 		return
 	}
-	if err := vrfSubJsonValid(vrfSubJson); err != nil {
+	if err := vrfSubJsonValidSW(vrfSubJson); err != nil {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -654,6 +693,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	body, err := ioutil.ReadAll(r.Body)
+	log.Debugf("request %s\n", body)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -668,9 +708,16 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, "malformed json")
 		return
 	}
-	if err := vrfSubJsonValid(vrfSubJson); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error())
-		return
+	if id != db.HardwareVrfID {
+		if err := vrfSubJsonValidSW(vrfSubJson); err != nil {
+			a.respondWithError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+	} else {
+		if err := vrfSubJsonValidHW(vrfSubJson); err != nil {
+			a.respondWithError(w, http.StatusBadRequest, err.Error())
+			return
+		}
 	}
 	vrfJson, err := json.Marshal(vrfSubJson)
 	if err != nil {
@@ -885,6 +932,37 @@ func (a *App) getErrors(w http.ResponseWriter, r *http.Request) {
 
 	api := sico_yang.SicoIpsec_Api{
 		Error: yangErrors,
+	}
+
+	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, json)
+}
+
+func (a *App) getSourceInterfaces(w http.ResponseWriter, r *http.Request) {
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		a.respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	switchCreds, err := a.getSwitchCreds(key)
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	sourceInterfaces, err := config.GetSourceInterfaces(*switchCreds)
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	api := sico_yang.SicoIpsec_Api{
+		SourceInterface: db.SourceInterfacesToYang(sourceInterfaces),
 	}
 
 	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{

@@ -1,6 +1,8 @@
 import { useState, FC } from 'react';
 import { Button } from 'common/';
 import { Notification, Logout, Setting, PopupLogs } from 'template';
+import { useThemeContext } from 'hooks/';
+import { Theme } from '../../../appTheme';
 import './styles.scss';
 
 export const TopBar: FC = () => {

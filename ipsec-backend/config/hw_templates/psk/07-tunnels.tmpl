@@ -1,0 +1,55 @@
+Cisco-IOS-XE-native:native/interface
+{{ range $index, $endpoint := .EndpointSubset }}Cisco-IOS-XE-native:native/interface/Tunnel={{$endpoint.ID}} {{end}}
+{
+        "interface": [
+        {{ range $index, $endpoint := .EndpointSubset }}
+                {
+                        "Tunnel": {
+                        "name": {{ $endpoint.ID }},
+                        "description": "hardware_psk{{ $index }}",
+                        {{ if $endpoint.IsIpv6 }}
+                        "ipv6": {
+                                "address": {
+                                        "prefix-list": [
+                                                {
+                                                        "prefix": "{{ $endpoint.LocalIP }}/64"
+                                                }
+                                        ]
+                                },
+                                "enable": [
+                                        null
+                                ]
+                        },
+                        {{ else }}
+                        "ip": {
+                        "address": {
+                        "primary": {
+                                "address": "{{ $endpoint.LocalIP }}",
+                                "mask": "255.255.255.252"
+                        }
+                        }
+                        },
+                        {{ end }}
+                        "Cisco-IOS-XE-tunnel:tunnel": {
+                        "source": "{{ $endpoint.SourceInterface }}",
+                        "destination-config": {
+                        "ipv4": "{{ $endpoint.RemoteIPSec }}"
+                        },
+                        "mode": {
+                        "ipsec": {
+                                "ipv4": {}
+                        }
+                        },
+                        "protection": {
+                        "Cisco-IOS-XE-crypto:ipsec": {
+                                "profile-option": {
+                                "name": "hardware_psk{{ $endpoint.ID }}"
+                                }
+                        }
+                        }
+                        }
+                        }
+                } {{ if (notEndOfSlice $.EndpointSubset $index) }},{{ end }}
+        {{ end }}
+        ]
+}

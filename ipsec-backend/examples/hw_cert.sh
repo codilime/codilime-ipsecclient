@@ -2,15 +2,13 @@
 
 TEST_PFX=`cat ../../dev-env/UI/test.pfx.b64`
 
-curl -v -XPATCH http://localhost/restconf/data/sico-ipsec:api/vrf=1 -u "admin:cisco123" -d @- << EOF
+curl -v -k -XPATCH\
+  http://localhost/restconf/data/sico-ipsec:api/vrf=1\
+  -u "admin:cisco123" -d @- << EOF
 {
     "vrf": {
         "id":1,
         "client_name":"hardware",
-        "vlan":[{
-            "vlan": 123,
-            "lan_ip": "10.0.0.1/24"
-        }],
         "crypto_ph1": "aes-cbc-128.sha256.fourteen",
         "crypto_ph2": "esp-aes.esp-sha-hmac.group14",
         "physical_interface":"eth0",

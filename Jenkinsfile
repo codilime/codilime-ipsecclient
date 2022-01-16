@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Run CSR-VM and build') {
             steps {
-                sh 'python3 -u build.py --csr-vm /home/jenkins/csr-vm/csr1000v-universalk9.17.03.03-serial.qcow2 /home/jenkins/csr-vm/csr_config.iso --clean'
+                sh 'python3 -u build.py --clean --ut --csr-vm /home/jenkins/csr-vm/csr1000v-universalk9.17.03.03-serial.qcow2 /home/jenkins/csr-vm/csr_config.iso'
             }
         }
         stage('Run unit tests') {
@@ -29,7 +29,7 @@ pipeline {
                 {
                     sh '''
                         rm -f out/*
-                        python3 -u build.py --pack
+                        python3 -u build.py --pack /home/jenkins/credentials/credentials.json
                     '''
                     archiveArtifacts 'out/*.tar.gz'
                 }
