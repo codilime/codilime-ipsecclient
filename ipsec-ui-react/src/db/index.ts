@@ -177,13 +177,13 @@ const hardwareCrypto: CryptoTypes = {
 export const defaultVrf: ContextProps = {
   data: {
     client_name: '',
-    vlan: [],
     crypto_ph1: '',
     crypto_ph2: '',
     physical_interface: 'eth0',
     active: false,
     ospf: false,
     local_as: 0,
+    vlan: [],
     endpoint: []
   },
   softwareCrypto: softwareCrypto,
@@ -191,6 +191,7 @@ export const defaultVrf: ContextProps = {
   certificates: [],
   vrf: [],
   notifications: [],
+  sourceInterface: [],
   loading: false,
   hardware: false,
   error: null,

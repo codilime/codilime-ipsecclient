@@ -70,6 +70,7 @@ export interface ContextProps {
   error: any;
   success: boolean;
   restConf: boolean;
+  sourceInterface: string[] | [];
 }
 
 type NameProps = {

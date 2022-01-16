@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { EndpointButton, EndpointInput, ToolTipInfo } from 'common/';
+import { EndpointButton, EndpointInput, ToolTipInfo, ComboBox } from 'common/';
 import { EndpointOption, Modal } from 'template';
 import { useEndpointLogic, useToggle, useModalLogic } from 'hooks/';
 import { EndpointsType } from 'interface/index';
@@ -41,6 +41,13 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
         return (
           <td key={el.name} className={classNames('table__column')}>
             <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints.authentication[el.name] }} />
+          </td>
+        );
+      }
+      case 'source_interface': {
+        return (
+          <td key={el.name} className={classNames('table__column')}>
+            <ComboBox {...{ ...el, onChange, edit, error, value: endpoints[el.name], list: 'source-Interface', sourceList: [] }} />
           </td>
         );
       }
