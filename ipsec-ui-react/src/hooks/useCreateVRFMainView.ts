@@ -1,5 +1,5 @@
-import { useEffect, useLayoutEffect } from 'react';
-import { DynamicVrfHardwareDetails, DynamicVrfDetails } from 'db';
+import { useLayoutEffect } from 'react';
+import { DynamicVrfDetails } from 'db';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { vrfSchema } from 'schema/';
@@ -16,6 +16,7 @@ export const useCreateVRFMainView = () => {
     register,
     handleSubmit,
     formState: { errors, isDirty, isValid },
+    control,
     reset,
     setValue
   } = useForm<VrfDataTypes>({
@@ -28,20 +29,17 @@ export const useCreateVRFMainView = () => {
 
   useLayoutEffect(() => {
     reset(data);
-    console.log(data.vlan);
   }, [reset, currentLocation, data]);
 
   const submit = async (data: VrfDataTypes) => {
-    console.log(data.vlan);
-    // if (!data.vlan) data.vlan = [];
-    // if (data.id) return patchVrfData({ vrf: data });
-    // const res = await postVrfData({ vrf: data });
-    // if (res) return history.push(`/vrf/${vrf.length + 1}`);
+    if (data.id) return patchVrfData({ vrf: data });
+    const res = await postVrfData({ vrf: data });
+    if (res) return history.push(`/vrf/${vrf.length + 1}`);
   };
 
   const crypto = hardware ? hardwareCrypto : softwareCrypto;
 
   const formAttributes = { crypto, details: DynamicVrfDetails, data, isValid, isDirty, setValue, register };
 
-  return { errors, hardware, handleSubmit, submit, reset, formAttributes };
+  return { errors, hardware, handleSubmit, submit, reset, formAttributes, control };
 };

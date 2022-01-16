@@ -1,12 +1,13 @@
 import { FC } from 'react';
 import { useCreateVRFMainView } from 'hooks/';
-import { Wrapper, Vlan, CryptoField, Field, Spinner } from 'template';
+import { Wrapper, Vlan, CryptoField, Field } from 'template';
 import { Button } from 'common/';
-import './styles.scss';
 import classNames from 'classnames';
 
+import './styles.scss';
+
 export const FormDetail: FC = () => {
-  const { handleSubmit, submit, reset, hardware, errors, formAttributes } = useCreateVRFMainView();
+  const { handleSubmit, submit, reset, hardware, errors, formAttributes, control } = useCreateVRFMainView();
   const { data, crypto, details, isDirty, setValue, register } = formAttributes;
 
   const displayDetails = details.map((el) => {
@@ -28,7 +29,7 @@ export const FormDetail: FC = () => {
               </Button>
             </div>
           </div>
-          {!hardware && <Vlan {...{ setValue, reset, errorSchema: errors['vlan'] }} />}
+          {!hardware && <Vlan {...{ control, reset, errorSchema: errors['vlan'] }} />}
         </fieldset>
       </form>
     </Wrapper>

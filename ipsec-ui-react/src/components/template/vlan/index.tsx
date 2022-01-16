@@ -2,29 +2,28 @@ import { FC } from 'react';
 import { useVlanLogic } from 'hooks/';
 import { EachVlan } from './eachVlan';
 import { VlanInput } from './vlanInput';
-import { FieldValues, UseFormSetValue } from 'react-hook-form';
+import { Control } from 'react-hook-form';
 
 import './styles.scss';
 import { VrfDataTypes } from 'interface/index';
 
 interface VlanType {
-  setValue: UseFormSetValue<VrfDataTypes>;
+  control: Control<VrfDataTypes>;
   errorSchema?: any;
 }
 
-export const Vlan: FC<VlanType> = ({ setValue, errorSchema }) => {
-  const { vlan, error, vlanInterface, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue } = useVlanLogic(setValue);
+export const Vlan: FC<VlanType> = ({ errorSchema, control }) => {
+  const { fields, error, vlanInterface, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue } = useVlanLogic(control);
 
   const errorMessage = errorSchema ? <p className="vlan__cancel">{errorSchema.message}</p> : 'There are no active Vlan and no Lan IP Mask';
 
-  const displayVlans =
-    vlan === null || !vlan.length ? (
-      <tr className="vlan__row__empty">
-        <td>{errorMessage}</td>
-      </tr>
-    ) : (
-      vlan.map((el) => <EachVlan key={el.vlan} {...{ ...el, onClick: handleDeleteVlan }} />)
-    );
+  const displayVlans = !fields.length ? (
+    <tr className="vlan__row__empty">
+      <td>{errorMessage}</td>
+    </tr>
+  ) : (
+    fields.map((el, index) => <EachVlan key={el.vlan} {...{ ...el, onClick: () => handleDeleteVlan(index) }} />)
+  );
 
   return (
     <div className="vlan">
