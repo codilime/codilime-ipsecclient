@@ -5,7 +5,7 @@ export const vrfSchema = yup.object().shape({
   active: yup.boolean(),
   local_as: yup.number(),
   endpoint: yup.array(),
-  vlan: yup.array(),
+  vlan: yup.array().min(1),
   crypto_ph1: yup.string(),
   crypto_ph2: yup.string(),
   ospf: yup.boolean()

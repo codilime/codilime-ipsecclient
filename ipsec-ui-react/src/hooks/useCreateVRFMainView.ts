@@ -17,22 +17,26 @@ export const useCreateVRFMainView = () => {
     handleSubmit,
     formState: { errors, isDirty, isValid },
     reset,
-    setValue,
-    watch
+    setValue
   } = useForm<VrfDataTypes>({
+    defaultValues: {
+      endpoint: [],
+      vlan: []
+    },
     resolver: yupResolver(vrfSchema)
   });
-  watch();
+
   useLayoutEffect(() => {
     reset(data);
+    console.log(data.vlan);
   }, [reset, currentLocation, data]);
 
   const submit = async (data: VrfDataTypes) => {
-    console.log(data);
-    if (!data.vlan) data.vlan = [];
-    if (data.id) return patchVrfData({ vrf: data });
-    const res = await postVrfData({ vrf: data });
-    if (res) return history.push(`/vrf/${vrf.length + 1}`);
+    console.log(data.vlan);
+    // if (!data.vlan) data.vlan = [];
+    // if (data.id) return patchVrfData({ vrf: data });
+    // const res = await postVrfData({ vrf: data });
+    // if (res) return history.push(`/vrf/${vrf.length + 1}`);
   };
 
   const crypto = hardware ? hardwareCrypto : softwareCrypto;

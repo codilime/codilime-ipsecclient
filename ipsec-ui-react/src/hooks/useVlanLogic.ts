@@ -1,5 +1,5 @@
 import { useState, useEffect, ChangeEvent, useLayoutEffect } from 'react';
-import { FieldValues, UseFormSetValue } from 'react-hook-form';
+import { UseFormSetValue } from 'react-hook-form';
 import { useAppContext } from 'hooks/';
 import { VlanInterface, VrfDataTypes } from 'interface/index';
 
@@ -7,7 +7,7 @@ export const useVlanLogic = (setValue: UseFormSetValue<VrfDataTypes>) => {
   const {
     context: { data }
   } = useAppContext();
-
+  const [check, setcheck] = useState(false);
   const [error, setError] = useState(false);
   const [vlan, setVlan] = useState<VlanInterface[] | []>([]);
   const [vlanInterface, setVlanInterface] = useState<VlanInterface>({ vlan: 0, lan_ip: '' });
@@ -37,10 +37,16 @@ export const useVlanLogic = (setValue: UseFormSetValue<VrfDataTypes>) => {
     if (data.vlan) {
       setVlan(data.vlan);
     }
+    console.log('test');
+    console.log(data.vlan);
   }, [data]);
 
   useEffect(() => {
-    if (data.vlan !== vlan) return setValue('vlan', vlan, { shouldDirty: true });
+    if (check) {
+      console.log('zmiana');
+      console.log(data.vlan);
+      setValue('vlan', [...[], ...vlan], { shouldDirty: true });
+    }
   }, [vlan, data.vlan]);
 
   useEffect(() => {
@@ -60,13 +66,13 @@ export const useVlanLogic = (setValue: UseFormSetValue<VrfDataTypes>) => {
     if (!validate || vlanInterface.vlan <= 0) return setError(true);
     setVlanInterface({ vlan: 0, lan_ip: '' });
     setVlan((prev) => [...prev, vlanInterface]);
+    setValue('vlan', [...vlan, vlanInterface], { shouldDirty: true });
   };
 
   const handleDeleteVlan = (value: number) => {
     const newVlan = vlan.filter((el) => el.vlan !== value);
-    setValue('vlan', newVlan, { shouldDirty: true });
-
     setVlan(newVlan);
+    setcheck(true);
   };
 
   return { vlan, vlanInterface, error, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue };

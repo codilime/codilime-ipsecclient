@@ -33,7 +33,9 @@ export const SettingContent: FC<SettingContentType> = ({ activeSetting, open, ha
   return (
     <>
       {settingData.map(({ option, component }) => (
-        <article className={classNames('setting__content', { setting__content__active: activeSetting === option })}>{component}</article>
+        <article key={option} className={classNames('setting__content', { setting__content__active: activeSetting === option })}>
+          {component}
+        </article>
       ))}
     </>
   );
