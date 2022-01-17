@@ -4,6 +4,7 @@ import { variable } from '../visualizationConstants';
 import { Group } from 'react-konva';
 import { Visualization } from 'interface/components';
 import { EndpointsType, VlanInterface, MetricsType } from 'interface/index';
+import { VisualizationRouter } from '..';
 
 interface VisualizationVrf extends Visualization {
   title: string;
@@ -17,23 +18,28 @@ interface VisualizationVrf extends Visualization {
 }
 
 export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, title, endpoint, dimensions, monitoring, hardware, vlan = [] }) => {
-  const { smHeightLabel, lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
+  const { lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
   const eachBreak = hardware ? 35 : 25;
 
-  const hardwareXLabel = hardware ? x + paddingBox + smWidthLabel + 10 : x + paddingBox + smWidthLabel + 30;
-  const hardwareSecoundLabel = hardware ? lgHeightLabel + 10 : heightHeader;
-  const hadwareYLabel = hardware ? y + height / 2 - hardwareSecoundLabel / 2 + paddingBox - 5 : y + height / 2 - hardwareSecoundLabel / 2 + paddingBox - 10;
+  const hardwareSecoundLabel = hardware ? lgHeightLabel + 40 : heightHeader;
 
-  const secondLabel = {
-    x: hardwareXLabel,
-    y: hadwareYLabel,
+  const hardwareLabel = {
+    x: x + paddingBox + smWidthLabel + 20,
+    y: y + height / 2 - hardwareSecoundLabel / 2 + 15,
     width: smWidthLabel,
     height: hardwareSecoundLabel,
     left: true,
     hardware
   };
 
-  const hightOfX = (height - 55) / 2 - (20 + mdHeightLabel / 2) + 7.5;
+  const secondLabel = {
+    x: x + width / 2 - 5,
+    y: y + height / 2 + 20,
+    width: 40,
+    height: 40,
+    left: true,
+    hardware
+  };
 
   const findStatus = (id: number) => {
     return monitoring.filter((status: MetricsType) => status.id === id)[0];
@@ -42,7 +48,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   const getCenterEndpoints = () => {
     if (vlan.length > endpoint.length) {
       const amount = endpoint.length - vlan.length;
-      return Math.abs(amount) * 40;
+      return Math.abs(amount) * 50;
     }
     return 0;
   };
@@ -56,15 +62,15 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   };
 
   const endpointStatus = endpoint.map((endpoint, index) => {
-    const hardwareLabel = hardware ? mdHeightLabel : lgHeightLabel;
-    const textY = y + heightHeader + paddingBox + index * 80 + getCenterEndpoints();
+    const hardwareLabel = mdHeightLabel;
+    const textY = y + heightHeader + 25 + index * 100 + getCenterEndpoints();
     const textX = x + width - paddingBox - smWidthLabel;
-    const centerX = textX - 40;
-    const centerY = y + height / 2 + smHeightLabel / 2 - 2.5;
-    const centerLabel = textY + lgHeightLabel / 2;
-
+    const centerX = hardware ? textX - 40 : textX - 70;
+    const centerY = y + height / 2 + hardwareLabel / 2 - 10;
+    const centerLabel = hardware ? textY + hardwareLabel : textY - 20 + hardwareLabel;
+    const firstBreak = hardware ? centerX + eachBreak / 1.5 : centerX + eachBreak + 5;
     const status = findStatus(endpoint.id!);
-    const hardwareYLabel = hardware ? textY + 10 : textY;
+    const hardwareYLabel = hardware ? textY + 25 : textY + 10;
 
     const thirdLabel = {
       x: textX,
@@ -78,17 +84,19 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     };
 
     const line = {
+      y: 0,
+      x: 0,
       color: 'black',
-      points: [centerX, centerY, centerX + eachBreak / 1.5, centerY, centerX + eachBreak / 1.5, centerLabel, centerX + eachBreak * 2, centerLabel]
+      points: [centerX, centerY, firstBreak, centerY, firstBreak, centerLabel, centerX + eachBreak * 3, centerLabel]
     };
     const connectStatus = {
       x: x + width,
-      height: 70,
+      height: 90,
       lineStartX: textX + smWidthLabel,
       lineStartY: centerLabel,
       title: `Remote Site ${index + 1}`,
       endpoint,
-      lineWidth: dimensions - 700,
+      lineWidth: hardware ? dimensions - 650 : dimensions - 750,
       monitoring: status
     };
 
@@ -96,7 +104,7 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
       <Group key={index}>
         <VisualizationLine {...line} />
         <VisualizationThreeLabel {...thirdLabel} />
-         <VisualizationStatus {...connectStatus} /> 
+        <VisualizationStatus {...connectStatus} />
       </Group>
     );
   });
@@ -106,18 +114,19 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     vlan &&
     vlan.map(({ vlan, lan_ip }, index) => {
       const centerX = x - 32.5;
-      const centerY = y + 50 + mdHeightLabel / 2 + index * 80 + getCenterVlan();
+      const centerY = y + 65 + heightHeader + index * 100 + getCenterVlan();
       const label = {
         x: x + paddingBox,
-        y: y + heightHeader + paddingBox / 2 + index * 80 + getCenterVlan(),
+        y: y + heightHeader + 15 + index * 100 + getCenterVlan(),
         width: smWidthLabel,
-        height: lgHeightLabel,
+        height: 75,
         vlan: vlan.toString(),
-        lan_ip: lan_ip
+        lan_ip
       };
       const firstBreak = +paddingBox + smWidthLabel + eachBreak + 42.5;
+      const labelCenter = y + height / 2 + paddingBox / 2 + 12.5;
       const line = {
-        points: [centerX, centerY, centerX + firstBreak, centerY, centerX + firstBreak, y + height / 2 + paddingBox / 2, centerX + firstBreak + 40, y + height / 2 + paddingBox / 2]
+        points: [centerX, centerY, centerX + firstBreak, centerY, centerX + firstBreak, labelCenter, centerX + firstBreak + 40, labelCenter]
       };
 
       return (
@@ -129,34 +138,34 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     });
 
   const hardwareLine = {
-    x: x + paddingBox + 60,
-    y: y + 50 + mdHeightLabel / 2,
+    x: x + paddingBox + 95,
+    y: y + height / 2 + 20,
     color: 'black',
-    points: [0, 0, 30, 0, 30, hightOfX - 2.5, 70, hightOfX - 2.5]
+    points: [0, 0, 75, 0]
   };
 
   const icon = {
-    x: x + paddingBox + 15,
-    y: y + heightHeader + paddingBox,
-    width: 45,
-    height: 45,
+    x: x + paddingBox + 30,
+    y: y + height / 2 - 35,
+    width: 40,
+    height: 40,
     color: '#c3d7df',
     text: 'Cat9300(X)'
   };
+
   if (hardware)
     return (
       <VisualizationBox {...{ x, y, width, height, title }}>
         <VisualizationIcon {...icon} />
         <VisualizationLine {...hardwareLine} />
-        <VisualizationOneLabel {...secondLabel} />
+        <VisualizationOneLabel {...hardwareLabel} />
         {endpointStatus}
       </VisualizationBox>
     );
-
   return (
     <VisualizationBox {...{ x, y, width, height, title }}>
       {vlansLabel}
-      <VisualizationOneLabel {...secondLabel} />
+      <VisualizationRouter {...secondLabel} />
       {endpointStatus}
     </VisualizationBox>
   );

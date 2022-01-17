@@ -1,14 +1,12 @@
 @import 'style/settings.scss';
 
 .vrf {
-  font-size: $standard-text-size;
-  &__breadcrumb {
-    font-size: $breadcrumb-font-size;
-  }
+  font-size: $small-size;
   &__header {
     display: flex;
-    justify-content: space-between;
-    height: 40px;
+    justify-content: flex-end;
+    align-items: center;
+    height: 80px;
   }
   &__button {
     padding: $padding-sm $padding-md;
@@ -16,5 +14,12 @@
   &__name {
     line-height: 32px;
     color: $breadcrumb-font-color;
+  }
+  &__btn {
+    height: 40px;
+    &__disabled {
+      background-color: $orange !important;
+      opacity: 0.3;
+    }
   }
 }

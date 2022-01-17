@@ -1,11 +1,11 @@
 import { useRef, useState, useEffect, ChangeEvent, Dispatch, SetStateAction, RefObject } from 'react';
-import { EndpointInput, Button, UploadCertificates } from 'common/';
+import { EndpointInput, UploadCertificates } from 'common/';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import classNames from 'classnames';
 import { EndpointsType } from 'interface/index';
 import { useVrfLogic } from 'hooks/';
 import { decodeX509, pkcs12ToBase64 } from 'utils/';
-
+import { AiOutlineUpload } from 'react-icons/ai';
 interface HookType {
   edit: boolean;
   error: any;
@@ -216,14 +216,14 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
         <div className="table__center">
           <button className="table__psk__btn" onClick={() => handleChooseAuthentication('psk')}>
-            Enter PSK
+            PSK
           </button>
         </div>
         <span className="table__text">or</span>
         <div className="table__center">
-          <Button className="table__btn" onClick={() => handleChooseAuthentication('certs')}>
-            X509
-          </Button>
+          <button className="table__psk__btn" onClick={() => handleChooseAuthentication('certs')}>
+            X509 <AiOutlineUpload className="table__upload" />
+          </button>
         </div>
       </td>
     );

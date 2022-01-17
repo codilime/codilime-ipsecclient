@@ -1,0 +1,21 @@
+.log {
+  &_list {
+    display: flex;
+    list-style-type: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    min-width: 530px;
+    font-size: 16px;
+    color: #a0a3a9;
+    font-weight: 400;
+  }
+  &_header {
+    text-transform: capitalize;
+    padding: 18px 16px;
+    cursor: pointer;
+    transition: 0.3s linear all;
+  }
+  &_active {
+    color: #3d89eb;
+    border-bottom: 1px solid #3d89eb;
+  }
+}

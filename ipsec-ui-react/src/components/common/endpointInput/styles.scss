@@ -1,28 +1,41 @@
 @import 'style/settings.scss';
 
 .endpointInput {
+  position: relative;
   align-items: flex-start;
   width: 100%;
-  font-family: $font-family;
-  font-size: $standard-text-size;
+  font-size: $basic-size;
   border: none;
   outline: none;
   background-color: transparent;
-  padding: $padding-sm 0;
-  padding-right: 20px;
-  cursor: pointer;
+  padding: $padding-sm 8px;
+
+  height: 40px;
   &::placeholder {
-    font-style: italic;
+    color: $lightGray;
     padding-left: $padding-sm;
+    font-weight: 400;
+    font-size: $basic-size;
+  }
+  &__psk {
+    margin-right: 20px;
   }
   &:focus {
-    border-bottom: $endpoint-input-focus;
+    border: 1px solid $lightBlue;
+    box-shadow: 0px 0px 4px #1890ff80;
   }
   &__active {
-    border-bottom: $endpoint-input;
+    border-radius: $border-radius-sm;
+    border: 1px solid $borderColor;
+    padding-right: 25px;
+    cursor: pointer;
   }
   &__checkbox {
     width: auto;
+    &:focus {
+      border: none;
+      box-shadow: none;
+    }
   }
   &__file {
     display: none;
@@ -32,21 +45,22 @@
     margin-right: 15px;
   }
   &__icon {
+    position: absolute;
+    right: 30px;
     cursor: pointer;
     font-size: 16px;
     transform: translateX(-100%);
     color: $gray05;
     &__hardware {
-      font-size: 26px;
-      transform: translateX(-200%);
+      right: 20px;
     }
   }
   &__hardware {
     width: 80%;
-    margin-right: 15px;
+    margin-right: 20px;
   }
   &__error {
-    border-bottom: 1px solid red;
+    border: 1px solid $red;
     animation: error 1s ease-in-out;
   }
 }

@@ -14,7 +14,7 @@ interface FieldType extends InputType {
   className?: string;
 }
 
-export const Field: FC<FieldType> = ({ text, type, name, placeholder, register, value, error, setting, validate = true, vlan, className = '' }) => (
+export const Field: FC<FieldType> = ({ text, type, name, placeholder, register, onChange, value, error, setting, validate = true, vlan, className = '' }) => (
   <div
     className={classNames('field', {
       field__checkbox: type === 'checkbox',
@@ -25,7 +25,7 @@ export const Field: FC<FieldType> = ({ text, type, name, placeholder, register, 
     <label htmlFor={name} className={classNames('field__label', { field__label__checkbox: type === 'checkbox' })}>
       {text}
     </label>
-    <Input {...{ type, name, placeholder, register, setting, validate, vlan }} />
+    <Input {...{ type, name, placeholder, register, setting, validate, vlan, onChange }} />
     {error && <p className={classNames('field__error', { field__error__setting: setting })}>{error.message}</p>}
   </div>
 );

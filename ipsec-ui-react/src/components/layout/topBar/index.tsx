@@ -1,46 +1,27 @@
 import { useState, FC } from 'react';
-import Logo from 'images/Logo.png';
 import { Button } from 'common/';
 import { Notification, Logout, Setting, PopupLogs } from 'template';
 import { useThemeContext } from 'hooks/';
 import { Theme } from '../../../appTheme';
 import './styles.scss';
 
-interface TopBarTypes {
-  productName: string;
-}
-
-export const TopBar: FC<TopBarTypes> = ({ productName }) => {
-  const { theme } = useThemeContext();
-  const [openPopup, setOpenPopup] = useState({ setting: false, notice: false, logs: false });
+export const TopBar: FC = () => {
+  const [openPopup, setOpenPopup] = useState('');
 
   const handleOpenAction = (name: string) => {
-    switch (name) {
-      case 'setting':
-        return setOpenPopup((prev) => ({ setting: !prev.setting, notice: false, logs: false }));
-      case 'logs':
-        return setOpenPopup((prev) => ({ setting: false, notice: false, logs: !prev.logs }));
-      default:
-        return setOpenPopup((prev) => ({ notice: !prev.notice, setting: false, logs: false }));
-    }
+    if (openPopup === '') return setOpenPopup(name);
+    return setOpenPopup('');
   };
-  const themeStyle = Theme[theme];
-  console.log(themeStyle);
-  
+
   return (
-    <header className="topBar" style={{}}>
-      <div className="topBar__right">
-        <img src={Logo} alt="cisco logo" className="topBar__image" />
-        <p className="topBar__productName">{productName}</p>
-      </div>
+    <header className="topBar">
       <div className="topBar__left">
         <Button className="topBar__log" onClick={() => handleOpenAction('logs')}>
           View logs
         </Button>
-        <Notification {...{ open: openPopup.notice, handleToggle: () => handleOpenAction('') }} />
-        <Setting {...{ open: openPopup.setting, handleToggle: () => handleOpenAction('setting') }} />
-        <Logout />
-        <PopupLogs {...{ open: openPopup.logs, handleToggle: () => handleOpenAction('logs') }} />
+        {/* <Notification {...{ open: openPopup === 'notice', handleToggle: () => handleOpenAction('notice') }} /> */}
+        <Setting {...{ open: openPopup === 'setting', handleToggle: () => handleOpenAction('setting') }} />
+        <PopupLogs {...{ open: openPopup === 'logs', handleToggle: () => handleOpenAction('logs') }} />
       </div>
     </header>
   );

@@ -5,14 +5,17 @@
   flex-direction: row;
   flex-wrap: wrap;
   z-index: 1;
-
+  overflow: hidden;
+  max-height: 100vh;
   &__content {
     padding: $padding-lg;
     margin-left: 212px;
-    margin-top: 50px;
+    margin-top: 65px;
     width: calc(100% - 212px);
-    min-height: calc(100vh - 50px);
+    max-height: calc(100vh - 50px);
     position: relative;
+    background-color: $lightGray02;
+    overflow-y: scroll;
   }
 }
 
@@ -21,7 +24,6 @@
 }
 
 @media screen and (min-device-width: 1281px) and (max-device-width: 1920px) {
-
 }
 
 @media screen and (min-device-width: 1135px) and (max-device-width: 1280px) {

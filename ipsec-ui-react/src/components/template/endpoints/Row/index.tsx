@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { EndpointButton, EndpointInput, ToolTipInfo } from 'common/';
+import { EndpointButton, EndpointInput, ToolTipInfo, ComboBox } from 'common/';
 import { EndpointOption, Modal } from 'template';
 import { useEndpointLogic, useToggle, useModalLogic } from 'hooks/';
 import { EndpointsType } from 'interface/index';
@@ -44,6 +44,13 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
           </td>
         );
       }
+      case 'source_interface': {
+        return (
+          <td key={el.name} className={classNames('table__column')}>
+            <ComboBox {...{ ...el, onChange, edit, error, value: endpoints[el.name], list: 'source-Interface', sourceList: [] }} />
+          </td>
+        );
+      }
       default:
         return (
           <td key={el.name} className={classNames('table__column', { table__bool: el.name === 'remote_as' })}>
@@ -65,7 +72,7 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
   );
 
   return (
-    <tr className="table__row">
+    <tr className={classNames('table__row', { table__row__edit: edit })}>
       {displayEndpoint}
       <td className="table__column table__bool">
         {activeButton}

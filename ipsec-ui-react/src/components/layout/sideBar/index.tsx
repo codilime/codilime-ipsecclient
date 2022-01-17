@@ -5,6 +5,8 @@ import { useGetLocation, useGetVrfs } from 'hooks/';
 import { IoHardwareChip } from 'react-icons/io5';
 import { HardwareId } from 'constant/';
 import classNames from 'classnames';
+import Logo from 'images/codilimeLogo.png';
+
 import './styles.scss';
 
 export const SideBar: FC = () => {
@@ -18,7 +20,7 @@ export const SideBar: FC = () => {
         }
       })
     : vrf;
-  
+
   const listContext = vrf ? (
     listVrf.map(({ client_name, id }) => (
       <li className={classNames('sideBar__eachVrf', { sideBar__eachVrf__active: id == parseInt(currentLocation) })} key={id}>
@@ -33,11 +35,14 @@ export const SideBar: FC = () => {
 
   return (
     <div className="sideBar">
+      <div className="sideBar__logo">
+        <img src={Logo} alt="Codilime logo" className="sideBar__image" />
+      </div>
       <ul className="sideBar__list">{listContext}</ul>
       <div className="sideBar__addNew">
         <Button className="sideBar__btn">
           <Link to="/vrf/create" className="sideBar__btnLink">
-            Add a new VRF
+            Add new VRF
           </Link>
         </Button>
       </div>

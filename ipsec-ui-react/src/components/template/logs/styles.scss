@@ -2,18 +2,18 @@
 
 .logs {
   width: 100%;
-  padding: 10px;
-  overflow-y: scroll;
+  padding: 24px;
+  min-width: 1000px;
   &__context {
-    margin: 10px 0;
-    transition: $transition;
     height: 0px;
     display: flex;
     overflow: hidden;
     justify-content: space-between;
     flex-direction: column;
     opacity: 0;
+
     &__active {
+      margin: 18px 0;
       opacity: 1;
       height: 380px;
     }
@@ -23,8 +23,10 @@
     list-style-type: none;
   }
   &__panel {
-    background-color: $gray01;
-    padding: 10px;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid #e0e0e0;
+    background-color: $light;
+    padding: 24px;
     height: 100%;
     overflow-y: scroll;
     position: relative;
@@ -57,7 +59,6 @@
     padding: 10px 0;
   }
   &__save {
-    background-color: #049fd9;
     color: white;
   }
   &__auto {
@@ -67,5 +68,16 @@
   }
   &__char {
     font-size: 16px;
+  }
+  &_btn {
+    width: 140px;
+    &:focus {
+      box-shadow: none;
+    }
+  }
+  &_icon {
+    font-size: 20px;
+    margin-left: 10px;
+    transform: rotate(90deg);
   }
 }

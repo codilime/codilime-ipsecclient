@@ -37,7 +37,7 @@
     }
   }
   &__description {
-    font-size: $modal-description-size;
+    font-size: $small-size;
     width: 70%;
     color: red;
     @include cutText;

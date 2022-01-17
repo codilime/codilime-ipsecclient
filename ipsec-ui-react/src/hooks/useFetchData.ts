@@ -38,6 +38,8 @@ export const useFetchData = () => {
 
   const fetchCertsData = async () => await client('ca');
 
+  const fetchSourceData = async () => await client('source-interface');
+
   return {
     fetchData,
     postVrfData,
@@ -46,6 +48,7 @@ export const useFetchData = () => {
     fetchEndpointStatus,
     fetchLogs,
     fetchRestConfData,
-    fetchCertsData
+    fetchCertsData,
+    fetchSourceData
   };
 };

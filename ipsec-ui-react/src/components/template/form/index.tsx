@@ -1,11 +1,13 @@
 import { FC } from 'react';
 import { useCreateVRFMainView } from 'hooks/';
-import { Wrapper, Vlan, CryptoField, Field, Spinner } from 'template';
+import { Wrapper, Vlan, CryptoField, Field } from 'template';
 import { Button } from 'common/';
+import classNames from 'classnames';
+
 import './styles.scss';
 
 export const FormDetail: FC = () => {
-  const { handleSubmit, submit, reset, hardware, errors, formAttributes } = useCreateVRFMainView();
+  const { handleSubmit, submit, reset, hardware, errors, formAttributes, control } = useCreateVRFMainView();
   const { data, crypto, details, isDirty, setValue, register } = formAttributes;
 
   const displayDetails = details.map((el) => {
@@ -19,12 +21,16 @@ export const FormDetail: FC = () => {
     <Wrapper title="VRF details">
       <form autoComplete="off" className="form" onSubmit={handleSubmit(submit)}>
         <fieldset className="form__fieldset">
-          <div className="form__details">{displayDetails}</div>
-          {!hardware && <Vlan {...{ setValue, reset, errorSchema: errors['vlan'] }} />}
+          <div className={classNames('form__details', { form__details__hardware: hardware })}>
+            {displayDetails}
+            <div className="form__buttons">
+              <Button className="form__btn" disabled={!isDirty}>
+                Save changes
+              </Button>
+            </div>
+          </div>
+          {!hardware && <Vlan {...{ control, reset, errorSchema: errors['vlan'] }} />}
         </fieldset>
-        <Button className="form__btn" disabled={!isDirty}>
-          Save changes
-        </Button>
       </form>
     </Wrapper>
   );

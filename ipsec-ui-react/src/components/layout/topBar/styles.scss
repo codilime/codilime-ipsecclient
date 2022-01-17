@@ -2,11 +2,12 @@
 
 .topBar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  border-bottom: $table-border;
   padding: 10px;
-  width: 100%;
+  height: 65px;
+  margin-left: 214px;
+  width: calc(100% - 214px);
   background-color: white;
   position: fixed;
   z-index: 101;
@@ -32,6 +33,12 @@
   }
   &__log {
     padding: 4px 0px;
-    min-width: 140px;
+    min-width: 100px;
+    background-color: $light;
+    border: 1px solid $blue;
+    color: $blue;
+    height: 36px;
+    font-size: $small-size;
+    margin: 0 14px;
   }
 }

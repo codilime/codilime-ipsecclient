@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { VisualizationBox, VisualizationEndpointLabel, VisualizationOneLabel } from 'template';
+import { VisualizationBox, VisualizationOneLabel, VisualizationBoxLabel } from 'template';
 import { variable } from '../visualizationConstants';
 import { Visualization } from 'interface/components';
 
@@ -13,16 +13,17 @@ export const VisualizationEndpointBox: FC<VisualizationEndpointBoxType> = ({ x, 
 
   const firstLabel = {
     x,
-    y: y + heightHeader + paddingBox / 2 + 2.5,
+    y: y + heightHeader + paddingBox,
     width: 60,
     height: heightHeader
   };
+
   const secondLabel = {
     x: x + 65,
-    y: y + heightHeader + paddingBox / 2 - 2.5,
+    y: y + heightHeader + paddingBox / 2,
     width: 150,
     height: 35,
-    title: 'Remote IP',
+    text: 'Remote IP',
     value,
     color: 'white'
   };
@@ -30,7 +31,7 @@ export const VisualizationEndpointBox: FC<VisualizationEndpointBoxType> = ({ x, 
   return (
     <VisualizationBox {...{ x, y, width, height, title }}>
       <VisualizationOneLabel {...firstLabel} />
-      <VisualizationEndpointLabel {...secondLabel} />
+      <VisualizationBoxLabel {...secondLabel} />
     </VisualizationBox>
   );
 };

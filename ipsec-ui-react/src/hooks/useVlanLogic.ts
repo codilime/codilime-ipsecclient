@@ -1,11 +1,17 @@
 import { useState, useEffect, ChangeEvent, useLayoutEffect } from 'react';
-import { FieldValues, UseFormSetValue } from 'react-hook-form';
+import { useFieldArray, Control } from 'react-hook-form';
 import { useAppContext } from 'hooks/';
-import { VlanInterface } from 'interface/index';
-export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
+import { VlanInterface, VrfDataTypes } from 'interface/index';
+
+export const useVlanLogic = (control: Control<VrfDataTypes>) => {
   const {
     context: { data }
   } = useAppContext();
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'vlan'
+  });
 
   const [error, setError] = useState(false);
   const [vlan, setVlan] = useState<VlanInterface[] | []>([]);
@@ -32,15 +38,17 @@ export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
     return false;
   };
 
-  useEffect(() => {
-    if (vlan.length) setValue('vlan', [...vlan], { shouldDirty: true });
-  }, [vlan]);
-
   useLayoutEffect(() => {
     if (data.vlan) {
       setVlan(data.vlan);
     }
+    console.log('test');
+    console.log(data.vlan);
   }, [data]);
+
+  useEffect(() => {
+    //setValue('vlan', [...[], ...vlan], { shouldDirty: true });
+  }, [vlan, data.vlan]);
 
   useEffect(() => {
     if (error) setError(false);
@@ -58,13 +66,12 @@ export const useVlanLogic = (setValue: UseFormSetValue<FieldValues>) => {
     const validate = checkLanIpValue(vlanInterface.lan_ip);
     if (!validate || vlanInterface.vlan <= 0) return setError(true);
     setVlanInterface({ vlan: 0, lan_ip: '' });
-    setVlan((prev) => [...prev, vlanInterface]);
+    append(vlanInterface);
+    //setVlan((prev) => [...prev, vlanInterface]);
+    //setValue('vlan', [...vlan, vlanInterface], { shouldDirty: true });
   };
 
-  const handleDeleteVlan = (value: number) => {
-    const newVlan = vlan.filter((el) => el.vlan !== value);
-    setVlan(newVlan);
-  };
+  const handleDeleteVlan = (index: number) => remove(index);
 
-  return { vlan, vlanInterface, error, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue };
+  return { vlan, vlanInterface, error, fields, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue };
 };

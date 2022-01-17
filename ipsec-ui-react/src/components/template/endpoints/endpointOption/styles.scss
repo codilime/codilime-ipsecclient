@@ -10,24 +10,27 @@
   opacity: 0;
   background-color: white;
   width: 100%;
-  max-width: 90px;
+  max-width: 120px;
   z-index: 4;
   transition: $transition;
+
   &__active {
     visibility: visible;
     opacity: 1;
-
+  }
+  &__list {
+    list-style-type: none;
   }
   &__item {
-    cursor: pointer;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-weight: 500;
     transition: $transition;
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    grid-template-rows: 1fr;
-    grid-template-areas: '. .';
     text-align: left;
-    font-size: 10px;
-    padding: 5px 10px;
+    font-size: 14px;
+    padding: 8px;
+    cursor: pointer;
     &:first-of-type {
       border-bottom: $table-border;
     }
@@ -36,10 +39,10 @@
     }
   }
   &__delete {
-    color: $disactive-color;
+    color: $red;
   }
   &__icon {
-    margin-bottom: 3px;
+    margin: 0 10px 3px 0;
   }
 }
 

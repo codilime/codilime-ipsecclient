@@ -1,23 +1,44 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import classNames from 'classnames';
-
-interface SettingOptionType {
-  activeSetting: any;
-  handleChangeActiveSetting: (name: string) => void;
+import { AiOutlineSafetyCertificate, AiOutlineSetting, AiOutlineUser } from 'react-icons/ai';
+import { SettingOptionType } from 'interface/index';
+interface SettingOptionsType {
+  activeSetting: keyof SettingOptionType;
+  handleChangeActiveSetting: (name: keyof SettingOptionType) => void;
 }
 
-export const SettingOption: FC<SettingOptionType> = ({ activeSetting, handleChangeActiveSetting }) => (
+interface settingDataType {
+  option: keyof SettingOptionType;
+  text: string;
+  icon: ReactNode;
+}
+
+const settingData: settingDataType[] = [
+  {
+    option: 'Profile',
+    text: 'Profile',
+    icon: <AiOutlineUser className="setting__icon" />
+  },
+  {
+    option: 'RestConf',
+    text: 'RestConf',
+    icon: <AiOutlineSetting className="setting__icon" />
+  },
+  {
+    option: 'Certificates',
+    text: 'CA Certificates',
+    icon: <AiOutlineSafetyCertificate className="setting__icon" />
+  }
+];
+
+export const SettingOption: FC<SettingOptionsType> = ({ activeSetting, handleChangeActiveSetting }) => (
   <nav className="setting__nav">
     <ul className="setting__list">
-      <li className={classNames('setting__option', { setting__active: activeSetting.profile })} onClick={() => handleChangeActiveSetting('profile')}>
-        <span>Profile</span>
-      </li>
-      <li className={classNames('setting__option', { setting__active: activeSetting.restConf })} onClick={() => handleChangeActiveSetting('restConf')}>
-        <span>RestConf</span>
-      </li>
-      <li className={classNames('setting__option', { setting__active: activeSetting.certificate })} onClick={() => handleChangeActiveSetting('certificate')}>
-        <span>Certificates</span>
-      </li>
+      {settingData.map(({ text, icon, option }) => (
+        <li key={text} className={classNames('setting__option', { setting__active: activeSetting === option })} onClick={() => handleChangeActiveSetting(option)}>
+          {icon} <span>{text}</span>
+        </li>
+      ))}
     </ul>
   </nav>
 );

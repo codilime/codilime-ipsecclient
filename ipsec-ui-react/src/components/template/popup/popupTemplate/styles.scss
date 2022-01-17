@@ -2,59 +2,57 @@
 
 .popup {
   position: fixed;
-  left: 212px;
+  left: 0px;
   right: 0;
-  top: 50px;
+  top: 0px;
   bottom: 0;
-  background-color: rgba($color: #000000, $alpha: 0.3);
+  background-color: rgba(37, 55, 70, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
   opacity: 0;
   visibility: hidden;
   transition: $transition;
-  z-index: 99;
+  z-index: 99999;
   &__active {
     opacity: 1;
     visibility: visible;
   }
   &__content {
-    width: 70%;
+    border-radius: $border-radius-lg;
     margin: 0 auto;
     background-color: white;
     overflow: hidden;
   }
   &__header {
     font-weight: 600;
-    border: $wrapper-border;
-    background-color: $gray01;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
   &__icon {
+    margin: 28px;
     font-size: 20px;
-    margin-right: $margin-md;
     cursor: pointer;
+    color: #2a2c34;
   }
   &__title {
-    padding: $wrapper-padding;
+    padding: 24px;
+    color: #2a2c34;
+    font-size: 20px;
+    font-weight: 700;
     margin: 0;
-    font-size: $header-and-button-font-size;
   }
   &__context {
-    height: 50vh;
-    min-height: 520px;
     margin: 0 auto;
-    border: $wrapper-border;
-    border-top: none;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
   &__footer {
-    text-align: right;
-    padding: $padding-md;
+    display: flex;
+    justify-content: flex-end;
+    padding: 24px 24px 0px 0px;
   }
   &__save {
     background-color: $primary;

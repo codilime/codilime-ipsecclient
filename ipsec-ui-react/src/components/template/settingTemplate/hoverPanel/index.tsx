@@ -2,31 +2,36 @@ import { FC } from 'react';
 import { Button } from 'common/';
 import { DescriptionType } from 'interface/index';
 import classNames from 'classnames';
+import './styles.scss';
 
 interface HoverPanelType {
   active: boolean;
-  handleReset?: () => void;
   description: DescriptionType;
+  handleReset?: () => void;
+  title?: string;
   button?: string;
+  handleToggle?: () => void;
 }
 
-export const HoverPanel: FC<HoverPanelType> = ({ description, button, active, handleReset }) => {
+export const HoverPanel: FC<HoverPanelType> = ({ description, title, button, active, handleReset, handleToggle }) => {
   const { message, result } = description;
 
   const footer = button && (
-    <div className="loginForm__panel__footer">
-      <Button {...{ className: 'loginForm__btn', onClick: handleReset }}>{button}</Button>
+    <div className="panel__footer">
+      <Button {...{ className: 'panel__cancel', onClick: handleToggle }}>Cancel</Button>
+      <Button {...{ className: 'panel__btn', onClick: handleReset }}>{button}</Button>
     </div>
   );
 
   return (
-    <div className={classNames('loginForm__panel', { loginForm__panel__active: active })}>
+    <div className={classNames('panel', { panel__active: active })}>
       <div
-        className={classNames('loginForm__panel__content', {
-          loginForm__panel__success: result === 'success',
-          loginForm__panel__error: result === 'error'
+        className={classNames('panel__content', {
+          panel__success: result === 'success',
+          panel__error: result === 'error'
         })}
       >
+        {title && <h3 className="panel__title">{title}</h3>}
         <span>{message}</span>
       </div>
       {footer}

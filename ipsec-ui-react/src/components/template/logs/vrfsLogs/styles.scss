@@ -1,0 +1,43 @@
+@import 'style/settings.scss';
+
+.logsVrfs {
+  &_title {
+    margin: 0;
+    padding: 0 0 24px;
+    width: 100%;
+  }
+  &_list {
+    margin: 0 24px 0 0;
+    padding: 0;
+    list-style-type: none;
+    display: inline-block;
+    width: 120px;
+  }
+  &_item {
+    text-transform: capitalize;
+    transition: 0.3s linear all;
+    padding-bottom: 20px;
+    color: #a0a3a9;
+    font-weight: 400;
+    font-size: $small-size;
+    cursor: pointer;
+    &_active {
+      margin-left: 5px;
+      color: #3d89eb;
+    }
+  }
+
+  &_aside {
+    position: fixed;
+  }
+  &_context {
+    margin-left: 145px;
+    display: none;
+    max-width: 100ch;
+    white-space: pre-wrap;
+    font-family: monospace;
+  }
+  &_active {
+    display: inline-block;
+  }
+}

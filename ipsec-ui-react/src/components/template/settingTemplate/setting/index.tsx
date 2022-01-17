@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { TopSideIcon } from 'common/';
 import { PopupSetting } from 'template';
-import { FiSettings } from 'react-icons/fi';
+import { AiOutlineUser } from 'react-icons/ai';
 import { useSettingLogic } from 'hooks/';
 
 interface SettingType {
@@ -11,10 +11,10 @@ interface SettingType {
 
 export const Setting: FC<SettingType> = ({ open, handleToggle }) => {
   const { handleChangeActiveSetting, activeSetting } = useSettingLogic(open);
-  
+
   return (
     <TopSideIcon>
-      <FiSettings className="topBar__icon" onClick={handleToggle} />
+      <AiOutlineUser className="topBar__icon" onClick={handleToggle} />
       <PopupSetting {...{ open, handleToggle, title: 'Settings', handleChangeActiveSetting, activeSetting }} />
     </TopSideIcon>
   );

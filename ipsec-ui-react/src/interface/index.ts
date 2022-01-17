@@ -26,14 +26,14 @@ export interface EndpointsType {
 
 export interface VrfDataTypes {
   client_name: string;
-  vlan: VlanInterface[] | [];
+  local_as: number;
+  physical_interface: string;
   crypto_ph1: string;
   crypto_ph2: string;
-  physical_interface: string;
   active: boolean;
-  local_as: number;
-  endpoint: EndpointsType[] | [];
   ospf: boolean;
+  endpoint: EndpointsType[] | [];
+  vlan: VlanInterface[] | [];
   id?: number;
 }
 
@@ -70,6 +70,7 @@ export interface ContextProps {
   error: any;
   success: boolean;
   restConf: boolean;
+  sourceInterface: string[] | [];
 }
 
 type NameProps = {
@@ -150,3 +151,22 @@ export interface AppTheme {
   light: CSSProperties;
   common?: CSSProperties;
 }
+
+export type HeadersNameProps = {
+  api: 'api';
+  front: 'front';
+  frr: 'frr';
+  reload_vtysh: 'reload_vtysh';
+  strongswan: 'strongswan';
+  strongswan_reload: 'strongswan_reload';
+  vrfs: 'vrfs';
+};
+export interface HeadersLogsType {
+  name: keyof HeadersNameProps;
+}
+
+export type SettingOptionType = {
+  Profile: 'Profile';
+  RestConf: 'RestConf';
+  Certificates: 'Certificates';
+};

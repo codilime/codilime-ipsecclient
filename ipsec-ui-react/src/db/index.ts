@@ -1,4 +1,4 @@
-import { ContextProps, EndpointsType, DetailsTypes, EndpointSchemaType, CryptoTypes, SoftwareCryptoDataTypes } from 'interface/index';
+import { ContextProps, EndpointsType, DetailsTypes, EndpointSchemaType, CryptoTypes, SoftwareCryptoDataTypes, HeadersLogsType } from 'interface/index';
 
 const softwareCryptoTypes: SoftwareCryptoDataTypes = {
   encryption: [
@@ -177,13 +177,13 @@ const hardwareCrypto: CryptoTypes = {
 export const defaultVrf: ContextProps = {
   data: {
     client_name: '',
-    vlan: [],
     crypto_ph1: '',
     crypto_ph2: '',
     physical_interface: 'eth0',
     active: false,
     ospf: false,
     local_as: 0,
+    vlan: [],
     endpoint: []
   },
   softwareCrypto: softwareCrypto,
@@ -191,6 +191,7 @@ export const defaultVrf: ContextProps = {
   certificates: [],
   vrf: [],
   notifications: [],
+  sourceInterface: [],
   loading: false,
   hardware: false,
   error: null,
@@ -241,22 +242,22 @@ export const EndpointSchema: EndpointsType = {
 };
 
 export const endpointInputSchema: EndpointSchemaType[] = [
-  { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
-  { type: 'text', name: 'local_ip', placeholder: 'Enter local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
-  { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor. ' },
-  { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
-  { type: 'text', name: 'local_id', placeholder: 'Enter Local id' },
+  { type: 'text', name: 'remote_ip_sec', placeholder: 'Remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
+  { type: 'text', name: 'local_ip', placeholder: 'Local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
+  { type: 'text', name: 'peer_ip', placeholder: 'Peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor. ' },
+  { type: 'password', name: 'psk', placeholder: 'PSK' },
+  { type: 'text', name: 'local_id', placeholder: 'Local id' },
   { type: 'checkbox', name: 'nat' },
   { type: 'checkbox', name: 'bgp' }
 ];
 export const endpointHardwareSchema: EndpointSchemaType[] = [
-  { type: 'text', name: 'remote_ip_sec', placeholder: 'Enter remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
-  { type: 'text', name: 'local_ip', placeholder: 'Enter local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
-  { type: 'text', name: 'peer_ip', placeholder: 'Enter peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor.' },
-  { type: 'password', name: 'psk', placeholder: 'Enter PSK' },
-  { type: 'text', name: 'local_id', placeholder: 'Enter Local id' },
+  { type: 'text', name: 'remote_ip_sec', placeholder: 'Remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
+  { type: 'text', name: 'local_ip', placeholder: 'Local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
+  { type: 'text', name: 'peer_ip', placeholder: 'Peer IP', tooltip: 'Remote (IPv4/IPv6) address inside tunel. Used also for BGP neighbor.' },
+  { type: 'password', name: 'psk', placeholder: 'PSK' },
+  { type: 'text', name: 'local_id', placeholder: ' Local id' },
   { type: 'number', name: 'remote_as', placeholder: '0', tooltip: 'Remote BGP AS' },
-  { type: 'text', name: 'source_interface', placeholder: 'Enter source interface', tooltip: 'Cisco physical interfaces to which IPSEC tunnel is attached (i.e. Vlan100 , GigabitEthernet1/1)' },
+  { type: 'text', name: 'source_interface', placeholder: 'Source interface', tooltip: 'Cisco physical interfaces to which IPSEC tunnel is attached (i.e. Vlan100 , GigabitEthernet1/1)' },
   { type: 'checkbox', name: 'bgp' }
 ];
 
@@ -271,7 +272,7 @@ export const DynamicVrfDetails: DetailsTypes[] = [
   { name: 'local_as', type: 'text', text: 'BGP Local AS' },
   { name: 'crypto_ph2', text: 'Crypto phase 2' },
   { name: 'active', type: 'checkbox', text: 'Active' },
-  { name: 'ospf', type: 'checkbox', text: 'Ospf' }
+  { name: 'ospf', type: 'checkbox', text: 'OSPF' }
 ];
 
 export const DynamicVrfHardwareDetails: DetailsTypes[] = [
@@ -284,10 +285,12 @@ export const DynamicVrfHardwareDetails: DetailsTypes[] = [
 ];
 
 export const DynamicLoginForm = [
-  { type: 'password', name: 'password', placeholder: 'New password' },
-  { type: 'password', name: 'newPasswordConfirmation', placeholder: 'Repeat new password' }
+  { type: 'password', name: 'password', text: 'Password', placeholder: 'Password' },
+  { type: 'password', name: 'newPasswordConfirmation', text: 'Repeat new Password', placeholder: 'Repeat password' }
 ];
 export const DynamicRestConfForm = [
-  { type: 'text', name: 'switch_username', placeholder: 'Login' },
-  { type: 'password', name: 'switch_password', placeholder: 'Password' }
+  { type: 'text', name: 'switch_username', text: 'Login', placeholder: 'Login' },
+  { type: 'password', name: 'switch_password', text: 'Password', placeholder: 'Password' }
 ];
+
+export const headerLogs: HeadersLogsType[] = [{ name: 'api' }, { name: 'front' }, { name: 'frr' }, { name: 'reload_vtysh' }, { name: 'strongswan' }, { name: 'strongswan_reload' }, { name: 'vrfs' }];

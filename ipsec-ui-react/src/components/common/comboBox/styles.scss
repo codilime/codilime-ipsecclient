@@ -1,0 +1,24 @@
+@import 'style/settings.scss';
+
+.comboBox {
+  position: relative;
+  align-items: flex-start;
+  width: 100%;
+  font-size: $basic-size;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  padding: $padding-sm 8px;
+  height: 40px;
+
+  &::placeholder {
+    color: $lightGray;
+    font-weight: 400;
+    font-size: $basic-size;
+  }
+  &__active {
+    border-radius: $border-radius-sm;
+    border: 1px solid $borderColor;
+    cursor: pointer;
+  }
+}

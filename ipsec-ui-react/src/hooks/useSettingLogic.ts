@@ -1,23 +1,14 @@
+import { SettingOptionType } from 'interface/index';
 import { useState, useEffect } from 'react';
 
 export const useSettingLogic = (open?: boolean) => {
-  const [activeSetting, setActiveSetting] = useState({ profile: true, restConf: false, certificate: false });
+  const [activeSetting, setActiveSetting] = useState<keyof SettingOptionType>('Profile');
 
-  const handleChangeActiveSetting = (name: string) => {
-    switch (name) {
-      case 'profile':
-        return setActiveSetting({ profile: true, restConf: false, certificate: false });
-      case 'restConf': {
-        return setActiveSetting({ profile: false, restConf: true, certificate: false });
-      }
-      default:
-        return setActiveSetting({ profile: false, restConf: false, certificate: true });
-    }
-  };
+  const handleChangeActiveSetting = (name: keyof SettingOptionType) => setActiveSetting(name);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (!open) setActiveSetting({ profile: true, restConf: false, certificate: false });
+      if (!open) setActiveSetting('Profile');
     }, 300);
     return () => {
       clearTimeout(timeout);

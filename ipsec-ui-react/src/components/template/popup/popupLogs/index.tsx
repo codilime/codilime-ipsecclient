@@ -28,9 +28,5 @@ export const PopupLogs: FC<PopupLogsType> = ({ open, handleToggle }) => {
     }
   }, [open]);
 
-  return (
-    <Popup {...{ open, handleToggle, title: 'Logs' }}>
-      <Logs {...{ logData: log, open }} />
-    </Popup>
-  );
+  return <Popup {...{ open, handleToggle, title: 'Logs' }}>{log && <Logs {...{ logData: log, open }} />}</Popup>;
 };

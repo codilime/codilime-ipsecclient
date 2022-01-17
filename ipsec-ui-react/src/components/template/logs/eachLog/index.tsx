@@ -1,67 +1,29 @@
-import { FC, useEffect, useMemo } from 'react';
+import { FC } from 'react';
+import { AiOutlineUpload } from 'react-icons/ai';
 import { LogData } from '../logData';
 import { Button } from 'common/';
-import { useToggle, useLogsLogic } from 'hooks/';
-import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
+import { useLogsLogic } from 'hooks/';
 import classNames from 'classnames';
+import { Field } from 'template';
 
 interface EachLogType {
-  title: string;
+  name: string;
   log: string;
-  activePopup: boolean;
+  active: boolean;
 }
 
-export const EachLog: FC<EachLogType> = ({ title, activePopup, log }) => {
-  const { open, handleToggle } = useToggle();
-
+export const EachLog: FC<EachLogType> = ({ name, log, active }) => {
   const { autoScroll, loading, HandleDownloadTextFile, handleActioveScroll } = useLogsLogic();
 
-  useEffect(() => {
-    if (!open && autoScroll) {
-      handleActioveScroll();
-    }
-  }, [open]);
-
-  useEffect(() => {
-    const timeOut = setTimeout(() => {
-      if (!activePopup && open) {
-        handleToggle();
-      }
-    }, 200);
-    return () => {
-      clearTimeout(timeOut);
-    };
-  }, [activePopup]);
-
-  const icon = open ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />;
-
-  const active = autoScroll && '✓';
-
-  const logHeader = useMemo(
-    () => (
-      <h3 className={classNames('logs__title', { logs__title__active: open })} onClick={handleToggle}>
-        {title} {icon}
-      </h3>
-    ),
-    [title]
-  );
-
-  const logs = useMemo(() => <LogData {...{ log, loading, autoScroll }} />, [log, autoScroll, loading]);
-
   return (
-    <li className="logs__each">
-      {logHeader}
-      <div className={classNames('logs__context', { logs__context__active: open })}>
-        {logs}
-        <div className="popup__footer">
-          <Button className="logs__auto" onClick={handleActioveScroll}>
-            <span className="logs__char"> {active}</span> Auto scroll
-          </Button>
-          <Button className="logs__save" onClick={() => HandleDownloadTextFile(log, title)}>
-            Save
-          </Button>
-        </div>
+    <div className={classNames('logs__context', { logs__context__active: active })}>
+      {<LogData {...{ log, loading, autoScroll }} />}
+      <div className="popup__footer">
+        <Field {...{ type: 'checkbox', name, onChange: handleActioveScroll, checked: autoScroll, text: 'Auto Scroll', className: 'logs_btn' }} />
+        <Button className="logs__save" onClick={() => HandleDownloadTextFile(log, name)}>
+          export <AiOutlineUpload className="logs_icon" />
+        </Button>
       </div>
-    </li>
+    </div>
   );
 };

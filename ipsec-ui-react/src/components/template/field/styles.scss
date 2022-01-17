@@ -1,17 +1,19 @@
 @import 'style/settings.scss';
 
 .field {
-  margin: 15px 0px 5px;
+  margin: 15px 0px 20px;
   position: relative;
   width: 100%;
+
   &__detail {
-    width: 35%;
+    width: 30%;
   }
   &__checkbox {
     display: flex;
     flex-direction: row;
     align-items: center;
-    width: 15%;
+    width: 175px;
+    margin: 0;
     &__active {
       color: $vrf-active;
     }
@@ -20,24 +22,23 @@
     }
   }
   &__input {
-    padding: $padding-sm $padding-lg $padding-md 180px;
-    width: 90%;
+    padding: 8px;
+    width: 100%;
+    height: 40px;
     border: none;
     outline: none;
-    border-bottom: 2px solid $gray01;
     font-weight: 300;
-    font-family: 'ciscoSansRegular', monospace;
+    font-size: $basic-size;
+    border: 1px solid $borderColor;
+    border-radius: $border-radius-sm;
     &:focus {
-      border-bottom: 2px solid $primary;
-      color: $primary;
+      border: 1px solid $lightBlue;
+      box-shadow: 0px 0px 4px #1890ff80;
+      color: $lightBlue;
       outline: none;
     }
   }
-  &__input__setting {
-    padding: $padding-sm $padding-lg $padding-md;
-    margin: 0 10px;
-    width: calc(100% - 20px);
-  }
+
   &__vlan {
     padding: $padding-sm 40px $padding-md;
     width: calc(100% - 20px);
@@ -50,11 +51,13 @@
     }
   }
   &__label {
-    font-weight: 500;
+    color: $lightGray;
+    font-weight: 400;
     order: 1;
-    padding: 3px 3px;
+    font-size: 12px;
     transform: translateY(-50%);
-    top: 40%;
+    line-height: 24px;
+    top: -12px;
     border: none;
     outline: none;
     position: absolute;
@@ -62,6 +65,9 @@
       margin-left: 20px;
       transform: translateY(0%);
       position: static;
+      color: $lightGray01;
+      font-weight: 400;
+      font-size: $basic-size;
     }
   }
 }
@@ -69,7 +75,8 @@
   &__checkbox {
     width: 14px;
     bottom: 2px;
+    &:focus {
+      box-shadow: none;
+    }
   }
 }
-
-

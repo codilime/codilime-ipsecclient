@@ -1,12 +1,13 @@
 import { FC } from 'react';
 import { Popup, SettingOption, SettingContent } from 'template';
+import { SettingOptionType } from 'interface/index';
 import './styles.scss';
 
 interface PopupSettingType {
   open: boolean;
   handleToggle: () => void;
-  handleChangeActiveSetting: (name: string) => void;
-  activeSetting: { profile: boolean; restConf: boolean; certificate: boolean };
+  handleChangeActiveSetting: (name: keyof SettingOptionType) => void;
+  activeSetting: keyof SettingOptionType;
 }
 
 export const PopupSetting: FC<PopupSettingType> = ({ open, handleToggle, handleChangeActiveSetting, activeSetting }) => {
@@ -14,7 +15,7 @@ export const PopupSetting: FC<PopupSettingType> = ({ open, handleToggle, handleC
     <Popup {...{ open, handleToggle, title: 'Settings' }}>
       <section className="setting">
         <SettingOption {...{ handleChangeActiveSetting, activeSetting }} />
-        <SettingContent {...{ activeSetting, open }} />
+        <SettingContent {...{ activeSetting, open, handleToggle }} />
       </section>
     </Popup>
   );

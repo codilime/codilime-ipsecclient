@@ -1,11 +1,6 @@
 @import 'ColorThemes';
-
-@font-face {
-  font-family: 'Cisco Sans';
-  src: url('../assets/fonts/CiscoSans.woff2') format('woff2'), url('../assets/fonts/CiscoSans.woff') format('woff'), url('../assets/fonts/CiscoSans.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-}
+@import './variables.scss';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700&display=swap');
 
 *,
 *::before,
@@ -18,7 +13,22 @@
 html,
 body {
   height: 100%;
-  font-family: 'Cisco Sans', monospace;
+  font-family: 'Roboto', sans-serif;
   letter-spacing: 1px;
   color: $gray03;
+  background-color: $lightGray02;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #eff1f6;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  border: 3px solid #eff1f6;
+  background-color: #8c8c8c;
 }

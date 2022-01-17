@@ -82,9 +82,19 @@ export const useCertificatesLogic = () => {
     await handleUpdateCertsList();
   };
 
-  const handleCheckCerts = (e: ChangeEvent<HTMLInputElement>, name: number) => {
+  const handleCheckCerts = (e: ChangeEvent<HTMLInputElement>, name: number | string) => {
+    if (typeof name === 'string' && checkedCa) {
+      const allChecked = Object.keys(checkedCa).reduce(
+        (attr, key) => ({
+          ...attr,
+          [key]: checkedCa['all'] === true ? false : true
+        }),
+        {}
+      );
+      setCheckedCa(allChecked);
+    }
     setCheckedCa((prev) => ({ ...prev, [name]: e.target.checked }));
   };
 
-  return { certificates, uploadBtn, handleAddCerts, handleSaveNewCerts, handleDeleteCerts, handleCheckCerts };
+  return { certificates, uploadBtn, checkedCa, handleAddCerts, handleSaveNewCerts, handleDeleteCerts, handleCheckCerts };
 };

@@ -34,7 +34,7 @@ export const EndpointInput: FC<EndpointInputTypes> = ({ type, placeholder, name,
   const showEyes = type === 'password' && edit ? <>{icon}</> : null;
 
   const validateKeyPress = onlyNumber ? validateDataInput : undefined;
-  
+
   return (
     <>
       <input
@@ -44,6 +44,7 @@ export const EndpointInput: FC<EndpointInputTypes> = ({ type, placeholder, name,
           endpointInput__error: error && error[name],
           endpointInput__radio: type === 'radio',
           endpointInput__file: type === 'file',
+          endpointInput__psk: name === 'psk',
           endpointInput__hardware: hardware
         })}
         {...{ type: open && edit ? 'text' : type, name, placeholder, value, onChange, onClick, onKeyPress: validateKeyPress, checked, disabled: !edit, ref: references }}

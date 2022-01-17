@@ -1,18 +1,20 @@
 import { FC } from 'react';
-import { Text, Rect, Group } from 'react-konva';
+import { Text, Circle, Group } from 'react-konva';
 import { Visualization } from 'interface/components';
 
 interface VisualizationCheckedType extends Visualization {
   status?: boolean;
+  width: number;
+  height: number;
 }
 
-export const VisualizationChecked: FC<VisualizationCheckedType> = ({ x, y, status }) => {
-  const checked = status ? '✓' : '';
-  const strokeColor = status ? 'green' : 'black';
+export const VisualizationChecked: FC<VisualizationCheckedType> = ({ x, y, status, width, height }) => {
+  const checked = status ? '✓' : 'x';
+  const fillColor = status ? 'green' : 'red';
   return (
     <Group>
-      <Rect {...{ x, y, width: 10, height: 10, fill: 'transparent' }} stroke={strokeColor} strokeWidth={1} />
-      <Text {...{ text: checked, x, y, width: 10, height: 10, align: 'center', verticalAlign: 'middle', fontSize: 10, fill: strokeColor }} />
+      <Circle {...{ x: x + 6.5, y: y + 7, width, height, fill: fillColor }} />
+      <Text {...{ text: checked, x: x - 1, y: checked === 'x' ? y - 1 : y, width, height, align: 'center', verticalAlign: 'middle', fontSize: 15, fill: 'white', fontStyle: 'bold' }} />
     </Group>
   );
 };
