@@ -5,17 +5,13 @@ import { ToolTipInfo } from 'common/';
 import classNames from 'classnames';
 
 interface VlanInput extends InputType {
-  text: string;
   tooltip?: string;
   error?: boolean;
   min?: string;
 }
 
-export const VlanInput: FC<VlanInput> = ({ text, type, name, placeholder, value, min, tooltip, error, onChange }) => (
+export const VlanInput: FC<VlanInput> = ({ type, name, placeholder, value, min, tooltip, error, onChange }) => (
   <div className="vlan__field">
-    <label htmlFor={name} className="vlan__label">
-      {text}
-    </label>
     <input
       {...{
         id: name,

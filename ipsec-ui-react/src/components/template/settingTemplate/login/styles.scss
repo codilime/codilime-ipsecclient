@@ -2,6 +2,18 @@
 
 .loginForm {
   max-width: 580px;
+  &__wrapper {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+  }
+  &__title {
+    padding-bottom: 24px;
+    font-size: $basic-size;
+    font-weight: 500;
+    color: var(--titleColor);
+  }
   &__fieldset {
     border: none;
     display: flex;
@@ -26,19 +38,15 @@
   }
   &__cancel {
     text-transform: capitalize;
+    background-color: transparent;
     color: #3d89eb;
     font-weight: 400;
-    background-color: $light;
     padding: $padding-sm $padding-md;
     min-width: 170px;
     margin: $margin-md 0px;
     border: 1px solid #3d89eb;
   }
-  &__wrapper {
-    position: relative;
-    margin: 0;
-    padding: 0;
-  }
+
   &__disabled {
     display: none;
   }

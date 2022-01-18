@@ -1,11 +1,12 @@
 import { FC, useRef, useEffect, useState } from 'react';
 import { Wrapper, VisualizationEndpoints } from 'template';
 import { MetricsType } from 'interface/index';
-import { useAppContext, useFetchData, useWindowDimensions } from 'hooks/';
+import { useAppContext, useFetchData, useThemeContext, useWindowDimensions } from 'hooks/';
 import './styles.scss';
 
 export const Visualization: FC = () => {
   const { width } = useWindowDimensions();
+  const { theme } = useThemeContext();
   const emptyEndpoint = <div className="visualization__empty">Add endpoints to vizualize them</div>;
   const {
     context: { data, hardware }
@@ -43,11 +44,11 @@ export const Visualization: FC = () => {
     };
   }, [data]);
 
-  const context = endpoint === null || !endpoint?.length ? emptyEndpoint : <VisualizationEndpoints {...{ data, dimensions, monitoring, hardware }} />;
+  const context = !endpoint.length ? emptyEndpoint : theme && <VisualizationEndpoints {...{ data, dimensions, monitoring, hardware, theme }} />;
 
   return (
     <Wrapper {...{ className: 'visualization__wrapper' }} title="Visualization" references={wrapper}>
-      {context}
+      {theme && context}
     </Wrapper>
   );
 };

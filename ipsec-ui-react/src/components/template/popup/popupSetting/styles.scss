@@ -5,10 +5,10 @@
   flex-direction: column;
   min-width: 630px;
   &__nav {
-    color: #58585b;
+    color: var(--settingTitleCOlor);
+    border-bottom: 1px solid var(--borderNavHeader);
     min-width: 530px;
     margin: 0 24px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
   &__list {
     display: flex;

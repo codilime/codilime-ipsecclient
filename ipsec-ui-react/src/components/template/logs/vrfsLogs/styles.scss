@@ -5,6 +5,7 @@
     margin: 0;
     padding: 0 0 24px;
     width: 100%;
+    color: var(--titleColor);
   }
   &_list {
     margin: 0 24px 0 0;
@@ -36,6 +37,7 @@
     max-width: 100ch;
     white-space: pre-wrap;
     font-family: monospace;
+    color: var(--titleColor);
   }
   &_active {
     display: inline-block;

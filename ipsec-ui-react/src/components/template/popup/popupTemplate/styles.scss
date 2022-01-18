@@ -1,18 +1,19 @@
 @import 'style/settings.scss';
 
 .popup {
+  background-color: var(--backgroundPopup);
+  transition: all 0.3s ease-in;
   position: fixed;
   left: 0px;
   right: 0;
   top: 0px;
   bottom: 0;
-  background-color: var(--backgroundPopup);
   display: flex;
   justify-content: center;
   align-items: center;
   opacity: 0;
   visibility: hidden;
-  transition: $transition;
+
   z-index: 99999;
   &__active {
     opacity: 1;
@@ -21,7 +22,7 @@
   &__content {
     border-radius: $border-radius-lg;
     margin: 0 auto;
-    background-color: white;
+    background-color: var(--backgroundPopupContent);
     overflow: hidden;
   }
   &__header {
@@ -34,11 +35,13 @@
     margin: 28px;
     font-size: 20px;
     cursor: pointer;
-    color: #2a2c34;
+    transition: $transition;
+    color: var(--titleColor);
   }
   &__title {
+    transition: $transition;
+    color: var(--titleColor);
     padding: 24px;
-    color: #2a2c34;
     font-size: 20px;
     font-weight: 700;
     margin: 0;

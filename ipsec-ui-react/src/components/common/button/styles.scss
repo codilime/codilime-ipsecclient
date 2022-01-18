@@ -25,9 +25,9 @@
     margin-left: $margin-md;
   }
   &__disabled {
+    transition: $transition;
     background-color: var(--backgroundBtnDisable) !important;
     color: var(--colorBtnDisable) !important;
-    transition: $transition;
   }
 }
 
@@ -50,7 +50,7 @@
   font-weight: 700;
   &__secondary {
     background-color: transparent;
-    color: black;
+    color: var(--inputText);
     padding: 0;
     letter-spacing: 2px;
     font-size: 12px;

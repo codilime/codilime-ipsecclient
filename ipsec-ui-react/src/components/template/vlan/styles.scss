@@ -112,31 +112,22 @@
     margin: 8px 10px;
     position: relative;
   }
-  &__label {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    line-height: 24px;
-    font-size: $basic-size;
-    font-weight: 400;
-    color: $lightGray;
-    padding-left: 10px;
-  }
   &__input {
     transition: $transition;
     border: 1px solid var(--inputBorderColor);
     border-radius: $border-radius-sm;
     font-size: $basic-size;
-    padding: $padding-sm 25px $padding-sm 70px;
+    padding: $padding-sm 25px $padding-sm 10px;
     width: calc(100% - 10px);
     height: 40px;
     background-color: transparent;
+    color: var(--inputColor);
+
     &::placeholder {
-      font-size: $small-size;
+      font-size: $basic-size;
+      line-height: 24px;
     }
-    &__vlan {
-      padding-left: 55px;
-    }
+
     &:focus {
       border: 1px solid $lightBlue;
       box-shadow: 0px 0px 4px #1890ff80;

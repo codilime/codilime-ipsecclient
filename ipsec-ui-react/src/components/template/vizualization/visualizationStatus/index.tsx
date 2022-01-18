@@ -12,16 +12,18 @@ interface VisualizationStatusType {
   title: string;
   monitoring: MetricsType;
   endpoint: EndpointsType;
+  theme: string;
 }
 
-export const VisualizationStatus: FC<VisualizationStatusType> = ({ x, height, lineStartX, lineStartY, lineWidth, title, endpoint, monitoring }) => {
+export const VisualizationStatus: FC<VisualizationStatusType> = ({ x, height, lineStartX, lineStartY, lineWidth, title, endpoint, monitoring, theme }) => {
   const firstLabel = {
     x: x + (lineWidth - 260) / 3 - 15,
     y: lineStartY - 18,
     width: 130,
     height: 36,
     text: 'Tunnel Local IP',
-    value: endpoint.local_ip
+    value: endpoint.local_ip,
+    theme
   };
 
   const secondLabel = {
@@ -30,7 +32,8 @@ export const VisualizationStatus: FC<VisualizationStatusType> = ({ x, height, li
     width: 130,
     height: 36,
     text: 'Tunnel Peer IP',
-    value: endpoint.peer_ip
+    value: endpoint.peer_ip,
+    theme
   };
 
   const remoteSite = {
@@ -39,7 +42,8 @@ export const VisualizationStatus: FC<VisualizationStatusType> = ({ x, height, li
     width: 225,
     height,
     title,
-    value: endpoint.remote_ip_sec
+    value: endpoint.remote_ip_sec,
+    theme
   };
 
   const contextStatus = {

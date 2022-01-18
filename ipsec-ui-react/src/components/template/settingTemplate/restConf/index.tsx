@@ -14,9 +14,11 @@ export const RestConf: FC<RestConfType> = ({ open, handleToggle }) => {
 
   return (
     <>
-      <Wrapper {...{ title: 'Cat 9300x Credentials', wrapperClass: classNames('loginForm__wrapper', { loginForm__disabled: active }) }}>
+      <div className={classNames('loginForm__wrapper', { loginForm__disabled: active })}>
+        <h3 className="loginForm__title">Cat 9300x Credentials</h3>
         <RestConfForm {...{ handleSendRestConf, handleToggle }} />
-      </Wrapper>
+      </div>
+
       <HoverPanel
         {...{
           title: 'The variables are set.',

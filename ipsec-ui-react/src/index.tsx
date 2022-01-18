@@ -1,17 +1,17 @@
 import { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom';
-import { Spinner } from 'template';
+import { Loading } from 'template';
 import { ThemeProvider, VrfsProvider } from 'context';
 const App = lazy(() => import('./App'));
 
 ReactDOM.render(
-  <VrfsProvider>
-    <Suspense fallback={<Spinner loading={true}></Spinner>}>
+  <Suspense fallback={<Loading loading={true}></Loading>}>
+    <VrfsProvider>
       <ThemeProvider>
         <App />
       </ThemeProvider>
-    </Suspense>
-  </VrfsProvider>,
+    </VrfsProvider>
+  </Suspense>,
   document.getElementById('root')
 );
 

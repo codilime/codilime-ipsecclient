@@ -41,8 +41,8 @@ export const Vlan: FC<VlanType> = ({ errorSchema, control }) => {
         <div className="vlan__box">
           <VlanInput
             {...{
+              placeholder:'Vlan',
               name: 'vlan',
-              text: 'Vlan',
               type: 'number',
               onChange: handleChangeInputValue,
               value: vlanInterface.vlan || '',
@@ -54,7 +54,7 @@ export const Vlan: FC<VlanType> = ({ errorSchema, control }) => {
           <VlanInput
             {...{
               name: 'lan_ip',
-              text: 'Lan IP',
+              placeholder: 'Lan IP',
               onChange: handleChangeInputValue,
               value: vlanInterface.lan_ip,
               error,

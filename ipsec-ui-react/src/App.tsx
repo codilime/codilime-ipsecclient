@@ -12,6 +12,10 @@ const App: FC = () => {
   useLayoutEffect(() => {
     fetchCerts();
     // fetchInitialData();
+  }, []);
+
+  useLayoutEffect(() => {
+    fetchCerts();
     if (!loading) fetchVrfData();
   }, [loading]);
 
