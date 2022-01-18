@@ -5,13 +5,13 @@ import { ThemeProvider, VrfsProvider } from 'context';
 const App = lazy(() => import('./App'));
 
 ReactDOM.render(
-  <ThemeProvider>
+  <VrfsProvider>
     <Suspense fallback={<Spinner loading={true}></Spinner>}>
-      <VrfsProvider>
+      <ThemeProvider>
         <App />
-      </VrfsProvider>
+      </ThemeProvider>
     </Suspense>
-  </ThemeProvider>,
+  </VrfsProvider>,
   document.getElementById('root')
 );
 

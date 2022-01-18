@@ -38,18 +38,6 @@ export const useVlanLogic = (control: Control<VrfDataTypes>) => {
     return false;
   };
 
-  useLayoutEffect(() => {
-    if (data.vlan) {
-      setVlan(data.vlan);
-    }
-    console.log('test');
-    console.log(data.vlan);
-  }, [data]);
-
-  useEffect(() => {
-    //setValue('vlan', [...[], ...vlan], { shouldDirty: true });
-  }, [vlan, data.vlan]);
-
   useEffect(() => {
     if (error) setError(false);
   }, [vlan]);
@@ -67,8 +55,6 @@ export const useVlanLogic = (control: Control<VrfDataTypes>) => {
     if (!validate || vlanInterface.vlan <= 0) return setError(true);
     setVlanInterface({ vlan: 0, lan_ip: '' });
     append(vlanInterface);
-    //setVlan((prev) => [...prev, vlanInterface]);
-    //setValue('vlan', [...vlan, vlanInterface], { shouldDirty: true });
   };
 
   const handleDeleteVlan = (index: number) => remove(index);

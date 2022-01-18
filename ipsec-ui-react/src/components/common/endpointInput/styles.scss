@@ -1,6 +1,8 @@
 @import 'style/settings.scss';
 
 .endpointInput {
+  transition: $transition;
+  color: var(--inputText);
   position: relative;
   align-items: flex-start;
   width: 100%;
@@ -9,8 +11,8 @@
   outline: none;
   background-color: transparent;
   padding: $padding-sm 8px;
-
   height: 40px;
+
   &::placeholder {
     color: $lightGray;
     padding-left: $padding-sm;
@@ -26,7 +28,7 @@
   }
   &__active {
     border-radius: $border-radius-sm;
-    border: 1px solid $borderColor;
+    border: 1px solid var(--borderColor);
     padding-right: 25px;
     cursor: pointer;
   }

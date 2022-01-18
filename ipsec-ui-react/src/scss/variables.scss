@@ -98,3 +98,107 @@ $transition: 0.3s linear all;
 /* Box-shadow */
 $endpoint-option-shadow: 0px 0px 5px -2px rgba(0, 0, 0, 0.35);
 $box-shadow: 0, 0, 4px, 0 rgba(24, 144, 255, 0.5);
+
+/* Design pallet*/
+
+$backgroundLight: #f2f5f8;
+$backgroundDark: #050b10;
+$darkGray01: #151a1f;
+$darkGray02: #1e242c;
+$lightBlue01: #f6f7fb;
+$darkBlue: #222933;
+$darkText: #858fa0;
+
+/* Transition */
+
+$transition: 0.3s color ease-in, 0.3s background-color ease-in, 0.3s border-color ease-in;
+
+[data-theme='light'] {
+  color: #a0a3a9;
+  background-color: $backgroundLight;
+  transition: $transition;
+
+  /* Background*/
+  --backgroundColor: #ffffff;
+  --backgroundHoverVrf: #f6f7fb;
+  --backgroundPopup: #25374666;
+
+  /* Border-color*/
+  --blueBorderColor: #3d89eb;
+  --inputBorderColor: #e0e0e0;
+  --borderColor: #e8e8e8;
+
+  /*Text-color*/
+  --inputText: #595959;
+
+  /* Title-color*/
+  --titleColor: #2a2c34;
+
+  /* Table*/
+  --backgroundHeader: #fafafa;
+  --columnColor: #595959;
+
+  /* Button disable*/
+  --backgroundBtnDisable: #f2f2f2;
+  --colorBtnDisable: #c3c3c3;
+
+  /* Scroll*/
+  ::-webkit-scrollbar-track {
+    background-color: #eff1f6;
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    border: 3px solid #eff1f6;
+    background-color: #8c8c8c;
+  }
+}
+
+[data-theme='dark'] {
+  color: #858fa0;
+  background-color: #050b10;
+  transition: $transition;
+
+  /* Background*/
+  --backgroundColor: #151a1f;
+  --backgroundHoverVrf: #222933;
+  --backgroundPopup: #050b10;
+
+  /* Border-color*/
+  --blueBorderColor: #3d89eb;
+  --inputBorderColor: #2e3846;
+  --borderColor: #2f3947;
+
+  /*text-color*/
+  --inputText: #858fa0;
+
+  /* Title-color*/
+  --titleColor: #ffffff;
+
+  /* Table*/
+  --backgroundHeader: #1e242c;
+  --columnColor: #858fa0;
+
+  /* Button disable*/
+  --backgroundBtnDisable: #222933;
+  --colorBtnDisable: #858fa0;
+
+  ::-webkit-scrollbar {
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #050b10;
+    transition: all 0.2s ease-in;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: 3px solid #050b10;
+    background-color: #606f7d;
+    transition: all 0.2s ease-in;
+  }
+}

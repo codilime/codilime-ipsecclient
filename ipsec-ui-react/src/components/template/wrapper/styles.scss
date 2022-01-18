@@ -2,8 +2,9 @@
 
 .wrapper {
   margin: $margin-lg 0;
-  font-size: 14px;
-  background-color: $light;
+  font-size: $small-size;
+  background-color: var(--backgroundColor);
+  transition: $transition;
   border-radius: $border-radius-lg;
   padding: 24px;
   &__header {
@@ -15,9 +16,10 @@
   }
   &__title {
     margin: 0;
+    color: var(--titleColor);
+    transition: $transition;
   }
   &__btn {
-    color: $primary;
     border: none;
     font-size: 10px;
     cursor: pointer;

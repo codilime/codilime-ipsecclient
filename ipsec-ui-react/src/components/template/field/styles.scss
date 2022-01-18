@@ -29,8 +29,11 @@
     outline: none;
     font-weight: 300;
     font-size: $basic-size;
-    border: 1px solid $borderColor;
+    border: 1px solid var(--inputBorderColor);
+    transition: $transition;
+    color: var(--inputText);
     border-radius: $border-radius-sm;
+    background-color: transparent;
     &:focus {
       border: 1px solid $lightBlue;
       box-shadow: 0px 0px 4px #1890ff80;
@@ -51,7 +54,8 @@
     }
   }
   &__label {
-    color: $lightGray;
+    color: var(--inputText);
+    transition: $transition;
     font-weight: 400;
     order: 1;
     font-size: 12px;
@@ -65,7 +69,6 @@
       margin-left: 20px;
       transform: translateY(0%);
       position: static;
-      color: $lightGray01;
       font-weight: 400;
       font-size: $basic-size;
     }

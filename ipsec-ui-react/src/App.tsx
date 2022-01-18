@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { MainLayout } from 'layout/';
 import { useInitData } from 'hooks/';
 import { Routers } from './routers';
+import { Theme } from './components/theme';
 import 'style/global.scss';
 
 const App: FC = () => {
@@ -10,18 +11,17 @@ const App: FC = () => {
 
   useLayoutEffect(() => {
     fetchCerts();
-    fetchInitialData();
-  }, []);
-
-  useLayoutEffect(() => {
+    // fetchInitialData();
     if (!loading) fetchVrfData();
   }, [loading]);
 
   return (
     <Router>
-      <MainLayout>
-        <Routers />
-      </MainLayout>
+      <Theme>
+        <MainLayout>
+          <Routers />
+        </MainLayout>
+      </Theme>
     </Router>
   );
 };

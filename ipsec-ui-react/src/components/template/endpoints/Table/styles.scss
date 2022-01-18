@@ -9,9 +9,10 @@
     overflow: visible;
   }
   &__row--header {
+    background-color: var(--backgroundHeader);
+    transition: $transition;
     display: flex;
-    background-color: $lightBgcGray;
-    border-radius: $border-radius-lg;
+    border-radius: $border-radius-lg $border-radius-lg 0 0;
   }
   &__row {
     width: 100%;
@@ -22,12 +23,13 @@
     &__column {
       font-size: $basic-size;
       padding: $padding-md;
+      transition: $transition;
+      color: var(--columnColor);
       width: 60%;
       text-align: left;
       display: flex;
       justify-content: flex-start;
       align-items: center;
-      color: $lightGray01;
       &:last-of-type {
         border-right: none;
       }
@@ -37,13 +39,15 @@
     font-size: 10px;
   }
   &__row__edit {
-    background-color: $lightBgcGray;
+    transition: $transition;
+    background-color: var(--backgroundHoverVrf) !important;
   }
   &__column {
+    transition: $transition;
+    border-top: 2px solid var(--borderColor);
     padding: 8px 10px;
     width: 60%;
     height: 56px;
-    border-top: 1px solid $borderColor;
     position: relative;
     font-size: $basic-size;
     color: $lightGray01;
@@ -71,9 +75,10 @@
     justify-content: space-around;
   }
   &__psk__btn {
+    transition: $transition;
+    color: var(--inputText);
     height: 100%;
     width: 100%;
-    color: $gray02;
     border: none;
     cursor: pointer;
     background-color: transparent;
@@ -83,11 +88,12 @@
     font-size: $basic-size;
   }
   &__addBtn {
+    transition: $transition;
+    border-top: 2px solid var(--borderColor);
     display: flex;
     justify-content: flex-start;
-    border-top: 1px solid $borderColor;
+
     padding-top: 32px;
-    background-color: white;
   }
   &__columnBtn {
     min-width: 120px;
@@ -109,7 +115,8 @@
     align-items: center;
     font-weight: 700;
     width: 100%;
-    color: $gray02;
+    transition: $transition;
+    color: var(--inputText);
     height: 100%;
   }
   &__certificates {
@@ -138,28 +145,35 @@
   &__iconBox {
     padding: $padding-sm;
   }
+
   &__title {
     font-weight: 700;
   }
+
   &__btn {
     color: white;
     padding: $padding-sm $padding-md;
     min-width: 160px;
   }
+
   &__text {
+    transition: $transition;
+    color: var(--inputText);
     font-size: 16px;
     margin: 0 20px;
   }
+
+  &__upload {
+    font-size: 24px;
+    color: $blue;
+    margin-left: 15px;
+  }
+
   input[type='number']::-webkit-inner-spin-button,
   input[type='number']::-webkit-outer-spin-button {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     margin: 0;
-  }
-  &__upload {
-    font-size: 24px;
-    color: $blue;
-    margin-left: 15px;
   }
 }

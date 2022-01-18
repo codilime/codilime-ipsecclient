@@ -2,11 +2,12 @@
 FROM node:14.18-alpine AS frontend-build
 WORKDIR /usr/src/app
 COPY ipsec-ui-react/package.json ./
-COPY ipsec-ui-react/package-lock.json ./
-RUN npm install -g webpack webpack-cli && npm install
-COPY ipsec-ui-react/src /usr/src/app/src/
 COPY ipsec-ui-react/webpack.config.prod.js /usr/src/app/
 COPY ipsec-ui-react/tsconfig.json /usr/src/app/
+RUN npm install -g webpack webpack-cli && npm install
+COPY ipsec-ui-react/package-lock.json ./
+COPY ipsec-ui-react/src /usr/src/app/src/
+
 RUN npm run build
 
 

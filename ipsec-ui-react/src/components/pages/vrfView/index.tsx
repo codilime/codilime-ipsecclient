@@ -9,11 +9,7 @@ import './styles.scss';
 export const VrfView: FC<MatchProps> = ({ match }) => {
   const { show, handleToggleModal } = useModalLogic();
   const {} = useGetVrfs(match.params.id);
-  const {
-    handleDelete,
-    context: { loading },
-    hardware
-  } = useVrfLogic();
+  const { handleDelete, hardware } = useVrfLogic();
 
   return (
     <section className="vrf">
