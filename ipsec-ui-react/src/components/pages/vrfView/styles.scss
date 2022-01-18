@@ -11,14 +11,12 @@
   &__button {
     padding: $padding-sm $padding-md;
   }
-  &__name {
-    line-height: 32px;
-    color: $breadcrumb-font-color;
-  }
   &__btn {
     height: 40px;
     &__disabled {
+      transition: $transition;
       background-color: $orange !important;
+      color: #fff !important;
       opacity: 0.3;
     }
   }

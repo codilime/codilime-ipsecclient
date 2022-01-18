@@ -7,7 +7,7 @@
   max-width: 500px;
   padding: 0px $padding-md;
   font-size: 14px;
-
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
   &__wrapper {
     overflow: visible;
   }
@@ -56,7 +56,10 @@
     font-size: 14px;
   }
   &__head {
-    background-color: $lightBgcGray;
+    transition: $transition;
+    background-color: var(--backgroundHeader);
+    color: var(--columnColor);
+    border-radius: $border-radius-lg $border-radius-lg 0 0;
   }
   &__body {
     display: block;
@@ -65,19 +68,20 @@
   }
 
   &__row {
+    border-bottom: 2px solid var(--borderColor);
+    color: var(--inputText);
+    transition: $transition;
     display: flex;
     padding: 5px 10px;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #e8e8e8;
     height: 38px;
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;
-    color: $lightGray01;
+
     &__header {
       padding-right: 30px;
-      color: $dark;
     }
     &__empty {
       color: $gray02;
@@ -95,40 +99,35 @@
     margin-top: 5px;
   }
   &__box {
+    transition: $transition;
+    background-color: var(--backgroundHeader);
+    border-top: 2px solid var(--borderColor);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #e8e8e8;
-    background-color: $lightBgcGray;
+
     height: 56px;
   }
   &__field {
     margin: 8px 10px;
     position: relative;
   }
-  &__label {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    line-height: 24px;
-    font-size: $basic-size;
-    font-weight: 400;
-    color: $lightGray;
-    padding-left: 10px;
-  }
   &__input {
-    padding: $padding-sm 25px $padding-sm 70px;
-    width: calc(100% - 10px);
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    height: 40px;
+    transition: $transition;
+    border: 1px solid var(--inputBorderColor);
     border-radius: $border-radius-sm;
     font-size: $basic-size;
+    padding: $padding-sm 25px $padding-sm 10px;
+    width: calc(100% - 10px);
+    height: 40px;
+    background-color: transparent;
+    color: var(--inputColor);
+
     &::placeholder {
-      font-size: $small-size;
+      font-size: $basic-size;
+      line-height: 24px;
     }
-    &__vlan {
-      padding-left: 55px;
-    }
+
     &:focus {
       border: 1px solid $lightBlue;
       box-shadow: 0px 0px 4px #1890ff80;

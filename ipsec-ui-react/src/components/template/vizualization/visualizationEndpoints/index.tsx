@@ -2,17 +2,20 @@ import { FC } from 'react';
 import { VrfDataTypes } from 'interface/index';
 import { Stage, Layer } from 'react-konva';
 import { MetricsType } from 'interface/index';
-import { VisualizationIcon, VisualizationLine, VisualizationVrf, Cube } from 'template';
+import { VisualizationIcon, VisualizationLine, VisualizationVrf } from 'template';
+import { colors } from '../visualizationConstants';
 
 interface VisualizationEndpoints {
   dimensions: number;
+  theme: string;
   hardware: boolean;
   data: VrfDataTypes;
   monitoring: MetricsType[];
 }
 
-export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimensions, monitoring, hardware }) => {
+export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimensions, monitoring, hardware, theme }) => {
   const { endpoint, client_name, vlan } = data;
+
   const getAmount = () => {
     if (vlan.length && endpoint) {
       return endpoint.length > vlan.length ? endpoint.length : vlan.length;
@@ -29,8 +32,10 @@ export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimen
     width: 40,
     height: 40,
     color: '#c3d7df',
-    text: 'Cat9300(X)'
+    text: 'Cat9300(X)',
+    theme
   };
+
   const hardwareBox = {
     x: hardware ? 0 : icon.x + icon.width + 10,
     y: hardware ? 0 : icon.y + icon.height + 40,
@@ -40,7 +45,8 @@ export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimen
     size: 8,
     endpoint,
     dimensions,
-    monitoring
+    monitoring,
+    vlan
   };
   const vrfBox = {
     x: hardware ? 0 : icon.x + icon.width + 10,
@@ -67,7 +73,7 @@ export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimen
   const getCenterVlan = () => {
     if (vlan.length < endpoint.length) {
       const amount = endpoint.length - vlan.length;
-      return Math.abs(amount) * 40;
+      return Math.abs(amount) * 50;
     }
     return 0;
   };
@@ -82,18 +88,15 @@ export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimen
   const iconToVRfLine = {
     x: icon.x + icon.width / 2 - 3,
     y: icon.y + icon.height + 32,
-    color: 'black',
+    color: colors.lineColor,
     points: [0, 0, 0, endYOfVlans()]
   };
 
-  if (!dimensions) {
-    return <Cube loading={false} />;
-  }
   if (hardware)
     return (
       <Stage width={dimensions} height={endpoint!.length * 110 + 90}>
         <Layer>
-          <VisualizationVrf {...{ ...hardwareBox, hardware }} />
+          <VisualizationVrf {...{ ...hardwareBox, hardware, theme }} />
         </Layer>
       </Stage>
     );
@@ -102,7 +105,7 @@ export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimen
     <Stage width={dimensions} height={getVisualizationHeight() + 160}>
       <Layer>
         <VisualizationIcon {...icon} />
-        <VisualizationVrf {...{ ...vrfBox, hardware, vlan }} />
+        <VisualizationVrf {...{ ...vrfBox, hardware, vlan, theme }} />
         <VisualizationLine {...iconToVRfLine} />
       </Layer>
     </Stage>

@@ -12,14 +12,15 @@
   justify-content: center;
   align-items: center;
   z-index: 999999;
-  background-color: $modal-background;
-  transition: $transition;
+  background-color: var(--backgroundPopup);
+  transition: all 0.3s ease-in;
+
   &__active {
     opacity: 1;
     visibility: visible;
   }
   &__content {
-    background-color: white;
+    background-color: var(--backgroundColor);
     display: flex;
     flex-direction: column;
     max-width: 400px;
@@ -30,6 +31,7 @@
     font-size: 20px;
     padding: 24px;
     height: 20%;
+    color: var(--titleColor);
   }
 
   &__context {
@@ -37,7 +39,8 @@
     height: 40%;
   }
   &__description {
-    font-size: $small-size;
+    color: var(--inputText);
+    font-size: $basic-size;
   }
   &__footer {
     display: flex;

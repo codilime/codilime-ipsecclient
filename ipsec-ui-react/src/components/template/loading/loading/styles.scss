@@ -1,6 +1,8 @@
+@import 'style/settings.scss';
+
 .loading {
   &__background {
-    background-color: rgba(37, 55, 70, 0.4);
+    background-color: var(--backgroundPopup);
     position: fixed;
     top: 0;
     left: 0;
@@ -13,7 +15,7 @@
     visibility: hidden;
     opacity: 0;
     transform: scale(0);
-    transition: 0.5s linear all;
+    transition: 0.3s linear all;
     &__active {
       visibility: visible;
       opacity: 1;
@@ -49,6 +51,7 @@
     animation: partTwo 3s infinite;
   }
   &__part__three {
+    font-size: 28px;
     font-weight: 700;
     position: absolute;
     top: 50%;

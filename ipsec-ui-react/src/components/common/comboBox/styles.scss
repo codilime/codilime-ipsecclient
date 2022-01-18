@@ -1,6 +1,8 @@
 @import 'style/settings.scss';
 
 .comboBox {
+  transition: $transition;
+  color: var(--inputText);
   position: relative;
   align-items: flex-start;
   width: 100%;
@@ -17,8 +19,9 @@
     font-size: $basic-size;
   }
   &__active {
+    transition: $transition;
+    border: 1px solid var(--borderColor);
     border-radius: $border-radius-sm;
-    border: 1px solid $borderColor;
     cursor: pointer;
   }
 }

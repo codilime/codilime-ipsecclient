@@ -8,7 +8,8 @@
   height: 65px;
   margin-left: 214px;
   width: calc(100% - 214px);
-  background-color: white;
+  background-color: var(--backgroundColor);
+  transition: $transition;
   position: fixed;
   z-index: 101;
   &__left,
@@ -18,15 +19,9 @@
   &__image {
     height: 32px;
   }
-  &__productName {
-    margin-left: 20px;
-    font-size: 24px;
-    color: $gray05;
-  }
   &__icon {
     cursor: pointer;
     transition: $transition;
-    color: $gray05;
     &:hover {
       color: $primary;
     }
@@ -34,11 +29,23 @@
   &__log {
     padding: 4px 0px;
     min-width: 100px;
-    background-color: $light;
+    background-color: var(--backgroundColor);
     border: 1px solid $blue;
+    transition: $transition;
     color: $blue;
     height: 36px;
     font-size: $small-size;
     margin: 0 14px;
+  }
+  &__darkIcon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  &__switch {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }

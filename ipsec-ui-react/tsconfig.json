@@ -33,6 +33,7 @@
       "context": ["src/context"],
       "api/*": ["src/api"],
       "schema/*": ["src/schema"],
+      "theme/*": ["src/theme"],
       "utils/*": ["src/utils"],
       "constant/*": ["src/constants"],
       "interface/*": ["src/interface/*"]

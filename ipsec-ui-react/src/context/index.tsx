@@ -1,4 +1,4 @@
-import { useState, createContext, FC, Dispatch, SetStateAction } from 'react';
+import { useState, createContext, FC, Dispatch, SetStateAction, useMemo } from 'react';
 import { defaultVrf } from 'db';
 import { ContextProps } from 'interface/index';
 
@@ -7,28 +7,41 @@ type ContextType = {
   setContext: Dispatch<SetStateAction<ContextProps>>;
 };
 
-type ThemeType = {
-  dark: 'dark';
-  light: 'light';
-  common: 'common';
-};
-
-type ContextThemeType = {
-  theme: keyof ThemeType;
-  setTheme: Dispatch<SetStateAction<keyof ThemeType>>;
-};
-
 export const VrfsContext = createContext<ContextType | null>(null);
 
 export const VrfsProvider: FC = ({ children }) => {
   const [context, setContext] = useState<ContextProps>(defaultVrf);
+  const value = useMemo(
+    () => ({
+      context,
+      setContext
+    }),
+    [context]
+  );
+  return <VrfsContext.Provider value={value}>{children}</VrfsContext.Provider>;
+};
 
-  return <VrfsContext.Provider value={{ context, setContext }}>{children}</VrfsContext.Provider>;
+/* Theme context */
+enum ThemeType {
+  dark = 'dark',
+  light = 'light'
+}
+
+type ContextThemeType = {
+  theme: ThemeType;
+  setTheme: Dispatch<SetStateAction<ThemeType>>;
 };
 
 export const ThemeContext = createContext<ContextThemeType | null>(null);
 
 export const ThemeProvider: FC = ({ children }) => {
-  const [theme, setTheme] = useState<keyof ThemeType>('dark');
-  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
+  const [theme, setTheme] = useState<ThemeType>(ThemeType.dark);
+  const value = useMemo(
+    () => ({
+      theme,
+      setTheme
+    }),
+    [theme]
+  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };

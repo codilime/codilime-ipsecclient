@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { TopBar, SideBar } from 'layout/';
 import { Loading } from 'template';
 import { useVrfLogic } from 'hooks/';
@@ -6,7 +6,7 @@ import './styles.scss';
 
 export const MainLayout: FC = ({ children }) => {
   const {
-    context: { loading }
+    context: { loading, vrf }
   } = useVrfLogic();
 
   return (

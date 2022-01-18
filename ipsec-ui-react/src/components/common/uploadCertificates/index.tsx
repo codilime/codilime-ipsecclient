@@ -16,7 +16,7 @@ interface UploadCertificates extends InputType {
 export const UploadCertificates: FC<UploadCertificates> = ({ type, name, onChange, edit, references, value, label, handleUploadFile, className = '', error }) => (
   <div className={classNames('uploadCertificate', { [className]: className })}>
     <EndpointInput {...{ type, name, onChange, edit, references, value }} />
-    {label && <p className="uploadCertificate_title">{label}</p>}
-    <AiOutlineUpload onClick={() => handleUploadFile(name)} className="uploadCertificate_upload" />
+    {label && <p className="uploadCertificate__title">{label}</p>}
+    <AiOutlineUpload onClick={() => handleUploadFile(name)} className="uploadCertificate__upload" />
   </div>
 );

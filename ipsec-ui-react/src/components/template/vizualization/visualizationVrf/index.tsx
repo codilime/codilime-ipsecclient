@@ -1,15 +1,16 @@
 import { FC } from 'react';
 import { VisualizationOneLabel, VisualizationTwoLabel, VisualizationThreeLabel, VisualizationBox, VisualizationLine, VisualizationStatus, VisualizationIcon } from 'template';
-import { variable } from '../visualizationConstants';
+import { colors, variable } from '../visualizationConstants';
 import { Group } from 'react-konva';
 import { Visualization } from 'interface/components';
 import { EndpointsType, VlanInterface, MetricsType } from 'interface/index';
 import { VisualizationRouter } from '..';
 
 interface VisualizationVrf extends Visualization {
+  theme: string;
   title: string;
   dimensions: number;
-  vlan?: VlanInterface[];
+  vlan: VlanInterface[];
   height: number;
   width: number;
   endpoint: EndpointsType[];
@@ -17,7 +18,7 @@ interface VisualizationVrf extends Visualization {
   hardware: boolean;
 }
 
-export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, title, endpoint, dimensions, monitoring, hardware, vlan = [] }) => {
+export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, title, endpoint, dimensions, monitoring, hardware, vlan, theme }) => {
   const { lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
   const eachBreak = hardware ? 35 : 25;
 
@@ -29,7 +30,8 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     width: smWidthLabel,
     height: hardwareSecoundLabel,
     left: true,
-    hardware
+    hardware,
+    theme
   };
 
   const secondLabel = {
@@ -56,37 +58,37 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
   const getCenterVlan = () => {
     if (vlan.length < endpoint.length) {
       const amount = endpoint.length - vlan.length;
-      return Math.abs(amount) * 40;
+      return Math.abs(amount) * 50;
     }
     return 0;
   };
 
   const endpointStatus = endpoint.map((endpoint, index) => {
-    const hardwareLabel = mdHeightLabel;
     const textY = y + heightHeader + 25 + index * 100 + getCenterEndpoints();
     const textX = x + width - paddingBox - smWidthLabel;
     const centerX = hardware ? textX - 40 : textX - 70;
-    const centerY = y + height / 2 + hardwareLabel / 2 - 10;
-    const centerLabel = hardware ? textY + hardwareLabel : textY - 20 + hardwareLabel;
+    const centerY = y + height / 2 + mdHeightLabel / 2 - 20;
+    const centerLabel = hardware ? textY - 20 + mdHeightLabel : textY - 40 + mdHeightLabel;
     const firstBreak = hardware ? centerX + eachBreak / 1.5 : centerX + eachBreak + 5;
     const status = findStatus(endpoint.id!);
-    const hardwareYLabel = hardware ? textY + 25 : textY + 10;
+    const hardwareYLabel = hardware ? textY + 15 : textY;
 
     const thirdLabel = {
       x: textX,
       y: hardwareYLabel,
       width: smWidthLabel,
-      height: hardwareLabel,
+      height: mdHeightLabel,
       firstText: `Endpoint ${index + 1}`,
       bgpActive: endpoint.bgp,
       natActive: endpoint.nat!,
-      hardware
+      hardware,
+      theme
     };
 
     const line = {
       y: 0,
       x: 0,
-      color: 'black',
+      color: colors.lineColor,
       points: [centerX, centerY, firstBreak, centerY, firstBreak, centerLabel, centerX + eachBreak * 3, centerLabel]
     };
     const connectStatus = {
@@ -97,7 +99,8 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
       title: `Remote Site ${index + 1}`,
       endpoint,
       lineWidth: hardware ? dimensions - 650 : dimensions - 750,
-      monitoring: status
+      monitoring: status,
+      theme
     };
 
     return (
@@ -111,7 +114,6 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
 
   const vlansLabel =
     !hardware &&
-    vlan &&
     vlan.map(({ vlan, lan_ip }, index) => {
       const centerX = x - 32.5;
       const centerY = y + 65 + heightHeader + index * 100 + getCenterVlan();
@@ -121,7 +123,8 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
         width: smWidthLabel,
         height: 75,
         vlan: vlan.toString(),
-        lan_ip
+        lan_ip,
+        theme
       };
       const firstBreak = +paddingBox + smWidthLabel + eachBreak + 42.5;
       const labelCenter = y + height / 2 + paddingBox / 2 + 12.5;
@@ -138,9 +141,9 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     });
 
   const hardwareLine = {
-    x: x + paddingBox + 95,
+    x: x + paddingBox + 100,
     y: y + height / 2 + 20,
-    color: 'black',
+    color: colors.lineColor,
     points: [0, 0, 75, 0]
   };
 
@@ -150,7 +153,8 @@ export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, ti
     width: 40,
     height: 40,
     color: '#c3d7df',
-    text: 'Cat9300(X)'
+    text: 'Cat9300(X)',
+    theme
   };
 
   if (hardware)
