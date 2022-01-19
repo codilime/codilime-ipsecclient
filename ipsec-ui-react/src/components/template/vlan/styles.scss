@@ -138,5 +138,9 @@
   &__error {
     color: $red;
     border: 1px solid $red;
+    &__message {
+      color: $red;
+      font-size: $basic-size;
+    }
   }
 }

@@ -2,6 +2,7 @@ import { FC, useMemo } from 'react';
 import { TopBar, SideBar } from 'layout/';
 import { Loading } from 'template';
 import { useVrfLogic } from 'hooks/';
+import 'style/global.scss';
 import './styles.scss';
 
 export const MainLayout: FC = ({ children }) => {

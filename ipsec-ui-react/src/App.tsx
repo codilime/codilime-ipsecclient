@@ -15,7 +15,6 @@ const App: FC = () => {
   }, []);
 
   useLayoutEffect(() => {
-    fetchCerts();
     if (!loading) fetchVrfData();
   }, [loading]);
 

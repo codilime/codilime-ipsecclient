@@ -12,7 +12,7 @@ interface NotificationType {
 export const Notification: FC<NotificationType> = ({ open, handleToggle }) => {
   const { openLogs, handleOpenLogs, notifications } = useNotificationLogic();
 
-  const newNotification = notifications.length ? <CircleInfo /> : null;
+  const newNotification = !notifications.length ? <CircleInfo /> : null;
   const logs = notifications.reverse();
 
   useEffect(() => {

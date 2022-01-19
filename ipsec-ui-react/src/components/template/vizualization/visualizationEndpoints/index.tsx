@@ -94,7 +94,7 @@ export const VisualizationEndpoints: FC<VisualizationEndpoints> = ({ data, dimen
 
   if (hardware)
     return (
-      <Stage width={dimensions} height={endpoint!.length * 110 + 90}>
+      <Stage width={dimensions} height={endpoint!.length * 110 + 100}>
         <Layer>
           <VisualizationVrf {...{ ...hardwareBox, hardware, theme }} />
         </Layer>

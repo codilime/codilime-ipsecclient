@@ -1,7 +1,7 @@
 import { FC } from 'react';
-import { Wrapper, EachNotification } from 'template';
-import classNames from 'classnames';
+import { EachNotification } from 'template';
 import { NotificationsType } from 'interface/index';
+import classNames from 'classnames';
 import './styles.scss';
 
 interface BoxNotificationType {
@@ -20,9 +20,16 @@ export const BoxNotification: FC<BoxNotificationType> = ({ open, handleToggle, n
 
   return (
     <div className={classNames('notification', { notification__active: open })} onMouseLeave={handleToggle}>
-      <Wrapper {...{ title: 'Unsaved changes', headerAction: 'Show all logs', small: true, onClick: handleOpenLogs }}>
-        <div className="notification__content">{displayNotification}</div>
-      </Wrapper>
+      <header className="notification__header">
+        <h3 className="notification__title">
+          New Notifications <span className="notification__amount">2</span>
+        </h3>
+        <button className="notification__show">Show all</button>
+      </header>
+      <div className="notification__content">{displayNotification}</div>
+      <div className="notification__footer">
+        <button className="notification__mark">Mark all as read</button>
+      </div>
     </div>
   );
 };

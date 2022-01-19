@@ -14,11 +14,11 @@ interface VisualizationVrf extends Visualization {
   height: number;
   width: number;
   endpoint: EndpointsType[];
-  monitoring: MetricsType[];
+  monitoring?: MetricsType[];
   hardware: boolean;
 }
 
-export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, title, endpoint, dimensions, monitoring, hardware, vlan, theme }) => {
+export const VisualizationVrf: FC<VisualizationVrf> = ({ x, y, width, height, title, endpoint, dimensions, monitoring = [], hardware, vlan, theme }) => {
   const { lgHeightLabel, mdHeightLabel, smWidthLabel, paddingBox, heightHeader } = variable;
   const eachBreak = hardware ? 35 : 25;
 

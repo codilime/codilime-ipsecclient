@@ -190,7 +190,11 @@ export const defaultVrf: ContextProps = {
   hardwareCrypto: hardwareCrypto,
   certificates: [],
   vrf: [],
-  notifications: [],
+  notifications: [
+    { id: 1, message: 'testowa wiadomość', errorTime: '10.1.1.1' },
+    { id: 2, message: 'testowa wiadomość', errorTime: '10.1.1.1' },
+    { id: 3, message: 'testowa wiadomość', errorTime: '10.1.1.1' }
+  ],
   sourceInterface: [],
   loading: false,
   hardware: false,

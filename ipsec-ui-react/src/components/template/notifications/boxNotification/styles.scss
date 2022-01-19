@@ -1,33 +1,85 @@
 @import 'style/settings.scss';
 
 .notification {
+  background-color: var(--backgroundColor);
+  border-radius: $border-radius-lg;
   position: absolute;
   top: 120%;
   right: 25%;
   min-width: 320px;
-  background-color: white;
+  padding: 16px;
   opacity: 0;
   visibility: hidden;
-  transition: $transition;
+  transition: all 0.3s ease-in;
+  border: 1px solid var(--borderColor);
+
   &__active {
     opacity: 1;
     visibility: visible;
   }
-  &__wrapper {
-    margin: 0;
-    font-size: 10px;
+  &__header {
+    transition: $transition;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--borderCerts);
+    padding: 5px 5px 16px;
+  }
+  &__title {
+    display: flex;
+    font-size: $basic-size;
+    font-weight: 500;
+    transition: $transition;
+    color: var(--titleColor);
+  }
+  &__amount {
+    text-align: center;
+    display: inline-block;
+    border-radius: 50%;
+    margin-left: 10px;
+    width: 24px;
+    line-height: 24px;
+    height: 24px;
+    font-size: 12px;
+    color: $blue;
+    font-weight: 500;
+    background-color: var(--backgroundHoverVrf);
+  }
+  &__show {
+    min-width: 70px;
+    font-weight: 500;
+    background-color: var(--backgroundColor);
+    transition: $transition;
+    border: none;
+    color: $blue;
+    height: 23px;
+    font-size: $small-size;
+    cursor: pointer;
+  }
+  &__mark {
+    min-width: 70px;
+    font-weight: 500;
+    background-color: var(--backgroundColor);
+    transition: $transition;
+    border: none;
+    color: $blue;
+    height: 23px;
+    font-size: $basic-size;
+    cursor: pointer;
+  }
+  &__footer {
+    transition: $transition;
+    border-top: 1px solid var(--borderCerts);
+    padding-top: 16px;
+    text-align: center;
   }
   &__content {
-    max-height: 245px;
+    max-height: 500px;
     overflow-y: scroll;
   }
   &__each {
     padding: $padding-md;
     border-bottom: $wrapper-border;
-  }
-  &__description {
-    margin: $margin-md 0px;
-    color: red;
   }
   &__btn {
     color: $primary;
@@ -36,7 +88,9 @@
     cursor: pointer;
   }
   &__empty {
-    padding: $padding-md;
+    font-size: $basic-size;
+    color: var(--inputText);
+    padding: 24px 24px 12px;
     display: flex;
     justify-content: center;
     align-items: center;

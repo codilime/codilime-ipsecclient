@@ -4,6 +4,7 @@ import { HeadersLog } from './headersLog';
 import { headerLogs } from 'db';
 import './styles.scss';
 import { VrfsLogs } from './vrfsLogs';
+import { Dotted } from '../loading';
 
 interface LogsType {
   logData: { log: string; name: string }[];
@@ -12,7 +13,6 @@ interface LogsType {
 
 export const Logs: FC<LogsType> = ({ logData, open }) => {
   const [activePage, setActivePage] = useState<string>('api');
-
   const handleSetActivePage = (name: string) => setActivePage(name);
 
   useLayoutEffect(() => {
@@ -46,6 +46,15 @@ export const Logs: FC<LogsType> = ({ logData, open }) => {
   });
 
   const displayVrfsLogs = <VrfsLogs {...{ vrfsLogs, activePage: activePage === 'vrfs' }} />;
+
+  if (!logData.length && open) {
+    return (
+      <article className="logs">
+        <HeadersLog {...{ headerLogs, active: activePage, onClick: handleSetActivePage }} />
+        <Dotted loading={!logData.length} />
+      </article>
+    );
+  }
 
   return (
     <article className="logs">
