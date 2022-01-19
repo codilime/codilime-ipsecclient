@@ -946,21 +946,22 @@ func (a *App) getErrors(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) getSourceInterfaces(w http.ResponseWriter, r *http.Request) {
-	key, err := getPassFromHeader(r.Header)
-	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error())
-		return
-	}
-	switchCreds, err := a.getSwitchCreds(key)
-	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	sourceInterfaces, err := config.GetSourceInterfaces(*switchCreds)
-	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+	// key, err := getPassFromHeader(r.Header)
+	// if err != nil {
+	// 	a.respondWithError(w, http.StatusUnauthorized, err.Error())
+	// 	return
+	// }
+	// switchCreds, err := a.getSwitchCreds(key)
+	// if err != nil {
+	// 	a.respondWithError(w, http.StatusInternalServerError, err.Error())
+	// 	return
+	// }
+	// sourceInterfaces, err := config.GetSourceInterfaces(*switchCreds)
+	// if err != nil {
+	// 	a.respondWithError(w, http.StatusInternalServerError, err.Error())
+	// 	return
+	// }
+	sourceInterfaces := []string{"GigabitEthernet1", "GigabitEthernet2", "SourceInterface1", "SourceInterface2", "eth123", "eth321"}
 	api := sico_yang.SicoIpsec_Api{
 		SourceInterface: db.SourceInterfacesToYang(sourceInterfaces),
 	}
