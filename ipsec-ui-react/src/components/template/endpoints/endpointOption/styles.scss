@@ -1,6 +1,8 @@
 @import 'style/settings.scss';
 
 .endpointOption {
+  background-color: var(--backgroundHeader);
+  transition: all 0.3s ease-in;
   position: absolute;
   top: 100%;
   left: 50%;
@@ -8,11 +10,10 @@
   box-shadow: $endpoint-option-shadow;
   visibility: hidden;
   opacity: 0;
-  background-color: var(--backgroundHeader);
+
   width: 100%;
   max-width: 120px;
   z-index: 4;
-  transition: $transition;
 
   &__active {
     visibility: visible;
@@ -31,12 +32,8 @@
     font-size: 14px;
     padding: 8px;
     cursor: pointer;
-    &:first-of-type {
-      border-bottom: $table-border;
-    }
-    &:nth-of-type(2) {
-      border-bottom: $table-border;
-    }
+    color: var(--columnColor);
+    border-bottom: 2px solid var(--borderColor);
   }
   &__delete {
     color: $red;

@@ -1,5 +1,5 @@
 import { useState, FC } from 'react';
-import { MdDarkMode } from 'react-icons/md';
+import { MdOutlineDarkMode, MdOutlineWbSunny } from 'react-icons/md';
 import Switch from 'react-switch';
 import { Button } from 'common/';
 import { Notification, Logout, Setting, PopupLogs } from 'template';
@@ -21,12 +21,13 @@ export const TopBar: FC = () => {
       <div className="topBar__left">
         <div className="topBar__switch">
           <Switch
-            checked={theme === 'dark'}
+            checked={theme === 'light'}
             onChange={() => setTheme(theme === ThemeType.light ? ThemeType.dark : ThemeType.light)}
             onColor="#00abe7"
-            onHandleColor="#00abe7"
-            handleDiameter={20}
-            uncheckedIcon={<MdDarkMode className="topBar__darkIcon" />}
+            offColor="#00abe7"
+            handleDiameter={18}
+            checkedIcon={<MdOutlineWbSunny className="topBar__modeIcon" />}
+            uncheckedIcon={<MdOutlineDarkMode className="topBar__modeIcon" />}
             boxShadow="0px 1px 3px rgba(0, 0, 0, 0.12), 0px 1px 1px 0px rgba(0, 0, 0, 0.14) "
             activeBoxShadow="0px 0px 1px 4px rgba(0, 0, 0, 0.2)"
             height={22}
