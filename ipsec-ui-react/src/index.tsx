@@ -1,18 +1,18 @@
 import { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom';
 import { Loading } from 'template';
-import { ThemeProvider, VrfsProvider } from 'context';
+import { ThemeProvider, VrfsProvider, AppProvider } from 'context';
 const App = lazy(() => import('./App'));
 
 ReactDOM.render(
   <Suspense fallback={<Loading loading={true}></Loading>}>
-    <VrfsProvider>
+    <AppProvider>
       <ThemeProvider>
         <App />
       </ThemeProvider>
-    </VrfsProvider>
+    </AppProvider>
   </Suspense>,
   document.getElementById('root')
 );
 
-module.hot && module.hot.accept();
+// module.hot && module.hot.accept();

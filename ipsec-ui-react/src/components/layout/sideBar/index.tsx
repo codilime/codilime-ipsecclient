@@ -1,7 +1,7 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from 'common/';
-import { useGetLocation, useGetVrfs, useThemeContext } from 'hooks/';
+import { useDataContext, useGetLocation, useGetVrfs, useThemeContext } from 'hooks/';
 import { IoHardwareChip } from 'react-icons/io5';
 import { HardwareId } from 'constant/';
 import classNames from 'classnames';
@@ -10,7 +10,9 @@ import WhiteLogo from 'images/white_logo.png';
 import './styles.scss';
 
 export const SideBar: FC = () => {
-  const { vrf } = useGetVrfs();
+  const {
+    appContext: { vrf }
+  } = useDataContext();
   const { currentLocation } = useGetLocation();
   const { theme } = useThemeContext();
 
@@ -22,17 +24,19 @@ export const SideBar: FC = () => {
       })
     : vrf;
 
-  const listContext = vrf ? (
-    listVrf.map(({ client_name, id }) => (
-      <li className={classNames('sideBar__eachVrf', { sideBar__eachVrf__active: id == parseInt(currentLocation) })} key={id}>
-        <Link to={`/vrf/${id}`} className={classNames('sideBar__link')}>
-          {client_name} {id === parseInt(HardwareId) && <IoHardwareChip className="sideBar__icon" />}
-        </Link>
-      </li>
-    ))
-  ) : (
-    <li>no connections</li>
-  );
+  const listContext = useMemo(() => {
+    return vrf.length ? (
+      listVrf.map(({ client_name, id }) => (
+        <li className={classNames('sideBar__eachVrf', { sideBar__eachVrf__active: id == parseInt(currentLocation) })} key={id}>
+          <Link to={`/vrf/${id}`} className={classNames('sideBar__link')}>
+            {client_name} {id === parseInt(HardwareId) && <IoHardwareChip className="sideBar__icon" />}
+          </Link>
+        </li>
+      ))
+    ) : (
+      <li>no connections</li>
+    );
+  }, [vrf, currentLocation, HardwareId]);
 
   return (
     <div className="sideBar">

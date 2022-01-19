@@ -1,42 +1,44 @@
-import { useEffect,useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useCallback } from 'react';
 import { useGetLocation, useAppContext } from 'hooks/';
 import { HardwareId } from 'constant/';
-import { defaultVrf } from 'db';
+import { defaultVrf, DefaultVrfData } from 'db';
+import { useDataContext, useVrfContext } from './useAppContext';
 
 export const useGetVrfs = (vrfId?: string) => {
   const { currentLocation, history } = useGetLocation();
-  const {
-    context: { vrf },
-    setContext
-  } = useAppContext();
+  const { appContext, setAppContext } = useDataContext();
+  const { vrfContext, setVrfContext } = useVrfContext();
+  const { vrf, hardware } = appContext;
+  // const {
+  //   context: { vrf, hardware },
+  //   setContext
+  // } = useAppContext();
 
-  const findActiveVrfPage = () => {
+  const findActiveVrfPage = useCallback(() => {
     if (!vrf.length) {
-      setContext((prev) => ({ ...prev, data: defaultVrf.data }));
+      setVrfContext(DefaultVrfData);
       return history.push('/vrf/create');
     }
     if (!vrfId) {
-      return setContext((prev) => ({ ...prev, data: defaultVrf.data }));
+      return setVrfContext(DefaultVrfData);
     }
-
     const currentVrf = vrf.filter(({ id }) => id === parseInt(vrfId))[0];
-
     if (currentVrf) {
-      return setContext((prev) => ({ ...prev, data: currentVrf }));
+      return setVrfContext(currentVrf);
     }
-  };
+  }, [vrf, vrfId]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (currentLocation === HardwareId) {
-      setContext((prev) => ({ ...prev, hardware: true }));
-    } else {
-      setContext((prev) => ({ ...prev, hardware: false }));
+      setAppContext((prev) => ({ ...prev, hardware: true }));
+    } else if (hardware) {
+      setAppContext((prev) => ({ ...prev, hardware: false }));
     }
   }, [currentLocation]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (currentLocation) findActiveVrfPage();
   }, [currentLocation, vrf]);
 
-  return { vrf, findActiveVrfPage };
+  return { vrfContext };
 };

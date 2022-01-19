@@ -20,14 +20,14 @@ export const SettingContent: FC<SettingContentType> = ({ activeSetting, open, ha
       option: 'Profile',
       component: <Login {...{ handleToggle }} />
     },
-    {
-      option: 'RestConf',
-      component: <RestConf {...{ open, handleToggle }} />
-    },
-    {
-      option: 'Certificates',
-      component: <SettingCertificates {...{ handleToggle }} />
-    }
+    // {
+    //   option: 'RestConf',
+    //   component: <RestConf {...{ open, handleToggle }} />
+    // },
+    // {
+    //   option: 'Certificates',
+    //   component: <SettingCertificates {...{ handleToggle }} />
+    // }
   ];
 
   return (

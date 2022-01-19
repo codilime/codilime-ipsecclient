@@ -199,6 +199,35 @@ export const defaultVrf: ContextProps = {
   restConf: false
 };
 
+export const defaultData = {
+  vrf: [],
+  notifications: [],
+  sourceInterface: [],
+  hardware: false,
+  loading: false,
+  error: null,
+  success: false
+};
+
+export const DefaultVrfData = {
+  client_name: '',
+  crypto_ph1: '',
+  crypto_ph2: '',
+  physical_interface: 'eth0',
+  active: false,
+  ospf: false,
+  local_as: 0,
+  vlan: [],
+  endpoint: []
+};
+
+export const Context = {};
+
+export const Crypto = {
+  softwareCrypto: softwareCrypto,
+  hardwareCrypto: hardwareCrypto
+};
+
 export const tableSoftwareHeaderSchema = [
   { header: 'Remote IP' },
   { header: 'Tunnel local IP' },

@@ -1,6 +1,6 @@
 import { useState, createContext, FC, Dispatch, SetStateAction, useMemo } from 'react';
-import { defaultVrf } from 'db';
-import { ContextProps } from 'interface/index';
+import { defaultData, defaultVrf, DefaultVrfData } from 'db';
+import { AppContextType, ContextProps, VrfDataTypes } from 'interface/index';
 
 type ContextType = {
   context: ContextProps;
@@ -44,4 +44,44 @@ export const ThemeProvider: FC = ({ children }) => {
     [theme]
   );
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+};
+
+type VrfContext = {
+  vrfContext: VrfDataTypes;
+  setVrfContext: Dispatch<SetStateAction<VrfDataTypes>>;
+};
+
+export const VrfContext = createContext<VrfContext | null>(null);
+
+export const VrfProvider: FC = ({ children }) => {
+  const [vrfContext, setVrfContext] = useState<VrfDataTypes>(DefaultVrfData);
+
+  const value = useMemo(
+    () => ({
+      vrfContext,
+      setVrfContext
+    }),
+    [vrfContext]
+  );
+  return <VrfContext.Provider value={value}>{children}</VrfContext.Provider>;
+};
+
+type AppContext = {
+  appContext: AppContextType;
+  setAppContext: Dispatch<SetStateAction<AppContextType>>;
+};
+
+export const AppContext = createContext<AppContext | null>(null);
+
+export const AppProvider: FC = ({ children }) => {
+  const [appContext, setAppContext] = useState<AppContextType>(defaultData);
+
+  const value = useMemo(
+    () => ({
+      appContext,
+      setAppContext
+    }),
+    [appContext]
+  );
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

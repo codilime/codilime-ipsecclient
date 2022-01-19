@@ -5,20 +5,17 @@ import { useInitData } from 'hooks/';
 import { Routers } from './routers';
 import { Theme } from './components/theme';
 import 'style/global.scss';
+import { VrfProvider } from 'context';
 
 const App: FC = () => {
-  const { fetchVrfData, fetchCerts, fetchInitialData, loading } = useInitData();
+  //const { fetchVrfData, fetchCerts, fetchInitialData, loading } = useInitData();
+  const { fetchVrfData, fetchCerts, fetchTest } = useInitData();
 
   useLayoutEffect(() => {
-    fetchCerts();
-    // fetchInitialData();
+    fetchTest();
   }, []);
 
-  useLayoutEffect(() => {
-    fetchCerts();
-    if (!loading) fetchVrfData();
-  }, [loading]);
-
+  console.log('app');
   return (
     <Router>
       <Theme>

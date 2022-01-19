@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useCreateVRFMainView } from 'hooks/';
+import { useCreateVRFMainView, useGetVrfs } from 'hooks/';
 import { Wrapper, Vlan, CryptoField, Field } from 'template';
 import { Button } from 'common/';
 import classNames from 'classnames';
@@ -7,19 +7,23 @@ import classNames from 'classnames';
 import './styles.scss';
 
 export const FormDetail: FC = () => {
-  const { handleSubmit, submit, reset, hardware, errors, formAttributes, control } = useCreateVRFMainView();
-  const { data, crypto, details, isDirty, setValue, register } = formAttributes;
+  const { vrfContext } = useGetVrfs();
+  console.log('test');
+  console.log(vrfContext);
 
-  const displayDetails = details.map((el) => {
-    if (el.name === 'crypto_ph1' || el.name === 'crypto_ph2') {
-      return <CryptoField {...{ ...el, key: el.name, crypto: crypto[el.name], setValue, value: data[el.name], error: errors[el.name] }} />;
-    }
-    return <Field {...{ ...el, key: el.name, value: data[el.name], register: register(el.name), error: errors[el.name], className: 'field__detail' }} />;
-  });
+  // const { handleSubmit, submit, reset, hardware, errors, formAttributes, control } = useCreateVRFMainView();
+  // const { data, crypto, details, isDirty, setValue, register } = formAttributes;
+
+  // const displayDetails = details.map((el) => {
+  //   if (el.name === 'crypto_ph1' || el.name === 'crypto_ph2') {
+  //     return <CryptoField {...{ ...el, key: el.name, crypto: crypto[el.name], setValue, value: data[el.name], error: errors[el.name] }} />;
+  //   }
+  //   return <Field {...{ ...el, key: el.name, value: data[el.name], register: register(el.name), error: errors[el.name], className: 'field__detail' }} />;
+  // });
 
   return (
     <Wrapper title="VRF details">
-      <form autoComplete="off" className="form" onSubmit={handleSubmit(submit)}>
+      {/* <form autoComplete="off" className="form" onSubmit={handleSubmit(submit)}>
         <fieldset className="form__fieldset">
           <div className={classNames('form__details', { form__details__hardware: hardware })}>
             {displayDetails}
@@ -31,7 +35,7 @@ export const FormDetail: FC = () => {
           </div>
           {!hardware && <Vlan {...{ control, reset, errorSchema: errors['vlan'] }} />}
         </fieldset>
-      </form>
+      </form> */}
     </Wrapper>
   );
 };

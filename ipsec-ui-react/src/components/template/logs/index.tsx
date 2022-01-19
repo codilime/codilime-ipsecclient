@@ -2,9 +2,8 @@ import { FC, useState, useLayoutEffect } from 'react';
 import { EachLog } from './eachLog';
 import { HeadersLog } from './headersLog';
 import { headerLogs } from 'db';
-import './styles.scss';
 import { VrfsLogs } from './vrfsLogs';
-
+import './styles.scss';
 interface LogsType {
   logData: { log: string; name: string }[];
   open: boolean;

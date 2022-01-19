@@ -73,7 +73,20 @@ export interface ContextProps {
   sourceInterface: string[] | [];
 }
 
+export interface SettingContextType {
+  certificates: CertificatesType[];
+  restConf: boolean;
+}
 
+export interface AppContextType {
+  vrf: VrfDataTypes[] | [];
+  notifications: NotificationsType[];
+  sourceInterface: string[] | [];
+  hardware: boolean;
+  loading: boolean;
+  error: any;
+  success: boolean;
+}
 
 type NameProps = {
   client_name: 'client_name';

@@ -37,9 +37,9 @@ export const TopBar: FC = () => {
         <Button className="topBar__log" onClick={() => handleOpenAction('logs')}>
           View logs
         </Button>
-        <Notification {...{ open: openPopup === 'notice', handleToggle: () => handleOpenAction('notice') }} />
+        {/* <Notification {...{ open: openPopup === 'notice', handleToggle: () => handleOpenAction('notice') }} /> */}
         <Setting {...{ open: openPopup === 'setting', handleToggle: () => handleOpenAction('setting') }} />
-        <PopupLogs {...{ open: openPopup === 'logs', handleToggle: () => handleOpenAction('logs') }} />
+        {/* <PopupLogs {...{ open: openPopup === 'logs', handleToggle: () => handleOpenAction('logs') }} /> */}
       </div>
     </header>
   );

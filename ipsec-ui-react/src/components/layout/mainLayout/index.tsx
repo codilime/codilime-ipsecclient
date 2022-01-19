@@ -1,19 +1,22 @@
 import { FC, useMemo } from 'react';
 import { TopBar, SideBar } from 'layout/';
 import { Loading } from 'template';
-import { useVrfLogic } from 'hooks/';
+import { useDataContext, useVrfLogic } from 'hooks/';
 import './styles.scss';
+import { VrfProvider } from 'context';
 
 export const MainLayout: FC = ({ children }) => {
   const {
-    context: { loading, vrf }
-  } = useVrfLogic();
+    appContext: { loading }
+  } = useDataContext();
 
   return (
     <section className="mainLayout">
       <TopBar />
       <SideBar />
-      <article className="mainLayout__content">{children}</article>
+      <article className="mainLayout__content">
+        <VrfProvider>{children}</VrfProvider>
+      </article>
       <Loading {...{ loading }} />
     </section>
   );
