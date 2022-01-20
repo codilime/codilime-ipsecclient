@@ -15,12 +15,12 @@ interface EachEndpointType {
 
 export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, handleActionVrfEndpoints, id }) => {
   const { open, handleToggle } = useToggle();
-  const [advantage, setAdventage] = useState(false);
+  const [advanced, setAdvanced] = useState(false);
   const { show, handleToggleModal } = useModalLogic();
   const { endpointAttributes, handleAddNewEndpoint, handleActiveEdit } = useEndpointLogic({ currentEndpoint, active, handleActionVrfEndpoints, id });
-  const { endpointSchema, endpointAdvantageSchema, endpoints, edit, error, sourceInterface, onChange, handleGeneratePskField } = endpointAttributes;
+  const { endpointSchema, endpointAdvancedSchema, endpoints, edit, error, sourceInterface, onChange, handleGeneratePskField } = endpointAttributes;
 
-  const handleOpenAdvantage = () => setAdventage((prev) => !prev);
+  const handleOpenAdvanced = () => setAdvanced((prev) => !prev);
 
   const displayEndpoint = endpointSchema.map((el) => {
     switch (el.name) {
@@ -60,9 +60,9 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
     }
   });
 
-  const advantageConfiguration = endpointAdvantageSchema.map((el) => (
+  const advantageConfiguration = endpointAdvancedSchema.map((el) => (
     <td key={el.name} className={classNames('advantage__column')}>
-      <label className="advantage__label">{el.text}</label>
+      <label className="advanced __label">{el.text}</label>
       <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints.authentication['local_id'] }} />
     </td>
   ));
@@ -77,16 +77,12 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
     </EndpointButton>
   );
 
-  const advantageIcon = advantage ? (
-    <BiArrowFromTop className="table__toggle__icon" onClick={handleOpenAdvantage} />
-  ) : (
-    <BiArrowFromLeft className="table__toggle__icon" onClick={handleOpenAdvantage} />
-  );
+  const advancedIcon = advanced ? <BiArrowFromTop className="table__toggle__icon" onClick={handleOpenAdvanced} /> : <BiArrowFromLeft className="table__toggle__icon" onClick={handleOpenAdvanced} />;
 
   return (
     <>
       <tr className={classNames('table__row', { table__row__edit: edit, table__row__advantage: true })}>
-        {edit && <td className="table__toggle">{advantageIcon}</td>}
+        {edit && <td className="table__toggle">{advancedIcon}</td>}
         {displayEndpoint}
         <td className="table__column table__bool">
           {activeButton}
@@ -99,10 +95,10 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
           </Modal>
         </td>
       </tr>
-      {advantage && (
-        <tr className="advantage">
-          <td className="advantage__header">
-            <h3 className="advantage__title">Advantage Configuration</h3>
+      {advanced && (
+        <tr className="advanced ">
+          <td className="advanced __header">
+            <h3 className="advanced __title">Advanced Configuration</h3>
           </td>
           {advantageConfiguration}
         </tr>

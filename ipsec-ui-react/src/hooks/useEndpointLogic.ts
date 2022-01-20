@@ -1,5 +1,5 @@
 import { useState, useEffect, ChangeEvent, useLayoutEffect } from 'react';
-import { endpointInputSchema, endpointHardwareSchema, EndpointSchema, endpointAdvantageSchema } from 'db';
+import { endpointInputSchema, endpointHardwareSchema, EndpointSchema, endpointAdvancedSchema } from 'db';
 import { useValidateEndpoint, useVrfLogic, useChoiceCertyficate } from 'hooks/';
 import { EndpointsType } from 'interface/index';
 
@@ -76,7 +76,7 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
   const endpointAttributes = {
     endpoints,
     endpointSchema,
-    endpointAdvantageSchema,
+    endpointAdvancedSchema,
     error,
     edit,
     sourceInterface,

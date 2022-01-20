@@ -252,7 +252,7 @@ export const endpointInputSchema: EndpointSchemaType[] = [
   { type: 'checkbox', name: 'bgp' }
 ];
 
-export const endpointAdvantageSchema: EndpointSchemaType[] = [{ type: 'text', name: 'local_id', placeholder: 'Local id', text: 'Local ID:' }];
+export const endpointAdvancedSchema: EndpointSchemaType[] = [{ type: 'text', name: 'local_id', placeholder: 'Local id', text: 'Local ID:' }];
 
 export const endpointHardwareSchema: EndpointSchemaType[] = [
   { type: 'text', name: 'remote_ip_sec', placeholder: 'Remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
