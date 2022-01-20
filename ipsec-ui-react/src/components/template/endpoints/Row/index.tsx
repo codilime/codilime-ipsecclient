@@ -61,8 +61,8 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
   });
 
   const advantageConfiguration = endpointAdvancedSchema.map((el) => (
-    <td key={el.name} className={classNames('advantage__column')}>
-      <label className="advanced __label">{el.text}</label>
+    <td key={el.name} className={classNames('advanced__column')}>
+      <label className="advanced__label">{el.text}</label>
       <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints.authentication['local_id'] }} />
     </td>
   ));
@@ -96,9 +96,9 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
         </td>
       </tr>
       {advanced && (
-        <tr className="advanced ">
-          <td className="advanced __header">
-            <h3 className="advanced __title">Advanced Configuration</h3>
+        <tr className="advanced">
+          <td className="advanced__header">
+            <h3 className="advanced__title">Advanced Configuration</h3>
           </td>
           {advantageConfiguration}
         </tr>
