@@ -1,13 +1,49 @@
-import { useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useAppContext } from 'hooks/';
+import { NotificationsType } from 'interface/index';
+import { useFetchData } from './useFetchData';
 
 export const useNotificationLogic = () => {
   const {
-    context: { notifications }
+    context: { notifications, loading }
   } = useAppContext();
+  const { fetchErrorData } = useFetchData();
 
   const [openLogs, setOpenLogs] = useState(false);
-  const handleOpenLogs = () => setOpenLogs((prev) => !prev);
+  const [displayNotifications, setDisplayNotifications] = useState<NotificationsType[] | []>([]);
+  const [newNotifications, setNewNotifications] = useState<NotificationsType[] | []>([]);
 
-  return { openLogs, handleOpenLogs, notifications };
+  useLayoutEffect(() => {
+    if (!displayNotifications.length) setDisplayNotifications(notifications);
+  }, [notifications]);
+
+  const handleFetchNewNotifications = async () => {
+    const { error } = await fetchErrorData();
+    if (!error) return;
+    const newNotifications = error.filter((err: any) => !displayNotifications.find((notice) => notice.id === err.id));
+    setNewNotifications(newNotifications);
+  };
+
+  useEffect(() => {
+    if (displayNotifications.length) {
+      handleFetchNewNotifications();
+    }
+  }, [loading]);
+
+  const handleReadNotification = (notification: number) => {
+    const readedNotifications = newNotifications.filter(({ id }) => id === notification);
+    const otherNotifications = newNotifications.filter(({ id }) => {
+      id !== notification;
+    });
+    setNewNotifications(otherNotifications);
+    setDisplayNotifications((prev) => [...prev, ...readedNotifications]);
+  };
+
+  const handleReadAllNotification = () => {
+    setNewNotifications([]);
+    setDisplayNotifications((prev) => [...prev, ...newNotifications]);
+  };
+
+  const handleOpenLogs = () => setOpenLogs((prev) => !prev);
+  return { handleOpenLogs, openLogs, displayNotifications, newNotifications, handleReadNotification, handleReadAllNotification };
 };

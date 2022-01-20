@@ -2,8 +2,8 @@ import { FC, useRef, useEffect, useState } from 'react';
 import { Wrapper, VisualizationEndpoints } from 'template';
 import { MetricsType } from 'interface/index';
 import { useAppContext, useFetchData, useThemeContext, useWindowDimensions } from 'hooks/';
-import './styles.scss';
 import { Dotted } from '../../loading';
+import './styles.scss';
 
 export const Visualization: FC = () => {
   const { width } = useWindowDimensions();
@@ -29,9 +29,10 @@ export const Visualization: FC = () => {
 
   const handleFetchStatus = async () => {
     if (!data.id || endpoint === null || !endpoint.length) return;
-    const status = await fetchEndpointStatus(data.id);
-
-    setMonitoring(status.monitoring[0].endpoint);
+    // const { monitoring } = await fetchEndpointStatus(data.id);
+    // if (monitoring) {
+    //   setMonitoring(monitoring[0].endpoint);
+    // }
   };
 
   useEffect(() => {

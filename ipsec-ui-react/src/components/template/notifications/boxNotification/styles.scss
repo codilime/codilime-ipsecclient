@@ -19,10 +19,10 @@
   }
   &__header {
     transition: $transition;
+    border-bottom: 1px solid var(--borderCerts);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--borderCerts);
     padding: 5px 5px 16px;
   }
   &__title {
@@ -33,6 +33,8 @@
     color: var(--titleColor);
   }
   &__amount {
+    transition: $transition;
+    background-color: var(--backgroundHoverVrf);
     text-align: center;
     display: inline-block;
     border-radius: 50%;
@@ -43,29 +45,34 @@
     font-size: 12px;
     color: $blue;
     font-weight: 500;
-    background-color: var(--backgroundHoverVrf);
   }
   &__show {
-    min-width: 70px;
-    font-weight: 500;
     background-color: var(--backgroundColor);
     transition: $transition;
+    font-size: $small-size;
+    min-width: 70px;
+    font-weight: 500;
     border: none;
     color: $blue;
     height: 23px;
-    font-size: $small-size;
     cursor: pointer;
   }
   &__mark {
-    min-width: 70px;
-    font-weight: 500;
     background-color: var(--backgroundColor);
     transition: $transition;
+    min-width: 70px;
+    font-weight: 500;
     border: none;
     color: $blue;
     height: 23px;
     font-size: $basic-size;
     cursor: pointer;
+  }
+  &__new {
+    transition: $transition;
+    border-bottom: 1px solid var(--borderCerts);
+    max-height: 270px;
+    overflow-y: scroll;
   }
   &__footer {
     transition: $transition;
@@ -74,7 +81,7 @@
     text-align: center;
   }
   &__content {
-    max-height: 500px;
+    max-height: 270px;
     overflow-y: scroll;
   }
   &__each {

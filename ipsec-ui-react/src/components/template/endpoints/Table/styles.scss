@@ -9,10 +9,10 @@
     overflow: visible;
   }
   &__row--header {
+    padding-left: 20px;
     background-color: var(--backgroundHeader);
     border-bottom: 2px solid var(--borderColor);
     transition: $transition;
-
     display: flex;
     border-radius: $border-radius-lg $border-radius-lg 0 0;
   }
@@ -26,7 +26,7 @@
   &__header {
     &__column {
       font-size: $basic-size;
-      padding: $padding-md;
+      padding: 16px 12px;
       transition: $transition;
       color: var(--columnColor);
       width: 60%;
@@ -42,12 +42,18 @@
   &__body {
     font-size: 10px;
   }
-  &__row__edit {
-    transition: $transition;
-    background-color: var(--backgroundHeader) !important;
-    border: none;
-    border-radius: 0 0 8px 8px;
+  &__row {
+    &__edit {
+      transition: $transition;
+      background-color: var(--backgroundHeader) !important;
+      border: none;
+      border-radius: 0 0 8px 8px;
+    }
+    &__advantage {
+      border-radius: 0;
+    }
   }
+
   &__column {
     transition: $transition;
     padding: 8px 10px;
@@ -169,5 +175,47 @@
     font-size: 24px;
     color: $blue;
     margin-left: 15px;
+  }
+  &__toggle {
+    width: 20px;
+    font-size: 20px;
+    line-height: 56px;
+    padding: 0 5px;
+    cursor: pointer;
+  }
+}
+.advantage {
+  padding: 10px;
+  width: 100%;
+  transition: $transition;
+  background-color: var(--backgroundHeader);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  flex-direction: column;
+  border-top: 2px solid var(--borderColor);
+  border-radius: 0 0 8px 8px;
+  &__title {
+    font-size: $basic-size;
+    padding: 10px 24px 15px;
+    color: var(--columnColor);
+    text-align: left;
+    padding-bottom: 16px;
+  }
+  &__column {
+    display: flex;
+    margin-left: 5px;
+    padding: 8px 10px;
+    width: 300px;
+  }
+  &__label {
+    text-align: left;
+    transition: $transition;
+    color: var(--columnColor);
+    font-size: $basic-size;
+    padding: 10px;
+    line-height: 20px;
+    min-width: 100px;
+    font-weight: 500;
   }
 }

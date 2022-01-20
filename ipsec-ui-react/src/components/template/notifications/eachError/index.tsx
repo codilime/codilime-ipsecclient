@@ -3,12 +3,12 @@ import { FC } from 'react';
 interface EachErrorType {
   id: number;
   message: string;
-  errorTime: string;
+  time: string;
 }
 
-export const EachError: FC<EachErrorType> = ({ errorTime, message }) => (
+export const EachError: FC<EachErrorType> = ({ time, message }) => (
   <div className="notifications__log">
-    <p className="notifications__time">{errorTime}</p>
+    <p className="notifications__time">{time.split(':01')[0]}</p>
     <p className="notifications__response notifications__error">{message}</p>
   </div>
 );

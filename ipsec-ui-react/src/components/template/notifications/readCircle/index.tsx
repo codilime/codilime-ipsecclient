@@ -3,9 +3,9 @@ import classNames from 'classnames';
 import './styles.scss';
 
 interface ReadCircleType {
-  read: boolean;
+  active?: boolean;
 }
 
-export const ReadCircle: FC<ReadCircleType> = ({ read }) => {
-  return <span className={classNames('readCircle', { ReadCircle__active: read })}></span>;
+export const ReadCircle: FC<ReadCircleType> = ({ active }) => {
+  return <span className={classNames('readCircle', { readCircle__active: active })}></span>;
 };

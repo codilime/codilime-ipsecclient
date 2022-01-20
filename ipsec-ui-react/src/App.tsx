@@ -7,11 +7,12 @@ import { Theme } from './components/theme';
 import 'style/global.scss';
 
 const App: FC = () => {
-  const { fetchVrfData, fetchCerts, fetchInitialData, loading } = useInitData();
+  const { fetchVrfData, fetchCerts, fetchNotification, fetchSourceList, loading } = useInitData();
 
   useLayoutEffect(() => {
     fetchCerts();
-    // fetchInitialData();
+    fetchNotification();
+    fetchSourceList();
   }, []);
 
   useLayoutEffect(() => {

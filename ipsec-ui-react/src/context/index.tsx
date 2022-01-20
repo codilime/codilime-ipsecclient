@@ -18,6 +18,7 @@ export const VrfsProvider: FC = ({ children }) => {
     }),
     [context]
   );
+
   return <VrfsContext.Provider value={value}>{children}</VrfsContext.Provider>;
 };
 

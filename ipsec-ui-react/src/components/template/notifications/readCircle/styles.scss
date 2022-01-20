@@ -2,9 +2,14 @@
 
 .readCircle {
   display: inline-block;
-  margin-right: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: $blue;
+  transition: $transition;
+  background-color: var(--backgroundReadCircle);
+  &__active {
+    background-color: $blue;
+  }
 }

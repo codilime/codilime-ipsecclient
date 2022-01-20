@@ -1,4 +1,4 @@
-import { ContextProps, EndpointsType, DetailsTypes, EndpointSchemaType, CryptoTypes, SoftwareCryptoDataTypes, HeadersLogsType } from 'interface/index';
+import { ContextProps, EndpointsType, DetailsTypes, EndpointSchemaType, CryptoTypes, SoftwareCryptoDataTypes, HeadersLogsType, AdvantageConfigType } from 'interface/index';
 
 const softwareCryptoTypes: SoftwareCryptoDataTypes = {
   encryption: [
@@ -190,11 +190,7 @@ export const defaultVrf: ContextProps = {
   hardwareCrypto: hardwareCrypto,
   certificates: [],
   vrf: [],
-  notifications: [
-    { id: 1, message: 'testowa wiadomość', errorTime: '10.1.1.1' },
-    { id: 2, message: 'testowa wiadomość', errorTime: '10.1.1.1' },
-    { id: 3, message: 'testowa wiadomość', errorTime: '10.1.1.1' }
-  ],
+  notifications: [],
   sourceInterface: [],
   loading: false,
   hardware: false,
@@ -208,7 +204,6 @@ export const tableSoftwareHeaderSchema = [
   { header: 'Tunnel local IP' },
   { header: 'Tunnel peer IP' },
   { header: 'PSK / Certificates' },
-  { header: 'LOCAL ID' },
   { header: 'NAT' },
   { header: 'BGP' },
   { header: 'ACTION' }
@@ -219,7 +214,6 @@ export const tableHardwaHeaderSchema = [
   { header: 'Tunnel local IP' },
   { header: 'Tunnel peer IP' },
   { header: 'PSK / Certificates' },
-  { header: 'LOCAL ID' },
   { header: 'Remote AS' },
   { header: 'Source interface' },
   { header: 'BGP' },
@@ -244,6 +238,9 @@ export const EndpointSchema: EndpointsType = {
   nat: false,
   bgp: false
 };
+export const advantageSchema: AdvantageConfigType = {
+  local_id: ''
+};
 
 export const endpointInputSchema: EndpointSchemaType[] = [
   { type: 'text', name: 'remote_ip_sec', placeholder: 'Remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
@@ -254,6 +251,9 @@ export const endpointInputSchema: EndpointSchemaType[] = [
   { type: 'checkbox', name: 'nat' },
   { type: 'checkbox', name: 'bgp' }
 ];
+
+export const endpointAdvantageSchema: EndpointSchemaType[] = [{ type: 'text', name: 'local_id', placeholder: 'Local id', text: 'Local ID:' }];
+
 export const endpointHardwareSchema: EndpointSchemaType[] = [
   { type: 'text', name: 'remote_ip_sec', placeholder: 'Remote IP', tooltip: 'IP address (IPv4) for remote endpoint address' },
   { type: 'text', name: 'local_ip', placeholder: 'Local IP', tooltip: 'Local (*IPv4/v6) address assigned to tunnnel interface' },
