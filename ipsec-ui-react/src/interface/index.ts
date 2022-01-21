@@ -25,7 +25,7 @@ export interface EndpointsType {
 }
 
 export interface AdvantageConfigType {
-   local_id: string;
+  local_id: string;
 }
 export interface VrfDataTypes {
   client_name: string;
@@ -73,10 +73,8 @@ export interface ContextProps {
   error: any;
   success: boolean;
   restConf: boolean;
-  sourceInterface: string[] | [];
+  sourceInterface: { name: string }[] | [];
 }
-
-
 
 type NameProps = {
   client_name: 'client_name';
