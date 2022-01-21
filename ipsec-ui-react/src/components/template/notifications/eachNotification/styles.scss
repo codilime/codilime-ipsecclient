@@ -1,0 +1,30 @@
+@import 'style/settings.scss';
+
+.each {
+  margin: 16px 0;
+  padding: 8px 0px;
+  position: relative;
+  color: var(--titleColor);
+  transition: $transition;
+  border-radius: $border-radius-lg;
+  min-height: 76px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  cursor: pointer;
+  &__active {
+    background-color: var(--backgroundHoverVrf);
+  }
+  &:hover {
+    background-color: var(--backgroundHoverVrf);
+  }
+  &__time {
+    padding: 0 4px;
+    font-weight: 500;
+    font-size: $small-size;
+  }
+  &__description {
+    padding: 0px 26px;
+    font-size: 14px;
+  }
+}

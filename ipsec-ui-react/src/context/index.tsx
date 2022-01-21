@@ -18,6 +18,7 @@ export const VrfsProvider: FC = ({ children }) => {
     }),
     [context]
   );
+
   return <VrfsContext.Provider value={value}>{children}</VrfsContext.Provider>;
 };
 
@@ -35,7 +36,7 @@ type ContextThemeType = {
 export const ThemeContext = createContext<ContextThemeType | null>(null);
 
 export const ThemeProvider: FC = ({ children }) => {
-  const [theme, setTheme] = useState<ThemeType>(ThemeType.light);
+  const [theme, setTheme] = useState<ThemeType>(ThemeType.dark);
   const value = useMemo(
     () => ({
       theme,

@@ -1,7 +1,16 @@
 import { useFetchData, useAppContext } from 'hooks/';
+import { VrfDataTypes, NotificationsType, CertificatesType } from 'interface/index';
+import { useState, useLayoutEffect } from 'react';
+
+interface InitDataType {
+  vrf: VrfDataTypes[] | [];
+  notifications: NotificationsType[] | [];
+  certificates: CertificatesType[] | [];
+  sourceInterface: string[];
+}
 
 export const useInitData = () => {
-  const { fetchData, fetchCertsData, fetchSourceData } = useFetchData();
+  const { fetchData, fetchCertsData, fetchErrorData, fetchSourceData } = useFetchData();
 
   const {
     context: { loading },
@@ -14,16 +23,23 @@ export const useInitData = () => {
     setContext((prev) => ({ ...prev, vrf }));
   };
 
-  // need have csr active to upload this data
-  const fetchInitialData = async () => {
-    const source = await fetchSourceData();
-    console.log(source);
-  };
   const fetchCerts = async () => {
     const { ca } = await fetchCertsData();
     if (!ca) return;
-    setContext((prev) => ({ ...prev, certificates: [...ca] }));
+    setContext((prev) => ({ ...prev, certificates: ca }));
+  };
+  const fetchNotification = async () => {
+    const { error } = await fetchErrorData();
+    if (!error) return;
+    setContext((prev) => ({ ...prev, notifications: error }));
   };
 
-  return { fetchVrfData, fetchCerts, fetchInitialData, loading };
+  const fetchSourceList = async () => {
+    const { source_interface } = await fetchSourceData();
+    if (source_interface) {
+      setContext((prev) => ({ ...prev, sourceInterface: source_interface }));
+    }
+  };
+
+  return { fetchVrfData, fetchCerts, fetchNotification, fetchSourceList, loading };
 };

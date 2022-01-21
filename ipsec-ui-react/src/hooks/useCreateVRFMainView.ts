@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect } from 'react';
 import { DynamicVrfDetails } from 'db';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { vrfSchema } from 'schema/';
+import { hardwareSchame, vrfSchema } from 'schema/';
 import { useFetchData, useGetLocation, useAppContext } from 'hooks/';
 import { VrfDataTypes } from 'interface/index';
 
@@ -11,6 +11,8 @@ export const useCreateVRFMainView = () => {
   const { history, currentLocation } = useGetLocation();
   const { postVrfData, patchVrfData } = useFetchData();
   const { data, softwareCrypto, hardwareCrypto, hardware, vrf } = context;
+
+  const schema = hardware ? hardwareSchame : vrfSchema;
 
   const {
     register,
@@ -24,7 +26,7 @@ export const useCreateVRFMainView = () => {
       endpoint: [],
       vlan: []
     },
-    resolver: yupResolver(vrfSchema)
+    resolver: yupResolver(schema)
   });
 
   useLayoutEffect(() => {

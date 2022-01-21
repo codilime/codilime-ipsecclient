@@ -1,5 +1,5 @@
 import { useState, useEffect, ChangeEvent, useLayoutEffect } from 'react';
-import { endpointInputSchema, endpointHardwareSchema, EndpointSchema } from 'db';
+import { endpointInputSchema, endpointHardwareSchema, EndpointSchema, endpointAdvancedSchema } from 'db';
 import { useValidateEndpoint, useVrfLogic, useChoiceCertyficate } from 'hooks/';
 import { EndpointsType } from 'interface/index';
 
@@ -11,10 +11,11 @@ interface EndpointLogicType {
 }
 
 export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpoints, id }: EndpointLogicType) => {
-  const { hardware, vrf_id } = useVrfLogic();
-  const { error, validateEmptyEndpoint, setError } = useValidateEndpoint();
   const [endpoints, setEndpoint] = useState<EndpointsType>(EndpointSchema);
   const [edit, setEdit] = useState(active);
+
+  const { error, validateEmptyEndpoint, setError } = useValidateEndpoint();
+  const { hardware, vrf_id, sourceInterface } = useVrfLogic();
   const { handleGeneratePskField } = useChoiceCertyficate({ edit, error, setEndpoint, endpoints });
   const handleActiveEdit = () => setEdit((prev) => !prev);
 
@@ -75,8 +76,10 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
   const endpointAttributes = {
     endpoints,
     endpointSchema,
+    endpointAdvancedSchema,
     error,
     edit,
+    sourceInterface,
     onChange,
     handleGeneratePskField
   };

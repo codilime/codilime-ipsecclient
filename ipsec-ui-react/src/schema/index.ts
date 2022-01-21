@@ -5,7 +5,18 @@ export const vrfSchema = yup.object().shape({
   active: yup.boolean(),
   local_as: yup.number(),
   endpoint: yup.array(),
-  vlan: yup.array().min(1),
+  vlan: yup.array().min(1).required('there need at least one Vlan and Lan IP'),
+  crypto_ph1: yup.string(),
+  crypto_ph2: yup.string(),
+  ospf: yup.boolean()
+});
+
+export const hardwareSchame = yup.object().shape({
+  client_name: yup.string().min(5, 'Name should consist of at least 5 characters').max(28, 'Name should consist of maximum 28 characters').required('Please provide valid name for VRF'),
+  active: yup.boolean(),
+  local_as: yup.number(),
+  endpoint: yup.array(),
+  vlan: yup.array(),
   crypto_ph1: yup.string(),
   crypto_ph2: yup.string(),
   ospf: yup.boolean()

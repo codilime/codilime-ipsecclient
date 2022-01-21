@@ -1,0 +1,15 @@
+@import 'style/settings.scss';
+
+.readCircle {
+  display: inline-block;
+  margin-right: 5px;
+  margin-left: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transition: $transition;
+  background-color: var(--backgroundReadCircle);
+  &__active {
+    background-color: $blue;
+  }
+}

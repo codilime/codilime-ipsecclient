@@ -111,11 +111,11 @@ $darkText: #858fa0;
 
 /* Transition */
 
-$transition: 0.3s color ease-in, 0.3s background-color ease-in, 0.3s border-color ease-in;
+$transition: 0.3s color linear, 0.3s background-color linear, 0.3s border-color linear;
 
 [data-theme='light'] {
   color: #a0a3a9;
-  background-color: $backgroundLight;
+  background-color: #f2f5f8;
   transition: $transition;
 
   /* Background*/
@@ -124,6 +124,8 @@ $transition: 0.3s color ease-in, 0.3s background-color ease-in, 0.3s border-colo
   --backgroundPopup: #25374666;
   --backgroundEvenCers: #fafafa;
   --backgroundPopupContent: #ffffff;
+  --backgroundDottedLoading: #ffffff;
+  --backgroundReadCircle: #0000001f;
 
   /* Border-color*/
   --blueBorderColor: #3d89eb;
@@ -178,6 +180,8 @@ $transition: 0.3s color ease-in, 0.3s background-color ease-in, 0.3s border-colo
   --backgroundPopup: #050b10cc;
   --backgroundEvenCers: #222933;
   --backgroundPopupContent: #1e242c;
+  --backgroundDottedLoading: #c4b0b0;
+  --backgroundReadCircle: #222933;
 
   /* Border-color*/
   --blueBorderColor: #3d89eb;

@@ -24,6 +24,9 @@ export interface EndpointsType {
   vrf_id?: number;
 }
 
+export interface AdvantageConfigType {
+   local_id: string;
+}
 export interface VrfDataTypes {
   client_name: string;
   local_as: number;
@@ -55,7 +58,7 @@ export interface CertificatesType {
 export interface NotificationsType {
   id: number;
   message: string;
-  errorTime: string;
+  time: string;
 }
 
 export interface ContextProps {

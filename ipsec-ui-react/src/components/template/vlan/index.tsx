@@ -15,7 +15,7 @@ interface VlanType {
 export const Vlan: FC<VlanType> = ({ errorSchema, control }) => {
   const { fields, error, vlanInterface, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue } = useVlanLogic(control);
 
-  const errorMessage = errorSchema ? <p className="vlan__cancel">{errorSchema.message}</p> : 'There are no active Vlan and no Lan IP Mask';
+  const errorMessage = errorSchema ? <p className="vlan__error__message">{errorSchema.message}</p> : 'There are no active Vlan and no Lan IP Mask';
 
   const displayVlans = !fields.length ? (
     <tr className="vlan__row__empty">
@@ -41,7 +41,7 @@ export const Vlan: FC<VlanType> = ({ errorSchema, control }) => {
         <div className="vlan__box">
           <VlanInput
             {...{
-              placeholder:'Vlan',
+              placeholder: 'Vlan',
               name: 'vlan',
               type: 'number',
               onChange: handleChangeInputValue,

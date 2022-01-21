@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, useLayoutEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { useFieldArray, Control } from 'react-hook-form';
 import { useAppContext } from 'hooks/';
 import { VlanInterface, VrfDataTypes } from 'interface/index';
@@ -14,7 +14,6 @@ export const useVlanLogic = (control: Control<VrfDataTypes>) => {
   });
 
   const [error, setError] = useState(false);
-  const [vlan, setVlan] = useState<VlanInterface[] | []>([]);
   const [vlanInterface, setVlanInterface] = useState<VlanInterface>({ vlan: 0, lan_ip: '' });
 
   const checkLanIpValue = (value: string) => {
@@ -40,7 +39,7 @@ export const useVlanLogic = (control: Control<VrfDataTypes>) => {
 
   useEffect(() => {
     if (error) setError(false);
-  }, [vlan]);
+  }, [error]);
 
   const handleChangeInputValue = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -59,5 +58,5 @@ export const useVlanLogic = (control: Control<VrfDataTypes>) => {
 
   const handleDeleteVlan = (index: number) => remove(index);
 
-  return { vlan, vlanInterface, error, fields, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue };
+  return { vlanInterface, error, fields, handleAddNewVlan, handleDeleteVlan, handleChangeInputValue };
 };

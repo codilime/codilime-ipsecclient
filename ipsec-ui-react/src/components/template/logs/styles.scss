@@ -4,6 +4,8 @@
   width: 100%;
   padding: 0 24px 24px;
   min-width: 1000px;
+  min-height: 500px;
+  position: relative;
   &__context {
     height: 0px;
     display: flex;
