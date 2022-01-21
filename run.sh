@@ -2,7 +2,7 @@
 
 set -e
 
-docker rm sico_api || true
+docker rm sico || true
 
 docker network create \
                -o com.docker.network.bridge.enable_icc=true \
@@ -11,9 +11,10 @@ docker network create \
                --subnet=10.69.0.0/24 \
                ipsec || true
 
-exec docker run --name sico_api \
+exec docker run --cap-add=NET_ADMIN --privileged --name sico \
         --mount type=volume,source=ipsec,destination=/opt/ipsec/ \
         --mount type=volume,source=frr,destination=/opt/frr/ \
+        --mount type=volume,source=super,destination=/opt/super/ \
         --mount type=volume,source=super_net,destination=/opt/super_net/ \
         --mount type=volume,source=super_api,destination=/opt/super_api/ \
         --mount type=volume,source=logs,destination=/opt/logs/ \
@@ -24,4 +25,5 @@ exec docker run --name sico_api \
         --network ipsec \
         --publish 80:80 \
         --publish 443:443 \
-        sico_api
+        --publish 333:333 \
+        sico
