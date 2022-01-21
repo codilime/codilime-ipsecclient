@@ -1,8 +1,8 @@
 import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { Popup, EachError } from 'template';
 import { NotificationsType } from 'interface/index';
-import './styles.scss';
 import { Dotted } from '../../loading';
+import './styles.scss';
 
 interface PopupNotificationType {
   open: boolean;
@@ -23,7 +23,7 @@ export const PopupNotification: FC<PopupNotificationType> = ({ open, handleToggl
     }
   }, [findDate, notifications]);
 
-  const displayError = displayNotification.length ? displayNotification.map((notice, index) => <EachError key={index} {...notice} />) : <Dotted loading />;
+  const displayError = displayNotification.length ? displayNotification.map((notice, index) => <EachError key={index} {...notice} />) : <div>Notifications are empty</div>;
 
   return (
     <Popup {...{ open, handleToggle, title: 'Notifications' }}>

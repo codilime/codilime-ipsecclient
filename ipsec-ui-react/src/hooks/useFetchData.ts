@@ -21,7 +21,6 @@ export const useFetchData = () => {
 
   const patchVrfData = async (payload: any) => {
     try {
-      console.log(payload);
       setContext((prev) => ({ ...prev, loading: true }));
       const res = await client(`vrf=${payload.vrf.id}`, { ...payload }, { method: 'PATCH' });
       if (res.result === 'error') {
@@ -32,7 +31,6 @@ export const useFetchData = () => {
         setContext((prev) => ({ ...prev, loading: false }));
         return res;
       }
-     
     } catch (err: any) {
       setContext((prev) => ({ ...prev, loading: false }));
     }

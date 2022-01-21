@@ -38,6 +38,7 @@
     }
   }
   &__content {
+    position: relative;
     height: 440px;
     overflow-y: scroll;
     border-top: 2px solid var(--borderColor);
