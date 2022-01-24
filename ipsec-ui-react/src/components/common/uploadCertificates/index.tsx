@@ -1,9 +1,10 @@
 import { FC } from 'react';
 import { EndpointInput } from 'common/';
 import { InputType } from 'interface/components';
-import classNames from 'classnames';
 import { AiOutlineUpload } from 'react-icons/ai';
+import classNames from 'classnames';
 import './styles.scss';
+
 interface UploadCertificates extends InputType {
   edit: boolean;
   label: string;

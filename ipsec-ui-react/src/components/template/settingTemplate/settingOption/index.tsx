@@ -3,29 +3,29 @@ import classNames from 'classnames';
 import { AiOutlineSafetyCertificate, AiOutlineSetting, AiOutlineUser } from 'react-icons/ai';
 import { SettingOptionType } from 'interface/index';
 interface SettingOptionsType {
-  activeSetting: keyof SettingOptionType;
-  handleChangeActiveSetting: (name: keyof SettingOptionType) => void;
+  activeSetting: SettingOptionType | string;
+  handleChangeActiveSetting: (name: SettingOptionType) => void;
 }
 
 interface settingDataType {
-  option: keyof SettingOptionType;
+  value: SettingOptionType;
   text: string;
   icon: ReactNode;
 }
 
 const settingData: settingDataType[] = [
   {
-    option: 'Profile',
+    value: SettingOptionType.profile,
     text: 'Profile',
     icon: <AiOutlineUser className="setting__icon" />
   },
   {
-    option: 'RestConf',
+    value: SettingOptionType.restConf,
     text: 'RestConf',
     icon: <AiOutlineSetting className="setting__icon" />
   },
   {
-    option: 'Certificates',
+    value: SettingOptionType.certificates,
     text: 'CA Certificates',
     icon: <AiOutlineSafetyCertificate className="setting__icon" />
   }
@@ -34,8 +34,8 @@ const settingData: settingDataType[] = [
 export const SettingOption: FC<SettingOptionsType> = ({ activeSetting, handleChangeActiveSetting }) => (
   <nav className="setting__nav">
     <ul className="setting__list">
-      {settingData.map(({ text, icon, option }) => (
-        <li key={text} className={classNames('setting__option', { setting__active: activeSetting === option })} onClick={() => handleChangeActiveSetting(option)}>
+      {settingData.map(({ text, icon, value }) => (
+        <li key={text} className={classNames('setting__option', { setting__active: activeSetting === value })} onClick={() => handleChangeActiveSetting(value)}>
           {icon} <span>{text}</span>
         </li>
       ))}

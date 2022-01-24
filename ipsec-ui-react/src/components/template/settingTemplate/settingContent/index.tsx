@@ -4,29 +4,30 @@ import classNames from 'classnames';
 import { SettingOptionType } from 'interface/index';
 
 interface SettingContentType {
-  activeSetting: keyof SettingOptionType;
+  activeSetting: SettingOptionType | string;
   open: boolean;
-  handleToggle: () => void;
+  handleClose: () => void;
 }
 
 interface settingDataType {
-  option: keyof SettingOptionType;
+  option: SettingOptionType;
   component: ReactNode;
 }
 
-export const SettingContent: FC<SettingContentType> = ({ activeSetting, open, handleToggle }) => {
+export const SettingContent: FC<SettingContentType> = ({ activeSetting, open, handleClose }) => {
+  const { profile, restConf, certificates } = SettingOptionType;
   const settingData: settingDataType[] = [
     {
-      option: 'Profile',
-      component: <Login {...{ handleToggle }} />
+      option: profile,
+      component: <Login {...{ handleClose }} />
     },
     {
-      option: 'RestConf',
-      component: <RestConf {...{ open, handleToggle }} />
+      option: restConf,
+      component: <RestConf {...{ open, handleClose }} />
     },
     {
-      option: 'Certificates',
-      component: <SettingCertificates {...{ handleToggle }} />
+      option: certificates,
+      component: <SettingCertificates {...{ handleClose }} />
     }
   ];
 

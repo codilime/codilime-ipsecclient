@@ -1,0 +1,22 @@
+@import 'style/settings.scss';
+
+.about {
+  padding: 0px 24px 24px;
+  min-width: 400px;
+  &__list {
+    list-style-type: none;
+  }
+  &__item {
+    display: flex;
+    line-height: 56px;
+    color: $blue;
+  }
+  &__title {
+    padding-right: 10px;
+    color: var(--inputText);
+  }
+  &__link {
+    text-decoration: none;
+    color: $blue;
+  }
+}

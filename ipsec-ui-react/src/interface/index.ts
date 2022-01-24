@@ -61,19 +61,31 @@ export interface NotificationsType {
   time: string;
 }
 
+export interface SourceInterfaceType {
+  name: string;
+}
+
+export interface ActionStatusType {
+  status: string;
+  message: string;
+}
+
 export interface ContextProps {
   data: VrfDataTypes;
   softwareCrypto: CryptoTypes;
   hardwareCrypto: CryptoTypes;
-  certificates: CertificatesType[];
   vrf: VrfDataTypes[] | [];
-  notifications: NotificationsType[];
+  certificates: CertificatesType[] | [];
+  notifications: NotificationsType[] | [];
   loading: boolean;
   hardware: boolean;
   error: any;
   success: boolean;
   restConf: boolean;
-  sourceInterface: { name: string }[] | [];
+  sourceInterface: SourceInterfaceType[] | [];
+  switchVersion: string;
+  version: string;
+  actionStatus: ActionStatusType[] | [];
 }
 
 type NameProps = {
@@ -168,8 +180,9 @@ export interface HeadersLogsType {
   name: keyof HeadersNameProps;
 }
 
-export type SettingOptionType = {
-  Profile: 'Profile';
-  RestConf: 'RestConf';
-  Certificates: 'Certificates';
-};
+export enum SettingOptionType {
+  profile = 'profile',
+  restConf = 'restConf',
+  certificates = 'certificates',
+  about = 'about'
+}

@@ -2,18 +2,20 @@ import { useState, FC } from 'react';
 import { MdOutlineDarkMode, MdOutlineWbSunny } from 'react-icons/md';
 import Switch from 'react-switch';
 import { Button } from 'common/';
-import { Notification, Logout, Setting, PopupLogs } from 'template';
+import { Notification, Setting, PopupLogs } from 'template';
 import { useThemeContext } from 'hooks/';
-import { ThemeType } from 'interface/enum';
+import { ThemeType, TopBarMenu } from 'interface/enum';
 import './styles.scss';
 
 export const TopBar: FC = () => {
+  const { dark, light } = ThemeType;
+  const { logs, notice, dropDown } = TopBarMenu;
   const { theme, setTheme } = useThemeContext();
-  const [openPopup, setOpenPopup] = useState('');
+  const [openPopup, setOpenPopup] = useState<TopBarMenu | null>(null);
 
-  const handleOpenAction = (name: string) => {
-    if (openPopup === '') return setOpenPopup(name);
-    return setOpenPopup('');
+  const handleOpenAction = (name: TopBarMenu) => {
+    if (openPopup === null) return setOpenPopup(name);
+    return setOpenPopup(null);
   };
 
   return (
@@ -22,7 +24,7 @@ export const TopBar: FC = () => {
         <div className="topBar__switch">
           <Switch
             checked={theme === 'light'}
-            onChange={() => setTheme(theme === ThemeType.light ? ThemeType.dark : ThemeType.light)}
+            onChange={() => setTheme(theme === light ? dark : light)}
             onColor="#00abe7"
             offColor="#00abe7"
             handleDiameter={18}
@@ -34,12 +36,12 @@ export const TopBar: FC = () => {
             width={44}
           />
         </div>
-        <Button className="topBar__log" onClick={() => handleOpenAction('logs')}>
+        <Button className="topBar__log" onClick={() => handleOpenAction(logs)}>
           View logs
         </Button>
-        <Notification {...{ open: openPopup === 'notice', handleToggle: () => handleOpenAction('notice') }} />
-        <Setting {...{ open: openPopup === 'setting', handleToggle: () => handleOpenAction('setting') }} />
-        <PopupLogs {...{ open: openPopup === 'logs', handleToggle: () => handleOpenAction('logs') }} />
+        <Notification {...{ open: openPopup === notice, handleToggle: () => handleOpenAction(notice) }} />
+        <Setting {...{ open: openPopup === dropDown, handleToggle: () => handleOpenAction(dropDown) }} />
+        <PopupLogs {...{ open: openPopup === logs, handleToggle: () => handleOpenAction(logs) }} />
       </div>
     </header>
   );

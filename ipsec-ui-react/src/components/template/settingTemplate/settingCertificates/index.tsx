@@ -5,10 +5,10 @@ import classNames from 'classnames';
 import './styles.scss';
 
 interface SettingCertificatesType {
-  handleToggle: () => void;
+  handleClose: () => void;
 }
 
-export const SettingCertificates: FC<SettingCertificatesType> = ({ handleToggle }) => {
+export const SettingCertificates: FC<SettingCertificatesType> = ({ handleClose }) => {
   const { certificates, uploadBtn, checkedCa, handleAddCerts, handleSaveNewCerts, handleCheckCerts, handleDeleteCerts } = useCertificatesLogic();
 
   const displayCertificates = certificates.map(({ ca_file, id }) => {
@@ -38,7 +38,7 @@ export const SettingCertificates: FC<SettingCertificatesType> = ({ handleToggle 
           active: !certificates.length
         }}
       />
-      <UploadCertificates {...{ references: uploadBtn, onChange: handleSaveNewCerts, onClick: handleAddCerts, handleDeleteCerts, noExistCerts: !certificates.length, handleToggle }} />
+      <UploadCertificates {...{ references: uploadBtn, onChange: handleSaveNewCerts, onClick: handleAddCerts, handleDeleteCerts, noExistCerts: !certificates.length, handleClose }} />
     </div>
   );
 };

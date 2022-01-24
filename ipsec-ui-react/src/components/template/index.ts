@@ -12,3 +12,5 @@ export * from './settingTemplate';
 export * from './loading';
 export * from './vlan';
 export * from './logs';
+export * from './about';
+export * from './dropDown';
