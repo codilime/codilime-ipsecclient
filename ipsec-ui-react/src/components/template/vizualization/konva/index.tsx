@@ -29,10 +29,10 @@ export const Visualization: FC = () => {
 
   const handleFetchStatus = async () => {
     if (!data.id || endpoint === null || !endpoint.length) return;
-    // const { monitoring } = await fetchEndpointStatus(data.id);
-    // if (monitoring) {
-    //   setMonitoring(monitoring[0].endpoint);
-    // }
+    const { monitoring } = await fetchEndpointStatus(data.id);
+    if (monitoring) {
+      setMonitoring(monitoring[0].endpoint);
+    }
   };
 
   useEffect(() => {
