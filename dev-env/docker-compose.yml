@@ -11,7 +11,7 @@ services:
     restart: always
     networks:
       ipsec:
-        ipv4_address: 10.67.0.101
+        ipv4_address: 10.69.0.101
 
   ipsec-2:
     container_name: site2
@@ -24,7 +24,7 @@ services:
     restart: always
     networks:
       ipsec:
-        ipv4_address: 10.67.0.102
+        ipv4_address: 10.69.0.102
 
   ipsec-3:
     container_name: site3
@@ -37,7 +37,7 @@ services:
     restart: always
     networks:
       ipsec:
-        ipv4_address: 10.67.0.103
+        ipv4_address: 10.69.0.103
 
   ipsec-4:
     container_name: site4
@@ -50,7 +50,7 @@ services:
     restart: always
     networks:
       ipsec:
-        ipv4_address: 10.67.0.104
+        ipv4_address: 10.69.0.104
 
   ipsec-5:
     container_name: site5
@@ -63,7 +63,7 @@ services:
     restart: always
     networks:
       ipsec:
-        ipv4_address: 10.67.0.105
+        ipv4_address: 10.69.0.105
 
   ipsec-6:
     container_name: site6
@@ -76,7 +76,7 @@ services:
     restart: always
     networks:
       ipsec:
-        ipv4_address: 10.67.0.106
+        ipv4_address: 10.69.0.106
 
   bird-1:
     container_name: bird1
@@ -146,11 +146,11 @@ services:
 
 networks:
   ipsec:
-    name: aipsec
+    name: 02_dmz_br
     driver: bridge
     driver_opts:
-      com.docker.network.bridge.name: ipsec_br
+      com.docker.network.bridge.name: dmz_br
       com.docker.network.bridge.enable_icc: "true"
     ipam:
       config:
-        - subnet: 10.67.0.0/24
+        - subnet: 10.69.0.0/24
