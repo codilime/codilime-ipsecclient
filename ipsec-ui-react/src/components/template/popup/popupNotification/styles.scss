@@ -66,6 +66,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
     border-bottom: 2px solid var(--borderColor);
   }
   &__time,
@@ -94,7 +95,7 @@
   }
   &__tooltip {
     color: $red;
-    top: 8%;
+    left: 20%;
   }
   &__empty {
     display: flex;
