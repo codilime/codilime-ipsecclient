@@ -44,10 +44,6 @@ export const useVlanLogic = (control: Control<VrfDataTypes>) => {
     return false;
   };
 
-  useEffect(() => {
-    if (error) setError(false);
-  }, [error]);
-
   const handleChangeInputValue = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === 'vlan') {
@@ -55,10 +51,15 @@ export const useVlanLogic = (control: Control<VrfDataTypes>) => {
     }
     setVlanInterface((prev) => ({ ...prev, [name]: value }));
   };
+  
+  useEffect(() => {
+    if (error) setError(false);
+  }, [vlanInterface]);
 
   const handleAddNewVlan = () => {
     const validate = checkLanIpValue(vlanInterface.lan_ip);
-    if (!validate || vlanInterface.vlan <= 0) return setError(true);
+    const exist = data.vlan.find(({ vlan }) => vlan === vlanInterface.vlan);
+    if (!validate || vlanInterface.vlan <= 0 || vlanInterface.vlan === NaN || exist) return setError(true);
     setVlanInterface({ vlan: 0, lan_ip: '' });
     append(vlanInterface);
   };

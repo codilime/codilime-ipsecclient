@@ -8,8 +8,8 @@
 import { FC } from 'react';
 import { ReadCircle } from 'template';
 import classNames from 'classnames';
-import './styles.scss';
 
+import './styles.scss';
 interface EachErrorType {
   id: number;
   message: string;

@@ -18,12 +18,14 @@
   &__list {
     list-style-type: none;
     text-align: left;
+    color: var(--inputColor);
   }
   &__eachVrf {
     font-size: $basic-size;
     transition: $transition;
     margin: 10px;
     border-radius: $border-radius-sm;
+
     &__active {
       background-color: var(--backgroundHoverVrf);
 
@@ -42,8 +44,9 @@
   }
   &__link {
     padding: $padding-md;
+    color: var(--inputColor);
+    transition: $transition;
     cursor: pointer;
-    color: $lightGray;
     text-decoration: none;
     display: flex;
     justify-content: space-between;

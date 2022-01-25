@@ -63,6 +63,10 @@
     color: $blue;
     height: 23px;
     cursor: pointer;
+    border: $border-radius-lg;
+    &:hover {
+      background-color: var(--backgroundHoverVrf);
+    }
   }
   &__mark {
     background-color: var(--backgroundColor);

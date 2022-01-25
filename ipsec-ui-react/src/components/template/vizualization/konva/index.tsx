@@ -54,7 +54,7 @@ export const Visualization: FC = () => {
         clearInterval(interval);
       };
     }
-  }, [data.active, loading]);
+  }, [data, loading]);
 
   useEffect(() => {
     setThemeLoading(true);

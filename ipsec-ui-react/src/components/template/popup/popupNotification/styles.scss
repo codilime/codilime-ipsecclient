@@ -19,6 +19,7 @@
     justify-content: flex-end;
     align-items: center;
     margin: 0 24px;
+    color: var(--inputText);
   }
   &__input {
     transition: $transition;
@@ -32,6 +33,7 @@
     color: var(--inputColor);
     margin-left: 10px;
     &::placeholder {
+      color: var(--inputText);
       font-size: $basic-size;
       line-height: 24px;
     }
@@ -88,6 +90,11 @@
   &__error {
     font-size: 14px;
     color: $red;
+    position: relative;
+  }
+  &__tooltip {
+    color: $red;
+    top: 8%;
   }
   &__empty {
     display: flex;

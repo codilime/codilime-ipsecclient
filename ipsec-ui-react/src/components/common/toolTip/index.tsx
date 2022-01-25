@@ -34,6 +34,7 @@ export const ToolTipInfo: FC<ToolTipInfoType> = ({ children, error }) => {
 
 interface TooltipType {
   open: boolean;
+  className?: string;
 }
 
-export const ToolTip: FC<TooltipType> = ({ children, open }) => <div className={classNames('toolTip', { toolTip__active: open })}>{children}</div>;
+export const ToolTip: FC<TooltipType> = ({ children, open, className = '' }) => <div className={classNames('toolTip', { toolTip__active: open, [className]: className })}>{children}</div>;

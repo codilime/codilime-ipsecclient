@@ -5,7 +5,8 @@
  *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
  */
 
-import { FC } from 'react';
+import { FC, useState } from 'react';
+import { ToolTip } from 'common/';
 
 interface EachErrorType {
   id: number;
@@ -13,9 +14,21 @@ interface EachErrorType {
   time: string;
 }
 
-export const EachError: FC<EachErrorType> = ({ time, message }) => (
-  <div className="notifications__log">
-    <p className="notifications__time">{time.split(':01')[0]}</p>
-    <p className="notifications__response notifications__error">{message}</p>
-  </div>
-);
+export const EachError: FC<EachErrorType> = ({ time, message }) => {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="notifications__log">
+      <p className="notifications__time">{time.split(':01')[0]}</p>
+      <p
+        className="notifications__response notifications__error"
+        {...{
+          onMouseMove: () => setShow(true),
+          onMouseLeave: () => setShow(false)
+        }}
+      >
+        {message}
+      </p>
+      <ToolTip {...{ open: show, className: 'notifications__tooltip' }}>{message}</ToolTip>
+    </div>
+  );
+};
