@@ -4,7 +4,6 @@ from pathlib import Path
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
-import shutil
 
 
 parser = argparse.ArgumentParser()
@@ -62,16 +61,13 @@ def my_except_hook():
 
 
 if args.clean:
-    subprocess.run("docker stop sico_api", shell=True)
-    subprocess.run("docker stop sico_net", shell=True)
+    subprocess.run("docker stop sico", shell=True)
     subprocess.run("docker stop sico_test", shell=True)
 
-    subprocess.run("docker rm sico_api", shell=True)
-    subprocess.run("docker rm sico_net", shell=True)
+    subprocess.run("docker rm sico", shell=True)
     subprocess.run("docker rm sico_test", shell=True)
 
-    subprocess.run("docker rmi sico_api", shell=True)
-    subprocess.run("docker rmi sico_net", shell=True)
+    subprocess.run("docker rmi sico", shell=True)
     subprocess.run("docker rmi sico_test", shell=True)
 
     subprocess.run("docker system prune -f", shell=True)
@@ -100,52 +96,23 @@ version = subprocess.run(
     universal_newlines=True,
 ).stdout.split("\n")[0]
 
+content_path = "out/content/"
+Path(content_path).mkdir(parents=True, exist_ok=True)
+
 if args.pack:
-    package_version = subprocess.run(
-        r'exec git describe --tags --long | sed "s/\(.*\)-.*/\1/"',
-        shell=True,
-        check=True,
-        stdout=subprocess.PIPE,
-        universal_newlines=True,
-    ).stdout.split("\n")[0]
-    package_name = "sico_ipsec-" + package_version
-    package = "out/" + package_name + ".tar.gz"
-    content_path = "out/content/"
-    image = package_name + "/sico_api-" + package_version + ".tar"
-    documentation = package_name + "/documentation.pdf"
-    Path(content_path + package_name).mkdir(parents=True, exist_ok=True)
-    download_documentation("out/content/documentation.pdf", creds_path=args.pack[0])
-
-    shutil.copyfile("sico.dockerfile", "sico-doc.dockerfile")
-
-    f = open("sico-doc.dockerfile", "r")
-    contents = f.readlines()
-    f.close()
-
-    contents.insert(62, "ADD out/content/documentation.pdf /usr/share/nginx/html")
-
-    f = open("sico-doc.dockerfile", "w")
-    contents = "".join(contents)
-    f.write(contents)
-    f.close()
-
-    build_processes.append(
-        subprocess.Popen(
-            "exec docker build -t sico --build-arg VERSION="
-            + version
-            + " -f sico-doc.dockerfile .",
-            shell=True,
-        )
-    )
+    download_documentation(content_path + "documentation.pdf", creds_path=args.pack[0])
 else:
-    build_processes.append(
-        subprocess.Popen(
-            "exec docker build -t sico --build-arg VERSION="
-            + version
-            + " -f sico.dockerfile .",
-            shell=True,
-        )
+    shutil.copyfile("helper-scripts/dummy.pdf", content_path + "documentation.pdf")
+
+
+build_processes.append(
+    subprocess.Popen(
+        "exec docker build -t sico --build-arg VERSION="
+        + version
+        + " -f sico.dockerfile .",
+        shell=True,
     )
+)
 
 if args.ut:
     build_processes.append(
@@ -176,10 +143,9 @@ if args.pack:
     ).stdout.split("\n")[0]
     package_name = "sico_ipsec-" + package_version
     package = "out/" + package_name + ".tar.gz"
-    content_path = "out/content/"
     image = package_name + "/sico-" + package_version + ".tar"
     documentation = package_name + "/documentation.pdf"
-    # Path(content_path + package_name).mkdir(parents=True, exist_ok=True)
+    Path(content_path + package_name).mkdir(parents=True, exist_ok=True)
 
     download_documentation(content_path + documentation, creds_path=args.pack[0])
 
@@ -201,5 +167,6 @@ if args.pack:
         shell=True,
         check=True,
     )
-    shutil.rmtree(content_path)
     print("created package: " + package)
+
+shutil.rmtree(content_path)
