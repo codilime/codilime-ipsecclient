@@ -84,7 +84,8 @@
       padding-right: 30px;
     }
     &__empty {
-      color: $gray02;
+      text-align: center;
+      color: var(--inputColor);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -143,5 +144,11 @@
       color: $red;
       font-size: $basic-size;
     }
+  }
+}
+
+@media screen and (min-width: 890px) and (max-width: 1366px) {
+  .vlan {
+    width: 35%;
   }
 }

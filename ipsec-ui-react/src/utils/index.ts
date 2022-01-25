@@ -1,4 +1,5 @@
 import { pki, util } from 'node-forge';
+import { useCallback } from 'react';
 
 export const validateDataInput = (event: any) => {
   const { name } = event.target;
@@ -45,4 +46,16 @@ export const decodeX509 = (x509: string) => {
     }
   }
   return { CN: '', ON: '' };
+};
+
+export const compressIPV6 = (ip: string) => {
+  if (!ip) return;
+  let formatted = ip.toString().replace(/\b(?:0+:){2,}/, ':');
+  let finalAddress = formatted
+    .split(':')
+    .map(function (octet) {
+      return octet.replace(/\b0+/g, '');
+    })
+    .join(':');
+  return finalAddress;
 };

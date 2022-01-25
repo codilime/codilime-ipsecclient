@@ -162,6 +162,9 @@
     color: white;
     padding: $padding-sm $padding-md;
     min-width: 160px;
+    &__error {
+      color: $red;
+    }
   }
 
   &__text {

@@ -19,8 +19,14 @@ export const ToolTipInfo: FC<ToolTipInfoType> = ({ children, error }) => {
     <>
       <BiInfoCircle className="table__icon" onClick={handleToggle} />
       <div className={classNames('toolTipInfo', { toolTipInfo__active: open })} onMouseLeave={handleToggle}>
-        <div className="toolTipInfo__label">{children}</div>
+        {children}
       </div>
     </>
   );
 };
+
+interface TooltipType {
+  open: boolean;
+}
+
+export const ToolTip: FC<TooltipType> = ({ children, open }) => <div className={classNames('toolTip', { toolTip__active: open })}>{children}</div>;
