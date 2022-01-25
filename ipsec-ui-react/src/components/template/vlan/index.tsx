@@ -3,10 +3,8 @@ import { useVlanLogic } from 'hooks/';
 import { EachVlan } from './eachVlan';
 import { VlanInput } from './vlanInput';
 import { Control } from 'react-hook-form';
-
-import './styles.scss';
 import { VrfDataTypes } from 'interface/index';
-
+import './styles.scss';
 interface VlanType {
   control: Control<VrfDataTypes>;
   errorSchema?: any;

@@ -21,7 +21,8 @@ export const VlanInput: FC<VlanInput> = ({ type, name, placeholder, value, min, 
         min,
         className: classNames('vlan__input', { vlan__error: error, vlan__input__vlan: name === 'vlan' }),
         value,
-        onChange
+        onChange,
+        onKeyPress: validateDataInput
       }}
     />
     <ToolTipInfo {...{ error }}>{tooltip}</ToolTipInfo>

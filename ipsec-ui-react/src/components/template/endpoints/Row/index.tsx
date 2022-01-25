@@ -52,7 +52,7 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
       default:
         return (
           <td key={el.name} className={classNames('table__column', { table__bool: el.name === 'remote_as' })}>
-            <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints[el.name] }} />
+            <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints[el.name], onlyNumber: true }} />
             {edit && <ToolTipInfo {...{ error: error[el.name] }}>{el.tooltip}</ToolTipInfo>}
           </td>
         );
