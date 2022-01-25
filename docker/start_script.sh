@@ -17,15 +17,20 @@ echo $PREFIX
 echo $LOCAL_IP
 echo $SWITCH_IP
 
-#ip address flush dev eth0
+ip address flush dev eth0
+
+if [ -n "$FORCE_GW" ]; then 
+    ip route del 0.0.0.0/0 2>/dev/null
+    ip route add 0.0.0.0/0 via $FORCE_GW
+fi
 
 ip route del $PREFIX dev $DEV
 ip rule add from $LOCAL_IP/32 table $MNG_TABLE
 ip rule add to $LOCAL_IP/32 table $MNG_TABLE
 ip rule add to $SWITCH_IP table $MNG_TABLE
 ip route add $PREFIX dev $DEV src $LOCAL_IP table $MNG_TABLE
-ip a 
-echo ip route add 0.0.0.0/0 via $MNG_GW_IP dev $DEV table $MNG_TABLE
+#ip a 
+#echo ip route add 0.0.0.0/0 via $MNG_GW_IP dev $DEV table $MNG_TABLE
 ip route add 0.0.0.0/0 via $MNG_GW_IP dev $DEV table $MNG_TABLE
 
 exec /usr/bin/supervisord -n -c /etc/supervisord.conf

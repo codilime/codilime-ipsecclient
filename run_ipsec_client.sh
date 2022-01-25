@@ -20,6 +20,7 @@ docker network create \
                -o com.docker.network.bridge.name=dmz_br \
                --driver=bridge \
                --subnet=10.69.0.0/24 \
+               --gateway=10.69.0.1 \
                02_dmz_br || true
 
 docker network create \
@@ -34,6 +35,7 @@ docker create --cap-add=NET_ADMIN --privileged --name sico \
         -e MNG_GW_ADDRESS=10.67.0.1 \
         -e SWITCH_USERNAME=admin \
         -e SWITCH_PASSWORD=cisco123 \
+        -e FORCE_GW=10.69.0.1 \
         -e LOG_LEVEL=debug \
         --network 01_vlan_br \
         --publish 80:80 \
