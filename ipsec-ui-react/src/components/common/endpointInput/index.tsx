@@ -62,7 +62,7 @@ export const EndpointInput: FC<EndpointInputTypes> = ({ type, placeholder, name,
           onMouseLeave: () => setShowToltip(false)
         }}
       />
-      {value ? <ToolTip {...{ open: showToltip }}>{compressIPV6(value)}</ToolTip> : null}
+      {value ? <ToolTip {...{ open: showToltip }}>{value}</ToolTip> : null}
       {showEyes}
     </>
   );
