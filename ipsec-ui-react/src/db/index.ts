@@ -192,11 +192,14 @@ export const defaultVrf: ContextProps = {
   vrf: [],
   notifications: [],
   sourceInterface: [],
+  actionStatus: [],
   loading: false,
   hardware: false,
   error: null,
   success: false,
-  restConf: false
+  restConf: false,
+  switchVersion: '',
+  version: ''
 };
 
 export const tableSoftwareHeaderSchema = [

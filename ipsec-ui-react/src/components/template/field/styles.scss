@@ -34,6 +34,7 @@
     color: var(--inputText);
     border-radius: $border-radius-sm;
     background-color: transparent;
+
     &::placeholder {
       color: var(--inputText);
     }
@@ -68,6 +69,7 @@
     border: none;
     outline: none;
     position: absolute;
+    cursor: pointer;
     &__checkbox {
       margin-left: 20px;
       transform: translateY(0%);

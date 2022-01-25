@@ -4,6 +4,7 @@ export const useVrfLogic = () => {
   const { context } = useAppContext();
   const { deleteVrfData } = useFetchData();
   const { history } = useGetLocation();
+  
   const {
     data: { client_name, id, endpoint },
     hardware,

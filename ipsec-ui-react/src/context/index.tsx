@@ -22,6 +22,7 @@ export const VrfsProvider: FC = ({ children }) => {
   return <VrfsContext.Provider value={value}>{children}</VrfsContext.Provider>;
 };
 
+
 /* Theme context */
 enum ThemeType {
   dark = 'dark',

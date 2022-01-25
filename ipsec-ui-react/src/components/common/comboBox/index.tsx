@@ -6,11 +6,15 @@ import './styles.scss';
 interface ComboBoxType extends InputType {
   edit: boolean;
   list: string;
-  sourceInterface: string[] | [];
+  sourceInterface: { name: string }[] | [];
 }
 
-export const ComboBox: FC<ComboBoxType> = ({ type, placeholder, value, edit, name, list, onChange, sourceInterface }) => {
-  const displaySourceList = sourceInterface.map((eachSource) => <option>{eachSource}</option>);
+export const ComboBox: FC<ComboBoxType> = ({ type, placeholder, value, edit, name, list, onChange, sourceInterface = [] }) => {
+  const displaySourceList = sourceInterface.map(({ name }) => (
+    <option key={name} value={name}>
+      {name}
+    </option>
+  ));
 
   return (
     <>

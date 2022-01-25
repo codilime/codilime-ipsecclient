@@ -14,8 +14,10 @@ export async function client(endpoint: RequestInfo, data?: any, options?: Reques
   };
   try {
     const response = await window.fetch(`${API_URL}/${endpoint}`, config);
-    const res = await response.json();
-    if (res) return res;
+    if (config.method === 'GET') {
+      const res = await response.json();
+      if (res) return res;
+    }
     return response.ok;
   } catch (error: any) {
     return Promise.reject(error ? error.message : data);

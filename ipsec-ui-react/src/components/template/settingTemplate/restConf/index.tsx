@@ -6,17 +6,17 @@ import classNames from 'classnames';
 
 interface RestConfType {
   open: boolean;
-  handleToggle: () => void;
+  handleClose: () => void;
 }
 
-export const RestConf: FC<RestConfType> = ({ open, handleToggle }) => {
+export const RestConf: FC<RestConfType> = ({ open, handleClose }) => {
   const { handleSendRestConf, handleResetRestConf, active, description } = UseRestConfLogic(open);
 
   return (
     <>
       <div className={classNames('loginForm__wrapper', { loginForm__disabled: active })}>
         <h3 className="loginForm__title">Cat 9300x Credentials</h3>
-        <RestConfForm {...{ handleSendRestConf, handleToggle }} />
+        <RestConfForm {...{ handleSendRestConf, handleClose }} />
       </div>
 
       <HoverPanel
@@ -26,7 +26,7 @@ export const RestConf: FC<RestConfType> = ({ open, handleToggle }) => {
           button: 'Reset',
           active,
           handleReset: handleResetRestConf,
-          handleToggle
+          handleClose
         }}
       />
     </>

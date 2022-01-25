@@ -1,4 +1,4 @@
-import { ChangeEvent, FC } from 'react';
+import { ChangeEvent, FC, useState } from 'react';
 import { useVrfLogic } from 'hooks/';
 import { validateDataInput } from 'utils/';
 import { InputType } from 'interface/components';

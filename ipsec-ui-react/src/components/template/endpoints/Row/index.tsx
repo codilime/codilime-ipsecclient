@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { EndpointButton, EndpointInput, ToolTipInfo, ComboBox } from 'common/';
+import { EndpointButton, EndpointInput, ToolTipInfo, ComboBox, ToolTip } from 'common/';
 import { EndpointOption, Modal } from 'template';
 import { useEndpointLogic, useToggle, useModalLogic } from 'hooks/';
 import { EndpointsType } from 'interface/index';
@@ -37,7 +37,6 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
         return (
           <td key={el.name} className="table__column">
             <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints[el.name], onlyNumber: true }} />
-            {edit && <ToolTipInfo {...{ error: error[el.name] }}>{el.tooltip}</ToolTipInfo>}
           </td>
         );
       }

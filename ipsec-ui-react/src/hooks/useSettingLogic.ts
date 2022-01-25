@@ -1,19 +1,10 @@
 import { SettingOptionType } from 'interface/index';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-export const useSettingLogic = (open?: boolean) => {
-  const [activeSetting, setActiveSetting] = useState<keyof SettingOptionType>('Profile');
+export const useSettingLogic = () => {
+  const [activeSetting, setActiveSetting] = useState<SettingOptionType | string>('');
 
-  const handleChangeActiveSetting = (name: keyof SettingOptionType) => setActiveSetting(name);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!open) setActiveSetting('Profile');
-    }, 300);
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [open]);
+  const handleChangeActiveSetting = (name: SettingOptionType | string) => setActiveSetting(name);
 
   return { activeSetting, handleChangeActiveSetting };
 };

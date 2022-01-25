@@ -126,6 +126,8 @@ $transition: 0.3s color linear, 0.3s background-color linear, 0.3s border-color 
   --backgroundPopupContent: #ffffff;
   --backgroundDottedLoading: #ffffff;
   --backgroundReadCircle: #0000001f;
+  --backgroundErrorInfo: #ffe2e5;
+  --backgroundSuccessInfo: #e0fae0;
 
   /* Border-color*/
   --blueBorderColor: #3d89eb;
@@ -136,6 +138,8 @@ $transition: 0.3s color linear, 0.3s background-color linear, 0.3s border-color 
 
   /*Text-color*/
   --inputText: #595959;
+  --errorText: #ec4b43;
+  --successText: #04c000;
 
   /* Title-color*/
   --titleColor: #2a2c34;
@@ -182,6 +186,8 @@ $transition: 0.3s color linear, 0.3s background-color linear, 0.3s border-color 
   --backgroundPopupContent: #1e242c;
   --backgroundDottedLoading: #c4b0b0;
   --backgroundReadCircle: #222933;
+  --backgroundErrorInfo: #281416;
+  --backgroundSuccessInfo: #05250d;
 
   /* Border-color*/
   --blueBorderColor: #3d89eb;
@@ -192,6 +198,8 @@ $transition: 0.3s color linear, 0.3s background-color linear, 0.3s border-color 
 
   /*text-color*/
   --inputText: #858fa0;
+  --errorText: #ec4b43;
+  --successText: #04c000;
 
   /* Title-color*/
   --titleColor: #ffffff;

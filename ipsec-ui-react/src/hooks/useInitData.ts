@@ -1,45 +1,58 @@
 import { useFetchData, useAppContext } from 'hooks/';
-import { VrfDataTypes, NotificationsType, CertificatesType } from 'interface/index';
-import { useState, useLayoutEffect } from 'react';
-
-interface InitDataType {
-  vrf: VrfDataTypes[] | [];
-  notifications: NotificationsType[] | [];
-  certificates: CertificatesType[] | [];
-  sourceInterface: string[];
-}
+import { StatusState, StatusMessage } from 'interface/enum';
 
 export const useInitData = () => {
-  const { fetchData, fetchCertsData, fetchErrorData, fetchSourceData } = useFetchData();
-
+  const { fetchData, fetchCertsData, fetchErrorData, fetchSourceData, fetchAppVersion, fetchSystemName } = useFetchData();
   const {
     context: { loading },
     setContext
   } = useAppContext();
 
-  const fetchVrfData = async () => {
+  const setVrfData = async () => {
     const { vrf } = await fetchData();
     if (!vrf) return;
     setContext((prev) => ({ ...prev, vrf }));
   };
 
-  const fetchCerts = async () => {
+  const setCerts = async () => {
     const { ca } = await fetchCertsData();
     if (!ca) return;
     setContext((prev) => ({ ...prev, certificates: ca }));
   };
-  const fetchNotification = async () => {
+  const setNotification = async () => {
     const { error } = await fetchErrorData();
     if (!error) return;
     setContext((prev) => ({ ...prev, notifications: error }));
   };
 
-  const fetchSourceList = async () => {
+  const setSourceList = async () => {
     const { source_interface } = await fetchSourceData();
     if (source_interface) {
       setContext((prev) => ({ ...prev, sourceInterface: source_interface }));
     }
   };
 
-  return { fetchVrfData, fetchCerts, fetchNotification, fetchSourceList, loading };
+  const setSystemName = async () => {
+    const { setting } = await fetchSystemName();
+    if (setting) setContext((prev) => ({ ...prev, switchVersion: setting.value }));
+  };
+
+  const setAppVersion = async () => {
+    const { setting } = await fetchAppVersion();
+    if (setting) setContext((prev) => ({ ...prev, version: setting.value }));
+  };
+
+  const InitData = () => {
+    try {
+      setCerts();
+      setNotification();
+      setSourceList();
+      setAppVersion();
+      setSystemName();
+    } catch (err: any) {
+      setContext((prev) => ({ ...prev, actionStatus: [{ status: StatusState.error, message: StatusMessage.failedFetch }] }));
+    }
+  };
+
+  return { setVrfData, InitData, loading };
 };

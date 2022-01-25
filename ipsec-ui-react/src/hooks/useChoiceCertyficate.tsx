@@ -215,13 +215,13 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
     return (
       <td key={el.name} className={classNames('table__column', 'table__psk', 'table__psk__choice')}>
         <div className="table__center">
-          <button className="table__psk__btn" onClick={() => handleChooseAuthentication('psk')}>
+          <button className={classNames('table__psk__btn', { table__btn__error: error['psk'] })} onClick={() => handleChooseAuthentication('psk')}>
             PSK
           </button>
         </div>
         <span className="table__text">or</span>
         <div className="table__center">
-          <button className="table__psk__btn" onClick={() => handleChooseAuthentication('certs')}>
+          <button className={classNames('table__psk__btn', { table__btn__error: error['psk'] })} onClick={() => handleChooseAuthentication('certs')}>
             X509 <AiOutlineUpload className="table__upload" />
           </button>
         </div>
