@@ -4,6 +4,7 @@ from pathlib import Path
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
+import shutil
 
 
 parser = argparse.ArgumentParser()
@@ -99,22 +100,53 @@ version = subprocess.run(
     universal_newlines=True,
 ).stdout.split("\n")[0]
 
-build_processes.append(
-    subprocess.Popen(
-        "exec docker build -t sico_api --build-arg VERSION="
-        + version
-        + " -f sico_api.dockerfile .",
+if args.pack:
+    package_version = subprocess.run(
+        r'exec git describe --tags --long | sed "s/\(.*\)-.*/\1/"',
         shell=True,
+        check=True,
+        stdout=subprocess.PIPE,
+        universal_newlines=True,
+    ).stdout.split("\n")[0]
+    package_name = "sico_ipsec-" + package_version
+    package = "out/" + package_name + ".tar.gz"
+    content_path = "out/content/"
+    image = package_name + "/sico_api-" + package_version + ".tar"
+    documentation = package_name + "/documentation.pdf"
+    Path(content_path + package_name).mkdir(parents=True, exist_ok=True)
+    download_documentation("out/content/documentation.pdf", creds_path=args.pack[0])
+
+    shutil.copyfile("sico.dockerfile", "sico-doc.dockerfile")
+
+    f = open("sico-doc.dockerfile", "r")
+    contents = f.readlines()
+    f.close()
+
+    contents.insert(62, "ADD out/content/documentation.pdf /usr/share/nginx/html")
+
+    f = open("sico-doc.dockerfile", "w")
+    contents = "".join(contents)
+    f.write(contents)
+    f.close()
+
+    build_processes.append(
+        subprocess.Popen(
+            "exec docker build -t sico --build-arg VERSION="
+            + version
+            + " -f sico-doc.dockerfile .",
+            shell=True,
+        )
     )
-)
-build_processes.append(
-    subprocess.Popen(
-        "exec docker build -t sico_net --build-arg VERSION="
-        + version
-        + " -f sico_net.dockerfile .",
-        shell=True,
+else:
+    build_processes.append(
+        subprocess.Popen(
+            "exec docker build -t sico --build-arg VERSION="
+            + version
+            + " -f sico.dockerfile .",
+            shell=True,
+        )
     )
-)
+
 if args.ut:
     build_processes.append(
         subprocess.Popen(
@@ -145,20 +177,14 @@ if args.pack:
     package_name = "sico_ipsec-" + package_version
     package = "out/" + package_name + ".tar.gz"
     content_path = "out/content/"
-    image_api = package_name + "/sico_api-" + package_version + ".tar"
-    image_net = package_name + "/sico_net-" + package_version + ".tar"
+    image = package_name + "/sico-" + package_version + ".tar"
     documentation = package_name + "/documentation.pdf"
-    Path(content_path + package_name).mkdir(parents=True, exist_ok=True)
+    # Path(content_path + package_name).mkdir(parents=True, exist_ok=True)
 
     download_documentation(content_path + documentation, creds_path=args.pack[0])
 
     subprocess.run(
-        "exec docker save --output " + content_path + image_api + " sico_api",
-        shell=True,
-        check=True,
-    )
-    subprocess.run(
-        "exec docker save --output " + content_path + image_net + " sico_net",
+        "exec docker save --output " + content_path + image + " sico",
         shell=True,
         check=True,
     )
@@ -169,9 +195,7 @@ if args.pack:
         + " --directory="
         + content_path
         + " "
-        + image_api
-        + " "
-        + image_net
+        + image
         + " "
         + documentation,
         shell=True,

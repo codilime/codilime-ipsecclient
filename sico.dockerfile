@@ -60,6 +60,8 @@ COPY --from=frontend-build /usr/src/app/dist/ /usr/share/nginx/html
 COPY docker/front.ini /etc/supervisor.d/
 COPY docker/nginx.sh /usr/local/sbin/
 
+
+
 #Strongswan
 COPY docker/ipsec.ini /etc/supervisor.d/
 COPY docker/ipsec_reload.sh /usr/local/sbin/
