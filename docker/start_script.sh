@@ -33,4 +33,4 @@ ip route add $PREFIX dev $DEV src $LOCAL_IP table $MNG_TABLE
 #echo ip route add 0.0.0.0/0 via $MNG_GW_IP dev $DEV table $MNG_TABLE
 ip route add 0.0.0.0/0 via $MNG_GW_IP dev $DEV table $MNG_TABLE
 
-exec /usr/bin/supervisord -n -c /etc/supervisord.conf
+NGINX_LOCAL_IP=$LOCAL_IP exec /usr/bin/supervisord -n -c /etc/supervisord.conf
