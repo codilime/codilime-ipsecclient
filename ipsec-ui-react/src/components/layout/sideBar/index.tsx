@@ -1,16 +1,25 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from 'common/';
-import { useGetLocation, useGetVrfs, useThemeContext } from 'hooks/';
+import { useAppContext, useGetLocation, useThemeContext } from 'hooks/';
 import { IoHardwareChip } from 'react-icons/io5';
-import { HardwareId } from 'constant/';
-import classNames from 'classnames';
+import { HardwareId } from 'interface/enum';
 import Logo from 'images/codilimeLogo.png';
 import WhiteLogo from 'images/white_logo.png';
+import classNames from 'classnames';
 import './styles.scss';
 
 export const SideBar: FC = () => {
-  const { vrf } = useGetVrfs();
+  const {
+    context: { vrf }
+  } = useAppContext();
   const { currentLocation } = useGetLocation();
   const { theme } = useThemeContext();
 

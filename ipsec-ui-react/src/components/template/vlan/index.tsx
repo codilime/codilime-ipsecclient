@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { FC } from 'react';
 import { useVlanLogic } from 'hooks/';
 import { EachVlan } from './eachVlan';
@@ -5,6 +12,7 @@ import { VlanInput } from './vlanInput';
 import { Control } from 'react-hook-form';
 import { VrfDataTypes } from 'interface/index';
 import './styles.scss';
+
 interface VlanType {
   control: Control<VrfDataTypes>;
   errorSchema?: any;

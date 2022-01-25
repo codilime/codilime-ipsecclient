@@ -1,8 +1,14 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { FC, useRef, useEffect, useState } from 'react';
-import { Wrapper, VisualizationEndpoints } from 'template';
+import { Wrapper, VisualizationEndpoints, Dotted } from 'template';
 import { MetricsType } from 'interface/index';
 import { useAppContext, useFetchData, useThemeContext, useWindowDimensions } from 'hooks/';
-import { Dotted } from '../../loading';
 import './styles.scss';
 
 export const Visualization: FC = () => {
@@ -28,7 +34,7 @@ export const Visualization: FC = () => {
   }, [wrapper, width]);
 
   const handleFetchStatus = async () => {
-    if (!data.id || endpoint === null || !endpoint.length) return;
+    if (!data.id || endpoint === null || !endpoint.length || loading) return;
     const { monitoring } = await fetchEndpointStatus(data.id);
     if (monitoring) {
       setMonitoring(monitoring[0].endpoint);
@@ -40,13 +46,15 @@ export const Visualization: FC = () => {
   }, [data]);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      if (data.active) handleFetchStatus();
-    }, 5000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [data]);
+    if (data.active && !loading) {
+      const interval = setInterval(async () => {
+        handleFetchStatus();
+      }, 5000);
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [data, loading]);
 
   useEffect(() => {
     setThemeLoading(true);

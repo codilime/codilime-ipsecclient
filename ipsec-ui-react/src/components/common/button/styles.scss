@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 @import 'style/settings.scss';
 
 .button {
@@ -20,7 +27,7 @@
     font-weight: 500;
     max-width: 140px;
     width: auto;
-    background-color: $bgc-delete;
+    background-color: $red;
     color: white;
     margin-left: $margin-md;
   }
@@ -31,29 +38,41 @@
   }
 }
 
-.endpointButton {
+.secondaryButton {
+  padding: 4px 0px;
+  min-width: 100px;
+  background-color: var(--backgroundColor);
+  border: 1px solid $blue;
+  color: $blue;
   font-family: $font-family;
-  padding: 8px $padding-md;
-  border: none;
-  color: white;
+  height: 36px;
+  font-size: $small-size;
+  margin: 0 14px;
   border-radius: $border-radius-sm;
-  font-size: $basic-size;
   width: auto;
-  min-width: 60px;
   max-width: 240px;
   cursor: pointer;
   transition: $transition;
-  margin: 0 auto;
-  color: $light;
-  background-color: $blue;
-  height: 48px;
   font-weight: 700;
+  &:hover {
+    background-color: var(--backgroundHoverVrf);
+  }
+  &__table {
+    font-size: $basic-size;
+    border: none;
+  }
+  &__light {
+    font-weight: 400;
+  }
   &__secondary {
     background-color: transparent;
     color: var(--inputText);
     padding: 0;
     letter-spacing: 2px;
     font-size: 12px;
+    &:hover {
+      background-color: transparent;
+    }
   }
   &__disabled {
     background-color: var(--backgroundBtnDisable) !important;

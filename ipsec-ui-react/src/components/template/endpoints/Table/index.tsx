@@ -1,9 +1,16 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { FC } from 'react';
-import { EndpointButton } from 'common/';
+import { Button } from 'common/';
 import { EachEndpoint, Wrapper } from 'template';
 import { useCreateEndpointTable } from 'hooks/';
-import { newVrf, EndpointTableConst } from 'constant/';
 import classNames from 'classnames';
+import { EndpointTableConst, newVrf } from 'interface/enum';
 import './styles.scss';
 
 const { pskCertificates, nat, bgp, action, remote } = EndpointTableConst;
@@ -27,8 +34,6 @@ export const Endpoints: FC = () => {
 
   const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, currentEndpoint: EndpointSchema, handleActionVrfEndpoints, id: null }} />;
 
-  const newEndpointButton = open ? 'Close' : 'Add a new endpoint';
-
   return (
     <Wrapper {...{ wrapperClass: 'table__wrapper', className: 'table__wrapper', title: 'Endpoints' }}>
       <table className="table">
@@ -40,9 +45,9 @@ export const Endpoints: FC = () => {
           {createNewEndpoint}
           <tr className="table__addBtn">
             <td className="table__columnBtn">
-              <EndpointButton disabled={currentLocation === newVrf} onClick={handleToggle} className="table__btn">
-                {newEndpointButton}
-              </EndpointButton>
+              <Button disabled={currentLocation === newVrf} onClick={handleToggle} className="table__btn">
+                {open ? 'Close' : 'Add a new endpoint'}
+              </Button>
             </td>
           </tr>
         </tbody>

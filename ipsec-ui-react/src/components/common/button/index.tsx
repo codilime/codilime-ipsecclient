@@ -1,3 +1,9 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
 import { FC } from 'react';
 import { ButtonType } from 'interface/components';
 import classNames from 'classnames';
@@ -9,17 +15,21 @@ export const Button: FC<ButtonType> = ({ children, onClick, className = '', btnD
   </button>
 );
 
-interface EndpointButtonType extends ButtonType {
+interface SecondaryButtonType extends ButtonType {
   secondary?: boolean;
+  table?: boolean;
+  light?: boolean;
 }
 
-export const EndpointButton: FC<EndpointButtonType> = ({ onClick, secondary, children, disabled, className = '' }) => (
+export const SecondaryButton: FC<SecondaryButtonType> = ({ onClick, secondary, table, light, children, disabled, className = '' }) => (
   <button
     {...{ onClick, disabled }}
-    className={classNames('endpointButton', {
+    className={classNames('secondaryButton', {
       [className]: className,
-      endpointButton__secondary: secondary,
-      endpointButton__disabled: disabled
+      secondaryButton__secondary: secondary,
+      secondaryButton__table: table,
+      secondaryButton__light: light,
+      secondaryButton__disabled: disabled
     })}
     disabled={disabled}
   >

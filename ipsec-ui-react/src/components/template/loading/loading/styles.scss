@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 @import 'style/settings.scss';
 
 .loading {
@@ -47,7 +54,7 @@
     transform: translate(-50%, -50%) rotate(45deg);
     width: 82px;
     height: 82px;
-    border: 4px solid #3d89eb;
+    border: 4px solid $blue;
     border-radius: 20px;
     animation: partTwo 3s infinite;
   }
@@ -58,7 +65,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #3d89eb;
+    color: $blue;
   }
 }
 

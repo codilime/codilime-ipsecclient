@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 @import 'style/settings.scss';
 
 .sideBar {
@@ -11,13 +18,14 @@
   &__list {
     list-style-type: none;
     text-align: left;
-    font-size: 12px;
+    color: var(--inputColor);
   }
   &__eachVrf {
     font-size: $basic-size;
     transition: $transition;
     margin: 10px;
     border-radius: $border-radius-sm;
+
     &__active {
       background-color: var(--backgroundHoverVrf);
 
@@ -36,8 +44,9 @@
   }
   &__link {
     padding: $padding-md;
+    color: var(--inputColor);
+    transition: $transition;
     cursor: pointer;
-    color: $lightGray;
     text-decoration: none;
     display: flex;
     justify-content: space-between;

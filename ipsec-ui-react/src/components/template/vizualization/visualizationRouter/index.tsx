@@ -1,10 +1,16 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { FC } from 'react';
-import { Rect, Group, Text, Image, Circle } from 'react-konva';
+import { Group, Image, Circle } from 'react-konva';
 import Router from 'images/Router.png';
 import useImage from 'use-image';
 import { Visualization } from 'interface/components';
 import { colors } from '../visualizationConstants';
-import { useThemeContext } from 'hooks/';
 
 interface VisualizationLabel extends Visualization {
   width: number;

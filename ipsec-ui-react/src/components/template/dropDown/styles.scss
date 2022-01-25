@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 @import 'style/settings.scss';
 
 .dropDown {
@@ -8,8 +15,8 @@
   right: 25%;
   min-width: 144px;
   padding: 16px 8px;
-    opacity: 0;
-    visibility: hidden;
+  opacity: 0;
+  visibility: hidden;
   transition: all 0.3s ease-in;
   border: 1px solid var(--borderColor);
   &__active {

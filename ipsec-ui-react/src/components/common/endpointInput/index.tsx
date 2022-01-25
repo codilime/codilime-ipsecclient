@@ -1,8 +1,15 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { FC, useState } from 'react';
 import { IoEyeSharp } from 'react-icons/io5';
 import { BsEyeSlashFill } from 'react-icons/bs';
 import { ToolTip } from 'common/';
-import { compressIPV6, validateDataInput } from 'utils/';
+import { validateDataInput } from 'utils/';
 import { useToggle } from 'hooks/';
 import { InputType } from 'interface/components';
 import classNames from 'classnames';

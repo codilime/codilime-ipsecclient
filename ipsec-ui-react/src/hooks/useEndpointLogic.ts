@@ -1,8 +1,14 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { useState, useEffect, ChangeEvent, useLayoutEffect } from 'react';
 import { endpointInputSchema, endpointHardwareSchema, EndpointSchema, endpointAdvancedSchema } from 'db';
 import { useValidateEndpoint, useVrfLogic, useChoiceCertyficate } from 'hooks/';
 import { EndpointsType } from 'interface/index';
-import { compressIPV6 } from 'utils/';
 
 interface EndpointLogicType {
   currentEndpoint: EndpointsType;

@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { useEffect, FC } from 'react';
 import { BiInfoCircle } from 'react-icons/bi';
 import { useToggle } from 'hooks/';
@@ -27,6 +34,7 @@ export const ToolTipInfo: FC<ToolTipInfoType> = ({ children, error }) => {
 
 interface TooltipType {
   open: boolean;
+  className?: string;
 }
 
-export const ToolTip: FC<TooltipType> = ({ children, open }) => <div className={classNames('toolTip', { toolTip__active: open })}>{children}</div>;
+export const ToolTip: FC<TooltipType> = ({ children, open, className = '' }) => <div className={classNames('toolTip', { toolTip__active: open, [className]: className })}>{children}</div>;

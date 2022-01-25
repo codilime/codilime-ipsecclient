@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { useState, createContext, FC, Dispatch, SetStateAction, useMemo } from 'react';
 import { defaultVrf } from 'db';
 import { ContextProps } from 'interface/index';
@@ -21,7 +28,6 @@ export const VrfsProvider: FC = ({ children }) => {
 
   return <VrfsContext.Provider value={value}>{children}</VrfsContext.Provider>;
 };
-
 
 /* Theme context */
 enum ThemeType {

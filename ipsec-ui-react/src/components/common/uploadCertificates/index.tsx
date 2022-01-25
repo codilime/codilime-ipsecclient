@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/licensecisco-sample-code-license/
+ */
+
 import { FC } from 'react';
 import { EndpointInput } from 'common/';
 import { InputType } from 'interface/components';
@@ -14,7 +21,7 @@ interface UploadCertificates extends InputType {
   error?: any;
 }
 
-export const UploadCertificates: FC<UploadCertificates> = ({ type, name, onChange, edit, references, value, label, handleUploadFile, className = '', error }) => (
+export const UploadCertificates: FC<UploadCertificates> = ({ type, name, onChange, edit, references, value, label, handleUploadFile, className = '' }) => (
   <div className={classNames('uploadCertificate', { [className]: className })}>
     <EndpointInput {...{ type, name, onChange, edit, references, value }} />
     {label && <p className="uploadCertificate__title">{label}</p>}

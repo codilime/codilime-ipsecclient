@@ -1,6 +1,13 @@
-import { FC, ReactNode } from 'react';
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
+import { FC } from 'react';
 import { AiOutlineUser, AiOutlineSetting, AiOutlineUpload, AiOutlineRest } from 'react-icons/ai';
-import { SettingOptionType } from 'interface/index';
+import { DropDownListType, SettingOptionType } from 'interface/index';
 import classNames from 'classnames';
 import './styles.scss';
 
@@ -8,12 +15,6 @@ interface DropDownType {
   open?: boolean;
   handleToggle?: () => void;
   handleOpenSection: (name: SettingOptionType) => void;
-}
-
-interface DropDownListType {
-  value: SettingOptionType;
-  text: string;
-  icon: ReactNode;
 }
 
 export const DropDown: FC<DropDownType> = ({ open, handleOpenSection, handleToggle }) => {

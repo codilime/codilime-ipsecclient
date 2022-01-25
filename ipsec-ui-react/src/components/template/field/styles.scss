@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 @import 'style/settings.scss';
 
 .field {
@@ -15,10 +22,7 @@
     width: 175px;
     margin: 0;
     &__active {
-      color: $vrf-active;
-    }
-    &__hardware {
-      color: $hardware;
+      color: $blue;
     }
   }
   &__input {
@@ -39,9 +43,9 @@
       color: var(--inputText);
     }
     &:focus {
-      border: 1px solid $lightBlue;
+      border: 1px solid $blue;
       box-shadow: 0px 0px 4px #1890ff80;
-      color: $lightBlue;
+      color: $blue;
       outline: none;
     }
   }
