@@ -45,7 +45,7 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
       default:
         return setEndpoint((prev) => ({
           ...prev,
-          [name]: compressIPV6(value)
+          [name]: value
         }));
     }
   };
