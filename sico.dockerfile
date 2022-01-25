@@ -34,6 +34,14 @@ ENV APP_VERSION=$VERSION
 #Packages
 RUN apk add --no-cache nginx gettext supervisor curl sqlite tzdata strongswan jq tcpdump haproxy curl
 
+#volumes
+RUN mkdir -p /opt/ipsec/ && \
+    mkdir -p /opt/frr/ && \
+    mkdir -p /opt/super/ && \
+    mkdir -p /opt/super_net/ && \
+    mkdir -p /opt/super_api/ && \
+    mkdir -p /opt/logs/
+
 #API
 RUN mkdir -p /iox_data/appdata
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
@@ -67,6 +75,8 @@ RUN mkdir -p /opt/ipsec/conf && rm -rf /etc/swanctl/conf.d && ln -s /opt/ipsec/c
     mkdir /opt/ipsec/rsa && rm -rf /etc/swanctl/rsa && ln -s /opt/ipsec/rsa /etc/swanctl/rsa
 
 RUN chown -R ipsec:ipsec /etc/swanctl
+
+
 
 #FRR
 COPY docker/frr_content/frr-7.5.1.apk /tmp/

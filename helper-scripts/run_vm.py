@@ -35,7 +35,8 @@ virt-install                                    \
         --import                                \
         --disk path=%s,bus=sata,format=qcow2    \
         --disk path=%s,device=cdrom,bus=sata    \
-        --network bridge=eth2,model=virtio  \
+        --network bridge=dmz_br,model=virtio  \
+        --network bridge=mng_br,model=virtio  \
         --nographic                             \
         --noautoconsole
 """
