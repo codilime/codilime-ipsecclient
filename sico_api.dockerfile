@@ -7,7 +7,7 @@ COPY ipsec-ui-react/tsconfig.json /usr/src/app/
 RUN npm install -g webpack webpack-cli && npm install
 COPY ipsec-ui-react/package-lock.json ./
 COPY ipsec-ui-react/src /usr/src/app/src/
-
+COPY ipsec-ui-react/public /usr/src/app/public/
 RUN npm run build
 
 
