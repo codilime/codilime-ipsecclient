@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { FC } from 'react';
 import { Field } from 'template';
 import { Button } from 'common/';
@@ -6,7 +13,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { restConfSchema } from 'schema/';
 import { RestConfType } from 'interface/index';
-import classNames from 'classnames';
 
 interface RestConfFormType {
   handleSendRestConf: (data: RestConfType) => void;

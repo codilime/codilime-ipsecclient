@@ -1,3 +1,12 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
+@import 'style/settings.scss';
+
 .circle {
   border-radius: 50%;
   position: absolute;
@@ -6,7 +15,7 @@
   width: 10px;
   height: 10px;
   transform: translate(-50%, -50%);
-  background-color: red;
+  background-color: $red;
   font-size: 12px;
   color: white;
   text-align: center;

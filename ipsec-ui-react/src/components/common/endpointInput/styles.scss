@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 @import 'style/settings.scss';
 
 .endpointInput {
@@ -20,21 +27,24 @@
     font-size: $basic-size;
   }
 
-  &__psk {
-    margin-right: 20px;
-  }
   &:focus {
     transition: $transition;
     background-color: var(--backgroundColor);
     border: 1px solid $lightBlue;
     box-shadow: 0px 0px 4px #1890ff80;
   }
+
   &__active {
     border-radius: $border-radius-sm;
     border: 1px solid var(--borderColor);
     padding-right: 25px;
     cursor: pointer;
   }
+
+  &__psk {
+    margin-right: 20px;
+  }
+
   &__checkbox {
     width: auto;
     &:focus {
@@ -42,28 +52,34 @@
       box-shadow: none;
     }
   }
+
   &__file {
     display: none;
   }
+
   &__radio {
     width: auto;
     margin-right: 15px;
   }
+
   &__icon {
+    transition: $transition;
+    color: var(--inputText);
     position: absolute;
     right: 30px;
-    cursor: pointer;
-    font-size: 16px;
+    font-size: $basic-size;
     transform: translateX(-100%);
-    color: $gray05;
+    cursor: pointer;
     &__hardware {
       right: 20px;
     }
   }
+
   &__hardware {
     width: 80%;
     margin-right: 20px;
   }
+
   &__error {
     border: 1px solid $red;
     animation: error 1s ease-in-out;

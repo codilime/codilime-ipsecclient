@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 @import 'style/settings.scss';
 
 .panel {
@@ -17,7 +24,6 @@
     align-items: flex-start;
     height: 100px;
     width: 100%;
-    color: #a0a3a9;
     line-height: 24px;
     border-radius: $border-radius-lg;
   }
@@ -33,13 +39,16 @@
     min-width: 170px;
   }
   &__cancel {
-    color: #3d89eb;
+    color: $blue;
     font-weight: 400;
     background-color: transparent;
     padding: $padding-sm $padding-md;
     min-width: 170px;
     margin-top: 24px;
-    border: 1px solid #3d89eb;
+    border: 1px solid $blue;
+    &:hover {
+      background-color: var(--backgroundColor);
+    }
   }
   &__footer {
     display: flex;

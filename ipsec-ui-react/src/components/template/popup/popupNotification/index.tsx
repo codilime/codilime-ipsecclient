@@ -1,7 +1,13 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { Popup, EachError } from 'template';
 import { NotificationsType } from 'interface/index';
-import { Dotted } from '../../loading';
 import './styles.scss';
 
 interface PopupNotificationType {
@@ -23,7 +29,11 @@ export const PopupNotification: FC<PopupNotificationType> = ({ open, handleToggl
     }
   }, [findDate, notifications]);
 
-  const displayError = displayNotification.length ? displayNotification.map((notice, index) => <EachError key={index} {...notice} />) : <div>Notifications are empty</div>;
+  const displayError = displayNotification.length ? (
+    displayNotification.map((notice, index) => <EachError key={index} {...notice} />)
+  ) : (
+    <div className="notifications__empty">Notifications are empty</div>
+  );
 
   return (
     <Popup {...{ open, handleToggle, title: 'Notifications' }}>

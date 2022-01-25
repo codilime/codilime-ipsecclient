@@ -1,37 +1,43 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 @import 'style/settings.scss';
 
 .logsVrfs {
-  &_title {
+  &__title {
     margin: 0;
     padding: 0 0 24px;
     width: 100%;
     color: var(--titleColor);
   }
-  &_list {
+  &__list {
     margin: 0 24px 0 0;
     padding: 0;
     list-style-type: none;
     display: inline-block;
     width: 120px;
   }
-  &_item {
+  &__item {
     text-transform: capitalize;
     transition: 0.3s linear all;
     padding-bottom: 20px;
-    color: #a0a3a9;
     font-weight: 400;
     font-size: $small-size;
     cursor: pointer;
-    &_active {
+    &__active {
       margin-left: 5px;
-      color: #3d89eb;
+      color: $blue;
     }
   }
 
-  &_aside {
+  &__aside {
     position: fixed;
   }
-  &_context {
+  &__context {
     margin-left: 145px;
     display: none;
     max-width: 100ch;
@@ -39,7 +45,7 @@
     font-family: monospace;
     color: var(--titleColor);
   }
-  &_active {
+  &__active {
     display: inline-block;
   }
 }

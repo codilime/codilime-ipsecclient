@@ -1,4 +1,11 @@
-import { CSSProperties } from 'react';
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
+import { CSSProperties, ReactNode } from 'react';
 import { RouteComponentProps } from 'react-router';
 
 interface AuthenticationType {
@@ -185,4 +192,16 @@ export enum SettingOptionType {
   restConf = 'restConf',
   certificates = 'certificates',
   about = 'about'
+}
+
+export interface AboutListType {
+  title: string;
+  value: string;
+  link?: string;
+}
+
+export interface DropDownListType {
+  value: SettingOptionType;
+  text: string;
+  icon: ReactNode;
 }

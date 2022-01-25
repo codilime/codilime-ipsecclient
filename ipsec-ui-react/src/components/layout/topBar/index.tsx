@@ -1,7 +1,14 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { useState, FC } from 'react';
 import { MdOutlineDarkMode, MdOutlineWbSunny } from 'react-icons/md';
 import Switch from 'react-switch';
-import { Button } from 'common/';
+import { SecondaryButton } from 'common/';
 import { Notification, Setting, PopupLogs } from 'template';
 import { useThemeContext } from 'hooks/';
 import { ThemeType, TopBarMenu } from 'interface/enum';
@@ -36,9 +43,7 @@ export const TopBar: FC = () => {
             width={44}
           />
         </div>
-        <Button className="topBar__log" onClick={() => handleOpenAction(logs)}>
-          View logs
-        </Button>
+        <SecondaryButton onClick={() => handleOpenAction(logs)}>View logs</SecondaryButton>
         <Notification {...{ open: openPopup === notice, handleToggle: () => handleOpenAction(notice) }} />
         <Setting {...{ open: openPopup === dropDown, handleToggle: () => handleOpenAction(dropDown) }} />
         <PopupLogs {...{ open: openPopup === logs, handleToggle: () => handleOpenAction(logs) }} />

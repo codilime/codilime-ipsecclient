@@ -1,9 +1,16 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { FC } from 'react';
 import { useAppContext, useCryptoLogic } from 'hooks/';
-import { FieldValues, UseFormSetValue } from 'react-hook-form';
-import './styles.scss';
+import { UseFormSetValue } from 'react-hook-form';
 import classNames from 'classnames';
 
+import './styles.scss';
 interface CryptoType {
   encryption: string[];
   integrity: string[];

@@ -1,9 +1,17 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { FC } from 'react';
 import { MdClose } from 'react-icons/md';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import { Theme } from '../../../theme';
 import './styles.scss';
+
 interface PopupType {
   open: boolean;
   handleToggle: () => void;

@@ -1,3 +1,10 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 @import 'style/settings.scss';
 
 .endpointOption {
@@ -7,10 +14,9 @@
   top: 100%;
   left: 50%;
   transform: translate(-50%, -5%);
-  box-shadow: $endpoint-option-shadow;
+  box-shadow: 0px 0px 5px -2px rgba(0, 0, 0, 0.35);
   visibility: hidden;
   opacity: 0;
-
   width: 100%;
   max-width: 120px;
   z-index: 4;

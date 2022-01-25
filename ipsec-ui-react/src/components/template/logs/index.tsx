@@ -1,11 +1,17 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { FC, useState, useLayoutEffect } from 'react';
 import { EachLog } from './eachLog';
 import { HeadersLog } from './headersLog';
 import { headerLogs } from 'db';
-import './styles.scss';
 import { VrfsLogs } from './vrfsLogs';
 import { Dotted } from '../loading';
-
+import './styles.scss';
 interface LogsType {
   logData: { log: string; name: string }[];
   open: boolean;

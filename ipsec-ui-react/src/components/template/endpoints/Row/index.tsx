@@ -1,5 +1,12 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { FC, useState } from 'react';
-import { EndpointButton, EndpointInput, ToolTipInfo, ComboBox, ToolTip } from 'common/';
+import { SecondaryButton, EndpointInput, ToolTipInfo, ComboBox } from 'common/';
 import { EndpointOption, Modal } from 'template';
 import { useEndpointLogic, useToggle, useModalLogic } from 'hooks/';
 import { EndpointsType } from 'interface/index';
@@ -67,13 +74,13 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
   ));
 
   const activeButton = edit ? (
-    <EndpointButton {...{ onClick: handleAddNewEndpoint }} className="table__add">
+    <SecondaryButton {...{ onClick: handleAddNewEndpoint }} table className="table__add">
       Add
-    </EndpointButton>
+    </SecondaryButton>
   ) : (
-    <EndpointButton secondary onClick={handleToggle}>
+    <SecondaryButton secondary table onClick={handleToggle}>
       ...
-    </EndpointButton>
+    </SecondaryButton>
   );
 
   const advancedIcon = advanced ? <BiArrowFromTop className="table__toggle__icon" onClick={handleOpenAdvanced} /> : <BiArrowFromLeft className="table__toggle__icon" onClick={handleOpenAdvanced} />;

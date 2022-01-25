@@ -1,6 +1,13 @@
-import { useEffect,useLayoutEffect } from 'react';
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
+import { useLayoutEffect } from 'react';
 import { useGetLocation, useAppContext } from 'hooks/';
-import { HardwareId } from 'constant/';
+import { HardwareId } from 'interface/enum';
 import { defaultVrf } from 'db';
 
 export const useGetVrfs = (vrfId?: string) => {

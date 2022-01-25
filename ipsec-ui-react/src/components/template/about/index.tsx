@@ -1,12 +1,14 @@
+/*
+ *     Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *     This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 import { FC, useMemo } from 'react';
 import { useAppContext } from 'hooks/';
+import { AboutListType } from 'interface/index';
 import './styles.scss';
-
-interface AboutListType {
-  title: string;
-  value: string;
-  link?: string;
-}
 
 export const About: FC = () => {
   const {
