@@ -10,13 +10,12 @@ interface EachCertificateType {
 
 export const EachCertificate: FC<EachCertificateType> = ({ id, ca_file, checkedCa, handleCheckCerts }) => {
   const decode = decodeX509(ca_file);
-
   return (
     <tr className="table__setting__row">
       <td className="table__setting__column">{decode.ON}</td>
       <td className="table__setting__column">{decode.CN}</td>
       <td className="table__setting__column table__setting__checked">
-        <input {...{ type: 'checkbox', className: 'table__setting__checkbox', onChange: (e) => handleCheckCerts(e, id), checked: checkedCa[id] }} />
+        <input {...{ type: 'checkbox', className: 'table__setting__checkbox', value: id || '', onChange: (e) => handleCheckCerts(e, id), checked: checkedCa[id] }} />
       </td>
     </tr>
   );

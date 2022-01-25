@@ -91,7 +91,7 @@ module.exports = {
       name: 'manifest'
     }
   },
-  plugins: [new HtmlWebpackPlugin({ template: './src/index.html', favicon: './public/favicon.ico' }), new CleanWebpackPlugin(), new NodePolyfillPlugin()],
+  plugins: [new HtmlWebpackPlugin({ template: './public/index.html', favicon: './public/favicon.ico' }), new CleanWebpackPlugin(), new NodePolyfillPlugin()],
   devServer: {
     https: true,
     proxy: {
