@@ -23,8 +23,9 @@ export const useCertificatesLogic = () => {
   };
 
   const handleUpdateCertsList = async () => {
-    const newCerts = await client('ca');
-    if (newCerts) setContext((prev) => ({ ...prev, certificates: [...newCerts.ca] }));
+    const { ca } = await client('ca');
+    if (ca) setContext((prev) => ({ ...prev, certificates: [...ca] }));
+    setCerts([]);
   };
 
   useEffect(() => {
@@ -61,6 +62,7 @@ export const useCertificatesLogic = () => {
         const newCerts = certs.map((cert, index) => {
           return { id: certificates.length + index + 1, ...cert };
         });
+        console.log(certificates, 'certificates', newCerts, 'new');
         await client('ca', { ca: [...certificates, ...newCerts] }, { method: 'POST' });
       }, 300);
       const UploadTimeout = setTimeout(async () => {
@@ -71,7 +73,9 @@ export const useCertificatesLogic = () => {
         clearTimeout(UploadTimeout);
       };
     }
-  }, [certs]);
+  }, []);
+
+  console.log(certs);
 
   const handleDeleteCerts = async () => {
     if (!checkedCa) return;
