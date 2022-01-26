@@ -70,6 +70,7 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
 
   const handleAddNewEndpoint = () => {
     const validate = validateEmptyEndpoint(endpoints);
+    console.log(validate, endpoints);
     if (!validate) return;
     if (id === null) {
       handleActionVrfEndpoints('add', endpoints);
