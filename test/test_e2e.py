@@ -44,7 +44,7 @@ def wait_for_csr_vm():
         "Content-Type": "application/yang-data+json",
     }
     proposal_url = (
-        "https://10.69.0.10/restconf/data/Cisco-IOS-XE-native:native/interface"
+        "https://10.67.0.10/restconf/data/Cisco-IOS-XE-native:native/interface"
     )
 
     while True:
