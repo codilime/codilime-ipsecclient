@@ -28,7 +28,7 @@ export const About: FC = () => {
           <h3 className="about__title">{title}</h3>
           {!link && <span className="about__value">{value}</span>}
           {link && (
-            <a href={link} target="_blank" className="about__link" download>
+            <a href={link} target="_blank" className="about__link">
               {value}
             </a>
           )}
