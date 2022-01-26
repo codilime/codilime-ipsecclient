@@ -61,16 +61,13 @@ def my_except_hook():
 
 
 if args.clean:
-    subprocess.run("docker stop sico_api", shell=True)
-    subprocess.run("docker stop sico_net", shell=True)
+    subprocess.run("docker stop sico", shell=True)
     subprocess.run("docker stop sico_test", shell=True)
 
-    subprocess.run("docker rm sico_api", shell=True)
-    subprocess.run("docker rm sico_net", shell=True)
+    subprocess.run("docker rm sico", shell=True)
     subprocess.run("docker rm sico_test", shell=True)
 
-    subprocess.run("docker rmi sico_api", shell=True)
-    subprocess.run("docker rmi sico_net", shell=True)
+    subprocess.run("docker rmi sico", shell=True)
     subprocess.run("docker rmi sico_test", shell=True)
 
     subprocess.run("docker system prune -f", shell=True)
@@ -99,22 +96,24 @@ version = subprocess.run(
     universal_newlines=True,
 ).stdout.split("\n")[0]
 
+content_path = "out/content/"
+Path(content_path).mkdir(parents=True, exist_ok=True)
+
+if args.pack:
+    download_documentation(content_path + "documentation.pdf", creds_path=args.pack[0])
+else:
+    shutil.copyfile("helper-scripts/dummy.pdf", content_path + "documentation.pdf")
+
+
 build_processes.append(
     subprocess.Popen(
-        "exec docker build -t sico_api --build-arg VERSION="
+        "exec docker build -t sico --build-arg VERSION="
         + version
-        + " -f sico_api.dockerfile .",
+        + " -f sico.dockerfile .",
         shell=True,
     )
 )
-build_processes.append(
-    subprocess.Popen(
-        "exec docker build -t sico_net --build-arg VERSION="
-        + version
-        + " -f sico_net.dockerfile .",
-        shell=True,
-    )
-)
+
 if args.ut:
     build_processes.append(
         subprocess.Popen(
@@ -144,21 +143,14 @@ if args.pack:
     ).stdout.split("\n")[0]
     package_name = "sico_ipsec-" + package_version
     package = "out/" + package_name + ".tar.gz"
-    content_path = "out/content/"
-    image_api = package_name + "/sico_api-" + package_version + ".tar"
-    image_net = package_name + "/sico_net-" + package_version + ".tar"
+    image = package_name + "/sico-" + package_version + ".tar"
     documentation = package_name + "/documentation.pdf"
     Path(content_path + package_name).mkdir(parents=True, exist_ok=True)
 
     download_documentation(content_path + documentation, creds_path=args.pack[0])
 
     subprocess.run(
-        "exec docker save --output " + content_path + image_api + " sico_api",
-        shell=True,
-        check=True,
-    )
-    subprocess.run(
-        "exec docker save --output " + content_path + image_net + " sico_net",
+        "exec docker save --output " + content_path + image + " sico",
         shell=True,
         check=True,
     )
@@ -169,13 +161,12 @@ if args.pack:
         + " --directory="
         + content_path
         + " "
-        + image_api
-        + " "
-        + image_net
+        + image
         + " "
         + documentation,
         shell=True,
         check=True,
     )
-    shutil.rmtree(content_path)
     print("created package: " + package)
+
+shutil.rmtree(content_path)

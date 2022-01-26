@@ -2,7 +2,7 @@ import requests, time, json, logging, os, subprocess, urllib3, pytest
 from http import HTTPStatus
 from deepdiff import DeepDiff
 
-BASE_URL = "https://sico_api/restconf/data/sico-ipsec:api"
+BASE_URL = "https://sico/restconf/data/sico-ipsec:api"
 
 VRFS_URL = BASE_URL + "/vrf"
 SETTINGS_URL = BASE_URL + "/setting=siemka"
@@ -33,21 +33,9 @@ def wait_for_sico_api():
             continue
 
 
-def wait_for_sico_net():
-    while True:
-        log.info("waiting for sico_net...")
-        if os.path.exists("/opt/super_net/supervisord.sock") and os.path.exists(
-            "/opt/ipsec/conf/charon.vici"
-        ):
-            log.info("sico_net is ready")
-            return
-        time.sleep(3)
-
-
 def setup_module():
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     wait_for_sico_api()
-    wait_for_sico_net()
 
 
 def wait_for_csr_vm():

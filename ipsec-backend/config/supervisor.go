@@ -8,8 +8,8 @@ import (
 	"github.com/abrander/go-supervisord"
 )
 
-const supervisorNetSocketPath = "/opt/super_net/supervisord.sock"
-const supervisorApiSocketPath = "/opt/super_api/supervisord.sock"
+const supervisorNetSocketPath = "/opt/super/supervisord.sock"
+const supervisorApiSocketPath = "/opt/super/supervisord.sock"
 
 type Supervisor struct{}
 

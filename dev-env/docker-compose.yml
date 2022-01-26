@@ -146,10 +146,10 @@ services:
 
 networks:
   ipsec:
-    name: ipsec
+    name: 02_dmz_br
     driver: bridge
     driver_opts:
-      com.docker.network.bridge.name: ipsec_br
+      com.docker.network.bridge.name: dmz_br
       com.docker.network.bridge.enable_icc: "true"
     ipam:
       config:
