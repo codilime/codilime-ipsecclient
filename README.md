@@ -6,9 +6,9 @@
 
 ## running the dockers
 
-- `./run_ipsec_client.sh.sh`
+- `./run_ipsec_client.sh`
 
-The app should be available on https://10.67.0.0
+The app should be available on https://10.67.0.2
 
 ## available enviroment variables
 

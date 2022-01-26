@@ -366,7 +366,7 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	log.Debugf("Get setting key %s value %s", key, value)
+	log.Debugf("Get setting key %s value %s", name, value)
 
 	respondWithMarshalledJSON(w, http.StatusOK, `{"setting":`+json+"}")
 }
