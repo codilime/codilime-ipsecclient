@@ -78,6 +78,35 @@ if args.clean:
     subprocess.run("docker system prune -f", shell=True)
     subprocess.run("docker volume prune -f", shell=True)
 
+    subprocess.run(
+        "docker network create \
+               -o com.docker.network.bridge.enable_icc=true \
+               -o com.docker.network.bridge.name=vlan_br \
+               --driver=bridge \
+               --subnet=10.68.0.0/24 \
+               01_vlan_br",
+        shell=True,
+    )
+    subprocess.run(
+        "docker network create \
+               -o com.docker.network.bridge.enable_icc=true \
+               -o com.docker.network.bridge.name=dmz_br \
+               --driver=bridge \
+               --subnet=10.69.0.0/24 \
+               --gateway=10.69.0.1 \
+               02_dmz_br",
+        shell=True,
+    )
+    subprocess.run(
+        "docker network create \
+               -o com.docker.network.bridge.enable_icc=true \
+               -o com.docker.network.bridge.name=mng_br \
+               --driver=bridge \
+               --subnet=10.67.0.0/24 \
+               03_mng_br",
+        shell=True,
+    )
+
 if args.csr_vm:
     subprocess.run("helper-scripts/docker_network_create.sh", shell=True)
 
