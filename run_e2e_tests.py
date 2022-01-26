@@ -41,15 +41,7 @@ def main():
 def run_app():
     processes.append(
         subprocess.Popen(
-            "exec ./run_api.sh",
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-        )
-    )
-    processes.append(
-        subprocess.Popen(
-            "exec ./run_net.sh",
+            "exec ./run_ipsec_client.sh",
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,

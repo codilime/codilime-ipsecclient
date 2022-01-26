@@ -5,7 +5,6 @@ set -e
 docker stop sico || true
 docker rm sico || true
 
-# docker network rm aipsec eth1 eth2 ipsec || true
 # docker network rm 01_vlan_br 02_dmz_br 03_mng_br || true
 
 docker network create \
