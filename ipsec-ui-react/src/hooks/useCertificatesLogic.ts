@@ -71,7 +71,6 @@ export const useCertificatesLogic = () => {
           ca_file
         }));
         const newCerts = certs.map(({ ca_file }, index) => {
-          console.log(certificates.length + index + 1);
 
           return { id: certificates.length + index + 1, ca_file };
         });
