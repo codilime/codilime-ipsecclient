@@ -17,7 +17,7 @@ export const About: FC = () => {
 
   const listData: AboutListType[] = [
     { title: 'Version:', value: version },
-    { title: 'Documentation:', value: 'Link', link: 'dsadsadsa' },
+    { title: 'Documentation:', value: 'Ipsec-Client-By-Codilime-Documentation', link: '/documentation.pdf' },
     { title: 'Switch version:', value: switchVersion }
   ];
 
@@ -28,7 +28,7 @@ export const About: FC = () => {
           <h3 className="about__title">{title}</h3>
           {!link && <span className="about__value">{value}</span>}
           {link && (
-            <a href={link} target="_blank" className="about__link">
+            <a href={link} target="_blank" className="about__link" download>
               {value}
             </a>
           )}

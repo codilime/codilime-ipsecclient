@@ -98,7 +98,7 @@ module.exports = {
     https: true,
     proxy: {
       '/restconf/data/sico-ipsec:api': {
-        target: 'https://0.0.0.0:443',
+        target: 'https://10.67.0.2:443',
         secure: false
       }
     },

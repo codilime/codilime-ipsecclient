@@ -43,7 +43,7 @@ type ContextThemeType = {
 export const ThemeContext = createContext<ContextThemeType | null>(null);
 
 export const ThemeProvider: FC = ({ children }) => {
-  const [theme, setTheme] = useState<ThemeType>(ThemeType.dark);
+  const [theme, setTheme] = useState<ThemeType>(ThemeType.light);
   const value = useMemo(
     () => ({
       theme,
