@@ -2,16 +2,15 @@
 
 ## building the dockers
 
-`docker build -t sico_api -f sico_api.dockerfile . && docker build -t sico_net -f sico_net.dockerfile .`
+`docker build -t sico -f sico_api.dockerfile`
 
 ## running the dockers
 
-- `./run_api.sh`
-- `./run_net.sh`
+- `./run_ipsec_client.sh.sh`
 
-The app should be available on http://localhost:80
+The app should be available on https://10.67.0.0
 
-## enviroment variables for ipsec_backend binary
+## available enviroment variables
 
 - `LOG_LEVEL` - specify logging level. Three levels available : error, info, debug.
 - `TZ` - specify time zone. You can do it by specifying exact time zone `TZ=America/Los_Angeles` or get the time zone from `/etc/timezone` `TZ=$(cat /etc/timezone)`. Time zone is used in the error time. 
@@ -20,8 +19,7 @@ The app should be available on http://localhost:80
 
 ## check version of the app
 
-`docker inspect -f {{.Config.Labels.APP_VERSION}} sico_api`  
-`docker inspect -f {{.Config.Labels.APP_VERSION}} sico_net`
+`docker inspect -f {{.Config.Labels.APP_VERSION}} sico`
 
 ## running API unit tests
 
@@ -37,10 +35,11 @@ NOTE Install python requirements:
 
 Build the dockers:  
   
-`./build.py [-h] [--csr-vm <csr-vm path> <csr_config.iso path>] [--clean] [--pack] [--ut]`
+`./build.py [-h] [--csr-vm <csr-vm path> <csr_config.iso path>] [--clean]`
+                `[--pack <documentation download creds path>] [--ut]`
 - `--csr-vm <csr-vm path> <csr_config.iso path>` - run csr-vm
 - `--clean` - remove docker images and containers
-- `--pack` - create package in the `out` directory
+- `--pack <documentation download creds path>` - create package in the `out` directory
 - `--ut` - build api unit tests
 
 Build and run e2e tests:  
