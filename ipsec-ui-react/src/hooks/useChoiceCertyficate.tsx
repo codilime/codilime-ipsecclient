@@ -20,15 +20,7 @@ interface HookType {
   endpoints: EndpointsType;
 }
 
-interface fileNameType {
-  key: string;
-  certificate: string;
-  peerCertificate: string;
-  pkcs12_base64: string;
-}
-
 export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: HookType) => {
-  const [fileName, setFileName] = useState<fileNameType>({ key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File', pkcs12_base64: 'Attach File' });
   const {
     authentication: { type, psk, private_key, local_cert, remote_cert, pkcs12_base64 }
   } = endpoints;
@@ -59,7 +51,8 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
 
     if (!ref.current?.files) return;
     const reader = new FileReader();
-    if (name !== 'pkcs12_base64')
+
+    if (name !== 'pkcs12_base64') {
       reader.onload = (e) => {
         setEndpoint((prev: EndpointsType) => ({
           ...prev,
@@ -70,6 +63,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
           }
         }));
       };
+    }
     if (name === 'pkcs12_base64') {
       reader.onload = (e) => {
         const base64 = pkcs12ToBase64(e.target?.result);
@@ -82,8 +76,8 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
           }
         }));
       };
-      reader.readAsBinaryString(ref.current.files[0]);
     }
+    reader.readAsBinaryString(ref.current.files[0]);
   };
 
   const handleUpdateEndpoint = (e: ChangeEvent<HTMLInputElement>) => {
@@ -103,7 +97,6 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
               }
             }));
           } else {
-            setFileName((prev) => ({ ...prev, pkcs12_base64: 'Attach File' }));
             return setEndpoint((prev) => ({
               ...prev,
               authentication: {
@@ -124,7 +117,6 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
     } else
       switch (name) {
         case 'psk':
-          setFileName((prev) => ({ ...prev, key: 'Attach File', certificate: 'Attach File', peerCertificate: 'Attach File' }));
           return setEndpoint((prev) => ({
             ...prev,
             authentication: {
@@ -159,33 +151,12 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
     }));
   };
 
-  const handleUpdateFileName = () => {
-    if (private_key) {
-      setFileName((prev) => ({ ...prev, key: 'Private Key' }));
-    }
-    if (local_cert) {
-      const decode = decodeX509(local_cert);
-      if (decode) setFileName((prev) => ({ ...prev, certificate: decode.CN }));
-    }
-    if (remote_cert) {
-      const decode = decodeX509(remote_cert);
-      if (decode) setFileName((prev) => ({ ...prev, peerCertificate: decode.CN }));
-    }
-    if (pkcs12_base64) {
-      setFileName((prev) => ({ ...prev, pkcs12_base64: 'Complete' }));
-    }
-  };
-
-  useEffect(() => {
-    handleUpdateFileName();
-  }, [private_key, local_cert, remote_cert, pkcs12_base64]);
-
   const UploadCaSchema = [
     {
       type: 'file',
       name: 'private_key',
       label: 'key',
-      text: fileName.key,
+      added: private_key,
       edit,
       error,
       references: key,
@@ -196,7 +167,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       type: 'file',
       name: 'local_cert',
       label: 'Certificate',
-      text: fileName.certificate,
+      added: local_cert,
       edit,
       error,
       references: certificate,
@@ -207,7 +178,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
       type: 'file',
       name: 'remote_cert',
       label: 'Peer Certificate',
-      text: fileName.peerCertificate,
+      added: remote_cert,
       edit,
       error,
       references: peerCertificate,
@@ -255,7 +226,7 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
               type: 'file',
               name: 'pkcs12_base64',
               label: 'Password',
-              text: fileName.pkcs12_base64,
+              added: pkcs12_base64,
               edit,
               references: pkcs12,
               onChange: handleUpdateEndpoint,
