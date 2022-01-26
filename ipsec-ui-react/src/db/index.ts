@@ -294,8 +294,7 @@ export const DynamicVrfHardwareDetails: DetailsTypes[] = [
   { name: 'crypto_ph1', text: 'Crypto phase 1' },
   { name: 'local_as', type: 'text', text: 'BGP Local AS' },
   { name: 'crypto_ph2', text: 'Crypto phase 2' },
-  { name: 'active', type: 'checkbox', text: 'Active' },
-  { name: 'ospf', type: 'checkbox', text: 'Ospf' }
+  { name: 'active', type: 'checkbox', text: 'Active' }
 ];
 
 export const DynamicLoginForm = [

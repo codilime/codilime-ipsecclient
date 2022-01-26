@@ -6,7 +6,7 @@
  */
 
 import { useEffect, useLayoutEffect } from 'react';
-import { DynamicVrfDetails } from 'db';
+import { DynamicVrfDetails, DynamicVrfHardwareDetails } from 'db';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { hardwareSchame, vrfSchema } from 'schema/';
@@ -20,7 +20,7 @@ export const useCreateVRFMainView = () => {
   const { data, softwareCrypto, hardwareCrypto, hardware, vrf } = context;
 
   const schema = hardware ? hardwareSchame : vrfSchema;
-
+  const details = hardware ? DynamicVrfHardwareDetails : DynamicVrfDetails;
   const {
     register,
     handleSubmit,
@@ -52,7 +52,7 @@ export const useCreateVRFMainView = () => {
 
   const crypto = hardware ? hardwareCrypto : softwareCrypto;
 
-  const formAttributes = { crypto, details: DynamicVrfDetails, data, isValid, isDirty, setValue, register };
+  const formAttributes = { crypto, details, data, isValid, isDirty, setValue, register };
 
   return { errors, hardware, handleSubmit, submit, reset, formAttributes, control };
 };
