@@ -1,5 +1,4 @@
 {
-  "cs": "cos",
   "vrf": {
     "client_name": "ansible_test",
     "vlan": [
