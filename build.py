@@ -1,10 +1,16 @@
 #!/usr/bin/python3
+
+# Copyright (c) 2021 Cisco and/or its affiliates
+#
+# This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+# available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
 import subprocess, sys, argparse, atexit, time, shutil, io, os.path
 from pathlib import Path
 
-# from google.oauth2 import service_account
-# from googleapiclient.discovery import build
-# from googleapiclient.http import MediaIoBaseDownload
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseDownload
 
 
 parser = argparse.ArgumentParser()
@@ -34,10 +40,6 @@ build_processes = []
 
 
 def download_documentation(out_file_path, creds_path):
-    from google.oauth2 import service_account
-    from googleapiclient.discovery import build
-    from googleapiclient.http import MediaIoBaseDownload
-
     creds = service_account.Credentials.from_service_account_file(
         creds_path, scopes=["https://www.googleapis.com/auth/drive"]
     )

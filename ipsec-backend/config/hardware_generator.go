@@ -175,9 +175,9 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 			return logger.ReturnError(err)
 		}
 		lines := strings.Split(string(bytes), "\n")
-		url := lines[0]
-		_ = lines[1] // this is the delete url
-		templ := strings.Join(lines[2:], "\n")
+		url := lines[5]
+		_ = lines[6] // this is the delete url
+		templ := strings.Join(lines[7:], "\n")
 		t, err := template.New(file.Name()).Funcs(template.FuncMap{
 			"notEndOfSlice": func(l []db.Endpoint, i int) bool {
 				return len(l)-1 != i
@@ -311,7 +311,7 @@ func (h *HardwareGenerator) doTemplateFolderDelete(folderName string, client *ht
 			return logger.ReturnError(err)
 		}
 		lines := strings.Split(string(bytes), "\n")
-		deleteUrlTemplate := lines[1]
+		deleteUrlTemplate := lines[6]
 		t, err := template.New(file.Name()).Parse(deleteUrlTemplate)
 		if err != nil {
 			return logger.ReturnError(err)

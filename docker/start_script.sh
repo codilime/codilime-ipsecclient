@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Copyright (c) 2021 Cisco and/or its affiliates
+#
+# This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+# available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
 #eth0 - VLAN interface (Trunk) (IPSEC inside)
 #eth1 - Default GW interface (DMZ)
 #eth2 - MNG interface + switch config
