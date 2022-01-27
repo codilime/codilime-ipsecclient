@@ -11,7 +11,7 @@
 
   - name: patch the hardware vrf
     uri:
-      url: https://localhost/restconf/data/sico-ipsec:api/vrf=1
+      url: https://10.67.0.2/restconf/data/sico-ipsec:api/vrf=1
       method: PATCH
       status_code: [200, 204]
       force_basic_auth: yes

@@ -1,3 +1,3 @@
 curl -v -k\
-   https://localhost/restconf/data/sico-ipsec:api/monitoring=2\
+   https://10.67.0.2/restconf/data/sico-ipsec:api/monitoring=2\
    -u "admin:cisco123"

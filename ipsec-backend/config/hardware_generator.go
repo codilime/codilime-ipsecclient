@@ -26,7 +26,7 @@ import (
 const (
 	switchBase      = "https://%s/restconf/data/"
 	hwTemplatesDir  = "hw_templates"
-	defaultLocalAdd = "10.69.0.1"
+	defaultLocalAdd = "10.67.0.1"
 )
 
 type VrfWithCryptoSlices struct {
@@ -66,6 +66,7 @@ func NewHardwareGenerator(switchCreds db.SwitchCreds) (*HardwareGenerator, error
 	if err != nil {
 		return &HardwareGenerator{defaultLocalAdd}, nil
 	}
+	fmt.Printf("NewHardwareGenerator localAddr %v\n", localAddr)
 	return &HardwareGenerator{localAddr}, nil
 }
 
