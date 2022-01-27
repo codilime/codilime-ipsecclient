@@ -1,27 +1,32 @@
+#	Copyright (c) 2021 Cisco and/or its affiliates
+#
+#	This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+#	available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
 --- Dockerfile	2021-07-27 14:55:15.157886633 +0200
 +++ Dockerfile	2021-07-27 14:57:11.434112284 +0200
 @@ -1,5 +1,5 @@
- # This stage builds a dist tarball from the source
+# This stage builds a dist tarball from the source
 -FROM alpine:latest as source-builder
 +FROM alpine:3.13 as source-builder
- 
- RUN mkdir -p /src/alpine
- COPY alpine/APKBUILD.in /src/alpine
+
+RUN mkdir -p /src/alpine
+COPY alpine/APKBUILD.in /src/alpine
 @@ -21,7 +21,7 @@
- 	&& make dist
- 
- # This stage builds an apk from the dist tarball
+&& make dist
+
+# This stage builds an apk from the dist tarball
 -FROM alpine:latest as alpine-builder
 +FROM alpine:3.13 as alpine-builder
- # Don't use nocache here so that abuild can use the cache
- RUN apk add \
- 		--update-cache \
-@@ -44,7 +44,7 @@
- 	&& abuild -r -P /pkgs/apk
- 
- # This stage installs frr from the apk
+# Don't use nocache here so that abuild can use the cache
+RUN apk add \
+	--update-cache \
+	@@ -44,7 +44,7 @@
+&& abuild -r -P /pkgs/apk
+
+# This stage installs frr from the apk
 -FROM alpine:latest
 +FROM alpine:3.13
- RUN mkdir -p /pkgs/apk
- COPY --from=alpine-builder /pkgs/apk/ /pkgs/apk/
- RUN apk add \
+RUN mkdir -p /pkgs/apk
+COPY --from=alpine-builder /pkgs/apk/ /pkgs/apk/
+RUN apk add \

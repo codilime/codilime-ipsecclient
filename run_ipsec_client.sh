@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Copyright (c) 2021 Cisco and/or its affiliates
+#
+# This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+# available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
 set -e
 
 docker stop sico || true
@@ -52,4 +57,4 @@ docker create --cap-add=NET_ADMIN --privileged --name sico \
 docker network connect 02_dmz_br sico
 docker network connect 03_mng_br sico
 
-docker start sico --attach
+exec docker start sico --attach
