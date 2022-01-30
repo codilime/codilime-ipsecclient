@@ -33,16 +33,17 @@ import (
 )
 
 const (
-	restconfBasePath    = "/restconf/data/sico-ipsec:api"
-	vrfPath             = restconfBasePath + "/vrf"
-	vrfIDPath           = vrfPath + "={id:[0-9]+}"
-	monitoringPath      = restconfBasePath + "/monitoring={id:[0-9]+}"
-	sourceInterfacePath = restconfBasePath + "/source-interface"
-	logPath             = restconfBasePath + "/log"
-	errorPath           = restconfBasePath + "/error"
-	CAPath              = restconfBasePath + "/ca"
-	settingNamePath     = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
-	passPath            = restconfBasePath + "/password"
+	restconfBasePath     = "/restconf/data/sico-ipsec:api"
+	vrfPath              = restconfBasePath + "/vrf"
+	vrfIDPath            = vrfPath + "={id:[0-9]+}"
+	monitoringPath       = restconfBasePath + "/monitoring={id:[0-9]+}"
+	sourceInterfacePath  = restconfBasePath + "/source-interface"
+	logPath              = restconfBasePath + "/log"
+	errorPath            = restconfBasePath + "/error"
+	CAPath               = restconfBasePath + "/ca"
+	settingNamePath      = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
+	passPath             = restconfBasePath + "/password"
+	checkSwitchBasicAuth = restconfBasePath + "/check-switch-basic-auth"
 
 	pkcs12Path = "/pkcs12/{id:[0-9]+}"
 
@@ -144,6 +145,7 @@ func (a *App) initializeRoutes() {
 	a.router.HandleFunc(settingNamePath, a.apiGetSetting).Methods(http.MethodGet)
 	a.router.HandleFunc(settingNamePath, a.apiSetSetting).Methods(http.MethodPost)
 	a.router.HandleFunc(passPath, a.changePassword).Methods(http.MethodPost)
+	a.router.HandleFunc(checkSwitchBasicAuth, a.checkSwitchBasicAuth).Methods(http.MethodGet)
 	a.router.HandleFunc(CAPath, a.setCAs).Methods(http.MethodPost)
 	a.router.HandleFunc(CAPath, a.getCAs).Methods(http.MethodGet)
 	a.router.HandleFunc(pkcs12Path, a.getPkcs12).Methods(http.MethodGet)
@@ -340,7 +342,7 @@ func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	logger.InfoDebug("Set setting completed", fmt.Sprintf("Set Setting completed|key: %s|value: %s", key, *setting.Value))
+	logger.InfoDebug("Set setting completed", fmt.Sprintf("Set Setting completed|name: %s|value: %s", name, *setting.Value))
 
 	respondWithJSON(w, http.StatusCreated, nil)
 }
@@ -971,6 +973,42 @@ func (a *App) getSourceInterfaces(w http.ResponseWriter, r *http.Request) {
 	}
 	api := sico_yang.SicoIpsec_Api{
 		SourceInterface: db.SourceInterfacesToYang(sourceInterfaces),
+	}
+
+	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, json)
+}
+
+func (a *App) checkSwitchBasicAuth(w http.ResponseWriter, r *http.Request) {
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		a.respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	switchCreds, err := a.getSwitchCreds(key)
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	switchAddress, err := a.db.GetSetting(key, "switch_address")
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	isValid, err := config.CheckSwitchBasicAuth(*switchCreds, switchAddress)
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	api := sico_yang.SicoIpsec_Api{
+		CheckSwitchBasicAuth: db.BoolPointer(&isValid),
 	}
 
 	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{

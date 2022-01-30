@@ -10,7 +10,8 @@ from deepdiff import DeepDiff
 BASE_URL = "https://sico/restconf/data/sico-ipsec:api"
 
 VRFS_URL = BASE_URL + "/vrf"
-SETTINGS_URL = BASE_URL + "/setting=siemka"
+SETTINGS_URL = BASE_URL + "/setting="
+CHECK_SWITCH_BASIC_AUTH_URL = BASE_URL + "/check-switch-basic-auth"
 CHANGE_PASS_URL = BASE_URL + "/password"
 CAS_URL = BASE_URL + "/ca"
 MONITORING_URL = BASE_URL + "/monitoring="
@@ -277,14 +278,47 @@ def test_vrf_scenario():
 
 
 def test_setting():
-    setting_1 = {"setting": {"name": "siemka", "value": "tasiemka"}}
-    setting_2 = {"setting": {"name": "siemka", "value": "foremka"}}
+    setting_name = "siemka"
+    setting_value_1 = "tasiemka"
+    setting_value_2 = "foremka"
 
-    set_setting(setting_1)
-    check_setting(setting_1)
+    set_setting(setting_name, setting_value_1)
+    check_setting(setting_name, setting_value_1)
 
-    set_setting(setting_2)
-    check_setting(setting_2)
+    set_setting(setting_name, setting_value_2)
+    check_setting(setting_name, setting_value_2)
+
+
+def test_check_switch_basic_auth_csr_vm():
+    wait_for_csr_vm()
+
+    setting_switch_username = "switch_username"
+    setting_switch_pasword = "switch_password"
+
+    switch_username = "admin"
+    switch_password = "cisco123"
+    wrong_switch_password = "wrongpassword"
+
+    set_setting(setting_switch_pasword, wrong_switch_password)
+
+    response = requests.get(CHECK_SWITCH_BASIC_AUTH_URL, auth=basicAuth, verify=False)
+    check_status_code(response, HTTPStatus.OK)
+    response_json = json.loads(response.text)
+
+    assert (
+        response_json["check-switch-basic-auth"] == False
+    ), "Switch basic auth should not be valid"
+
+    set_setting(setting_switch_username, switch_username)
+    set_setting(setting_switch_pasword, switch_password)
+
+    response = requests.get(CHECK_SWITCH_BASIC_AUTH_URL, auth=basicAuth, verify=False)
+    check_status_code(response, HTTPStatus.OK)
+    response_json = json.loads(response.text)
+
+    assert (
+        response_json["check-switch-basic-auth"] == True
+    ), "Switch basic auth should be valid"
 
 
 def test_change_pass():
@@ -512,17 +546,24 @@ def check_deleted_vrf(vrf_id):
     check_status_code(get_response, HTTPStatus.NOT_FOUND)
 
 
-def set_setting(setting):
-    response = requests.post(SETTINGS_URL, auth=basicAuth, json=setting, verify=False)
+def set_setting(name, value):
+    response = requests.post(
+        SETTINGS_URL + name,
+        auth=basicAuth,
+        json={"setting": {"name": name, "value": value}},
+        verify=False,
+    )
     check_status_code(response, HTTPStatus.CREATED)
 
 
-def check_setting(expected_setting):
-    response = requests.get(SETTINGS_URL, auth=basicAuth, verify=False)
+def check_setting(name, value):
+    response = requests.get(SETTINGS_URL + name, auth=basicAuth, verify=False)
     check_status_code(response, HTTPStatus.OK)
 
     received_setting = json.loads(response.text)
-    diff = DeepDiff(expected_setting, received_setting, ignore_order=True)
+    diff = DeepDiff(
+        {"setting": {"name": name, "value": value}}, received_setting, ignore_order=True
+    )
     assert not diff, "Settings don't match: " + str(diff)
 
 
