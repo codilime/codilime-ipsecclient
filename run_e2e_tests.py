@@ -18,6 +18,11 @@ parser.add_argument(
     help="pytest flag: only run tests which match the given substring expression. \
         Example: -k 'test_method or test_other' matches all test functions and classes whose name contains'test_method'",
 )
+parser.add_argument(
+    "--logs",
+    action="store_true",
+    help="print logs from the app at the end of the test suite run",
+)
 args = parser.parse_args()
 
 processes = []
@@ -105,6 +110,11 @@ def run_test_cases():
             run_command = "exec ./test/run_test.sh -k 'not csr_vm'"
 
     returncode = subprocess.run(run_command, shell=True).returncode
+    if args.logs:
+        subprocess.run(
+            "docker exec -it sico /bin/sh -c 'cat /opt/logs/api.log'", shell=True
+        )
+
     if returncode:
         sys.exit(returncode)
 

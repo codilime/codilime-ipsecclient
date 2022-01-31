@@ -73,7 +73,6 @@ func NewHardwareGenerator(switchCreds db.SwitchCreds) (*HardwareGenerator, error
 	if err != nil {
 		return &HardwareGenerator{defaultLocalAdd}, nil
 	}
-	fmt.Printf("NewHardwareGenerator localAddr %v\n", localAddr)
 	return &HardwareGenerator{localAddr}, nil
 }
 
@@ -510,6 +509,31 @@ func GetSourceInterfaces(switchCreds db.SwitchCreds) ([]string, error) {
 		}
 	}
 	return sourceInterfaces, logger.ReturnError(fmt.Errorf("cannot get source interfaces from the switch - malformed response"))
+}
+
+func CheckSwitchBasicAuth(switchCreds db.SwitchCreds, switchAddress string) (bool, error) {
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+
+	fullPath := "https://" + switchAddress + "/.well-known/host-meta"
+	req, err := http.NewRequest(http.MethodGet, fullPath, nil)
+	if err != nil {
+		return false, err
+	}
+	req.Header.Add("Content-Type", "application/yang-data+json")
+	req.Header.Add("Accept", "application/yang-data+json")
+	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
+	resp, err := client.Do(req)
+	if err != nil {
+		return false, err
+	}
+	if resp.StatusCode == 200 {
+		return true, nil
+	}
+	return false, nil
 }
 
 func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds) (map[string]interface{}, error) {
