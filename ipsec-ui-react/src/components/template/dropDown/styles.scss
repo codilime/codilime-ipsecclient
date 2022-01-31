@@ -14,7 +14,7 @@
   top: 120%;
   right: 25%;
   min-width: 144px;
-  padding: 16px 8px;
+  padding: 8px 8px;
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease-in;
@@ -42,6 +42,10 @@
       color: $blue;
       background-color: var(--backgroundHoverVrf);
     }
+  }
+  &__about {
+    padding: 3px 0;
+    border-top: 2px solid var(--borderColor);
   }
   &__icon {
     margin-right: 10px;

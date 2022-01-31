@@ -5,7 +5,7 @@
  *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
  */
 
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { AiOutlineUser, AiOutlineSetting, AiOutlineUpload, AiOutlineRest } from 'react-icons/ai';
 import { DropDownListType, SettingOptionType } from 'interface/index';
 import classNames from 'classnames';
@@ -27,9 +27,12 @@ export const DropDown: FC<DropDownType> = ({ open, handleOpenSection, handleTogg
   ];
 
   const displayDropDownList = dropDownList.map(({ value, text, icon }) => (
-    <li key={value} className="dropDown__item" onClick={() => handleOpenSection(value)}>
-      {icon} {text}
-    </li>
+    <React.Fragment key={value}>
+      {value === about && <li className="dropDown__about"></li>}
+      <li className={classNames('dropDown__item')} onClick={() => handleOpenSection(value)}>
+        {icon} {text}
+      </li>
+    </React.Fragment>
   ));
 
   return (

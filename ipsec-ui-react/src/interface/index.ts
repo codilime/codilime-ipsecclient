@@ -146,6 +146,7 @@ export interface MetricsType {
 export interface RestConfType {
   switch_username: string;
   switch_password: string;
+  switch_address: string;
 }
 
 type ResultType = {

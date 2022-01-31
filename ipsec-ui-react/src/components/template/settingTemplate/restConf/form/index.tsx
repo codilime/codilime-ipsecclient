@@ -27,7 +27,7 @@ export const RestConfForm: FC<RestConfFormType> = ({ handleSendRestConf, handleC
   } = useForm({ resolver: yupResolver(restConfSchema) });
 
   const displayForm = DynamicRestConfForm.map((input) => (
-    <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register: register(input.name), validate: false, className: 'loginForm__field' }} />
+    <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register: register(input.name), validate: false, className: 'loginForm__restConf' }} />
   ));
 
   return (

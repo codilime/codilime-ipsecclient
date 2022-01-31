@@ -31,6 +31,10 @@
     margin: 24px 0px;
     width: calc(50% - 10px);
   }
+  &__restConf {
+    margin: 24px 0px;
+    width: calc(100% / 3 - 10px);
+  }
   &__submit {
     display: flex;
     width: 100%;

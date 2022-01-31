@@ -303,7 +303,8 @@ export const DynamicLoginForm = [
 ];
 export const DynamicRestConfForm = [
   { type: 'text', name: 'switch_username', text: 'Login', placeholder: 'Login' },
-  { type: 'password', name: 'switch_password', text: 'Password', placeholder: 'Password' }
+  { type: 'password', name: 'switch_password', text: 'Password', placeholder: 'Password' },
+  { type: 'text', name: 'switch_address', text: 'Ip adress', placeholder: '10.1.1.1' }
 ];
 
 export const headerLogs: HeadersLogsType[] = [{ name: 'api' }, { name: 'front' }, { name: 'frr' }, { name: 'reload_vtysh' }, { name: 'strongswan' }, { name: 'strongswan_reload' }, { name: 'vrfs' }];

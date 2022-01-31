@@ -85,4 +85,11 @@
   &__active {
     display: block;
   }
+  input[type='checkbox']:before {
+    top: -13px;
+  }
+  input[type='checkbox']:checked:after {
+    top: -3px;
+    left: 12px;
+  }
 }

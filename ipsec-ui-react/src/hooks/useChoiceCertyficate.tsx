@@ -71,7 +71,6 @@ export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: Ho
           ...prev,
           authentication: {
             ...prev.authentication,
-            psk: '',
             [name]: base64
           }
         }));

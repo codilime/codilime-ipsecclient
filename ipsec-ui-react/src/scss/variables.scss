@@ -5,75 +5,20 @@
  *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
  */
 
-
-
-
 /* design pallet */
-$primary: #049fd9;
-$gray01: #f2f2f2;
-$gray02: #626469;
-$gray03: #39393b;
-$gray04: #dfdfdf;
-$gray05: #58585b;
-$white: #ffffff;
-$green: #6cc04a;
 
-$dark: #262626;
 $light: #ffffff;
-$lightDark: #2a2c34;
 $lightGray: #a0a3a9;
-$lightGray01: #595959;
-$lightGray02: #f2f5f8;
-$lightGray03: #f6f7fb;
-$lightGray04: #e0e0e0;
-$disabledGray: #eaeaea;
 $lightBlue: #3d89eb;
-$lightBgcBlue: #f6f7fb;
-$blue: #3d89eb; // zostaje
-$green: #4caf50;
-$lightBgcGray: #fafafa;
+$blue: #3d89eb;
 $red: #eb5757;
 $orange: #eb5757;
 $borderColor: #e0e0e0;
-
-/* Colors */
-$sidebar-background-color: $gray01;
-$sidebar-text-color: #ffffff;
-$breadcrumb-font-color: $primary;
-$gray-light-color: $gray01;
-$disactive-color: $red;
-$active-color: #6cc04a;
-$light-blue: lightblue;
-$blue: #3d89eb;
 $green: #4caf50;
-$lightBgcGray: #fafafa;
-
-$vrf-active: $primary;
-$hardware: $primary;
-
-/* Border */
-$wrapper-border: 0.5px solid $gray04;
-$info-border: 1px solid lightblue;
-$info-footer-border: 0.5px solid gray;
-$table-border-color: gray;
-$table-border: 0.5px solid $gray04;
-$sideBar-active-border: 3px solid $primary;
-$endpoint-input-focus: 0.5px solid $primary;
-$endpoint-input: 0.5px solid $gray03;
 
 /* Border-radius */
 $border-radius-sm: 4px;
 $border-radius-lg: 8px;
-$button-radius: 12px;
-$button-radius-secound: 100px;
-
-/* Background-color */
-$bgc-gray: $gray02;
-$bgc-info: lightblue;
-$bgc-disable: $gray01;
-$bgc-active: $gray03;
-$modal-background: #00000057;
-$bgc-delete: $red;
 
 /* Font-size */
 $small-size: 14px;
@@ -85,7 +30,7 @@ $font-family: 'Roboto', sans-serif;
 
 /* Font-weight */
 $title-weight: 600;
-$info-title-weight: 400;
+$light-title-weight: 400;
 
 /* Padding */
 $wrapper-padding: 10px;
@@ -102,22 +47,9 @@ $margin-md: 10px;
 $margin-lg: 15px;
 $margin-xl: 20px;
 
-/* Transition */
-$transition: 0.3s linear all;
-
 /* Box-shadow */
 $endpoint-option-shadow: 0px 0px 5px -2px rgba(0, 0, 0, 0.35);
 $box-shadow: 0, 0, 4px, 0 rgba(24, 144, 255, 0.5);
-
-/* Design pallet*/
-
-$backgroundLight: #f2f5f8;
-$backgroundDark: #050b10;
-$darkGray01: #151a1f;
-$darkGray02: #1e242c;
-$lightBlue01: #f6f7fb;
-$darkBlue: #222933;
-$darkText: #858fa0;
 
 /* Transition */
 
@@ -127,7 +59,6 @@ $transition: 0.3s color linear, 0.3s background-color linear, 0.3s border-color 
   color: #a0a3a9;
   background-color: #f2f5f8;
   transition: $transition;
-
   /* Background*/
   --backgroundColor: #ffffff;
   --backgroundHoverVrf: #f6f7fb;
@@ -138,6 +69,7 @@ $transition: 0.3s color linear, 0.3s background-color linear, 0.3s border-color 
   --backgroundReadCircle: #0000001f;
   --backgroundErrorInfo: #ffe2e5;
   --backgroundSuccessInfo: #e0fae0;
+  --backgroundCheckbox: #fff;
 
   /* Border-color*/
   --blueBorderColor: #3d89eb;
@@ -150,6 +82,9 @@ $transition: 0.3s color linear, 0.3s background-color linear, 0.3s border-color 
   --inputText: #595959;
   --errorText: #ec4b43;
   --successText: #04c000;
+
+  /*CheckboxColor*/
+  --checkboxColor: #595959;
 
   /* Title-color*/
   --titleColor: #2a2c34;
@@ -198,6 +133,7 @@ $transition: 0.3s color linear, 0.3s background-color linear, 0.3s border-color 
   --backgroundReadCircle: #222933;
   --backgroundErrorInfo: #281416;
   --backgroundSuccessInfo: #05250d;
+  --backgroundCheckbox: #2e3846;
 
   /* Border-color*/
   --blueBorderColor: #3d89eb;
@@ -210,6 +146,9 @@ $transition: 0.3s color linear, 0.3s background-color linear, 0.3s border-color 
   --inputText: #858fa0;
   --errorText: #ec4b43;
   --successText: #04c000;
+
+  /*CheckboxColor*/
+  --checkboxColor: #3d89eb;
 
   /* Title-color*/
   --titleColor: #ffffff;
