@@ -8,11 +8,10 @@
 TEST_PFX=`cat ../../dev-env/UI/test.pfx.b64`
 
 curl -v -k -XPATCH\
-  http://localhost/restconf/data/sico-ipsec:api/vrf=1\
+  https://10.67.0.2/restconf/data/sico-ipsec:api/vrf=1\
   -u "admin:cisco123" -d @- << EOF
 {
     "vrf": {
-        "id":1,
         "client_name":"hardware",
         "crypto_ph1": "aes-cbc-128.sha256.fourteen",
         "crypto_ph2": "esp-aes.esp-sha-hmac.group14",
@@ -20,8 +19,6 @@ curl -v -k -XPATCH\
         "active":true,
         "local_as":123,
         "endpoint": [{
-                "id": 123,
-                "vrf_id": 1,
                 "remote_ip_sec":"10.1.0.1",
                 "local_ip":"10.2.0.1",
                 "peer_ip":"10.3.0.1",
