@@ -382,7 +382,7 @@ module sico-ipsec {
         leaf password {
             type string;
         }
-        leaf check-switch-basic-auth {
+        leaf check_switch_basic_auth {
             type boolean;
             description
               "check if setting=switch_password and setting=switch_username are valid";

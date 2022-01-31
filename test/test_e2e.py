@@ -306,7 +306,7 @@ def test_check_switch_basic_auth_csr_vm():
     response_json = json.loads(response.text)
 
     assert (
-        response_json["check-switch-basic-auth"] == False
+        response_json["check_switch_basic_auth"] == False
     ), "Switch basic auth should not be valid"
 
     set_setting(setting_switch_username, switch_username)
@@ -317,7 +317,7 @@ def test_check_switch_basic_auth_csr_vm():
     response_json = json.loads(response.text)
 
     assert (
-        response_json["check-switch-basic-auth"] == True
+        response_json["check_switch_basic_auth"] == True
     ), "Switch basic auth should be valid"
 
 

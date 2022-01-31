@@ -8,6 +8,7 @@
 package db
 
 type SwitchCreds struct {
-	Username string
-	Password string
+	Username      string
+	Password      string
+	SwitchAddress string
 }
