@@ -799,7 +799,11 @@ func (a *App) getSwitchCreds(key string) (*db.SwitchCreds, error) {
 	if err != nil {
 		return nil, logger.ReturnError(err)
 	}
-	return &db.SwitchCreds{username, password}, nil
+	switchAddress, err := a.db.GetSetting(key, "switch_address")
+	if err != nil {
+		return nil, logger.ReturnError(err)
+	}
+	return &db.SwitchCreds{username, password, switchAddress}, nil
 }
 
 func (a *App) generateConfigs(key string, vrf db.Vrf) error {

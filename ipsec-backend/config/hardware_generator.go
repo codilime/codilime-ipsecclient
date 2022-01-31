@@ -61,7 +61,7 @@ func NewHardwareGenerator(switchCreds db.SwitchCreds) (*HardwareGenerator, error
 	}
 	traceCtx := httptrace.WithClientTrace(context.Background(), clientTrace)
 
-	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + "/.well-known/host-meta"
+	fullPath := fmt.Sprintf(switchBase, switchCreds.SwitchAddress) + "/.well-known/host-meta"
 	req, err := http.NewRequestWithContext(traceCtx, http.MethodGet, fullPath, nil)
 	if err != nil {
 		return nil, logger.ReturnError(err)
@@ -417,7 +417,7 @@ func (h *HardwareGenerator) tryRestconfRequest(method, path, data string, client
 
 func (h *HardwareGenerator) restconfDoRequest(method, path, data string, client *http.Client, switchCreds db.SwitchCreds) error {
 	log.Debugf("%s: %s\n%s\n", method, path, data)
-	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + path
+	fullPath := fmt.Sprintf(switchBase, switchCreds.SwitchAddress) + path
 	req, err := http.NewRequest(method, fullPath, strings.NewReader(data))
 	if err != nil {
 		return logger.ReturnError(err)
@@ -518,7 +518,7 @@ func CheckSwitchBasicAuth(switchCreds db.SwitchCreds, switchAddress string) (boo
 		},
 	}
 
-	fullPath := "https://" + switchAddress + "/.well-known/host-meta"
+	fullPath := "https://" + switchCreds.SwitchAddress + "/.well-known/host-meta"
 	req, err := http.NewRequest(http.MethodGet, fullPath, nil)
 	if err != nil {
 		return false, err
@@ -539,7 +539,7 @@ func CheckSwitchBasicAuth(switchCreds db.SwitchCreds, switchAddress string) (boo
 func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds) (map[string]interface{}, error) {
 	log.Debugf("GET: %s\n", path)
 	ret := map[string]interface{}{}
-	fullPath := fmt.Sprintf(switchBase, os.Getenv("SWITCH_ADDRESS")) + path
+	fullPath := fmt.Sprintf(switchBase, switchCreds.SwitchAddress) + path
 	req, err := http.NewRequest("GET", fullPath, nil)
 	if err != nil {
 		return ret, logger.ReturnError(err)
