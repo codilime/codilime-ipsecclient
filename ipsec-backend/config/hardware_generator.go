@@ -1,3 +1,10 @@
+/*
+ *	Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *	This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *	available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 package config
 
 import (
@@ -26,7 +33,7 @@ import (
 const (
 	switchBase      = "https://%s/restconf/data/"
 	hwTemplatesDir  = "hw_templates"
-	defaultLocalAdd = "10.69.0.1"
+	defaultLocalAdd = "10.67.0.1"
 )
 
 type VrfWithCryptoSlices struct {
@@ -167,9 +174,9 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 			return logger.ReturnError(err)
 		}
 		lines := strings.Split(string(bytes), "\n")
-		url := lines[0]
-		_ = lines[1] // this is the delete url
-		templ := strings.Join(lines[2:], "\n")
+		url := lines[5]
+		_ = lines[6] // this is the delete url
+		templ := strings.Join(lines[7:], "\n")
 		t, err := template.New(file.Name()).Funcs(template.FuncMap{
 			"notEndOfSlice": func(l []db.Endpoint, i int) bool {
 				return len(l)-1 != i
@@ -303,7 +310,7 @@ func (h *HardwareGenerator) doTemplateFolderDelete(folderName string, client *ht
 			return logger.ReturnError(err)
 		}
 		lines := strings.Split(string(bytes), "\n")
-		deleteUrlTemplate := lines[1]
+		deleteUrlTemplate := lines[6]
 		t, err := template.New(file.Name()).Parse(deleteUrlTemplate)
 		if err != nil {
 			return logger.ReturnError(err)
@@ -502,6 +509,31 @@ func GetSourceInterfaces(switchCreds db.SwitchCreds) ([]string, error) {
 		}
 	}
 	return sourceInterfaces, logger.ReturnError(fmt.Errorf("cannot get source interfaces from the switch - malformed response"))
+}
+
+func CheckSwitchBasicAuth(switchCreds db.SwitchCreds, switchAddress string) (bool, error) {
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+
+	fullPath := "https://" + switchAddress + "/.well-known/host-meta"
+	req, err := http.NewRequest(http.MethodGet, fullPath, nil)
+	if err != nil {
+		return false, err
+	}
+	req.Header.Add("Content-Type", "application/yang-data+json")
+	req.Header.Add("Accept", "application/yang-data+json")
+	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
+	resp, err := client.Do(req)
+	if err != nil {
+		return false, err
+	}
+	if resp.StatusCode == 200 {
+		return true, nil
+	}
+	return false, nil
 }
 
 func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds) (map[string]interface{}, error) {

@@ -1,3 +1,8 @@
+# Copyright (c) 2021 Cisco and/or its affiliates
+#
+# This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+# available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
 ---
 - name: configure an example tunnel
   hosts: localhost
@@ -7,7 +12,7 @@
   - name: delete a previous software vrf if exists
     ignore_errors: yes
     uri:
-      url: https://localhost/restconf/data/sico-ipsec:api/vrf=3
+      url: https://10.67.0.2/restconf/data/sico-ipsec:api/vrf=3
       method: DELETE
       force_basic_auth: yes
       user: "{{ sico_username }}"
@@ -21,7 +26,7 @@
 
   - name: create a software vrf
     uri:
-      url: https://localhost/restconf/data/sico-ipsec:api/vrf
+      url: https://10.67.0.2/restconf/data/sico-ipsec:api/vrf
       method: POST
       status_code: [200, 201]
       force_basic_auth: yes

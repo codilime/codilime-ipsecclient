@@ -1,3 +1,8 @@
+# Copyright (c) 2021 Cisco and/or its affiliates
+#
+# This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+# available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
 ---
 - name: configure an example tunnel
   hosts: localhost
@@ -11,7 +16,7 @@
 
   - name: patch the hardware vrf
     uri:
-      url: https://localhost/restconf/data/sico-ipsec:api/vrf=1
+      url: https://10.67.0.2/restconf/data/sico-ipsec:api/vrf=1
       method: PATCH
       status_code: [200, 204]
       force_basic_auth: yes

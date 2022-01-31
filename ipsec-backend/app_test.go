@@ -1,3 +1,10 @@
+/*
+ *	Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *	This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *	available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 package main
 
 import (
@@ -46,6 +53,7 @@ func createApp(t *testing.T) (*App, *mock.MockGenerator, *mock.MockGenerator, *m
 	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("switch_password"), switchCreds.Password).Return(nil)
 	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("system_name"), gomock.Any()).Return(nil)
 	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("app_version"), gomock.Any()).Return(nil)
+	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("switch_address"), gomock.Any()).Return(nil)
 	dbInstance.EXPECT().Create(gomock.Any()).Return(nil)
 	app, _ := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds)
 	return app, softwareGenerator, hardwareGenerator, dbInstance

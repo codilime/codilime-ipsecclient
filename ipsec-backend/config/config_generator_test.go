@@ -1,3 +1,10 @@
+/*
+ *	Copyright (c) 2021 Cisco and/or its affiliates
+ *
+ *	This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+ *	available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+ */
+
 package config
 
 import (
@@ -17,14 +24,24 @@ const (
 	supervisorConfigPath = "/opt/super_net/vrf2.ini"
 	frrConfigPath        = "/opt/frr/vtysh.conf"
 
-	supervisorConfig = `[program:test vrf]
+	supervisorConfig = `# Copyright (c) 2021 Cisco and/or its affiliates
+#
+# This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+# available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
+[program:test vrf]
 command=/usr/local/sbin/ipsec.sh
 environment=PHYS_IF="test_interface", VRF_ID="2", XFRM_IP="0.0.0.1", XFRM_PEER="10.42.0.1", NAT="YES", VLANS_IPS="1000 11.11.0.0/30 2000 22.22.0.0/30 ", ENDPOINT_IDS="1", DISABLE_PEER_IPS="false"
 redirect_stderr=true
 stdout_logfile=/opt/logs/test vrf.log
 #stdout_logfile_maxbytes = 0
 `
-	frrConfigCreate = `router bgp 3 vrf vrf-2
+	frrConfigCreate = `# Copyright (c) 2021 Cisco and/or its affiliates
+#
+# This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+# available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
+router bgp 3 vrf vrf-2
     no bgp ebgp-requires-policy
     neighbor ipsec peer-group
     neighbor ipsec remote-as external
@@ -54,7 +71,12 @@ address-family ipv6 unicast
 	remote_ip_sec = "192.168.0.1"
 )
 
-const config_psk = `connections {
+const config_psk = `#	Copyright (c) 2021 Cisco and/or its affiliates
+#
+#	This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+#	available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
+connections {
 
     test vrf_1 {
         remote_addrs = %s
@@ -144,7 +166,12 @@ func TestGenerateTemplatePskLocalId(t *testing.T) {
 }
 
 func TestGenerateTemplateCert(t *testing.T) {
-	vrfConf := []byte(`connections {
+	vrfConf := []byte(`#	Copyright (c) 2021 Cisco and/or its affiliates
+#
+#	This software is licensed under the terms of the Cisco Sample Code License (CSCL)
+#	available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
+
+connections {
 
     test vrf_1 {
         remote_addrs = 192.168.0.1
