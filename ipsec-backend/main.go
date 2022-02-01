@@ -30,7 +30,11 @@ func main() {
 	log.SetFormatter(&logger.ErrorFormatter{})
 	log.SetLevel(parsedLvl)
 
-	switchCreds := db.SwitchCreds{os.Getenv("SWITCH_USERNAME"), os.Getenv("SWITCH_PASSWORD"), os.Getenv("SWITCH_ADDRESS")}
+	switchCreds := db.SwitchCreds{
+		Username:      os.Getenv("SWITCH_USERNAME"),
+		Password:      os.Getenv("SWITCH_PASSWORD"),
+		SwitchAddress: os.Getenv("SWITCH_ADDRESS"),
+	}
 
 	softwareGenerator, err := config.NewSoftwareGenerator(&config.FileHandler{}, &config.Supervisor{})
 	if err != nil {
