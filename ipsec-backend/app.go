@@ -111,7 +111,7 @@ func (a *App) initializeSettings(switchCreds db.SwitchCreds) error {
 		a.db.SetSetting(password, "switch_password", switchCreds.Password),
 		a.db.SetSetting(password, "system_name", os.Getenv("CAF_SYSTEM_NAME")),
 		a.db.SetSetting(password, "app_version", os.Getenv("APP_VERSION")),
-		a.db.SetSetting(password, "switch_address", os.Getenv("SWITCH_ADDRESS")),
+		a.db.SetSetting(password, "switch_address", switchCreds.SwitchAddress),
 	)
 }
 
