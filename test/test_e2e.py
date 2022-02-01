@@ -321,6 +321,20 @@ def test_check_switch_basic_auth_csr_vm():
     ), "Switch basic auth should be valid"
 
 
+def test_set_switch_address():
+    setting_switch_address = "switch_address"
+
+    response_switch_address = requests.get(
+        SETTINGS_URL + setting_switch_address, auth=basicAuth, verify=False
+    )
+    check_status_code(response_switch_address, HTTPStatus.OK)
+
+    switch_address = json.loads(response_switch_address.text)["setting"]["value"]
+
+    set_setting(setting_switch_address, "10.65.0.5")
+    set_setting(setting_switch_address, switch_address)
+
+
 def test_change_pass():
     new_password = "innehaslo"
 

@@ -33,7 +33,7 @@ func main() {
 	switchCreds := db.SwitchCreds{
 		Username:      os.Getenv("SWITCH_USERNAME"),
 		Password:      os.Getenv("SWITCH_PASSWORD"),
-		SwitchAddress: os.Getenv("SWITCH_ADDRESS"),
+		SwitchAddress: os.Getenv("SWITCH_IP"),
 	}
 
 	softwareGenerator, err := config.NewSoftwareGenerator(&config.FileHandler{}, &config.Supervisor{})

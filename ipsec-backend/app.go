@@ -342,6 +342,10 @@ func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	if name == "switch_address" {
+		exec.Command("ip", "rule", "del", "pref", "2000").Output()
+		exec.Command("ip", "rule", "add", "to", *setting.Value, "table", "1701", "pref", "2000").Output()
+	}
 	logger.InfoDebug("Set setting completed", fmt.Sprintf("Set Setting completed|name: %s|value: %s", name, *setting.Value))
 
 	respondWithJSON(w, http.StatusCreated, nil)
