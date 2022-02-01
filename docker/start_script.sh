@@ -32,7 +32,9 @@ fi
 ip route del $PREFIX dev $DEV
 ip rule add from $LOCAL_IP/32 table $MNG_TABLE
 ip rule add to $LOCAL_IP/32 table $MNG_TABLE
-ip rule add to $SWITCH_IP table $MNG_TABLE
+if [ -n "$SWITCH_IP" ]; then 
+    ip rule add to $SWITCH_IP table $MNG_TABLE pref 2000
+fi
 ip route add $PREFIX dev $DEV src $LOCAL_IP table $MNG_TABLE
 #ip a 
 #echo ip route add 0.0.0.0/0 via $MNG_GW_IP dev $DEV table $MNG_TABLE
