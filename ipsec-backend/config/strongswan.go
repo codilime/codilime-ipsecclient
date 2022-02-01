@@ -9,7 +9,7 @@ package config
 
 import (
 	"errors"
-	"ipsec_backend/sico_yang"
+	"ipsec_backend/ipsecclient_yang"
 	"strconv"
 	"strings"
 
@@ -28,7 +28,7 @@ type monitoringEndpoint struct {
 	ID         uint32
 }
 
-func (f *SoftwareGenerator) GetMonitoring(clientName *string, _ ...db.SwitchCreds) (*sico_yang.SicoIpsec_Api_Monitoring, error) {
+func (f *SoftwareGenerator) GetMonitoring(clientName *string, _ ...db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
 	if clientName == nil {
 		return nil, logger.ReturnError(errors.New("wrong monitoring parameter"))
 	}
@@ -37,12 +37,12 @@ func (f *SoftwareGenerator) GetMonitoring(clientName *string, _ ...db.SwitchCred
 	if err != nil {
 		return nil, logger.ReturnError(err)
 	}
-	ret := sico_yang.SicoIpsec_Api_Monitoring{
-		Endpoint: map[uint32]*sico_yang.SicoIpsec_Api_Monitoring_Endpoint{},
+	ret := ipsecclient_yang.Ipsecclient_Api_Monitoring{
+		Endpoint: map[uint32]*ipsecclient_yang.Ipsecclient_Api_Monitoring_Endpoint{},
 	}
 	for k, v := range statuses {
 		if strings.Contains(k, name) {
-			ret.Endpoint[v.ID] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
+			ret.Endpoint[v.ID] = &ipsecclient_yang.Ipsecclient_Api_Monitoring_Endpoint{
 				LocalIp: db.StringPointer(normalizeLocalIP(v.localAddr, v.remoteAddr)),
 				PeerIp:  db.StringPointer(v.remoteAddr),
 				Status:  db.StringPointer(normalizeStatus(v.status)),

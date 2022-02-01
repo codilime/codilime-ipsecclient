@@ -4,5 +4,5 @@
 # available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
 
 ---
-- sico_username: admin
-- sico_password: cisco123
+- ipsecclient_username: admin
+- ipsecclient_password: cisco123

@@ -9,7 +9,7 @@ package config
 
 import (
 	"ipsec_backend/db"
-	"ipsec_backend/sico_yang"
+	"ipsec_backend/ipsecclient_yang"
 	"strings"
 )
 
@@ -17,7 +17,7 @@ import (
 type Generator interface {
 	GenerateConfigs(v db.Vrf, switchCreds ...db.SwitchCreds) error
 	DeleteConfigs(v db.Vrf, switchCreds ...db.SwitchCreds) error
-	GetMonitoring(clientName *string, switchCreds ...db.SwitchCreds) (*sico_yang.SicoIpsec_Api_Monitoring, error)
+	GetMonitoring(clientName *string, switchCreds ...db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error)
 }
 
 func normalizeStatus(status string) string {

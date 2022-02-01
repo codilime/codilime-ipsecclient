@@ -14,8 +14,8 @@ import (
 	"io/ioutil"
 	"ipsec_backend/config"
 	"ipsec_backend/db"
+	"ipsec_backend/ipsecclient_yang"
 	"ipsec_backend/logger"
-	"ipsec_backend/sico_yang"
 	"net/http"
 	"os"
 	"os/exec"
@@ -33,7 +33,7 @@ import (
 )
 
 const (
-	restconfBasePath     = "/restconf/data/sico-ipsec:api"
+	restconfBasePath     = "/restconf/data/ipsecclient:api"
 	vrfPath              = restconfBasePath + "/vrf"
 	vrfIDPath            = vrfPath + "={id:[0-9]+}"
 	monitoringPath       = restconfBasePath + "/monitoring={id:[0-9]+}"
@@ -176,8 +176,8 @@ func (a *App) changePassword(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	api := sico_yang.SicoIpsec_Api{}
-	err = sico_yang.Unmarshal(body, &api)
+	api := ipsecclient_yang.Ipsecclient_Api{}
+	err = ipsecclient_yang.Unmarshal(body, &api)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -243,8 +243,8 @@ func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	api := sico_yang.SicoIpsec_Api{}
-	err = sico_yang.Unmarshal(body, &api, nil)
+	api := ipsecclient_yang.Ipsecclient_Api{}
+	err = ipsecclient_yang.Unmarshal(body, &api, nil)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -283,8 +283,8 @@ func (a *App) getCAs(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	api := sico_yang.SicoIpsec_Api{
-		Ca: map[uint32]*sico_yang.SicoIpsec_Api_Ca{},
+	api := ipsecclient_yang.Ipsecclient_Api{
+		Ca: map[uint32]*ipsecclient_yang.Ipsecclient_Api_Ca{},
 	}
 	for _, ca := range cas {
 		api.Ca[ca.ID] = ca.ToYang()
@@ -329,8 +329,8 @@ func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	setting := sico_yang.SicoIpsec_Api_Setting{}
-	if err := sico_yang.Unmarshal(settingJson, &setting); err != nil {
+	setting := ipsecclient_yang.Ipsecclient_Api_Setting{}
+	if err := ipsecclient_yang.Unmarshal(settingJson, &setting); err != nil {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -368,7 +368,7 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	setting := sico_yang.SicoIpsec_Api_Setting{
+	setting := ipsecclient_yang.Ipsecclient_Api_Setting{
 		Name:  db.StringPointer(name),
 		Value: db.StringPointer(value),
 	}
@@ -386,7 +386,7 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
-	vrfsMap := map[string]*sico_yang.SicoIpsec_Api_Vrf{}
+	vrfsMap := map[string]*ipsecclient_yang.Ipsecclient_Api_Vrf{}
 	vrfs, err := a.db.GetVrfs()
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -409,7 +409,7 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 		}
 		vrfsMap[v.ClientName] = vrfYang
 	}
-	api := sico_yang.SicoIpsec_Api{
+	api := ipsecclient_yang.Ipsecclient_Api{
 		Vrf: vrfsMap,
 	}
 	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
@@ -638,8 +638,8 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	yangVrf := sico_yang.SicoIpsec_Api_Vrf{}
-	if err := sico_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
+	yangVrf := ipsecclient_yang.Ipsecclient_Api_Vrf{}
+	if err := ipsecclient_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -738,8 +738,8 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	yangVrf := sico_yang.SicoIpsec_Api_Vrf{}
-	if err := sico_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
+	yangVrf := ipsecclient_yang.Ipsecclient_Api_Vrf{}
+	if err := ipsecclient_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
 		a.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -911,8 +911,8 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	api := sico_yang.SicoIpsec_Api{
-		Log: map[string]*sico_yang.SicoIpsec_Api_Log{},
+	api := ipsecclient_yang.Ipsecclient_Api{
+		Log: map[string]*ipsecclient_yang.Ipsecclient_Api_Log{},
 	}
 	for _, info := range processInfos {
 		log, err := getLastBytesOfFile(info.StdoutLogfile, lastLogBytes)
@@ -920,7 +920,7 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 			a.respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		api.Log[info.Name] = &sico_yang.SicoIpsec_Api_Log{
+		api.Log[info.Name] = &ipsecclient_yang.Ipsecclient_Api_Log{
 			Name: db.StringPointer(info.Name),
 			Log:  db.StringPointer(string(log)),
 		}
@@ -943,12 +943,12 @@ func (a *App) getErrors(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	yangErrors := []*sico_yang.SicoIpsec_Api_Error{}
+	yangErrors := []*ipsecclient_yang.Ipsecclient_Api_Error{}
 	for _, storedError := range storedErrors {
 		yangErrors = append(yangErrors, storedError.ToYang())
 	}
 
-	api := sico_yang.SicoIpsec_Api{
+	api := ipsecclient_yang.Ipsecclient_Api{
 		Error: yangErrors,
 	}
 
@@ -979,7 +979,7 @@ func (a *App) getSourceInterfaces(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	api := sico_yang.SicoIpsec_Api{
+	api := ipsecclient_yang.Ipsecclient_Api{
 		SourceInterface: db.SourceInterfacesToYang(sourceInterfaces),
 	}
 
@@ -1015,7 +1015,7 @@ func (a *App) checkSwitchBasicAuth(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	api := sico_yang.SicoIpsec_Api{
+	api := ipsecclient_yang.Ipsecclient_Api{
 		CheckSwitchBasicAuth: db.BoolPointer(&isValid),
 	}
 

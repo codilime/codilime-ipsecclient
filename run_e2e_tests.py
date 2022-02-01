@@ -40,7 +40,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def main():
     subprocess.run(
-        "exec docker build -f ./test/Dockerfile -t sico_test .", shell=True, check=True
+        "exec docker build -f ./test/Dockerfile -t ipsecclient_test .",
+        shell=True,
+        check=True,
     )
     remove_containers()
     run_app()
@@ -62,7 +64,7 @@ def run_app():
 
 def remove_containers():
     subprocess.run(
-        "docker stop $(docker ps | grep sico | awk '{print $1}')", shell=True
+        "docker stop $(docker ps | grep ipsecclient | awk '{print $1}')", shell=True
     )
     subprocess.run(
         "docker stop $(docker ps | grep site | awk '{print $1}')", shell=True
@@ -112,7 +114,7 @@ def run_test_cases():
     returncode = subprocess.run(run_command, shell=True).returncode
     if args.logs:
         subprocess.run(
-            "docker exec -it sico /bin/sh -c 'cat /opt/logs/api.log'", shell=True
+            "docker exec -it ipsecclient /bin/sh -c 'cat /opt/logs/api.log'", shell=True
         )
 
     if returncode:

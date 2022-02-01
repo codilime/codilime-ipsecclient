@@ -8,7 +8,7 @@
 package main
 
 import (
-	"ipsec_backend/sico_yang"
+	"ipsec_backend/ipsecclient_yang"
 	"net/http"
 	"strconv"
 
@@ -48,7 +48,7 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var monitoring *sico_yang.SicoIpsec_Api_Monitoring
+	var monitoring *ipsecclient_yang.Ipsecclient_Api_Monitoring
 	if vrf.ID != db.HardwareVrfID {
 		monitoring, err = a.softwareGenerator.GetMonitoring(&vrf.ClientName)
 		if err != nil {
@@ -63,8 +63,8 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	monitoring.Id = db.Uint32Pointer(uint32(id))
-	api := sico_yang.SicoIpsec_Api{
-		Monitoring: map[uint32]*sico_yang.SicoIpsec_Api_Monitoring{
+	api := ipsecclient_yang.Ipsecclient_Api{
+		Monitoring: map[uint32]*ipsecclient_yang.Ipsecclient_Api_Monitoring{
 			uint32(id): monitoring,
 		},
 	}

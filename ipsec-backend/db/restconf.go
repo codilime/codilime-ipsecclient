@@ -9,8 +9,8 @@ package db
 
 import (
 	"encoding/json"
+	"ipsec_backend/ipsecclient_yang"
 	"ipsec_backend/logger"
-	"ipsec_backend/sico_yang"
 	"strings"
 )
 
@@ -33,8 +33,8 @@ func StringPointer(s string) *string {
 	return &s
 }
 
-func (e *Endpoint) ToYang() *sico_yang.SicoIpsec_Api_Vrf_Endpoint {
-	return &sico_yang.SicoIpsec_Api_Vrf_Endpoint{
+func (e *Endpoint) ToYang() *ipsecclient_yang.Ipsecclient_Api_Vrf_Endpoint {
+	return &ipsecclient_yang.Ipsecclient_Api_Vrf_Endpoint{
 		Id:              Uint32Pointer(e.ID),
 		VrfId:           Uint32Pointer(e.VrfID),
 		Bgp:             BoolPointer(&e.BGP),
@@ -44,7 +44,7 @@ func (e *Endpoint) ToYang() *sico_yang.SicoIpsec_Api_Vrf_Endpoint {
 		RemoteAs:        Uint32Pointer(e.RemoteAS),
 		RemoteIpSec:     StringPointer(e.RemoteIPSec),
 		SourceInterface: StringPointer(e.SourceInterface),
-		Authentication: &sico_yang.SicoIpsec_Api_Vrf_Endpoint_Authentication{
+		Authentication: &ipsecclient_yang.Ipsecclient_Api_Vrf_Endpoint_Authentication{
 			LocalCert:    StringPointer(e.Authentication.LocalCert),
 			PrivateKey:   StringPointer(e.Authentication.PrivateKey),
 			LocalId:      StringPointer(e.Authentication.LocalID),
@@ -63,7 +63,7 @@ func stringIfNotNil(s *string) string {
 	return *s
 }
 
-func (e *Endpoint) FromYang(endVrf *sico_yang.SicoIpsec_Api_Vrf_Endpoint) {
+func (e *Endpoint) FromYang(endVrf *ipsecclient_yang.Ipsecclient_Api_Vrf_Endpoint) {
 	e.RemoteIPSec = *endVrf.RemoteIpSec
 	e.LocalIP = *endVrf.LocalIp
 	e.PeerIP = *endVrf.PeerIp
@@ -82,7 +82,7 @@ func (e *Endpoint) FromYang(endVrf *sico_yang.SicoIpsec_Api_Vrf_Endpoint) {
 	}
 }
 
-func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
+func (v *Vrf) ToYang() (*ipsecclient_yang.Ipsecclient_Api_Vrf, error) {
 	cryptoPh1 := []string{}
 	if err := json.Unmarshal(v.CryptoPh1, &cryptoPh1); err != nil {
 		return nil, logger.ReturnError(err)
@@ -93,7 +93,7 @@ func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 	}
 	ph1 := strings.Join(cryptoPh1, ".")
 	ph2 := strings.Join(cryptoPh2, ".")
-	endpoints := map[string]*sico_yang.SicoIpsec_Api_Vrf_Endpoint{}
+	endpoints := map[string]*ipsecclient_yang.Ipsecclient_Api_Vrf_Endpoint{}
 	for _, e := range v.Endpoints {
 		endpoints[e.RemoteIPSec] = e.ToYang()
 	}
@@ -101,14 +101,14 @@ func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 	if err != nil {
 		return nil, logger.ReturnError(err)
 	}
-	vlansMap := map[uint32]*sico_yang.SicoIpsec_Api_Vrf_Vlan{}
+	vlansMap := map[uint32]*ipsecclient_yang.Ipsecclient_Api_Vrf_Vlan{}
 	for _, v := range vlans {
-		vlansMap[v.Vlan] = &sico_yang.SicoIpsec_Api_Vrf_Vlan{
+		vlansMap[v.Vlan] = &ipsecclient_yang.Ipsecclient_Api_Vrf_Vlan{
 			Vlan:  Uint32Pointer(v.Vlan),
 			LanIp: StringPointer(v.LanIP),
 		}
 	}
-	return &sico_yang.SicoIpsec_Api_Vrf{
+	return &ipsecclient_yang.Ipsecclient_Api_Vrf{
 		Id:                Uint32Pointer(v.ID),
 		Active:            BoolPointer(v.Active),
 		ClientName:        StringPointer(v.ClientName),
@@ -123,19 +123,19 @@ func (v *Vrf) ToYang() (*sico_yang.SicoIpsec_Api_Vrf, error) {
 	}, nil
 }
 
-func (c *CertificateAuthority) FromYang(caYang *sico_yang.SicoIpsec_Api_Ca) {
+func (c *CertificateAuthority) FromYang(caYang *ipsecclient_yang.Ipsecclient_Api_Ca) {
 	c.CA = *caYang.CaFile
 	c.ID = *caYang.Id
 }
 
-func (c *CertificateAuthority) ToYang() *sico_yang.SicoIpsec_Api_Ca {
-	return &sico_yang.SicoIpsec_Api_Ca{
+func (c *CertificateAuthority) ToYang() *ipsecclient_yang.Ipsecclient_Api_Ca {
+	return &ipsecclient_yang.Ipsecclient_Api_Ca{
 		Id:     Uint32Pointer(c.ID),
 		CaFile: StringPointer(c.CA),
 	}
 }
 
-func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
+func (v *Vrf) FromYang(vrfYang *ipsecclient_yang.Ipsecclient_Api_Vrf) error {
 	v.ClientName = *vrfYang.ClientName
 	vlans := []interface{}{}
 	for _, v := range vrfYang.Vlan {
@@ -171,18 +171,18 @@ func (v *Vrf) FromYang(vrfYang *sico_yang.SicoIpsec_Api_Vrf) error {
 	return nil
 }
 
-func (e *StoredError) ToYang() *sico_yang.SicoIpsec_Api_Error {
-	return &sico_yang.SicoIpsec_Api_Error{
+func (e *StoredError) ToYang() *ipsecclient_yang.Ipsecclient_Api_Error {
+	return &ipsecclient_yang.Ipsecclient_Api_Error{
 		Id:      Uint32Pointer(e.ID),
 		Message: StringPointer(e.Message),
 		Time:    StringPointer(e.ErrorTime.Format(timeFormat)),
 	}
 }
 
-func SourceInterfacesToYang(sourceInterfaces []string) []*sico_yang.SicoIpsec_Api_SourceInterface {
-	yangSourceInterface := []*sico_yang.SicoIpsec_Api_SourceInterface{}
+func SourceInterfacesToYang(sourceInterfaces []string) []*ipsecclient_yang.Ipsecclient_Api_SourceInterface {
+	yangSourceInterface := []*ipsecclient_yang.Ipsecclient_Api_SourceInterface{}
 	for _, sourceInterface := range sourceInterfaces {
-		yangSourceInterface = append(yangSourceInterface, &sico_yang.SicoIpsec_Api_SourceInterface{Name: StringPointer(sourceInterface)})
+		yangSourceInterface = append(yangSourceInterface, &ipsecclient_yang.Ipsecclient_Api_SourceInterface{Name: StringPointer(sourceInterface)})
 	}
 	return yangSourceInterface
 }

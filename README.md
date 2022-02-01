@@ -1,8 +1,8 @@
-# sico-ipsec
+# ipsecclient
 
 ## building the dockers
 
-`docker build -t sico -f sico_api.dockerfile`
+`docker build -t ipsecclient -f ipsecclient.dockerfile`
 
 ## running the dockers
 
@@ -19,11 +19,11 @@ The app should be available on https://10.67.0.2
 
 ## check version of the app
 
-`docker inspect -f {{.Config.Labels.APP_VERSION}} sico`
+`docker inspect -f {{.Config.Labels.APP_VERSION}} ipsecclient`
 
 ## running API unit tests
 
-`docker build -t sico_api_ut -f sico_api_ut.dockerfile .`  
+`docker build -t ipsecclient_ut -f ipsecclient_ut.dockerfile .`  
 `./run_api_ut.sh`  
 or  
 inside `ipsec-backend` directory run `CGO_CPPFLAGS="-DSQLITE_ENABLE_DBSTAT_VTAB=1" CGO_LDFLAGS="-lm" go test -v ./...`

@@ -68,14 +68,14 @@ def my_except_hook():
 
 
 if args.clean:
-    subprocess.run("docker stop sico", shell=True)
-    subprocess.run("docker stop sico_test", shell=True)
+    subprocess.run("docker stop ipsecclient", shell=True)
+    subprocess.run("docker stop ipsecclient_test", shell=True)
 
-    subprocess.run("docker rm sico", shell=True)
-    subprocess.run("docker rm sico_test", shell=True)
+    subprocess.run("docker rm ipsecclient", shell=True)
+    subprocess.run("docker rm ipsecclient_test", shell=True)
 
-    subprocess.run("docker rmi sico", shell=True)
-    subprocess.run("docker rmi sico_test", shell=True)
+    subprocess.run("docker rmi ipsecclient", shell=True)
+    subprocess.run("docker rmi ipsecclient_test", shell=True)
 
     subprocess.run("docker system prune -f", shell=True)
     subprocess.run("docker volume prune -f", shell=True)
@@ -143,9 +143,9 @@ else:
 
 build_processes.append(
     subprocess.Popen(
-        "exec docker build -t sico --build-arg VERSION="
+        "exec docker build -t ipsecclient --build-arg VERSION="
         + version
-        + " -f sico.dockerfile .",
+        + " -f ipsecclient.dockerfile .",
         shell=True,
     )
 )
@@ -153,7 +153,8 @@ build_processes.append(
 if args.ut:
     build_processes.append(
         subprocess.Popen(
-            "exec docker build -t sico_api_ut -f sico_api_ut.dockerfile .", shell=True
+            "exec docker build -t ipsecclient_ut -f ipsecclient_ut.dockerfile .",
+            shell=True,
         )
     )
 
@@ -177,16 +178,16 @@ if args.pack:
         stdout=subprocess.PIPE,
         universal_newlines=True,
     ).stdout.split("\n")[0]
-    package_name = "sico_ipsec-" + package_version
+    package_name = "ipsecclient-" + package_version
     package = "out/" + package_name + ".tar.gz"
-    image = package_name + "/sico-" + package_version + ".tar"
+    image = package_name + "/ipsecclient-" + package_version + ".tar"
     documentation = package_name + "/documentation.pdf"
     Path(content_path + package_name).mkdir(parents=True, exist_ok=True)
 
     download_documentation(content_path + documentation, creds_path=args.pack[0])
 
     subprocess.run(
-        "exec docker save --output " + content_path + image + " sico",
+        "exec docker save --output " + content_path + image + " ipsecclient",
         shell=True,
         check=True,
     )

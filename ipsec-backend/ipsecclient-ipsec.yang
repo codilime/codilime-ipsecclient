@@ -5,10 +5,10 @@
  *  available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
  */
 
-module sico-ipsec {
+module ipsecclient {
     yang-version 1.1;
-    namespace urn:ietf:params:xml:ns:yang:sico-ipsec;
-    prefix sico-ipsec;
+    namespace urn:ietf:params:xml:ns:yang:ipsecclient;
+    prefix ipsecclient;
 
     typedef ipv4-address {
         type string {

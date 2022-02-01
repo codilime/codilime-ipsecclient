@@ -7,7 +7,7 @@ import requests, time, json, logging, os, subprocess, urllib3, pytest
 from http import HTTPStatus
 from deepdiff import DeepDiff
 
-BASE_URL = "https://sico/restconf/data/sico-ipsec:api"
+BASE_URL = "https://ipsecclient/restconf/data/ipsecclient:api"
 
 VRFS_URL = BASE_URL + "/vrf"
 SETTINGS_URL = BASE_URL + "/setting="
@@ -25,13 +25,13 @@ log = logging.getLogger(__name__)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-def wait_for_sico_api():
+def wait_for_ipsecclient():
     while True:
-        log.info("waiting for sico_api...")
+        log.info("waiting for ipsecclient...")
         try:
             r = requests.get(VRFS_URL, auth=basicAuth, verify=False)
             if r.status_code < 400:
-                log.info("sico_api is ready")
+                log.info("ipsecclient is ready")
                 return
             time.sleep(3)
         except:
@@ -41,7 +41,7 @@ def wait_for_sico_api():
 
 def setup_module():
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    wait_for_sico_api()
+    wait_for_ipsecclient()
 
 
 def wait_for_csr_vm():

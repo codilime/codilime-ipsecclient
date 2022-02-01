@@ -12,20 +12,20 @@
   - name: delete a previous software vrf if exists
     ignore_errors: yes
     uri:
-      url: https://10.67.0.2/restconf/data/sico-ipsec:api/vrf=2
+      url: https://10.67.0.2/restconf/data/ipsecclient:api/vrf=2
       method: DELETE
       force_basic_auth: yes
-      user: "{{ sico_username }}"
-      password: "{{ sico_password }}"
+      user: "{{ ipsecclient_username }}"
+      password: "{{ ipsecclient_password }}"
       validate_certs: no
 
   - name: create a software vrf
     uri:
-      url: https://10.67.0.2/restconf/data/sico-ipsec:api/vrf
+      url: https://10.67.0.2/restconf/data/ipsecclient:api/vrf
       method: POST
       status_code: [200, 201]
       force_basic_auth: yes
-      user: "{{ sico_username }}"
-      password: "{{ sico_password }}"
+      user: "{{ ipsecclient_username }}"
+      password: "{{ ipsecclient_password }}"
       src: sw_create.json
       validate_certs: no

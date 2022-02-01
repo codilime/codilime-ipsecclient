@@ -5,7 +5,7 @@
  *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
  */
 
-const API_URL = '/restconf/data/sico-ipsec:api';
+const API_URL = '/restconf/data/ipsecclient:api';
 
 export async function client(endpoint: RequestInfo, data?: any, options?: RequestInit) {
   const { ...customConfig } = options ?? {};
