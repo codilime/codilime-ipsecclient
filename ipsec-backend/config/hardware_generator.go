@@ -8,7 +8,6 @@
 package config
 
 import (
-	"context"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
@@ -20,7 +19,6 @@ import (
 	"ipsec_backend/sico_yang"
 	"net"
 	"net/http"
-	"net/http/httptrace"
 	"os"
 	"strconv"
 	"strings"
@@ -33,7 +31,7 @@ import (
 const (
 	switchBase      = "https://%s/restconf/data/"
 	hwTemplatesDir  = "hw_templates"
-	defaultLocalAdd = "10.67.0.1"
+	defaultLocalAdd = "10.67.0.2"
 )
 
 type VrfWithCryptoSlices struct {
@@ -47,33 +45,11 @@ type HardwareGenerator struct {
 }
 
 func NewHardwareGenerator(switchCreds db.SwitchCreds) (*HardwareGenerator, error) {
-	localAddr := ""
-	clientTrace := &httptrace.ClientTrace{
-		GotConn: func(info httptrace.GotConnInfo) {
-			l := strings.Split(info.Conn.LocalAddr().String(), ":")
-			localAddr = l[0]
-		},
+	nginxLocalIp, isPresent := os.LookupEnv("NGINX_LOCAL_IP")
+	if isPresent {
+		return &HardwareGenerator{nginxLocalIp}, nil
 	}
-	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		},
-	}
-	traceCtx := httptrace.WithClientTrace(context.Background(), clientTrace)
-
-	fullPath := fmt.Sprintf(switchBase, switchCreds.SwitchAddress) + "/.well-known/host-meta"
-	req, err := http.NewRequestWithContext(traceCtx, http.MethodGet, fullPath, nil)
-	if err != nil {
-		return nil, logger.ReturnError(err)
-	}
-	req.Header.Add("Content-Type", "application/yang-data+json")
-	req.Header.Add("Accept", "application/yang-data+json")
-	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
-	_, err = client.Do(req)
-	if err != nil {
-		return &HardwareGenerator{defaultLocalAdd}, nil
-	}
-	return &HardwareGenerator{localAddr}, nil
+	return &HardwareGenerator{defaultLocalAdd}, nil
 }
 
 func (h *HardwareGenerator) GenerateConfigs(vrf db.Vrf, switchCredsList ...db.SwitchCreds) error {
