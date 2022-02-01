@@ -16,7 +16,12 @@ PREFIX=`ip -j r| jq -r '.[] | select(.dev==env.DEV) | .dst'`
 LOCAL_IP=`ip -j a| jq -r '.[] | select(.ifname==env.DEV) | .addr_info |.[] | select(.family=="inet") | .local'`
 
 MNG_GW_IP=$MNG_GW_ADDRESS
-SWITCH_IP=$SWITCH_ADDRESS
+
+if [[ -z "${SWITCH_ADDRESS}" ]]; then
+    SWITCH_IP=$CAF_IP_ADDRESS
+else
+    SWITCH_IP=$SWITCH_ADDRESS
+fi
 
 echo $PREFIX
 echo $LOCAL_IP
@@ -38,4 +43,4 @@ ip route add $PREFIX dev $DEV src $LOCAL_IP table $MNG_TABLE
 #echo ip route add 0.0.0.0/0 via $MNG_GW_IP dev $DEV table $MNG_TABLE
 ip route add 0.0.0.0/0 via $MNG_GW_IP dev $DEV table $MNG_TABLE
 
-NGINX_LOCAL_IP=$LOCAL_IP exec /usr/bin/supervisord -n -c /etc/supervisord.conf
+SWITCH_IP=$SWITCH_IP NGINX_LOCAL_IP=$LOCAL_IP exec /usr/bin/supervisord -n -c /etc/supervisord.conf
