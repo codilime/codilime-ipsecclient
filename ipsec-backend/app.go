@@ -111,7 +111,7 @@ func (a *App) initializeSettings(switchCreds db.SwitchCreds) error {
 		a.db.SetSetting(password, "switch_password", switchCreds.Password),
 		a.db.SetSetting(password, "system_name", os.Getenv("CAF_SYSTEM_NAME")),
 		a.db.SetSetting(password, "app_version", os.Getenv("APP_VERSION")),
-		a.db.SetSetting(password, "switch_address", os.Getenv("SWITCH_ADDRESS")),
+		a.db.SetSetting(password, "switch_address", switchCreds.SwitchAddress),
 	)
 }
 
@@ -341,6 +341,10 @@ func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
 	if err := a.db.SetSetting(key, name, *setting.Value); err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
+	}
+	if name == "switch_address" {
+		exec.Command("ip", "rule", "del", "pref", "2000").Output()
+		exec.Command("ip", "rule", "add", "to", *setting.Value, "table", "1701", "pref", "2000").Output()
 	}
 	logger.InfoDebug("Set setting completed", fmt.Sprintf("Set Setting completed|name: %s|value: %s", name, *setting.Value))
 

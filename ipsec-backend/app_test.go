@@ -43,7 +43,7 @@ func TestMain(m *testing.M) {
 }
 
 func createApp(t *testing.T) (*App, *mock.MockGenerator, *mock.MockGenerator, *mock.MockDBinterface) {
-	switchCreds := db.SwitchCreds{username, password}
+	switchCreds := db.SwitchCreds{username, password, "10.0.0.1"}
 
 	ctrl := gomock.NewController(t)
 	softwareGenerator := mock.NewMockGenerator(ctrl)
@@ -53,7 +53,7 @@ func createApp(t *testing.T) (*App, *mock.MockGenerator, *mock.MockGenerator, *m
 	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("switch_password"), switchCreds.Password).Return(nil)
 	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("system_name"), gomock.Any()).Return(nil)
 	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("app_version"), gomock.Any()).Return(nil)
-	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("switch_address"), gomock.Any()).Return(nil)
+	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("switch_address"), switchCreds.SwitchAddress).Return(nil)
 	dbInstance.EXPECT().Create(gomock.Any()).Return(nil)
 	app, _ := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds)
 	return app, softwareGenerator, hardwareGenerator, dbInstance
