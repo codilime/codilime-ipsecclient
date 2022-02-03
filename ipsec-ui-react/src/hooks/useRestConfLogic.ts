@@ -31,13 +31,11 @@ export const UseRestConfLogic = (open: boolean) => {
   const handleSendRestConf = async (data: RestConfType) => {
     const { switch_address, switch_password, switch_username } = data;
     if (switch_address) {
-      const adress = await client('setting=switch_password', { setting: { name: 'switch_password', value: data.switch_address } }, { method: 'POST' });
+      const adress = await client('setting=switch_address', { setting: { name: 'switch_password', value: data.switch_address } }, { method: 'POST' });
       if (!adress) {
         setActive(true);
         return setDescription({ result: 'error', message: 'Error change, something is wrong' });
       }
-      setActive(true);
-      setDescription({ result: 'success', message: 'Successful change. New variables saved' });
     }
     if (switch_password) {
       const password = await client('setting=switch_password', { setting: { name: 'switch_password', value: data.switch_password } }, { method: 'POST' });
@@ -45,25 +43,21 @@ export const UseRestConfLogic = (open: boolean) => {
         setActive(true);
         return setDescription({ result: 'error', message: 'Error change, something is wrong' });
       }
-      setActive(true);
-      setDescription({ result: 'success', message: 'Successful change. New variables saved' });
     }
     if (switch_username) {
       const username = await client('setting=switch_username', { setting: { name: 'switch_username', value: data.switch_username } }, { method: 'POST' });
       if (!username) {
         setActive(true);
-        setDescription({ result: 'error', message: 'Error change, something is wrong' });
+        return setDescription({ result: 'error', message: 'Error change, something is wrong' });
       }
-      setActive(true);
-      setDescription({ result: 'success', message: 'Successful change. New variables saved' });
     }
 
-    const correctAuth = await client('check-switch-basic-auth');
-    if (!correctAuth) {
+    const { check_switch_basic_auth } = await client('check-switch-basic-auth');
+    if (!check_switch_basic_auth) {
       setActive(true);
       return setDescription({ result: 'error', message: 'Error, basic auth is incorrect' });
     }
-    if (correctAuth) {
+    if (check_switch_basic_auth) {
       setActive(true);
       return setDescription({ result: 'success', message: 'Successful change, New variables saved' });
     }

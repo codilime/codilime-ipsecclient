@@ -23,12 +23,11 @@ export const RestConf: FC<RestConfType> = ({ open, handleClose }) => {
     <>
       <div className={classNames('loginForm__wrapper', { loginForm__disabled: active })}>
         <h3 className="loginForm__title">Cat 9300x Credentials</h3>
-        <RestConfForm {...{ handleSendRestConf, handleClose }} />
+        <RestConfForm {...{ handleSendRestConf, handleClose, active }} />
       </div>
 
       <HoverPanel
         {...{
-          title: 'The variables are set.',
           description,
           button: 'Reset',
           active,

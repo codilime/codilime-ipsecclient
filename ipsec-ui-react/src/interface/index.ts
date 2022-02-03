@@ -88,7 +88,7 @@ export interface ContextProps {
   hardware: boolean;
   error: any;
   success: boolean;
-  restConf: boolean;
+  restConf: { switch_username: string; switch_password: string; switch_address: string };
   sourceInterface: SourceInterfaceType[] | [];
   switchVersion: string;
   version: string;

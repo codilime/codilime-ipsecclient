@@ -204,7 +204,7 @@ export const defaultVrf: ContextProps = {
   hardware: false,
   error: null,
   success: false,
-  restConf: false,
+  restConf: { switch_address: '', switch_password: '', switch_username: '' },
   switchVersion: '',
   version: ''
 };
@@ -304,7 +304,7 @@ export const DynamicLoginForm = [
 export const DynamicRestConfForm = [
   { type: 'text', name: 'switch_username', text: 'Login', placeholder: 'Login' },
   { type: 'password', name: 'switch_password', text: 'Password', placeholder: 'Password' },
-  { type: 'text', name: 'switch_address', text: 'Ip adress', placeholder: '10.1.1.1' }
+  { type: 'text', name: 'switch_address', text: 'Switch adress', placeholder: 'Auto complete' }
 ];
 
 export const headerLogs: HeadersLogsType[] = [{ name: 'api' }, { name: 'front' }, { name: 'frr' }, { name: 'reload_vtysh' }, { name: 'strongswan' }, { name: 'strongswan_reload' }, { name: 'vrfs' }];

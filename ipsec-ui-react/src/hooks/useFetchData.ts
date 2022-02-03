@@ -58,8 +58,6 @@ export const useFetchData = () => {
 
   const fetchCertsData = async () => await client('ca');
 
-  const fetchRestConfData = async () => await client(`settings/restConf`);
-
   const fetchSystemName = async () => await client('setting=system_name');
 
   const fetchAppVersion = async () => await client('setting=app_version');
@@ -68,6 +66,12 @@ export const useFetchData = () => {
 
   const fetchErrorData = async () => await client('error');
 
+  const fetchSwitchUsername = async () => await client('setting=switch_username');
+
+  const fetchSwitchPassword = async () => await client('setting=switch_password');
+
+  const fetchSwitchAddress = async () => await client('setting=switch_address');
+
   return {
     fetchData,
     postVrfData,
@@ -75,11 +79,13 @@ export const useFetchData = () => {
     patchVrfData,
     fetchEndpointStatus,
     fetchLogs,
-    fetchRestConfData,
     fetchCertsData,
     fetchSourceData,
     fetchSystemName,
     fetchAppVersion,
-    fetchErrorData
+    fetchErrorData,
+    fetchSwitchUsername,
+    fetchSwitchPassword,
+    fetchSwitchAddress
   };
 };

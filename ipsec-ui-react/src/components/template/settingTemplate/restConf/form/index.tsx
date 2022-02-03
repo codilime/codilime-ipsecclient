@@ -5,7 +5,7 @@
  *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
  */
 
-import { FC } from 'react';
+import { FC, useEffect, useLayoutEffect } from 'react';
 import { Field } from 'template';
 import { Button } from 'common/';
 import { DynamicRestConfForm } from 'db';
@@ -13,18 +13,32 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { restConfSchema } from 'schema/';
 import { RestConfType } from 'interface/index';
+import { useAppContext } from 'hooks/';
 
 interface RestConfFormType {
   handleSendRestConf: (data: RestConfType) => void;
   handleClose: () => void;
+  active: boolean;
 }
 
-export const RestConfForm: FC<RestConfFormType> = ({ handleSendRestConf, handleClose }) => {
+export const RestConfForm: FC<RestConfFormType> = ({ handleSendRestConf, handleClose, active }) => {
+  const {
+    context: { restConf }
+  } = useAppContext();
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    reset
   } = useForm({ resolver: yupResolver(restConfSchema) });
+
+  useEffect(() => {
+    if (active) reset(restConf);
+  }, [active]);
+
+  useLayoutEffect(() => {
+    reset(restConf);
+  }, [restConf]);
 
   const displayForm = DynamicRestConfForm.map((input) => (
     <Field {...{ ...input, key: input.name, error: errors[input.name], setting: true, register: register(input.name), validate: false, className: 'loginForm__restConf' }} />
