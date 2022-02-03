@@ -12,29 +12,29 @@
   - name: delete a previous software vrf if exists
     ignore_errors: yes
     uri:
-      url: http://localhost:9100/restconf/data/sico-ipsec:api/vrf=2
+      url: http://localhost:9100/restconf/data/ipsecclient:api/vrf=2
       method: DELETE
       status_code: [200, 204]
       force_basic_auth: yes
-      user: "{{ sico_username }}"
-      password: "{{ sico_password }}"
+      user: "{{ ipsecclient_username }}"
+      password: "{{ ipsecclient_password }}"
 
   - name: create a software vrf
     uri:
-      url: http://localhost:9100/restconf/data/sico-ipsec:api/vrf
+      url: http://localhost:9100/restconf/data/ipsecclient:api/vrf
       method: POST
       status_code: [200, 201]
       force_basic_auth: yes
-      user: "{{ sico_username }}"
-      password: "{{ sico_password }}"
+      user: "{{ ipsecclient_username }}"
+      password: "{{ ipsecclient_password }}"
       src: sw_create.json
 
   - name: configure the hardware
     uri:
-      url: http://localhost:9100/restconf/data/sico-ipsec:api/vrf=1
+      url: http://localhost:9100/restconf/data/ipsecclient:api/vrf=1
       method: PATCH
       status_code: [200, 204]
       force_basic_auth: yes
-      user: "{{ sico_username }}"
-      password: "{{ sico_password }}"
+      user: "{{ ipsecclient_username }}"
+      password: "{{ ipsecclient_password }}"
       src: hw.json

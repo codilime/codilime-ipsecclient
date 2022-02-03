@@ -6,7 +6,7 @@
 #	available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
 
 curl -v -k -XPOST\
-   http://localhost/restconf/data/sico-ipsec:api/vrf\
+   http://localhost/restconf/data/ipsecclient:api/vrf\
    -u "admin:cisco123" -d @- << EOF
 {
    "id":1,

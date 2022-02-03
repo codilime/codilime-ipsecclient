@@ -116,7 +116,7 @@ func TestCreateVrf(t *testing.T) {
 
 	const endpointId = 2
 	const origin = "test-origin"
-	expectedLocation := origin + "/restconf/data/sico-ipsec:api/vrf=" + strconv.Itoa(vrfIdSW)
+	expectedLocation := origin + "/restconf/data/ipsecclient:api/vrf=" + strconv.Itoa(vrfIdSW)
 
 	expectedVrf := createTestVrf()
 	setCryptoYang(&expectedVrf, cryptoAlgorythms, t)

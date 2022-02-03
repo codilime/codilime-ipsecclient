@@ -7,8 +7,8 @@
 
 set -e
 
-docker stop sico || true
-docker rm sico || true
+docker stop ipsecclient || true
+docker rm ipsecclient || true
 
 # docker network rm 01_vlan_br 02_dmz_br 03_mng_br || true
 
@@ -34,7 +34,7 @@ docker network create \
                --subnet=10.67.0.0/24 \
                03_mng_br || true
 
-docker create --cap-add=NET_ADMIN --privileged --name sico \
+docker create --cap-add=NET_ADMIN --privileged --name ipsecclient \
         -e SWITCH_ADDRESS=10.67.0.10 \
         -e MNG_GW_ADDRESS=10.67.0.1 \
         -e SWITCH_USERNAME=admin \
@@ -44,7 +44,7 @@ docker create --cap-add=NET_ADMIN --privileged --name sico \
         --network 01_vlan_br \
         --publish 80:80 \
         --publish 443:443 \
-        sico:latest
+        ipsecclient:latest
 
 #        --mount type=volume,source=ipsec,destination=/opt/ipsec/ \
 #        --mount type=volume,source=frr,destination=/opt/frr/ \
@@ -54,7 +54,7 @@ docker create --cap-add=NET_ADMIN --privileged --name sico \
 #        --mount type=volume,source=logs,destination=/opt/logs/ \
 
 
-docker network connect 02_dmz_br sico
-docker network connect 03_mng_br sico
+docker network connect 02_dmz_br ipsecclient
+docker network connect 03_mng_br ipsecclient
 
-exec docker start sico --attach
+exec docker start ipsecclient --attach

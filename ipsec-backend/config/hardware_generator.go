@@ -15,8 +15,8 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"ipsec_backend/db"
+	"ipsec_backend/ipsecclient_yang"
 	"ipsec_backend/logger"
-	"ipsec_backend/sico_yang"
 	"net"
 	"net/http"
 	"os"
@@ -415,7 +415,7 @@ func (h *HardwareGenerator) restconfDoRequest(method, path, data string, client 
 	return nil
 }
 
-func (h *HardwareGenerator) GetMonitoring(_ *string, switchCredsList ...db.SwitchCreds) (*sico_yang.SicoIpsec_Api_Monitoring, error) {
+func (h *HardwareGenerator) GetMonitoring(_ *string, switchCredsList ...db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
 	if len(switchCredsList) < 1 {
 		return nil, logger.ReturnError(fmt.Errorf("HardwareGenerator GetMonitoring called without SwitchCreds"))
 	}
@@ -429,11 +429,11 @@ func (h *HardwareGenerator) GetMonitoring(_ *string, switchCredsList ...db.Switc
 		return nil, logger.ReturnError(err)
 	}
 	if res == nil {
-		return &sico_yang.SicoIpsec_Api_Monitoring{}, nil
+		return &ipsecclient_yang.Ipsecclient_Api_Monitoring{}, nil
 	}
 	idents := res["Cisco-IOS-XE-crypto-oper:crypto-ipsec-ident"].([]interface{})
-	monitoring := sico_yang.SicoIpsec_Api_Monitoring{
-		Endpoint: map[uint32]*sico_yang.SicoIpsec_Api_Monitoring_Endpoint{},
+	monitoring := ipsecclient_yang.Ipsecclient_Api_Monitoring{
+		Endpoint: map[uint32]*ipsecclient_yang.Ipsecclient_Api_Monitoring_Endpoint{},
 	}
 	for _, ident_ := range idents {
 		ident := ident_.(map[string]interface{})
@@ -443,7 +443,7 @@ func (h *HardwareGenerator) GetMonitoring(_ *string, switchCredsList ...db.Switc
 		localIp := identData["local-endpt-addr"].(string)
 		remoteIp := identData["remote-endpt-addr"].(string)
 		saStatus := identData["inbound-esp-sa"].(map[string]interface{})["sa-status"].(string)
-		monitoring.Endpoint[uint32(endpointID)] = &sico_yang.SicoIpsec_Api_Monitoring_Endpoint{
+		monitoring.Endpoint[uint32(endpointID)] = &ipsecclient_yang.Ipsecclient_Api_Monitoring_Endpoint{
 			LocalIp: db.StringPointer(normalizeLocalIP(localIp, remoteIp)),
 			PeerIp:  db.StringPointer(remoteIp),
 			Status:  db.StringPointer(normalizeStatus(saStatus)),

@@ -8,7 +8,7 @@
 TEST_PFX=`cat ../../dev-env/UI/test.pfx.b64`
 
 curl -v -k -XPATCH\
-  https://10.67.0.2/restconf/data/sico-ipsec:api/vrf=1\
+  https://10.67.0.2/restconf/data/ipsecclient:api/vrf=1\
   -u "admin:cisco123" -d @- << EOF
 {
     "vrf": {

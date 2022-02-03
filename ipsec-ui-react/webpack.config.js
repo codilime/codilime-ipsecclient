@@ -97,7 +97,7 @@ module.exports = {
   devServer: {
     https: true,
     proxy: {
-      '/restconf/data/sico-ipsec:api': {
+      '/restconf/data/ipsecclient:api': {
         target: 'https://10.67.0.2:443',
         secure: false
       }

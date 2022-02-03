@@ -6,7 +6,7 @@ package mock
 
 import (
 	db "ipsec_backend/db"
-	sico_yang "ipsec_backend/sico_yang"
+	ipsecclient_yang "ipsec_backend/ipsecclient_yang"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -74,14 +74,14 @@ func (mr *MockGeneratorMockRecorder) GenerateConfigs(v interface{}, switchCreds 
 }
 
 // GetMonitoring mocks base method.
-func (m *MockGenerator) GetMonitoring(clientName *string, switchCreds ...db.SwitchCreds) (*sico_yang.SicoIpsec_Api_Monitoring, error) {
+func (m *MockGenerator) GetMonitoring(clientName *string, switchCreds ...db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{clientName}
 	for _, a := range switchCreds {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "GetMonitoring", varargs...)
-	ret0, _ := ret[0].(*sico_yang.SicoIpsec_Api_Monitoring)
+	ret0, _ := ret[0].(*ipsecclient_yang.Ipsecclient_Api_Monitoring)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

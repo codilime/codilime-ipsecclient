@@ -6,5 +6,5 @@
 #	available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
 
 curl -v -k\
-   https://10.67.0.2/restconf/data/sico-ipsec:api/monitoring=2\
+   https://10.67.0.2/restconf/data/ipsecclient:api/monitoring=2\
    -u "admin:cisco123"

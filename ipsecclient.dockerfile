@@ -28,9 +28,9 @@ RUN go mod download
 COPY ipsec-backend/ .
 RUN go build
 
-### Stage 2: create the sico_api docker ###
+### Stage 2: create the ipsecclient docker ###
 
-FROM alpine:3.13 AS sico_api
+FROM alpine:3.13 AS ipsecclient
 
 ARG VERSION=unspecified
 LABEL APP_VERSION=$VERSION

@@ -16,11 +16,11 @@
 
   - name: patch the hardware vrf
     uri:
-      url: https://10.67.0.2/restconf/data/sico-ipsec:api/vrf=1
+      url: https://10.67.0.2/restconf/data/ipsecclient:api/vrf=1
       method: PATCH
       status_code: [200, 204]
       force_basic_auth: yes
-      user: "{{ sico_username }}"
-      password: "{{ sico_password }}"
+      user: "{{ ipsecclient_username }}"
+      password: "{{ ipsecclient_password }}"
       src: hw.json
       validate_certs: no

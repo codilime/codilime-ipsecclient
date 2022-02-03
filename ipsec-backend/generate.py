@@ -29,6 +29,6 @@ if args.mock:
 if args.yang:
     subprocess.run(
         args.yang[0]
-        + " -output_file=sico_yang/sico_yang.go -package_name=sico_yang sico-ipsec.yang",
+        + " -output_file=ipsecclient_yang/ipsecclient_yang.go -package_name=ipsecclient_yang ipsecclient-ipsec.yang",
         shell=True,
     )
