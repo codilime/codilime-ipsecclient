@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"io/ioutil"
 	"ipsec_backend/db"
@@ -25,6 +26,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/openconfig/goyang/pkg/yang"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -454,13 +456,22 @@ func (h *HardwareGenerator) GetMonitoring(_ *string, switchCredsList ...db.Switc
 }
 
 func GetSourceInterfaces(switchCreds db.SwitchCreds) ([]string, error) {
+	retries := 5
 	sourceInterfaces := []string{}
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	res, err := restconfGetData("Cisco-IOS-XE-native:native/interface", client, switchCreds)
+	var res map[string]interface{}
+	var err error
+	for retries > 0 {
+		res, err = restconfGetData("Cisco-IOS-XE-native:native/interface", client, switchCreds)
+		if err == nil && res != nil {
+			break
+		}
+		retries--
+	}
 	if err != nil {
 		return nil, logger.ReturnError(err)
 	}
@@ -510,6 +521,171 @@ func CheckSwitchBasicAuth(switchCreds db.SwitchCreds, switchAddress string) (boo
 		return true, nil
 	}
 	return false, nil
+}
+
+func getModule(modulePath string, switchCreds db.SwitchCreds) (string, error) {
+	retries := 5
+	var err error
+	var module []byte
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	req, err := http.NewRequest(http.MethodGet, modulePath, nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Add("Content-Type", "application/yang-data+json")
+	req.Header.Add("Accept", "application/yang-data+json")
+	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
+
+	for retries > 0 {
+		retries--
+
+		var resp *http.Response
+		var ret map[string]interface{}
+		resp, err = client.Do(req)
+		if err != nil {
+			continue
+		}
+		module, err = io.ReadAll(resp.Body)
+		if err != nil {
+			continue
+		}
+		if err = json.Unmarshal(module, &ret); err != nil {
+			return string(module), nil
+		}
+		time.Sleep(10 * time.Second)
+		err = fmt.Errorf("cannot get algorithms from the hardware")
+	}
+	return "", err
+}
+
+func parse(ms *yang.Modules, moduleName string, modulePath string, switchCreds db.SwitchCreds) error {
+	module, err := getModule(modulePath, switchCreds)
+	if err != nil {
+		return err
+	}
+
+	if err := ms.Parse(module, moduleName); err != nil {
+		return err
+	}
+	return nil
+}
+
+func mergeEncryptions(encryptions []string, keyBits []string) []string {
+	var mergedEncryptions []string
+	for _, encryption := range encryptions {
+		mergedEncryptions = append(mergedEncryptions, encryption)
+		for _, keyBit := range keyBits {
+			mergedEncryptions = append(mergedEncryptions, encryption+" "+keyBit)
+		}
+	}
+	return mergedEncryptions
+}
+
+func getKeysFromMap(map_ map[string]*yang.Entry) []string {
+	keys := make([]string, 0, len(map_))
+	for key := range map_ {
+		keys = append(keys, key)
+	}
+	return keys
+}
+
+func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, error) {
+	ms := yang.NewModules()
+
+	modulesToParse := []string{"Cisco-IOS-XE-crypto", "cisco-semver", "ietf-inet-types", "Cisco-IOS-XE-native",
+		"Cisco-IOS-XE-types", "Cisco-IOS-XE-parser", "Cisco-IOS-XE-license", "Cisco-IOS-XE-features",
+		"Cisco-IOS-XE-line", "Cisco-IOS-XE-interface-common", "Cisco-IOS-XE-logging", "Cisco-IOS-XE-ip", "Cisco-IOS-XE-interfaces",
+		"Cisco-IOS-XE-ipv6", "Cisco-IOS-XE-tunnel", "Cisco-IOS-XE-mpls", "Cisco-IOS-XE-isis", "Cisco-IOS-XE-snmp",
+		"Cisco-IOS-XE-policy", "ietf-yang-types", "Cisco-IOS-XE-atm", "Cisco-IOS-XE-l2vpn", "Cisco-IOS-XE-ethernet",
+		"Cisco-IOS-XE-ethernet-oam", "Cisco-IOS-XE-ethernet-cfm-efp", "Cisco-IOS-XE-pppoe"}
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+
+	type Submodule struct {
+		Name   string `json:"name"`
+		Schema string `json:"schema"`
+	}
+
+	type Module struct {
+		Name      string      `json:"name"`
+		Schema    string      `json:"schema"`
+		Submodule []Submodule `json:"submodule"`
+	}
+
+	var modules struct {
+		Modules []Module `json:"ietf-yang-library:module"`
+	}
+
+	fullPath := "https://" + switchCreds.SwitchAddress + "/restconf/data/modules-state/module"
+	req, err := http.NewRequest(http.MethodGet, fullPath, nil)
+	if err != nil {
+		fmt.Printf("GetAlgorithms 1")
+		return db.Algorithm{}, err
+	}
+	req.Header.Add("Content-Type", "application/yang-data+json")
+	req.Header.Add("Accept", "application/yang-data+json")
+	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("GetAlgorithms 2")
+		return db.Algorithm{}, err
+	}
+
+	decoder := json.NewDecoder(resp.Body)
+	if err := decoder.Decode(&modules); err != nil {
+		fmt.Printf("GetAlgorithms 3")
+		return db.Algorithm{}, err
+	}
+
+	for _, module := range modules.Modules {
+		for _, moduleToParse := range modulesToParse {
+			if module.Name == moduleToParse {
+				if err := parse(ms, module.Name, module.Schema, switchCreds); err != nil {
+					return db.Algorithm{}, err
+				}
+			}
+		}
+		if module.Submodule != nil {
+			for _, moduleToParse := range modulesToParse {
+				for _, submodule := range module.Submodule {
+					if submodule.Name == moduleToParse {
+						if err := parse(ms, submodule.Name, submodule.Schema, switchCreds); err != nil {
+							return db.Algorithm{}, err
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if errs := ms.Process(); errs != nil {
+		return db.Algorithm{}, err
+	}
+	nativeModule, _ := ms.GetModule("Cisco-IOS-XE-native")
+
+	phase1Encryption := nativeModule.Dir["native"].Dir["crypto"].Dir["ikev2"].Dir["proposal"].Dir["encryption"].Dir
+	phase1Integrity := nativeModule.Dir["native"].Dir["crypto"].Dir["ikev2"].Dir["proposal"].Dir["integrity"].Dir
+	phase1KeyExchange := nativeModule.Dir["native"].Dir["crypto"].Dir["ikev2"].Dir["proposal"].Dir["group"].Dir
+	phase2Encryption := nativeModule.Dir["native"].Dir["crypto"].Dir["ipsec"].Dir["transform-set"].Dir["esp"].Type.Enum.Names()
+	keyBit := nativeModule.Dir["native"].Dir["crypto"].Dir["ipsec"].Dir["transform-set"].Dir["key-bit"].Type.Enum.Names()
+	phase2Integrity := nativeModule.Dir["native"].Dir["crypto"].Dir["ipsec"].Dir["transform-set"].Dir["esp-hmac"].Type.Enum.Names()
+	phase2KeyExchange := nativeModule.Dir["native"].Dir["crypto"].Dir["ipsec"].Dir["profile"].Dir["set"].Dir["pfs"].Dir["group"].Type.Enum.Names()
+
+	return db.Algorithm{
+		Phase1Encryption:  getKeysFromMap(phase1Encryption),
+		Phase1Integrity:   getKeysFromMap(phase1Integrity),
+		Phase1KeyExchange: getKeysFromMap(phase1KeyExchange),
+		Phase2Encryption:  mergeEncryptions(phase2Encryption, keyBit),
+		Phase2Integrity:   phase2Integrity,
+		Phase2KeyExchange: phase2KeyExchange,
+	}, nil
 }
 
 func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds) (map[string]interface{}, error) {

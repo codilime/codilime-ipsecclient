@@ -38,6 +38,7 @@ const (
 	vrfIDPath            = vrfPath + "={id:[0-9]+}"
 	monitoringPath       = restconfBasePath + "/monitoring={id:[0-9]+}"
 	sourceInterfacePath  = restconfBasePath + "/source-interface"
+	algorithmPath        = restconfBasePath + "/algorithm"
 	logPath              = restconfBasePath + "/log"
 	errorPath            = restconfBasePath + "/error"
 	CAPath               = restconfBasePath + "/ca"
@@ -140,6 +141,7 @@ func (a *App) initializeRoutes() {
 	a.router.HandleFunc(vrfIDPath, a.deleteVrf).Methods(http.MethodDelete)
 	a.router.HandleFunc(monitoringPath, a.monitoring).Methods(http.MethodGet)
 	a.router.HandleFunc(sourceInterfacePath, a.getSourceInterfaces).Methods(http.MethodGet)
+	a.router.HandleFunc(algorithmPath, a.getAlgorithms).Methods(http.MethodGet)
 	a.router.HandleFunc(logPath, a.getLogs).Methods(http.MethodGet)
 	a.router.HandleFunc(errorPath, a.getErrors).Methods(http.MethodGet)
 	a.router.HandleFunc(settingNamePath, a.apiGetSetting).Methods(http.MethodGet)
@@ -807,7 +809,7 @@ func (a *App) getSwitchCreds(key string) (*db.SwitchCreds, error) {
 	if err != nil {
 		return nil, logger.ReturnError(err)
 	}
-	return &db.SwitchCreds{username, password, switchAddress}, nil
+	return &db.SwitchCreds{Username: username, Password: password, SwitchAddress: switchAddress}, nil
 }
 
 func (a *App) generateConfigs(key string, vrf db.Vrf) error {
@@ -964,6 +966,7 @@ func (a *App) getErrors(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) getSourceInterfaces(w http.ResponseWriter, r *http.Request) {
+	log.Debugf("getSourceInterfaces\n")
 	key, err := getPassFromHeader(r.Header)
 	if err != nil {
 		a.respondWithError(w, http.StatusUnauthorized, err.Error())
@@ -981,6 +984,45 @@ func (a *App) getSourceInterfaces(w http.ResponseWriter, r *http.Request) {
 	}
 	api := ipsecclient_yang.Ipsecclient_Api{
 		SourceInterface: db.SourceInterfacesToYang(sourceInterfaces),
+	}
+
+	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
+		Format: ygot.RFC7951,
+		Indent: "  ",
+	})
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithMarshalledJSON(w, http.StatusOK, json)
+}
+
+func (a *App) getAlgorithms(w http.ResponseWriter, r *http.Request) {
+	key, err := getPassFromHeader(r.Header)
+	if err != nil {
+		a.respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	var algorithms = db.Algorithm{}
+	if err := a.db.GetAlgorithms(&algorithms); err != nil {
+		log.Debugf("getAlgorithms from the hardware\n")
+		switchCreds, err := a.getSwitchCreds(key)
+		if err != nil {
+			a.respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		algorithms, err = config.GetAlgorithms(*switchCreds)
+		if err != nil {
+			a.respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		a.db.StoreAlgorithms(algorithms)
+	} else {
+		log.Debugf("getAlgorithms from cache\n")
+	}
+
+	api := ipsecclient_yang.Ipsecclient_Api{
+		Algorithm: db.AlgorithmsToYang(algorithms),
 	}
 
 	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{

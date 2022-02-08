@@ -20,6 +20,7 @@ import (
 
 	"ipsec_backend/logger"
 
+	"github.com/lib/pq"
 	logrus "github.com/sirupsen/logrus"
 	"gorm.io/datatypes"
 	"gorm.io/driver/sqlite"
@@ -48,6 +49,8 @@ type DBinterface interface {
 	DecryptPSK(key string, v *Vrf) error
 	ChangePassword(oldPass, newPass string) error
 	RotateErrorsBySizeOrDate()
+	StoreAlgorithms(algorithms Algorithm) error
+	GetAlgorithms(algorithms *Algorithm) error
 }
 
 type DB struct {
@@ -172,6 +175,16 @@ type StoredError struct {
 	ErrorTime time.Time `json:"time"`
 }
 
+type Algorithm struct {
+	ID                uint32
+	Phase1Encryption  pq.StringArray `gorm:"type:string[]"`
+	Phase1Integrity   pq.StringArray `gorm:"type:string[]"`
+	Phase1KeyExchange pq.StringArray `gorm:"type:string[]"`
+	Phase2Encryption  pq.StringArray `gorm:"type:string[]"`
+	Phase2Integrity   pq.StringArray `gorm:"type:string[]"`
+	Phase2KeyExchange pq.StringArray `gorm:"type:string[]"`
+}
+
 func MakeDB(dbName, errRotDaysStr, errRotSizeStr string) (*DB, error) {
 	db := new(DB)
 
@@ -229,6 +242,10 @@ func MakeDB(dbName, errRotDaysStr, errRotSizeStr string) (*DB, error) {
 	if err = gormDb.AutoMigrate(&StoredError{}); err != nil {
 		return db, logger.ReturnError(err)
 	}
+	if err = gormDb.AutoMigrate(&Algorithm{}); err != nil {
+		return db, logger.ReturnError(err)
+	}
+
 	db.gormDb = gormDb
 	return db, nil
 }
@@ -317,6 +334,22 @@ func (db *DB) DeleteCAs() error {
 func (db *DB) GetCAs() ([]CertificateAuthority, error) {
 	cas := []CertificateAuthority{}
 	return cas, logger.ReturnError(db.gormDb.Find(&cas).Error)
+}
+
+func (db *DB) StoreAlgorithms(algorithms Algorithm) error {
+	err := db.Create(&Algorithm{
+		Phase1Encryption:  algorithms.Phase1Encryption,
+		Phase1Integrity:   algorithms.Phase1Integrity,
+		Phase1KeyExchange: algorithms.Phase1KeyExchange,
+		Phase2Encryption:  algorithms.Phase2Encryption,
+		Phase2Integrity:   algorithms.Phase2Integrity,
+		Phase2KeyExchange: algorithms.Phase2KeyExchange,
+	})
+	return err
+}
+
+func (db *DB) GetAlgorithms(algorithms *Algorithm) error {
+	return db.gormDb.First(algorithms).Error
 }
 
 func (db *DB) RotateErrorsBySizeOrDate() {

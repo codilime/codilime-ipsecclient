@@ -441,6 +441,26 @@ def test_get_source_interfaces_csr_vm():
     )
 
 
+def test_get_algorithms_csr_vm():
+    wait_for_csr_vm()
+    algorithm_1 = requests.get(BASE_URL + "/algorithm", auth=basicAuth, verify=False)
+    check_status_code(algorithm_1, HTTPStatus.OK)
+    print(algorithm_1.json())
+
+    algorithm_2 = requests.get(BASE_URL + "/algorithm", auth=basicAuth, verify=False)
+    check_status_code(algorithm_2, HTTPStatus.OK)
+
+    assert algorithm_1.json() == algorithm_2.json(), (
+        "Algorithms are not equal "
+        + str(algorithm_1.json())
+        + " "
+        + str(algorithm_2.json())
+    )
+    assert (
+        algorithm_1.elapsed.total_seconds() > algorithm_2.elapsed.total_seconds() * 5
+    ), "Wrong elapsed time"
+
+
 def check_status_code(response, expected_status_code):
     assert response.status_code == expected_status_code, (
         "Expected status code to be: "
