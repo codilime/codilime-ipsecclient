@@ -73,6 +73,9 @@ export const useFetchData = () => {
         const hardwareCrypto = createHardwareCryptoObject(algorithm);
         setContext((prev) => ({ ...prev, hardwareCrypto, loading: false, actionStatus: [...prev.actionStatus, { status: StatusState.success, message: StatusMessage.successAdd }] }));
       }
+      if (!algorithm) {
+        setContext((prev) => ({ ...prev, loading: false, actionStatus: [...prev.actionStatus, { status: StatusState.error, message: StatusMessage.failedAdd }] }));
+      }
     } catch (err) {
       setContext((prev) => ({ ...prev, loading: false, actionStatus: [...prev.actionStatus, { status: StatusState.error, message: StatusMessage.failedFetch }] }));
     }

@@ -26,12 +26,12 @@ export const FormDetail: FC = () => {
 
   return (
     <Wrapper title="VRF details">
-      <form autoComplete="off" className="form">
+      <form autoComplete="off" className="form" onSubmit={handleSubmit(submit)}>
         <fieldset className="form__fieldset">
           <div className={classNames('form__details', { form__details__hardware: hardware })}>
             {displayDetails}
             <div className="form__buttons">
-              <Button className="form__btn" disabled={!isDirty} onSubmit={handleSubmit(submit)}>
+              <Button className="form__btn" disabled={!isDirty}>
                 Save changes
               </Button>
               {hardware && (
