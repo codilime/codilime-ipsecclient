@@ -36,7 +36,7 @@ export const FormDetail: FC = () => {
               </Button>
               {hardware && (
                 <Button className="form__btn" type="button" onClick={fetchHardwareAlgoritm}>
-                  Get supported algorithms
+                  Crypto algorithms
                 </Button>
               )}
             </div>
