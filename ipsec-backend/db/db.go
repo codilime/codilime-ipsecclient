@@ -182,7 +182,6 @@ type Algorithm struct {
 	Phase2Encryption  pq.StringArray `gorm:"type:string[]"`
 	Phase2Integrity   pq.StringArray `gorm:"type:string[]"`
 	Phase2KeyExchange pq.StringArray `gorm:"type:string[]"`
-	WhenEspHmac       string
 }
 
 func MakeDB(dbName, errRotDaysStr, errRotSizeStr string) (*DB, error) {
