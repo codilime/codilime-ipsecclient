@@ -27,7 +27,7 @@ curl -k -v -XPOST\
       {
         "remote_ip_sec": "146.112.66.8",
         "local_ip": "192.168.1.1",
-        "peer_ip": "192.168.1.2",
+        "peer_ip": "",
         "remote_as": 0,
         "nat": false,
         "bgp": false,

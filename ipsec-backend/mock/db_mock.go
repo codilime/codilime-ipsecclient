@@ -118,6 +118,20 @@ func (mr *MockDBinterfaceMockRecorder) EncryptPSK(key, v interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EncryptPSK", reflect.TypeOf((*MockDBinterface)(nil).EncryptPSK), key, v)
 }
 
+// GetAlgorithms mocks base method.
+func (m *MockDBinterface) GetAlgorithms(algorithms *db.Algorithm) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAlgorithms", algorithms)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// GetAlgorithms indicates an expected call of GetAlgorithms.
+func (mr *MockDBinterfaceMockRecorder) GetAlgorithms(algorithms interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAlgorithms", reflect.TypeOf((*MockDBinterface)(nil).GetAlgorithms), algorithms)
+}
+
 // GetCAs mocks base method.
 func (m *MockDBinterface) GetCAs() ([]db.CertificateAuthority, error) {
 	m.ctrl.T.Helper()

@@ -323,6 +323,70 @@ func TestDeleteTemplatePsk(t *testing.T) {
 	generator.DeleteConfigs(vrf)
 }
 
+func TestTransformSetEsp(t *testing.T) {
+	templateFuncMap := getTemplateFuncMap()
+
+	ret := templateFuncMap["transformSetEsp"].(func(VrfWithCryptoSlices) string)(
+		VrfWithCryptoSlices{CryptoPh2Slice: []string{"esp-abc"}})
+
+	if ret != "esp-abc" {
+		t.Fatalf("expected transform set esp: %s got: %s\n", "", ret)
+	}
+
+	ret = templateFuncMap["transformSetEsp"].(func(VrfWithCryptoSlices) string)(
+		VrfWithCryptoSlices{CryptoPh2Slice: []string{"esp-abc 123"}})
+
+	if ret != "esp-abc" {
+		t.Fatalf("expected transform set esp: %s got: %s\n", "esp-abc", ret)
+	}
+}
+
+func TestTransformSetKeyBit(t *testing.T) {
+	templateFuncMap := getTemplateFuncMap()
+
+	ret := templateFuncMap["transformSetKeyBit"].(func(VrfWithCryptoSlices) string)(
+		VrfWithCryptoSlices{CryptoPh2Slice: []string{"esp-abc"}})
+
+	if ret != "" {
+		t.Fatalf("expected transform set key bit: %s got: %s\n", "", ret)
+	}
+
+	ret = templateFuncMap["transformSetKeyBit"].(func(VrfWithCryptoSlices) string)(
+		VrfWithCryptoSlices{CryptoPh2Slice: []string{"esp-abc 123"}})
+
+	if ret != `"key-bit": "123",` {
+		t.Fatalf("expected transform set key bit: %s got: %s\n", `"key-bit": "123",`, ret)
+	}
+}
+
+func TestTransformSetEspHmac(t *testing.T) {
+	templateFuncMap := getTemplateFuncMap()
+
+	ret := templateFuncMap["transformSetEspHmac"].(func(VrfWithCryptoSlices, string) string)(
+		VrfWithCryptoSlices{CryptoPh2Slice: []string{"esp-abc", "esp-xyz"}},
+		"!= esp-abc")
+
+	if ret != "" {
+		t.Fatalf("expected transform set esp hmac: %s got: %s\n", "", ret)
+	}
+
+	ret = templateFuncMap["transformSetEspHmac"].(func(VrfWithCryptoSlices, string) string)(
+		VrfWithCryptoSlices{CryptoPh2Slice: []string{"esp-abc", "esp-xyz"}},
+		"!= esp-123")
+
+	if ret != `"esp-hmac":"esp-xyz",` {
+		t.Fatalf("expected transform set esp hmac: %s got: %s\n", `"esp-hmac":"esp-xyz",`, ret)
+	}
+
+	ret = templateFuncMap["transformSetEspHmac"].(func(VrfWithCryptoSlices, string) string)(
+		VrfWithCryptoSlices{CryptoPh2Slice: []string{"esp-abc 123", "esp-xyz"}},
+		"!= esp-123")
+
+	if ret != `"esp-hmac":"esp-xyz",` {
+		t.Fatalf("expected transform set esp hmac: %s got: %s\n", `"esp-hmac":"esp-xyz",`, ret)
+	}
+}
+
 func TestTransformLocalID(t *testing.T) {
 	transformLocalIdMatrix := [][]string{
 		{"xyz=abc", "dn", ""},

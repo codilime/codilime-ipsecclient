@@ -186,3 +186,62 @@ func SourceInterfacesToYang(sourceInterfaces []string) []*ipsecclient_yang.Ipsec
 	}
 	return yangSourceInterface
 }
+
+func phase1EncryptionToYang(algorithms []string) []*ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_1Encryption {
+	yangAlgorithms := []*ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_1Encryption{}
+	for _, algorithm := range algorithms {
+		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_1Encryption{Name: StringPointer(algorithm)})
+	}
+	return yangAlgorithms
+}
+
+func phase1IntegrityToYang(algorithms []string) []*ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_1Integrity {
+	yangAlgorithms := []*ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_1Integrity{}
+	for _, algorithm := range algorithms {
+		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_1Integrity{Name: StringPointer(algorithm)})
+	}
+	return yangAlgorithms
+}
+
+func phase1KeyExchangeToYang(algorithms []string) []*ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_1KeyExchange {
+	yangAlgorithms := []*ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_1KeyExchange{}
+	for _, algorithm := range algorithms {
+		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_1KeyExchange{Name: StringPointer(algorithm)})
+	}
+	return yangAlgorithms
+}
+
+func phase2EncryptionToYang(algorithms []string) []*ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2Encryption {
+	yangAlgorithms := []*ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2Encryption{}
+	for _, algorithm := range algorithms {
+		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2Encryption{Name: StringPointer(algorithm)})
+	}
+	return yangAlgorithms
+}
+
+func phase2IntegrityToYang(algorithms []string) []*ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2Integrity {
+	yangAlgorithms := []*ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2Integrity{}
+	for _, algorithm := range algorithms {
+		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2Integrity{Name: StringPointer(algorithm)})
+	}
+	return yangAlgorithms
+}
+
+func phase2KeyExchangeToYang(algorithms []string) []*ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2KeyExchange {
+	yangAlgorithms := []*ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2KeyExchange{}
+	for _, algorithm := range algorithms {
+		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2KeyExchange{Name: StringPointer(algorithm)})
+	}
+	return yangAlgorithms
+}
+
+func AlgorithmsToYang(algorithms Algorithm) *ipsecclient_yang.Ipsecclient_Api_Algorithm {
+	return &ipsecclient_yang.Ipsecclient_Api_Algorithm{
+		Phase_1Encryption:  phase1EncryptionToYang(algorithms.Phase1Encryption),
+		Phase_1Integrity:   phase1IntegrityToYang(algorithms.Phase1Integrity),
+		Phase_1KeyExchange: phase1KeyExchangeToYang(algorithms.Phase1KeyExchange),
+		Phase_2Encryption:  phase2EncryptionToYang(algorithms.Phase2Encryption),
+		Phase_2Integrity:   phase2IntegrityToYang(algorithms.Phase2Integrity),
+		Phase_2KeyExchange: phase2KeyExchangeToYang(algorithms.Phase2KeyExchange),
+	}
+}

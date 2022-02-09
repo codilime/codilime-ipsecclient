@@ -108,6 +108,7 @@ def _test_software_vrf(create_vrf_json):
 def _test_hardware_vrf(update_vrf_json):
     wait_for_dev_env()
     wait_for_csr_vm()
+    get_algorithms()
 
     update_hardware_vrf(update_vrf_json)
     check_monitoring(HARDWARE_VRF_ID)
@@ -291,6 +292,7 @@ def test_setting():
 
 def test_check_switch_basic_auth_csr_vm():
     wait_for_csr_vm()
+    get_algorithms()
 
     setting_switch_username = "switch_username"
     setting_switch_pasword = "switch_password"
@@ -441,6 +443,46 @@ def test_get_source_interfaces_csr_vm():
     )
 
 
+def test_get_algorithms_csr_vm():
+    wait_for_csr_vm()
+    algorithms_1 = get_algorithms()
+
+    algorithms_2 = get_algorithms()
+
+    assert algorithms_1.json() == algorithms_2.json(), (
+        "Algorithms are not equal "
+        + str(algorithms_1.json())
+        + " "
+        + str(algorithms_2.json())
+    )
+
+
+@pytest.mark.skip(reason="very long execution")
+def test_hardware_algorithms_csr_vm():
+    wait_for_csr_vm()
+    algorithms = requests.get(BASE_URL + "/algorithm", auth=basicAuth, verify=False)
+    check_status_code(algorithms, HTTPStatus.OK)
+    algorithms_json = algorithms.json()["algorithm"]
+    log.info(algorithms_json)
+    phase1 = (
+        algorithms_json["phase_1_encryption"][0]["name"]
+        + "."
+        + algorithms_json["phase_1_integrity"][1]["name"]
+        + "."
+        + algorithms_json["phase_1_key_exchange"][2]["name"]
+    )
+    phase2_list = get_phase2_list(algorithms_json)
+    for phase2 in phase2_list:
+        log.info(phase2)
+        update_hardware_vrf(get_hardware_vrf_json(phase1, phase2))
+
+
+def get_algorithms():
+    algorithms = requests.get(BASE_URL + "/algorithm", auth=basicAuth, verify=False)
+    check_status_code(algorithms, HTTPStatus.OK)
+    return algorithms
+
+
 def check_status_code(response, expected_status_code):
     assert response.status_code == expected_status_code, (
         "Expected status code to be: "
@@ -448,8 +490,53 @@ def check_status_code(response, expected_status_code):
         + " got: "
         + str(response.status_code)
         + " response: "
-        + response.text
+        + response.text.replace("\\n", "\n")
     )
+
+
+def get_phase2_list(algorithms):
+    phase2_list = []
+    key_exchange = algorithms["phase_2_key_exchange"][2]["name"]
+    for encryption in algorithms["phase_2_encryption"]:
+        for integrity in algorithms["phase_2_integrity"]:
+            phase2_list.append(
+                encryption["name"] + "." + integrity["name"] + "." + key_exchange
+            )
+    return phase2_list
+
+
+def get_hardware_vrf_json(crypto_ph1, crypto_ph2):
+    return {
+        "vrf": {
+            "client_name": "hardware",
+            "crypto_ph1": crypto_ph1,
+            "crypto_ph2": crypto_ph2,
+            "physical_interface": "eth0",
+            "active": True,
+            "disable_peer_ips": False,
+            "local_as": 65010,
+            "ospf": False,
+            "endpoint": [
+                {
+                    "remote_ip_sec": "10.100.0.100",
+                    "local_ip": "10.0.5.1",
+                    "peer_ip": "10.0.5.2",
+                    "authentication": {
+                        "type": "psk",
+                        "psk": "123",
+                        "local_id": "",
+                        "local_cert": "",
+                        "private_key": "",
+                        "remote_cert": "",
+                    },
+                    "nat": False,
+                    "bgp": True,
+                    "remote_as": 65003,
+                    "source_interface": "GigabitEthernet1",
+                }
+            ],
+        }
+    }
 
 
 def _check_monitoring(vrf_id):
@@ -503,7 +590,6 @@ def update_hardware_vrf(update_vrf_json):
         verify=False,
     )
     check_status_code(update_response, HTTPStatus.NO_CONTENT)
-    check_monitoring(HARDWARE_VRF_ID)
 
 
 def check_vrf_diff(expected_vrf, received_vrf):

@@ -326,6 +326,44 @@ module ipsecclient {
                 type string;
             }
         }
+        container algorithm {
+            list phase_1_encryption {
+                config false;
+                leaf name {
+                    type string;
+                }
+            }
+            list phase_1_integrity {
+                config false;
+                leaf name {
+                    type string;
+                }
+            }
+            list phase_1_key_exchange {
+                config false;
+                leaf name {
+                    type string;
+                }
+            }
+            list phase_2_encryption {
+                config false;
+                leaf name {
+                    type string;
+                }
+            }
+            list phase_2_integrity {
+                config false;
+                leaf name {
+                    type string;
+                }
+            }
+            list phase_2_key_exchange {
+                config false;
+                leaf name {
+                    type string;
+                }
+            }
+        }
         list error {
             config false;
             leaf id {
