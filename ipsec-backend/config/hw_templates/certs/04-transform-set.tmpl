@@ -10,7 +10,7 @@ Cisco-IOS-XE-native:native/crypto/ipsec/transform-set=hardware_certs
                 "tag": "hardware_certs",
                 "esp": "{{ transformSetEsp $.VrfWithCryptoSlices }}",
                 {{ transformSetKeyBit $.VrfWithCryptoSlices }}
-                {{ transformSetEspHmac $.VrfWithCryptoSlices }}
+                {{ transformSetEspHmac $.VrfWithCryptoSlices $.WhenEspHmac }}
                 "mode": {
                 "{{ transformSetTunnelOptionName $.VrfWithCryptoSlices }}": [null]
                 }

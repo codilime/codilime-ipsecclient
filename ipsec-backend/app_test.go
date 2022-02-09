@@ -43,7 +43,7 @@ func TestMain(m *testing.M) {
 }
 
 func createApp(t *testing.T) (*App, *mock.MockGenerator, *mock.MockGenerator, *mock.MockDBinterface) {
-	switchCreds := db.SwitchCreds{username, password, "10.0.0.1"}
+	switchCreds := db.SwitchCreds{Username: username, Password: password, SwitchAddress: "10.0.0.1"}
 
 	ctrl := gomock.NewController(t)
 	softwareGenerator := mock.NewMockGenerator(ctrl)

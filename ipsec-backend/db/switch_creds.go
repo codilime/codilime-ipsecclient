@@ -11,4 +11,5 @@ type SwitchCreds struct {
 	Username      string
 	Password      string
 	SwitchAddress string
+	WhenEspHmac   string
 }
