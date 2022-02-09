@@ -108,10 +108,23 @@ def _test_software_vrf(create_vrf_json):
 def _test_hardware_vrf(update_vrf_json):
     wait_for_dev_env()
     wait_for_csr_vm()
-    get_algorithms()
 
     update_hardware_vrf(update_vrf_json)
     check_monitoring(HARDWARE_VRF_ID)
+
+
+def test_get_algorithms_csr_vm():
+    wait_for_csr_vm()
+    algorithms_1 = get_algorithms()
+
+    algorithms_2 = get_algorithms()
+
+    assert algorithms_1.json() == algorithms_2.json(), (
+        "Algorithms are not equal "
+        + str(algorithms_1.json())
+        + " "
+        + str(algorithms_2.json())
+    )
 
 
 def test_psk_software():
@@ -292,7 +305,6 @@ def test_setting():
 
 def test_check_switch_basic_auth_csr_vm():
     wait_for_csr_vm()
-    get_algorithms()
 
     setting_switch_username = "switch_username"
     setting_switch_pasword = "switch_password"
@@ -443,22 +455,8 @@ def test_get_source_interfaces_csr_vm():
     )
 
 
-def test_get_algorithms_csr_vm():
-    wait_for_csr_vm()
-    algorithms_1 = get_algorithms()
-
-    algorithms_2 = get_algorithms()
-
-    assert algorithms_1.json() == algorithms_2.json(), (
-        "Algorithms are not equal "
-        + str(algorithms_1.json())
-        + " "
-        + str(algorithms_2.json())
-    )
-
-
 @pytest.mark.skip(reason="very long execution")
-def test_hardware_algorithms_csr_vm():
+def test_hardware_algorithms_csr_vm_():
     wait_for_csr_vm()
     algorithms = requests.get(BASE_URL + "/algorithm", auth=basicAuth, verify=False)
     check_status_code(algorithms, HTTPStatus.OK)
@@ -472,6 +470,24 @@ def test_hardware_algorithms_csr_vm():
         + algorithms_json["phase_1_key_exchange"][2]["name"]
     )
     phase2_list = get_phase2_list(algorithms_json)
+    for phase2 in phase2_list:
+        log.info(phase2)
+        update_hardware_vrf(get_hardware_vrf_json(phase1, phase2))
+
+
+def test_hardware_algorithms_csr_vm():
+    wait_for_csr_vm()
+    algorithms = requests.get(BASE_URL + "/algorithm", auth=basicAuth, verify=False)
+    check_status_code(algorithms, HTTPStatus.OK)
+    algorithms_json = algorithms.json()["algorithm"]
+    log.info(algorithms_json)
+    phase1 = "aes-cbc-128.md5.fifteen"
+    phase2_list = [
+        "esp-des.esp-sha-hmac.group19",
+        "esp-gcm 192.esp-sha384-hmac.group19",
+        "esp-aes 256.esp-sha384-hmac.group19",
+    ]
+
     for phase2 in phase2_list:
         log.info(phase2)
         update_hardware_vrf(get_hardware_vrf_json(phase1, phase2))

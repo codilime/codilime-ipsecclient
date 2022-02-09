@@ -593,9 +593,6 @@ func keyBitsAllowed(encryption string, whenKeyBitsList []string) bool {
 func mergeEncryptions(encryptions []string, keyBits []string, whenKeyBits string) []string {
 	whenKeyBits = strings.Replace(whenKeyBits, "'", " ", -1)
 	whenKeyBitsList := strings.Fields(whenKeyBits)
-	for _, whenKey := range whenKeyBitsList {
-		fmt.Printf("whenKey %+v\n", whenKey)
-	}
 	var mergedEncryptions []string
 	for _, encryption := range encryptions {
 		if keyBitsAllowed(encryption, whenKeyBitsList) {
@@ -617,7 +614,7 @@ func getKeysFromMap(map_ map[string]*yang.Entry) []string {
 	return keys
 }
 
-func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, error) {
+func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 	ms := yang.NewModules()
 
 	modulesToParse := []string{"Cisco-IOS-XE-crypto", "cisco-semver", "ietf-inet-types", "Cisco-IOS-XE-native",
@@ -651,26 +648,26 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, error) {
 	req, err := http.NewRequest(http.MethodGet, fullPath, nil)
 	if err != nil {
 		fmt.Printf("GetAlgorithms 1")
-		return db.Algorithm{}, err
+		return db.Algorithm{}, "", err
 	}
 	req.Header.Add("Content-Type", "application/yang-data+json")
 	req.Header.Add("Accept", "application/yang-data+json")
 	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
 	resp, err := client.Do(req)
 	if err != nil {
-		return db.Algorithm{}, err
+		return db.Algorithm{}, "", err
 	}
 
 	decoder := json.NewDecoder(resp.Body)
 	if err := decoder.Decode(&modules); err != nil {
-		return db.Algorithm{}, err
+		return db.Algorithm{}, "", err
 	}
 
 	for _, module := range modules.Modules {
 		for _, moduleToParse := range modulesToParse {
 			if module.Name == moduleToParse {
 				if err := parse(ms, module.Name, module.Schema, switchCreds); err != nil {
-					return db.Algorithm{}, err
+					return db.Algorithm{}, "", err
 				}
 			}
 		}
@@ -679,7 +676,7 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, error) {
 				for _, submodule := range module.Submodule {
 					if submodule.Name == moduleToParse {
 						if err := parse(ms, submodule.Name, submodule.Schema, switchCreds); err != nil {
-							return db.Algorithm{}, err
+							return db.Algorithm{}, "", err
 						}
 					}
 				}
@@ -688,7 +685,7 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, error) {
 	}
 
 	if errs := ms.Process(); errs != nil {
-		return db.Algorithm{}, err
+		return db.Algorithm{}, "", err
 	}
 	nativeModule, _ := ms.GetModule("Cisco-IOS-XE-native")
 
@@ -711,8 +708,7 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, error) {
 		Phase2Encryption:  mergeEncryptions(phase2Encryption, keyBit, whenKeyBit),
 		Phase2Integrity:   phase2Integrity,
 		Phase2KeyExchange: phase2KeyExchange,
-		WhenEspHmac:       whenEspHmac,
-	}, nil
+	}, whenEspHmac, nil
 }
 
 func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds) (map[string]interface{}, error) {
