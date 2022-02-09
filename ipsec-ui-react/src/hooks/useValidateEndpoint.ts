@@ -29,6 +29,7 @@ const ipv6_regex =
   /^(?:(?:[a-fA-F\d]{1,4}:){7}(?:[a-fA-F\d]{1,4}|:)|(?:[a-fA-F\d]{1,4}:){6}(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|:[a-fA-F\d]{1,4}|:)|(?:[a-fA-F\d]{1,4}:){5}(?::(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|(?::[a-fA-F\d]{1,4}){1,2}|:)|(?:[a-fA-F\d]{1,4}:){4}(?:(?::[a-fA-F\d]{1,4}){0,1}:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|(?::[a-fA-F\d]{1,4}){1,3}|:)|(?:[a-fA-F\d]{1,4}:){3}(?:(?::[a-fA-F\d]{1,4}){0,2}:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|(?::[a-fA-F\d]{1,4}){1,4}|:)|(?:[a-fA-F\d]{1,4}:){2}(?:(?::[a-fA-F\d]{1,4}){0,3}:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|(?::[a-fA-F\d]{1,4}){1,5}|:)|(?:[a-fA-F\d]{1,4}:){1}(?:(?::[a-fA-F\d]{1,4}){0,4}:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|(?::[a-fA-F\d]{1,4}){1,6}|:)|(?::(?:(?::[a-fA-F\d]{1,4}){0,5}:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}|(?::[a-fA-F\d]{1,4}){1,7}|:)))(?:%[0-9a-zA-Z]{1,})?$/;
 
 const checkIpValue = (value: string) => {
+  if (value === '') return true;
   if (ipv4_regex.test(value)) {
     return 'ipv4';
   }
@@ -50,8 +51,12 @@ export const useValidateEndpoint = () => {
       peer_ip
     } = endpoints;
 
-    if (remote_ip_sec === '' && psk === '' && local_ip === '' && peer_ip === '') {
+    if (hardware && remote_ip_sec === '' && psk === '' && local_ip === '' && peer_ip === '') {
       setError((prev) => ({ ...prev, remote_ip_sec: true, psk: true, local_ip: true, peer_ip: true }));
+      return false;
+    }
+    if (!hardware && remote_ip_sec === '' && psk === '' && local_ip === '') {
+      setError((prev) => ({ ...prev, remote_ip_sec: true, psk: true, local_ip: true }));
       return false;
     }
     const checkRemote = ipv4_regex.test(remote_ip_sec);
@@ -66,7 +71,7 @@ export const useValidateEndpoint = () => {
       return false;
     }
     const checkPeer = checkIpValue(peer_ip);
-    if (local_ip === '' || !checkPeer) {
+    if (!checkPeer) {
       setError((prev) => ({ ...prev, peer_ip: true }));
       return false;
     }

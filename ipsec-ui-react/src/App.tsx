@@ -14,11 +14,14 @@ import { Theme } from './components/theme';
 import 'style/global.scss';
 
 const App: FC = () => {
-  const { InitData, setVrfData, loading } = useInitData();
+  const { InitData, setVrfData, setNotification, loading } = useInitData();
   useLayoutEffect(() => InitData(), []);
 
   useLayoutEffect(() => {
-    if (!loading) setVrfData();
+    if (!loading) {
+      setVrfData();
+      setNotification();
+    }
   }, [loading]);
 
   return (

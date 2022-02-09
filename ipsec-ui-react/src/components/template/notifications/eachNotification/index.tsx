@@ -22,7 +22,7 @@ export const EachNotification: FC<EachErrorType> = ({ time, message, active, onC
   <div className={classNames('each', { each__active: active })} {...{ onClick }}>
     <h4 className="each__time">
       <ReadCircle {...{ active }} />
-      {time.split(':01 +0000')[0]}
+      {time.split('+0000')[0]}
     </h4>
     <p className="each__description">{message}</p>
   </div>

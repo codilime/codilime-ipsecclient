@@ -9,8 +9,8 @@ import { ButtonType } from 'interface/components';
 import classNames from 'classnames';
 import './styles.scss';
 
-export const Button: FC<ButtonType> = ({ children, onClick, className = '', btnDelete, disabled }) => (
-  <button {...{ onClick, disabled }} className={classNames('button', { [className]: className, button__delete: btnDelete, button__disabled: disabled })}>
+export const Button: FC<ButtonType> = ({ children, onClick, onSubmit, className = '', btnDelete, disabled, type = 'submit' }) => (
+  <button {...{ onClick, disabled, onSubmit, type }} className={classNames('button', { [className]: className, button__delete: btnDelete, button__disabled: disabled })}>
     {children}
   </button>
 );

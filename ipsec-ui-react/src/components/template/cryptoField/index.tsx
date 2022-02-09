@@ -52,13 +52,31 @@ export const CryptoField: FC<CryptoFieldType> = ({ text, name, crypto, error, va
     <>
       <div className={classNames('crypto', { crypto__hardware: hardware })} {...{ name }}>
         <label className="crypto__label">{text}</label>
-        <select className="crypto__select" name="encryption" value={cryptoData.encryption} onChange={handleSetCryptoData}>
+        <select
+          className={classNames('crypto__select', { crypto__empty: !crypto.encryption.length })}
+          disabled={!crypto.encryption.length}
+          name="encryption"
+          value={cryptoData.encryption}
+          onChange={handleSetCryptoData}
+        >
           {encryptionOption}
         </select>
-        <select className="crypto__select" name="integrity" value={cryptoData.integrity} onChange={handleSetCryptoData}>
+        <select
+          className={classNames('crypto__select', { crypto__empty: !crypto.integrity.length })}
+          disabled={!crypto.integrity.length}
+          name="integrity"
+          value={cryptoData.integrity}
+          onChange={handleSetCryptoData}
+        >
           {integrityOption}
         </select>
-        <select className="crypto__select" name="keyExchange" value={cryptoData.keyExchange} onChange={handleSetCryptoData}>
+        <select
+          className={classNames('crypto__select', { crypto__empty: !crypto.key_exchange.length })}
+          disabled={!crypto.key_exchange.length}
+          name="keyExchange"
+          value={cryptoData.keyExchange}
+          onChange={handleSetCryptoData}
+        >
           {keyExchangeOption}
         </select>
       </div>

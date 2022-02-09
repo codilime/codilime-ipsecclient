@@ -7,8 +7,16 @@
 
 import { Ref, ChangeEvent, MouseEvent } from 'react';
 
+type typeOfButton = {
+  button: 'button';
+  reset: 'reset';
+  submit: 'submit';
+};
+
 export interface ButtonType {
   onClick?: () => void;
+  onSubmit?: () => void;
+  type?: keyof typeOfButton | undefined;
   className?: string;
   btnDelete?: boolean;
   disabled?: boolean;

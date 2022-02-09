@@ -12,6 +12,19 @@ import { StatusState, StatusMessage } from 'interface/enum';
 export const useFetchData = () => {
   const { setContext } = useAppContext();
 
+  const createHardwareCryptoObject = (algorithm: any) => {
+    const encryptionPh1 = algorithm.phase_1_encryption.map((encryption: { name: string }) => encryption.name);
+    const encryptionPh2 = algorithm.phase_2_encryption.map((encryption: { name: string }) => encryption.name);
+    const integrityPh1 = algorithm.phase_1_integrity.map((integrity: { name: string }) => integrity.name);
+    const integrityPh2 = algorithm.phase_2_integrity.map((integrity: { name: string }) => integrity.name);
+    const key_exchangePh1 = algorithm.phase_1_key_exchange.map((key_exchange: { name: string }) => key_exchange.name);
+    const key_exchangePh2 = algorithm.phase_2_key_exchange.map((key_exchange: { name: string }) => key_exchange.name);
+    return {
+      crypto_ph1: { encryption: encryptionPh1, integrity: integrityPh1, key_exchange: key_exchangePh1 },
+      crypto_ph2: { encryption: encryptionPh2, integrity: integrityPh2, key_exchange: key_exchangePh2 }
+    };
+  };
+
   const fetchData = async () => await client('vrf');
 
   const postVrfData = async (payload: any) => {
@@ -52,6 +65,19 @@ export const useFetchData = () => {
     }
   };
 
+  const fetchHardwareAlgoritm = async () => {
+    try {
+      setContext((prev) => ({ ...prev, loading: true }));
+      const { algorithm } = await client('algorithm');
+      if (algorithm) {
+        const hardwareCrypto = createHardwareCryptoObject(algorithm);
+        setContext((prev) => ({ ...prev, hardwareCrypto, loading: false, actionStatus: [...prev.actionStatus, { status: StatusState.success, message: StatusMessage.successAdd }] }));
+      }
+    } catch (err) {
+      setContext((prev) => ({ ...prev, loading: false, actionStatus: [...prev.actionStatus, { status: StatusState.error, message: StatusMessage.failedFetch }] }));
+    }
+  };
+
   const fetchEndpointStatus = async (id: number | string) => await client(`monitoring=${id}`);
 
   const fetchLogs = async () => await client('log');
@@ -86,6 +112,7 @@ export const useFetchData = () => {
     fetchErrorData,
     fetchSwitchUsername,
     fetchSwitchPassword,
-    fetchSwitchAddress
+    fetchSwitchAddress,
+    fetchHardwareAlgoritm
   };
 };

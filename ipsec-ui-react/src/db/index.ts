@@ -170,14 +170,14 @@ const softwareCrypto: CryptoTypes = {
 
 const hardwareCrypto: CryptoTypes = {
   crypto_ph1: {
-    encryption: ['', 'en-3des', 'aes-cbc-128', 'aes-cbc-192', 'aes-cbc-256', 'aes-gcm-128', 'aes-gcm-256', 'des'],
-    integrity: ['md5', 'sha1', 'sha256', 'sha384', 'sha512'],
-    key_exchange: ['one', 'fourteen', 'fifteen', 'sixteen', 'nineteen', 'two', 'twenty', 'twenty-one', 'twenty-four', 'five']
+    encryption: [],
+    integrity: [],
+    key_exchange: []
   },
   crypto_ph2: {
-    encryption: ['', 'esp-192-aes', 'esp-256-aes', 'esp-3des', 'esp-aes', 'esp-des', 'esp-128-gcm', 'esp-192-gcm', 'esp-256-gcm', 'esp-gmac', 'esp-null', 'esp-seal'],
-    integrity: ['esp-null', 'esp-sha-hmac', 'esp-sha256-hmac', 'esp-sha384-hmac', 'esp-sha512-hmac'],
-    key_exchange: ['group1', 'group14', 'group15', 'group16', 'group19', 'group2', 'group20', 'group21', 'group24', 'group5']
+    encryption: [],
+    integrity: [],
+    key_exchange: []
   }
 };
 

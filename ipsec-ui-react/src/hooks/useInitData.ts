@@ -76,5 +76,5 @@ export const useInitData = () => {
     }
   };
 
-  return { setVrfData, InitData, loading };
+  return { setVrfData, InitData, loading, setNotification };
 };
