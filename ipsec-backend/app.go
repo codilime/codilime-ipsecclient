@@ -807,13 +807,9 @@ func (a *App) getSwitchCreds(key string) (*db.SwitchCreds, error) {
 	if err != nil {
 		return nil, logger.ReturnError(err)
 	}
-	whenEspHmac := ""
-	algorithm := db.Algorithm{}
-	if err := a.db.GetAlgorithms(&algorithm); err == nil {
-		fmt.Printf("getSwitchCreds WhenEspHmac %s\n", algorithm.WhenEspHmac)
-		whenEspHmac = algorithm.WhenEspHmac
-	} else {
-		fmt.Printf("getSwitchCreds WhenEspHmac empty\n")
+	whenEspHmac, err := a.db.GetSetting(key, "when_esp_hmac")
+	if err != nil {
+		whenEspHmac = ""
 	}
 
 	return &db.SwitchCreds{Username: username, Password: password, SwitchAddress: switchAddress, WhenEspHmac: whenEspHmac}, nil
@@ -821,6 +817,10 @@ func (a *App) getSwitchCreds(key string) (*db.SwitchCreds, error) {
 
 func (a *App) generateConfigs(key string, vrf db.Vrf) error {
 	if vrf.ID == db.HardwareVrfID {
+		_, err := a._getAlgorithms(key)
+		if err != nil {
+			return err
+		}
 		switchCreds, err := a.getSwitchCreds(key)
 		if err != nil {
 			return err
@@ -833,6 +833,10 @@ func (a *App) generateConfigs(key string, vrf db.Vrf) error {
 
 func (a *App) deleteConfigs(key string, vrf db.Vrf) error {
 	if vrf.ID == db.HardwareVrfID {
+		_, err := a._getAlgorithms(key)
+		if err != nil {
+			return err
+		}
 		switchCreds, err := a.getSwitchCreds(key)
 		if err != nil {
 			return err
@@ -1004,28 +1008,40 @@ func (a *App) getSourceInterfaces(w http.ResponseWriter, r *http.Request) {
 	respondWithMarshalledJSON(w, http.StatusOK, json)
 }
 
+func (a *App) _getAlgorithms(key string) (db.Algorithm, error) {
+	algorithms := db.Algorithm{}
+	whenEspHmac := ""
+	if err := a.db.GetAlgorithms(&algorithms); err != nil {
+		switchCreds, err := a.getSwitchCreds(key)
+		if err != nil {
+			return algorithms, err
+		}
+		algorithms, whenEspHmac, err = config.GetAlgorithms(*switchCreds)
+		if err != nil {
+			return algorithms, err
+		}
+		a.db.SetSetting(key, "when_esp_hmac", whenEspHmac)
+		if err != nil {
+			return algorithms, err
+		}
+		err = a.db.Create(&algorithms)
+		if err != nil {
+			return algorithms, err
+		}
+	}
+	return algorithms, nil
+}
+
 func (a *App) getAlgorithms(w http.ResponseWriter, r *http.Request) {
 	key, err := getPassFromHeader(r.Header)
 	if err != nil {
 		a.respondWithError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	var algorithms = db.Algorithm{}
-	if err := a.db.GetAlgorithms(&algorithms); err != nil {
-		log.Debugf("get algorithms from the hardware\n")
-		switchCreds, err := a.getSwitchCreds(key)
-		if err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		algorithms, err = config.GetAlgorithms(*switchCreds)
-		if err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		a.db.Create(&algorithms)
-	} else {
-		log.Debugf("get algorithms from the cache\n")
+	algorithms, err := a._getAlgorithms(key)
+	if err != nil {
+		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	api := ipsecclient_yang.Ipsecclient_Api{
