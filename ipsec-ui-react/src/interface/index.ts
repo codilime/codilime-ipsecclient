@@ -179,14 +179,24 @@ export enum HeadersNameProps {
   api = 'api',
   front = 'front',
   frr = 'frr',
-  reload_vtysh = 'reload vtysh',
+  reloadVtysh = 'reload vtysh',
   strongswan = 'strongswan',
-  strongswan_reload = 'strongswan reload',
+  strongswanReload = 'strongswan reload',
+  vrfs = 'Vrfs / NAT'
+}
+export enum HeadersNameValue {
+  api = 'api',
+  front = 'front',
+  frr = 'frr',
+  reloadVtysh = 'reload_vtysh',
+  strongswan = 'strongswan',
+  strongswanReload = 'strongswan_reload',
   vrfs = 'Vrfs / NAT'
 }
 
 export interface HeadersLogsType {
   name: HeadersNameProps;
+  value: HeadersNameValue;
 }
 
 export enum SettingOptionType {

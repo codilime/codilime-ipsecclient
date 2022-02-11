@@ -17,8 +17,8 @@ interface HeaderLogType {
 }
 
 export const HeadersLog: FC<HeaderLogType> = ({ active, headerLogs, onClick }) => {
-  const headers = headerLogs.map(({ name }) => (
-    <li key={name} className={classNames('log__header', { log__active: active === name })} onClick={() => onClick(name)}>
+  const headers = headerLogs.map(({ name, value }) => (
+    <li key={name} className={classNames('log__header', { log__active: active === name })} onClick={() => onClick(value)}>
       <span>{name}</span>
     </li>
   ));

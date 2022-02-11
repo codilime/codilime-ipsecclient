@@ -5,7 +5,18 @@
  *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
  */
 
-import { ContextProps, EndpointsType, DetailsTypes, EndpointSchemaType, CryptoTypes, SoftwareCryptoDataTypes, HeadersLogsType, AdvantageConfigType, HeadersNameProps } from 'interface/index';
+import {
+  ContextProps,
+  EndpointsType,
+  DetailsTypes,
+  EndpointSchemaType,
+  CryptoTypes,
+  SoftwareCryptoDataTypes,
+  HeadersLogsType,
+  AdvantageConfigType,
+  HeadersNameProps,
+  HeadersNameValue
+} from 'interface/index';
 
 const softwareCryptoTypes: SoftwareCryptoDataTypes = {
   encryption: [
@@ -282,11 +293,11 @@ export const DynamicRestConfForm = [
 ];
 
 export const headerLogs: HeadersLogsType[] = [
-  { name: HeadersNameProps.api },
-  { name: HeadersNameProps.front },
-  { name: HeadersNameProps.frr },
-  { name: HeadersNameProps.reload_vtysh },
-  { name: HeadersNameProps.strongswan },
-  { name: HeadersNameProps.strongswan_reload },
-  { name: HeadersNameProps.vrfs }
+  { name: HeadersNameProps.api, value: HeadersNameValue.api },
+  { name: HeadersNameProps.front, value: HeadersNameValue.front },
+  { name: HeadersNameProps.frr, value: HeadersNameValue.frr },
+  { name: HeadersNameProps.reloadVtysh, value: HeadersNameValue.reloadVtysh },
+  { name: HeadersNameProps.strongswan, value: HeadersNameValue.strongswan },
+  { name: HeadersNameProps.strongswanReload, value: HeadersNameValue.strongswanReload },
+  { name: HeadersNameProps.vrfs, value: HeadersNameValue.vrfs }
 ];
