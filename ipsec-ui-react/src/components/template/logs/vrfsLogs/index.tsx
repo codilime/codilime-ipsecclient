@@ -24,7 +24,7 @@ export const VrfsLogs: FC<VrfsLogsType> = ({ vrfsLogs, activePage }) => {
 
   const vrfsLogList = vrfsLogs.map(({ name }) => (
     <li key={name} className={classNames('logsVrfs__item', { logsVrfs__item__active: active === name })} onClick={() => setActive(name)}>
-      <span>VRF {name}</span>
+      <span> {name}</span>
     </li>
   ));
 

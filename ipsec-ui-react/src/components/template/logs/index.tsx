@@ -51,7 +51,7 @@ export const Logs: FC<LogsType> = ({ logData, open }) => {
     }
   });
 
-  const displayVrfsLogs = <VrfsLogs {...{ vrfsLogs, activePage: activePage === 'vrfs' }} />;
+  const displayVrfsLogs = <VrfsLogs {...{ vrfsLogs, activePage: activePage === 'Vrfs / NAT' }} />;
 
   if (!logData.length && open) {
     return (
