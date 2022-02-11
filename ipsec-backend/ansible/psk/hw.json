@@ -2,7 +2,7 @@
   "vrf": {
     "client_name": "hardware",
     "crypto_ph1": "aes-cbc-128.sha256.fourteen",
-    "crypto_ph2": "esp-aes.esp-sha256-hmac.group14",
+    "crypto_ph2": "esp-aes 128.esp-sha256-hmac.group14",
     "physical_interface": "eth0",
     "active": true,
     "local_as": 65002,
