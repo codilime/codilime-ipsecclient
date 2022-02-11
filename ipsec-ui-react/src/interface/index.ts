@@ -175,17 +175,18 @@ export interface AppTheme {
   common?: CSSProperties;
 }
 
-export type HeadersNameProps = {
-  api: 'api';
-  front: 'front';
-  frr: 'frr';
-  reload_vtysh: 'reload_vtysh';
-  strongswan: 'strongswan';
-  strongswan_reload: 'strongswan_reload';
-  vrfs: 'vrfs';
-};
+export enum HeadersNameProps {
+  api = 'api',
+  front = 'front',
+  frr = 'frr',
+  reload_vtysh = 'reload vtysh',
+  strongswan = 'strongswan',
+  strongswan_reload = 'strongswan reload',
+  vrfs = 'Vrfs / NAT'
+}
+
 export interface HeadersLogsType {
-  name: keyof HeadersNameProps;
+  name: HeadersNameProps;
 }
 
 export enum SettingOptionType {

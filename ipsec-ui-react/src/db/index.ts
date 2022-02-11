@@ -5,7 +5,7 @@
  *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
  */
 
-import { ContextProps, EndpointsType, DetailsTypes, EndpointSchemaType, CryptoTypes, SoftwareCryptoDataTypes, HeadersLogsType, AdvantageConfigType } from 'interface/index';
+import { ContextProps, EndpointsType, DetailsTypes, EndpointSchemaType, CryptoTypes, SoftwareCryptoDataTypes, HeadersLogsType, AdvantageConfigType, HeadersNameProps } from 'interface/index';
 
 const softwareCryptoTypes: SoftwareCryptoDataTypes = {
   encryption: [
@@ -307,4 +307,12 @@ export const DynamicRestConfForm = [
   { type: 'text', name: 'switch_address', text: 'Switch address', placeholder: 'Auto complete' }
 ];
 
-export const headerLogs: HeadersLogsType[] = [{ name: 'api' }, { name: 'front' }, { name: 'frr' }, { name: 'reload_vtysh' }, { name: 'strongswan' }, { name: 'strongswan_reload' }, { name: 'vrfs' }];
+export const headerLogs: HeadersLogsType[] = [
+  { name: HeadersNameProps.api },
+  { name: HeadersNameProps.front },
+  { name: HeadersNameProps.frr },
+  { name: HeadersNameProps.reload_vtysh },
+  { name: HeadersNameProps.strongswan },
+  { name: HeadersNameProps.strongswan_reload },
+  { name: HeadersNameProps.vrfs }
+];

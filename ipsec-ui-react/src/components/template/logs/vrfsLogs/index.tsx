@@ -50,7 +50,7 @@ export const VrfsLogs: FC<VrfsLogsType> = ({ vrfsLogs, activePage }) => {
     <div className={classNames('logs__context', { logs__context__active: activePage })}>
       <div className="logs__panel">
         <aside className="logsVrfs__aside">
-          <h4 className="logsVrfs__title">VRF's / Nat's</h4>
+          <h4 className="logsVrfs__title">VRFs / NAT</h4>
           <ul className="logsVrfs__list">{vrfsLogList}</ul>
         </aside>
         {vrfsLogContext}
