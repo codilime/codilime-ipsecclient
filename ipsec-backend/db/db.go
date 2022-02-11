@@ -281,7 +281,7 @@ func (db *DB) GetVrfs() ([]Vrf, error) {
 }
 
 func (db *DB) getSetting(s *Setting) error {
-	return logger.ReturnError(db.gormDb.Where("name = ?", s.Name).First(s).Error)
+	return db.gormDb.Where("name = ?", s.Name).First(s).Error
 }
 
 func (db *DB) containsSetting(s *Setting) (bool, error) {

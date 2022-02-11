@@ -136,7 +136,7 @@ func (db *DB) GetSetting(pass, name string) (string, error) {
 	s.Name = name
 	masterpass, err := db.GetMasterpass(pass)
 	if err != nil {
-		return "", logger.ReturnError(err)
+		return "", err
 	}
 	if err := db.getSetting(&s); err != nil {
 		return "", logger.ReturnError(err)

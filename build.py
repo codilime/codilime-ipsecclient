@@ -80,39 +80,12 @@ if args.clean:
     subprocess.run("docker system prune -f", shell=True)
     subprocess.run("docker volume prune -f", shell=True)
 
-    subprocess.run(
-        "docker network create \
-               -o com.docker.network.bridge.enable_icc=true \
-               -o com.docker.network.bridge.name=vlan_br \
-               --driver=bridge \
-               --subnet=10.68.0.0/24 \
-               01_vlan_br",
-        shell=True,
-    )
-    subprocess.run(
-        "docker network create \
-               -o com.docker.network.bridge.enable_icc=true \
-               -o com.docker.network.bridge.name=dmz_br \
-               --driver=bridge \
-               --subnet=10.69.0.0/24 \
-               --gateway=10.69.0.1 \
-               02_dmz_br",
-        shell=True,
-    )
-    subprocess.run(
-        "docker network create \
-               -o com.docker.network.bridge.enable_icc=true \
-               -o com.docker.network.bridge.name=mng_br \
-               --driver=bridge \
-               --subnet=10.67.0.0/24 \
-               03_mng_br",
-        shell=True,
-    )
+
+subprocess.run("helpers/docker_network_create.sh", shell=True)
+
 
 if args.csr_vm:
-    subprocess.run("helper-scripts/docker_network_create.sh", shell=True)
-
-    run_vm = ["./helper-scripts/run_vm.py", args.csr_vm[0], args.csr_vm[1]]
+    run_vm = ["./helpers/run_vm.py", args.csr_vm[0], args.csr_vm[1]]
 
     csr_vm = subprocess.run(run_vm)
     if csr_vm.returncode:
@@ -138,7 +111,7 @@ Path(content_path).mkdir(parents=True, exist_ok=True)
 if args.pack:
     download_documentation(content_path + "documentation.pdf", creds_path=args.pack[0])
 else:
-    shutil.copyfile("helper-scripts/dummy.pdf", content_path + "documentation.pdf")
+    shutil.copyfile("helpers/dummy.pdf", content_path + "documentation.pdf")
 
 
 build_processes.append(

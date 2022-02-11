@@ -12,27 +12,7 @@ docker rm ipsecclient || true
 
 # docker network rm 01_vlan_br 02_dmz_br 03_mng_br || true
 
-docker network create \
-               -o com.docker.network.bridge.enable_icc=true \
-               -o com.docker.network.bridge.name=vlan_br \
-               --driver=bridge \
-               --subnet=10.68.0.0/24 \
-               01_vlan_br || true
-
-docker network create \
-               -o com.docker.network.bridge.enable_icc=true \
-               -o com.docker.network.bridge.name=dmz_br \
-               --driver=bridge \
-               --subnet=10.69.0.0/24 \
-               --gateway=10.69.0.1 \
-               02_dmz_br || true
-
-docker network create \
-               -o com.docker.network.bridge.enable_icc=true \
-               -o com.docker.network.bridge.name=mng_br \
-               --driver=bridge \
-               --subnet=10.67.0.0/24 \
-               03_mng_br || true
+./helpers/docker_network_create.sh
 
 docker create --cap-add=NET_ADMIN --privileged --name ipsecclient \
         -e SWITCH_ADDRESS=10.67.0.10 \
