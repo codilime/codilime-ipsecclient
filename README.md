@@ -1,10 +1,10 @@
 # ipsecclient
 
-## building the dockers
+## building the docker
 
 `docker build -t ipsecclient -f ipsecclient.dockerfile`
 
-## running the dockers
+## running the docker
 
 - `./run_ipsec_client.sh`
 
@@ -31,7 +31,7 @@ inside `ipsec-backend` directory run `CGO_CPPFLAGS="-DSQLITE_ENABLE_DBSTAT_VTAB=
 ## additional scripts
 
 NOTE Install python requirements:  
-`pip3 install -r ./helper-scripts/requirements.txt`
+`pip3 install -r ./helpers/requirements.txt`
 
 Build the dockers:  
   
