@@ -494,15 +494,20 @@ func GetSourceInterfaces(switchCreds db.SwitchCreds) ([]string, error) {
 			for interfaceName, interfaceBodyList_ := range interfaces {
 				if interfaceBodyList, ok := interfaceBodyList_.([]interface{}); ok {
 					for _, interfaceBody := range interfaceBodyList {
-						interfaceId, ok := interfaceBody.(map[string]interface{})["name"].(string)
-						if !ok {
-							break
+						interfaceIdstr, ok := interfaceBody.(map[string]interface{})["name"].(string)
+						if ok {
+							sourceInterfaces = append(sourceInterfaces, interfaceName+interfaceIdstr)
+							continue
 						}
-						sourceInterfaces = append(sourceInterfaces, interfaceName+interfaceId)
+						interfaceIdfloat, ok := interfaceBody.(map[string]interface{})["name"].(float64)
+						if ok {
+							sourceInterfaces = append(sourceInterfaces, interfaceName+strconv.Itoa(int(interfaceIdfloat)))
+							continue
+						}
 					}
-					return sourceInterfaces, nil
 				}
 			}
+			return sourceInterfaces, nil
 		}
 	}
 	return sourceInterfaces, logger.ReturnError(fmt.Errorf("cannot get source interfaces from the switch - malformed response"))
@@ -709,6 +714,36 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 		Phase2Integrity:   phase2Integrity,
 		Phase2KeyExchange: phase2KeyExchange,
 	}, whenEspHmac, nil
+}
+
+func GetSwitchModel(switchCreds db.SwitchCreds) string {
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	fullPath := "https://" + switchCreds.SwitchAddress + "/restconf/data/Cisco-IOS-XE-native:native/Cisco-IOS-XE-switch:switch=1/provision"
+	req, err := http.NewRequest(http.MethodGet, fullPath, nil)
+	if err != nil {
+		return ""
+	}
+	req.Header.Add("Content-Type", "application/yang-data+json")
+	req.Header.Add("Accept", "application/yang-data+json")
+	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
+	resp, err := client.Do(req)
+	if err != nil {
+		return ""
+	}
+
+	var model struct {
+		Model string `json:"Cisco-IOS-XE-switch:provision"`
+	}
+
+	decoder := json.NewDecoder(resp.Body)
+	if err := decoder.Decode(&model); err != nil {
+		return ""
+	}
+	return model.Model
 }
 
 func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds) (map[string]interface{}, error) {
