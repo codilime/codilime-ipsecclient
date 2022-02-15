@@ -477,10 +477,6 @@ def test_hardware_algorithms_csr_vm_():
 
 def test_hardware_algorithms_csr_vm():
     wait_for_csr_vm()
-    algorithms = requests.get(BASE_URL + "/algorithm", auth=basicAuth, verify=False)
-    check_status_code(algorithms, HTTPStatus.OK)
-    algorithms_json = algorithms.json()["algorithm"]
-    log.info(algorithms_json)
     phase1 = "aes-cbc-128.md5.fifteen"
     phase2_list = [
         "esp-des.esp-sha-hmac.group19",

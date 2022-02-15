@@ -42,7 +42,7 @@ func NewSoftwareGenerator(FileHandler FileHandlerInterface, Supervisor Superviso
 	return &SoftwareGenerator{FileHandler, Supervisor}, nil
 }
 
-func (f *SoftwareGenerator) GenerateConfigs(vrf db.Vrf, _ ...db.SwitchCreds) error {
+func (f *SoftwareGenerator) GenerateConfigs(vrf db.Vrf) error {
 	log.Infof("generating templates")
 	if err := f.saveCerts(&vrf); err != nil {
 		return logger.ReturnError(err)
@@ -73,7 +73,7 @@ func (f *SoftwareGenerator) GenerateConfigs(vrf db.Vrf, _ ...db.SwitchCreds) err
 	return nil
 }
 
-func (f *SoftwareGenerator) DeleteConfigs(vrf db.Vrf, _ ...db.SwitchCreds) error {
+func (f *SoftwareGenerator) DeleteConfigs(vrf db.Vrf) error {
 	log.Infof("deleting templates")
 	prefix := calculatePrefix(vrf)
 	if err := logger.ReturnError(

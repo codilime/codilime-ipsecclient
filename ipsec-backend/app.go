@@ -33,18 +33,18 @@ import (
 )
 
 const (
-	restconfBasePath     = "/restconf/data/ipsecclient:api"
-	vrfPath              = restconfBasePath + "/vrf"
-	vrfIDPath            = vrfPath + "={id:[0-9]+}"
-	monitoringPath       = restconfBasePath + "/monitoring={id:[0-9]+}"
-	sourceInterfacePath  = restconfBasePath + "/source-interface"
-	algorithmPath        = restconfBasePath + "/algorithm"
-	logPath              = restconfBasePath + "/log"
-	errorPath            = restconfBasePath + "/error"
-	CAPath               = restconfBasePath + "/ca"
-	settingNamePath      = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
-	passPath             = restconfBasePath + "/password"
-	checkSwitchBasicAuth = restconfBasePath + "/check-switch-basic-auth"
+	restconfBasePath         = "/restconf/data/ipsecclient:api"
+	vrfPath                  = restconfBasePath + "/vrf"
+	vrfIDPath                = vrfPath + "={id:[0-9]+}"
+	monitoringPath           = restconfBasePath + "/monitoring={id:[0-9]+}"
+	sourceInterfacePath      = restconfBasePath + "/source-interface"
+	algorithmPath            = restconfBasePath + "/algorithm"
+	logPath                  = restconfBasePath + "/log"
+	errorPath                = restconfBasePath + "/error"
+	CAPath                   = restconfBasePath + "/ca"
+	settingNamePath          = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
+	passPath                 = restconfBasePath + "/password"
+	checkSwitchBasicAuthPath = restconfBasePath + "/check-switch-basic-auth"
 
 	pkcs12Path = "/pkcs12/{id:[0-9]+}"
 
@@ -58,8 +58,8 @@ const (
 type App struct {
 	router            *mux.Router
 	db                db.DBinterface
-	softwareGenerator config.Generator
-	hardwareGenerator config.Generator
+	softwareGenerator config.SoftwareGeneratorInt
+	hardwareGenerator config.HardwareGeneratorInt
 }
 
 func (a *App) ensureHWVRF() error {
@@ -83,7 +83,7 @@ func (a *App) ensureHWVRF() error {
 	return logger.ReturnError(err)
 }
 
-func NewApp(dbInstance db.DBinterface, softwareGenerator, hardwareGenerator config.Generator, switchCreds db.SwitchCreds) (*App, error) {
+func NewApp(dbInstance db.DBinterface, softwareGenerator config.SoftwareGeneratorInt, hardwareGenerator config.HardwareGeneratorInt, switchCreds db.SwitchCreds) (*App, error) {
 	app := new(App)
 
 	app.db = dbInstance
@@ -110,7 +110,7 @@ func (a *App) initializeSettings(switchCreds db.SwitchCreds) error {
 	return logger.ReturnError(
 		a.db.SetSetting(password, "switch_username", switchCreds.Username),
 		a.db.SetSetting(password, "switch_password", switchCreds.Password),
-		a.db.SetSetting(password, "system_name", os.Getenv("CAF_SYSTEM_NAME")),
+		a.db.SetSetting(password, "system_name", a.hardwareGenerator.GetSwitchModel(switchCreds)),
 		a.db.SetSetting(password, "app_version", os.Getenv("APP_VERSION")),
 		a.db.SetSetting(password, "switch_address", switchCreds.SwitchAddress),
 	)
@@ -147,7 +147,7 @@ func (a *App) initializeRoutes() {
 	a.router.HandleFunc(settingNamePath, a.apiGetSetting).Methods(http.MethodGet)
 	a.router.HandleFunc(settingNamePath, a.apiSetSetting).Methods(http.MethodPost)
 	a.router.HandleFunc(passPath, a.changePassword).Methods(http.MethodPost)
-	a.router.HandleFunc(checkSwitchBasicAuth, a.checkSwitchBasicAuth).Methods(http.MethodGet)
+	a.router.HandleFunc(checkSwitchBasicAuthPath, a.checkSwitchBasicAuth).Methods(http.MethodGet)
 	a.router.HandleFunc(CAPath, a.setCAs).Methods(http.MethodPost)
 	a.router.HandleFunc(CAPath, a.getCAs).Methods(http.MethodGet)
 	a.router.HandleFunc(pkcs12Path, a.getPkcs12).Methods(http.MethodGet)
@@ -1070,15 +1070,14 @@ func (a *App) checkSwitchBasicAuth(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	switchAddress, err := a.db.GetSetting(key, "switch_address")
+	isValid, err := a.hardwareGenerator.CheckSwitchBasicAuth(*switchCreds)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	isValid, err := config.CheckSwitchBasicAuth(*switchCreds, switchAddress)
-	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
+
+	if isValid {
+		a.db.SetSetting(key, "system_name", a.hardwareGenerator.GetSwitchModel(*switchCreds))
 	}
 	api := ipsecclient_yang.Ipsecclient_Api{
 		CheckSwitchBasicAuth: db.BoolPointer(&isValid),
