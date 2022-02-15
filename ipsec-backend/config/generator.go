@@ -14,10 +14,18 @@ import (
 )
 
 //go:generate mockgen -source=generator.go -destination=../mock/generator_mock.go -package mock
-type Generator interface {
-	GenerateConfigs(v db.Vrf, switchCreds ...db.SwitchCreds) error
-	DeleteConfigs(v db.Vrf, switchCreds ...db.SwitchCreds) error
-	GetMonitoring(clientName *string, switchCreds ...db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error)
+type SoftwareGeneratorInt interface {
+	GenerateConfigs(v db.Vrf) error
+	DeleteConfigs(v db.Vrf) error
+	GetMonitoring(clientName *string) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error)
+}
+
+type HardwareGeneratorInt interface {
+	GenerateConfigs(v db.Vrf, switchCreds db.SwitchCreds) error
+	DeleteConfigs(v db.Vrf, switchCreds db.SwitchCreds) error
+	GetMonitoring(clientName *string, switchCreds db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error)
+	CheckSwitchBasicAuth(switchCreds db.SwitchCreds) (bool, error)
+	GetSwitchModel(switchCreds db.SwitchCreds) string
 }
 
 func normalizeStatus(status string) string {

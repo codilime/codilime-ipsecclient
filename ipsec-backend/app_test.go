@@ -36,22 +36,23 @@ const (
 )
 
 var cryptoAlgorythms = []string{"aes123", "sha234", "modp345", "camellia456", "md567", "frodos678"}
+var switchCreds = db.SwitchCreds{Username: username, Password: password, SwitchAddress: "10.0.0.1", WhenEspHmac: "abc"}
+var switchModel = "switch model"
 
 func TestMain(m *testing.M) {
 	log.SetFormatter(&logger.ErrorFormatter{})
 	os.Exit(m.Run())
 }
 
-func createApp(t *testing.T) (*App, *mock.MockGenerator, *mock.MockGenerator, *mock.MockDBinterface) {
-	switchCreds := db.SwitchCreds{Username: username, Password: password, SwitchAddress: "10.0.0.1"}
-
+func createApp(t *testing.T) (*App, *mock.MockSoftwareGeneratorInt, *mock.MockHardwareGeneratorInt, *mock.MockDBinterface) {
 	ctrl := gomock.NewController(t)
-	softwareGenerator := mock.NewMockGenerator(ctrl)
-	hardwareGenerator := mock.NewMockGenerator(ctrl)
+	softwareGenerator := mock.NewMockSoftwareGeneratorInt(ctrl)
+	hardwareGenerator := mock.NewMockHardwareGeneratorInt(ctrl)
 	dbInstance := mock.NewMockDBinterface(ctrl)
 	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("switch_username"), switchCreds.Username).Return(nil)
 	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("switch_password"), switchCreds.Password).Return(nil)
-	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("system_name"), gomock.Any()).Return(nil)
+	hardwareGenerator.EXPECT().GetSwitchModel(gomock.Eq(switchCreds)).Return(switchModel)
+	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("system_name"), gomock.Eq(switchModel)).Return(nil)
 	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("app_version"), gomock.Any()).Return(nil)
 	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("switch_address"), switchCreds.SwitchAddress).Return(nil)
 	dbInstance.EXPECT().Create(gomock.Any()).Return(nil)
@@ -343,7 +344,7 @@ func TestIPv6Update(t *testing.T) {
 	}, db.HardwareVrfID, t)
 }
 
-func executeUpdate(oldActive, newActive bool, t *testing.T) (*App, *http.Request, *mock.MockGenerator, db.Vrf) {
+func executeUpdate(oldActive, newActive bool, t *testing.T) (*App, *http.Request, *mock.MockSoftwareGeneratorInt, db.Vrf) {
 	expectedVrf := createTestVrf()
 	expectedVrf.Active = db.BoolPointer(&newActive)
 	app, softwareGenerator, _, dbInstance := createApp(t)
@@ -397,6 +398,35 @@ func TestUpdateVrf(t *testing.T) {
 	softwareGenerator.EXPECT().GenerateConfigs(vrfMatcher{expectedVrf}).Return(nil)
 	response = executeRequest(app, req)
 	checkResponseCode(t, http.StatusNoContent, response.Code)
+}
+
+func _getSwitchCreds(dbInstance *mock.MockDBinterface) {
+	dbInstance.EXPECT().GetSetting(gomock.Eq(password), gomock.Eq("switch_username")).Return(switchCreds.Username, nil)
+	dbInstance.EXPECT().GetSetting(gomock.Eq(password), gomock.Eq("switch_password")).Return(switchCreds.Password, nil)
+	dbInstance.EXPECT().GetSetting(gomock.Eq(password), gomock.Eq("switch_address")).Return(switchCreds.SwitchAddress, nil)
+	dbInstance.EXPECT().GetSetting(gomock.Eq(password), gomock.Eq("when_esp_hmac")).Return(switchCreds.WhenEspHmac, nil)
+}
+
+func TestCheckSwitchBasicAuth(t *testing.T) {
+	app, _, hardwareGenerator, dbInstance := createApp(t)
+
+	_getSwitchCreds(dbInstance)
+	hardwareGenerator.EXPECT().CheckSwitchBasicAuth(gomock.Eq(switchCreds)).Return(false, nil)
+	req, _ := http.NewRequest(http.MethodGet, checkSwitchBasicAuthPath, nil)
+	req.SetBasicAuth(username, password)
+
+	response := executeRequest(app, req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	_getSwitchCreds(dbInstance)
+	hardwareGenerator.EXPECT().CheckSwitchBasicAuth(gomock.Eq(switchCreds)).Return(true, nil)
+	hardwareGenerator.EXPECT().GetSwitchModel(gomock.Eq(switchCreds)).Return(switchModel)
+	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("system_name"), gomock.Eq(switchModel)).Return(nil)
+	req, _ = http.NewRequest(http.MethodGet, checkSwitchBasicAuthPath, nil)
+	req.SetBasicAuth(username, password)
+
+	response = executeRequest(app, req)
+	checkResponseCode(t, http.StatusOK, response.Code)
 }
 
 func setCryptoDB(vrf *db.Vrf, cryptoAlgs []string, t *testing.T) {

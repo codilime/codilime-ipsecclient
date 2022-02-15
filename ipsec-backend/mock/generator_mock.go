@@ -12,83 +12,163 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockGenerator is a mock of Generator interface.
-type MockGenerator struct {
+// MockSoftwareGeneratorInt is a mock of SoftwareGeneratorInt interface.
+type MockSoftwareGeneratorInt struct {
 	ctrl     *gomock.Controller
-	recorder *MockGeneratorMockRecorder
+	recorder *MockSoftwareGeneratorIntMockRecorder
 }
 
-// MockGeneratorMockRecorder is the mock recorder for MockGenerator.
-type MockGeneratorMockRecorder struct {
-	mock *MockGenerator
+// MockSoftwareGeneratorIntMockRecorder is the mock recorder for MockSoftwareGeneratorInt.
+type MockSoftwareGeneratorIntMockRecorder struct {
+	mock *MockSoftwareGeneratorInt
 }
 
-// NewMockGenerator creates a new mock instance.
-func NewMockGenerator(ctrl *gomock.Controller) *MockGenerator {
-	mock := &MockGenerator{ctrl: ctrl}
-	mock.recorder = &MockGeneratorMockRecorder{mock}
+// NewMockSoftwareGeneratorInt creates a new mock instance.
+func NewMockSoftwareGeneratorInt(ctrl *gomock.Controller) *MockSoftwareGeneratorInt {
+	mock := &MockSoftwareGeneratorInt{ctrl: ctrl}
+	mock.recorder = &MockSoftwareGeneratorIntMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockGenerator) EXPECT() *MockGeneratorMockRecorder {
+func (m *MockSoftwareGeneratorInt) EXPECT() *MockSoftwareGeneratorIntMockRecorder {
 	return m.recorder
 }
 
 // DeleteConfigs mocks base method.
-func (m *MockGenerator) DeleteConfigs(v db.Vrf, switchCreds ...db.SwitchCreds) error {
+func (m *MockSoftwareGeneratorInt) DeleteConfigs(v db.Vrf) error {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{v}
-	for _, a := range switchCreds {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DeleteConfigs", varargs...)
+	ret := m.ctrl.Call(m, "DeleteConfigs", v)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteConfigs indicates an expected call of DeleteConfigs.
-func (mr *MockGeneratorMockRecorder) DeleteConfigs(v interface{}, switchCreds ...interface{}) *gomock.Call {
+func (mr *MockSoftwareGeneratorIntMockRecorder) DeleteConfigs(v interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{v}, switchCreds...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteConfigs", reflect.TypeOf((*MockGenerator)(nil).DeleteConfigs), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteConfigs", reflect.TypeOf((*MockSoftwareGeneratorInt)(nil).DeleteConfigs), v)
 }
 
 // GenerateConfigs mocks base method.
-func (m *MockGenerator) GenerateConfigs(v db.Vrf, switchCreds ...db.SwitchCreds) error {
+func (m *MockSoftwareGeneratorInt) GenerateConfigs(v db.Vrf) error {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{v}
-	for _, a := range switchCreds {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GenerateConfigs", varargs...)
+	ret := m.ctrl.Call(m, "GenerateConfigs", v)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // GenerateConfigs indicates an expected call of GenerateConfigs.
-func (mr *MockGeneratorMockRecorder) GenerateConfigs(v interface{}, switchCreds ...interface{}) *gomock.Call {
+func (mr *MockSoftwareGeneratorIntMockRecorder) GenerateConfigs(v interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{v}, switchCreds...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateConfigs", reflect.TypeOf((*MockGenerator)(nil).GenerateConfigs), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateConfigs", reflect.TypeOf((*MockSoftwareGeneratorInt)(nil).GenerateConfigs), v)
 }
 
 // GetMonitoring mocks base method.
-func (m *MockGenerator) GetMonitoring(clientName *string, switchCreds ...db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
+func (m *MockSoftwareGeneratorInt) GetMonitoring(clientName *string) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{clientName}
-	for _, a := range switchCreds {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GetMonitoring", varargs...)
+	ret := m.ctrl.Call(m, "GetMonitoring", clientName)
 	ret0, _ := ret[0].(*ipsecclient_yang.Ipsecclient_Api_Monitoring)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetMonitoring indicates an expected call of GetMonitoring.
-func (mr *MockGeneratorMockRecorder) GetMonitoring(clientName interface{}, switchCreds ...interface{}) *gomock.Call {
+func (mr *MockSoftwareGeneratorIntMockRecorder) GetMonitoring(clientName interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{clientName}, switchCreds...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMonitoring", reflect.TypeOf((*MockGenerator)(nil).GetMonitoring), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMonitoring", reflect.TypeOf((*MockSoftwareGeneratorInt)(nil).GetMonitoring), clientName)
+}
+
+// MockHardwareGeneratorInt is a mock of HardwareGeneratorInt interface.
+type MockHardwareGeneratorInt struct {
+	ctrl     *gomock.Controller
+	recorder *MockHardwareGeneratorIntMockRecorder
+}
+
+// MockHardwareGeneratorIntMockRecorder is the mock recorder for MockHardwareGeneratorInt.
+type MockHardwareGeneratorIntMockRecorder struct {
+	mock *MockHardwareGeneratorInt
+}
+
+// NewMockHardwareGeneratorInt creates a new mock instance.
+func NewMockHardwareGeneratorInt(ctrl *gomock.Controller) *MockHardwareGeneratorInt {
+	mock := &MockHardwareGeneratorInt{ctrl: ctrl}
+	mock.recorder = &MockHardwareGeneratorIntMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockHardwareGeneratorInt) EXPECT() *MockHardwareGeneratorIntMockRecorder {
+	return m.recorder
+}
+
+// CheckSwitchBasicAuth mocks base method.
+func (m *MockHardwareGeneratorInt) CheckSwitchBasicAuth(switchCreds db.SwitchCreds) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckSwitchBasicAuth", switchCreds)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckSwitchBasicAuth indicates an expected call of CheckSwitchBasicAuth.
+func (mr *MockHardwareGeneratorIntMockRecorder) CheckSwitchBasicAuth(switchCreds interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckSwitchBasicAuth", reflect.TypeOf((*MockHardwareGeneratorInt)(nil).CheckSwitchBasicAuth), switchCreds)
+}
+
+// DeleteConfigs mocks base method.
+func (m *MockHardwareGeneratorInt) DeleteConfigs(v db.Vrf, switchCreds db.SwitchCreds) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteConfigs", v, switchCreds)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteConfigs indicates an expected call of DeleteConfigs.
+func (mr *MockHardwareGeneratorIntMockRecorder) DeleteConfigs(v, switchCreds interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteConfigs", reflect.TypeOf((*MockHardwareGeneratorInt)(nil).DeleteConfigs), v, switchCreds)
+}
+
+// GenerateConfigs mocks base method.
+func (m *MockHardwareGeneratorInt) GenerateConfigs(v db.Vrf, switchCreds db.SwitchCreds) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateConfigs", v, switchCreds)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// GenerateConfigs indicates an expected call of GenerateConfigs.
+func (mr *MockHardwareGeneratorIntMockRecorder) GenerateConfigs(v, switchCreds interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateConfigs", reflect.TypeOf((*MockHardwareGeneratorInt)(nil).GenerateConfigs), v, switchCreds)
+}
+
+// GetMonitoring mocks base method.
+func (m *MockHardwareGeneratorInt) GetMonitoring(clientName *string, switchCreds db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMonitoring", clientName, switchCreds)
+	ret0, _ := ret[0].(*ipsecclient_yang.Ipsecclient_Api_Monitoring)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMonitoring indicates an expected call of GetMonitoring.
+func (mr *MockHardwareGeneratorIntMockRecorder) GetMonitoring(clientName, switchCreds interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMonitoring", reflect.TypeOf((*MockHardwareGeneratorInt)(nil).GetMonitoring), clientName, switchCreds)
+}
+
+// GetSwitchModel mocks base method.
+func (m *MockHardwareGeneratorInt) GetSwitchModel(switchCreds db.SwitchCreds) string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSwitchModel", switchCreds)
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetSwitchModel indicates an expected call of GetSwitchModel.
+func (mr *MockHardwareGeneratorIntMockRecorder) GetSwitchModel(switchCreds interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSwitchModel", reflect.TypeOf((*MockHardwareGeneratorInt)(nil).GetSwitchModel), switchCreds)
 }

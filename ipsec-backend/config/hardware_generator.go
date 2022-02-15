@@ -54,10 +54,7 @@ func NewHardwareGenerator(switchCreds db.SwitchCreds) (*HardwareGenerator, error
 	return &HardwareGenerator{defaultLocalAdd}, nil
 }
 
-func (h *HardwareGenerator) GenerateConfigs(vrf db.Vrf, switchCredsList ...db.SwitchCreds) error {
-	if len(switchCredsList) < 1 {
-		return logger.ReturnError(fmt.Errorf("HardwareGenerator GenerateConfigs called without SwitchCreds"))
-	}
+func (h *HardwareGenerator) GenerateConfigs(vrf db.Vrf, switchCreds db.SwitchCreds) error {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -80,26 +77,23 @@ func (h *HardwareGenerator) GenerateConfigs(vrf db.Vrf, switchCredsList ...db.Sw
 	pskEndpoints, certsEndpoints := endpointSubsets(vrf)
 
 	if len(pskEndpoints) > 0 {
-		if err := h.doTemplateFolderCreate("psk", client, vrfWithSlices, pskEndpoints, switchCredsList[0]); err != nil {
+		if err := h.doTemplateFolderCreate("psk", client, vrfWithSlices, pskEndpoints, switchCreds); err != nil {
 			return logger.ReturnError(err)
 		}
 	}
 
 	if len(certsEndpoints) > 0 {
-		if err := h.insertPkcs12(vrfWithSlices, client, switchCredsList[0]); err != nil {
+		if err := h.insertPkcs12(vrfWithSlices, client, switchCreds); err != nil {
 			return logger.ReturnError(err)
 		}
-		if err := h.doTemplateFolderCreate("certs", client, vrfWithSlices, certsEndpoints, switchCredsList[0]); err != nil {
+		if err := h.doTemplateFolderCreate("certs", client, vrfWithSlices, certsEndpoints, switchCreds); err != nil {
 			return logger.ReturnError(err)
 		}
 	}
 	return nil
 }
 
-func (h *HardwareGenerator) DeleteConfigs(vrf db.Vrf, switchCredsList ...db.SwitchCreds) error {
-	if len(switchCredsList) < 1 {
-		return logger.ReturnError(fmt.Errorf("HardwareGenerator GetMonitoring called without SwitchCreds"))
-	}
+func (h *HardwareGenerator) DeleteConfigs(vrf db.Vrf, switchCreds db.SwitchCreds) error {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -108,13 +102,13 @@ func (h *HardwareGenerator) DeleteConfigs(vrf db.Vrf, switchCredsList ...db.Swit
 	pskEndpoints, certsEndpoints := endpointSubsets(vrf)
 
 	if len(pskEndpoints) > 0 {
-		if err := h.doTemplateFolderDelete("psk", client, vrf, pskEndpoints, switchCredsList[0]); err != nil {
+		if err := h.doTemplateFolderDelete("psk", client, vrf, pskEndpoints, switchCreds); err != nil {
 			return logger.ReturnError(err)
 		}
 	}
 
 	if len(certsEndpoints) > 0 {
-		if err := h.doTemplateFolderDelete("certs", client, vrf, certsEndpoints, switchCredsList[0]); err != nil {
+		if err := h.doTemplateFolderDelete("certs", client, vrf, certsEndpoints, switchCreds); err != nil {
 			return logger.ReturnError(err)
 		}
 	}
@@ -371,15 +365,6 @@ func (h *HardwareGenerator) tryRestconfDelete(path string, client *http.Client, 
 	return logger.ReturnError(h.tryRestconfRequest("DELETE", path, "", client, switchCreds))
 }
 
-func containsADigit(str string) bool {
-	for _, c := range str {
-		if c >= '0' && c <= '9' {
-			return true
-		}
-	}
-	return false
-}
-
 func (h *HardwareGenerator) tryRestconfPatch(path, data string, client *http.Client, switchCreds db.SwitchCreds) error {
 	return logger.ReturnError(h.tryRestconfRequest("PATCH", path, data, client, switchCreds))
 }
@@ -429,16 +414,13 @@ func (h *HardwareGenerator) restconfDoRequest(method, path, data string, client 
 	return nil
 }
 
-func (h *HardwareGenerator) GetMonitoring(_ *string, switchCredsList ...db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
-	if len(switchCredsList) < 1 {
-		return nil, logger.ReturnError(fmt.Errorf("HardwareGenerator GetMonitoring called without SwitchCreds"))
-	}
+func (h *HardwareGenerator) GetMonitoring(_ *string, switchCreds db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	res, err := restconfGetData("Cisco-IOS-XE-crypto-oper:crypto-oper-data/crypto-ipsec-ident", client, switchCredsList[0])
+	res, err := restconfGetData("Cisco-IOS-XE-crypto-oper:crypto-oper-data/crypto-ipsec-ident", client, switchCreds)
 	if err != nil {
 		return nil, logger.ReturnError(err)
 	}
@@ -513,7 +495,7 @@ func GetSourceInterfaces(switchCreds db.SwitchCreds) ([]string, error) {
 	return sourceInterfaces, logger.ReturnError(fmt.Errorf("cannot get source interfaces from the switch - malformed response"))
 }
 
-func CheckSwitchBasicAuth(switchCreds db.SwitchCreds, switchAddress string) (bool, error) {
+func (*HardwareGenerator) CheckSwitchBasicAuth(switchCreds db.SwitchCreds) (bool, error) {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -716,7 +698,7 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 	}, whenEspHmac, nil
 }
 
-func GetSwitchModel(switchCreds db.SwitchCreds) string {
+func (*HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) string {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},

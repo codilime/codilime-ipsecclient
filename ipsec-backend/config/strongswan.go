@@ -28,7 +28,7 @@ type monitoringEndpoint struct {
 	ID         uint32
 }
 
-func (f *SoftwareGenerator) GetMonitoring(clientName *string, _ ...db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
+func (f *SoftwareGenerator) GetMonitoring(clientName *string) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
 	if clientName == nil {
 		return nil, logger.ReturnError(errors.New("wrong monitoring parameter"))
 	}
