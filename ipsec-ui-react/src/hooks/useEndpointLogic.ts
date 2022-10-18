@@ -27,7 +27,9 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name, checked, type } = e.target;
+
     setError((prev) => ({ ...prev, [name]: false }));
+
     if (name === 'local_id') {
       return setEndpoint((prev) => ({
         ...prev,
@@ -37,6 +39,7 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
         }
       }));
     }
+
     switch (type) {
       case 'checkbox':
         return setEndpoint((prev) => ({
@@ -70,11 +73,14 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
 
   const handleAddNewEndpoint = () => {
     const validate = validateEmptyEndpoint(endpoints);
+
     if (!validate) return;
+
     if (id === null) {
       handleActionVrfEndpoints('add', endpoints);
       return setEdit(false);
     }
+
     handleActionVrfEndpoints('change', endpoints, id);
     return setEdit(false);
   };
@@ -88,6 +94,6 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
     onChange,
     handleGeneratePskField
   };
-
+  console.log(endpoints)
   return { endpointAttributes, handleAddNewEndpoint, handleActiveEdit };
 };

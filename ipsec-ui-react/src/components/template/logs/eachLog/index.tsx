@@ -20,13 +20,13 @@ interface EachLogType {
 }
 
 export const EachLog: FC<EachLogType> = ({ name, log, active }) => {
-  const { autoScroll, loading, HandleDownloadTextFile, handleActioveScroll } = useLogsLogic();
+  const { autoScroll, loading, HandleDownloadTextFile, handleActiveScroll } = useLogsLogic();
 
   return (
     <div className={classNames('logs__context', { logs__context__active: active })}>
       {<LogData {...{ log, loading, autoScroll }} />}
       <div className="popup__footer">
-        <Field {...{ type: 'checkbox', name, onChange: handleActioveScroll, checked: autoScroll, text: 'Auto Scroll', className: 'logs_btn' }} />
+        <Field {...{ type: 'checkbox', name, onChange: handleActiveScroll, checked: autoScroll, text: 'Auto Scroll', className: 'logs_btn' }} />
         <Button className="logs__save" onClick={() => HandleDownloadTextFile(log, name)}>
           export <AiOutlineUpload className="logs_icon" />
         </Button>

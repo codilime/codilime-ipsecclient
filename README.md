@@ -2,7 +2,7 @@
 
 ## building the docker
 
-`docker build -t ipsecclient -f ipsecclient.dockerfile`
+`docker build -t ipsecclient -f ipsecclient.dockerfile .`
 
 ## running the docker
 

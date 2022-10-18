@@ -50,7 +50,7 @@ export const useValidateEndpoint = () => {
       local_ip,
       peer_ip
     } = endpoints;
-
+    console.log(endpoints);
     if (hardware && remote_ip_sec === '' && psk === '' && local_ip === '' && peer_ip === '') {
       setError((prev) => ({ ...prev, remote_ip_sec: true, psk: true, local_ip: true, peer_ip: true }));
       return false;
@@ -71,11 +71,13 @@ export const useValidateEndpoint = () => {
       return false;
     }
     const checkPeer = checkIpValue(peer_ip);
+
     if (!checkPeer) {
       setError((prev) => ({ ...prev, peer_ip: true }));
       return false;
     }
-    if (checkPeer !== checkLocal) {
+    console.log(peer_ip,checkPeer !== checkLocal);
+    if (peer_ip && checkPeer !== checkLocal) {
       setError((prev) => ({ ...prev, peer_ip: true, local_ip: true }));
       return false;
     }

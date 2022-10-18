@@ -31,7 +31,7 @@ interface EndpointInputTypes extends InputType {
 
 export const EndpointInput: FC<EndpointInputTypes> = ({ type, placeholder, name, value, edit, onChange, onClick, checked, error, references, hardware, onlyNumber }) => {
   const { open, handleToggle } = useToggle();
-  const [showToltip, setShowToltip] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const icon =
     open && edit ? (
@@ -65,11 +65,11 @@ export const EndpointInput: FC<EndpointInputTypes> = ({ type, placeholder, name,
           checked,
           disabled: !edit,
           ref: references,
-          onMouseMove: () => setShowToltip(true),
-          onMouseLeave: () => setShowToltip(false)
+          onMouseMove: () => setShowTooltip(true),
+          onMouseLeave: () => setShowTooltip(false)
         }}
       />
-      {value ? <ToolTip {...{ open: showToltip }}>{value}</ToolTip> : null}
+      {value && open ? <ToolTip {...{ open: showTooltip }}>{value}</ToolTip> : null}
       {showEyes}
     </>
   );
