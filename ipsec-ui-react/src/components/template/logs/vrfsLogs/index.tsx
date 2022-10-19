@@ -19,7 +19,7 @@ interface VrfsLogsType {
 }
 
 export const VrfsLogs: FC<VrfsLogsType> = ({ vrfsLogs, activePage }) => {
-  const { autoScroll, HandleDownloadTextFile, handleActioveScroll } = useLogsLogic();
+  const { autoScroll, HandleDownloadTextFile, handleActiveScroll } = useLogsLogic();
   const [active, setActive] = useState<string>('');
 
   const vrfsLogList = vrfsLogs.map(({ name }) => (
@@ -57,7 +57,7 @@ export const VrfsLogs: FC<VrfsLogsType> = ({ vrfsLogs, activePage }) => {
         <ScrollToBottom {...{ change: active, auto: autoScroll }} />
       </div>
       <div className="popup__footer">
-        <Field {...{ type: 'checkbox', name: 'test', onChange: handleActioveScroll, checked: autoScroll, text: 'Auto Scroll', className: 'logs__btn' }} />
+        <Field {...{ type: 'checkbox', name: 'test', onChange: handleActiveScroll, checked: autoScroll, text: 'Auto Scroll', className: 'logs__btn' }} />
         <Button className="logs__save" onClick={() => HandleDownloadTextFile(exportCurrentVrf!.log, exportCurrentVrf!.name)}>
           export <AiOutlineUpload className="logs__icon" />
         </Button>

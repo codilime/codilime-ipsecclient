@@ -204,7 +204,7 @@ export const tableSoftwareHeaderSchema = [
   { header: 'ACTION' }
 ];
 
-export const tableHardwaHeaderSchema = [
+export const tableHardwareHeaderSchema = [
   { header: 'Remote IP' },
   { header: 'Tunnel local IP' },
   { header: 'Tunnel peer IP' },

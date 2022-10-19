@@ -19,7 +19,7 @@ export const useLogsLogic = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [autoScroll, setAutoScroll] = useState<boolean>(false);
   const { fetchLogs } = useFetchData();
-  const handleActioveScroll = () => setAutoScroll((prev) => !prev);
+  const handleActiveScroll = () => setAutoScroll((prev) => !prev);
 
   const handleFetchLogsData = async () => {
     const data = await fetchLogs();
@@ -43,5 +43,5 @@ export const useLogsLogic = () => {
     }
   };
 
-  return { logData, autoScroll, loading, handleFetchLogsData, HandleDownloadTextFile, handleActioveScroll };
+  return { logData, autoScroll, loading, handleFetchLogsData, HandleDownloadTextFile, handleActiveScroll };
 };
