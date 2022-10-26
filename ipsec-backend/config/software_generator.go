@@ -42,6 +42,18 @@ func NewSoftwareGenerator(FileHandler FileHandlerInterface, Supervisor Superviso
 	return &SoftwareGenerator{FileHandler, Supervisor}, nil
 }
 
+func vrfShouldDoFRR(vrf db.Vrf) bool {
+	if *vrf.OSPF {
+		return true
+	}
+	for _, e := range vrf.Endpoints {
+		if e.BGP {
+			return true
+		}
+	}
+	return false
+}
+
 func (f *SoftwareGenerator) GenerateConfigs(vrf db.Vrf) error {
 	log.Infof("generating templates")
 	if err := f.saveCerts(&vrf); err != nil {
@@ -58,8 +70,10 @@ func (f *SoftwareGenerator) GenerateConfigs(vrf db.Vrf) error {
 		return logger.ReturnError(err)
 	}
 
-	if err := f.generateFRRConfig(vrf); err != nil {
-		return logger.ReturnError(err)
+	if vrfShouldDoFRR(vrf) {
+		if err := f.generateFRRConfig(vrf); err != nil {
+			return logger.ReturnError(err)
+		}
 	}
 
 	if err := f.Supervisor.ReloadSupervisor(); err != nil {
