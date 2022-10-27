@@ -11,6 +11,7 @@
         "lan_ip": "2.2.2.2/24"
       }
     ],
+    "ospf": true,
     "crypto_ph1": "aes128.sha256.modp2048",
     "crypto_ph2": "aes128.sha256.modp2048",
     "physical_interface": "eth0",
