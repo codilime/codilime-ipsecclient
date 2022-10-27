@@ -7,22 +7,23 @@
 
 import { useState, useEffect, ChangeEvent, useLayoutEffect } from 'react';
 import { endpointInputSchema, endpointHardwareSchema, EndpointSchema, endpointAdvancedSchema } from 'db';
-import { useValidateEndpoint, useVrfLogic, useChoiceCertyficate } from 'hooks/';
+import { useValidateEndpoint, useVrfLogic, useChoiceCertificate } from 'hooks/';
 import { EndpointsType } from 'interface/index';
 
 interface EndpointLogicType {
   currentEndpoint: EndpointsType;
+  vrfEndpoints?: EndpointsType[] | null;
   active: boolean;
   handleActionVrfEndpoints: (action: string, data: EndpointsType, id?: number) => void;
   id: number | null;
 }
 
-export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpoints, id }: EndpointLogicType) => {
-  const [endpoints, setEndpoint] = useState<EndpointsType>(EndpointSchema);
+export const useEndpointLogic = ({ currentEndpoint, vrfEndpoints, active, handleActionVrfEndpoints, id }: EndpointLogicType) => {
+  const [endpoint, setEndpoint] = useState<EndpointsType>(EndpointSchema);
   const [edit, setEdit] = useState(active);
   const { error, validateEmptyEndpoint, setError } = useValidateEndpoint();
   const { hardware, vrf_id, sourceInterface } = useVrfLogic();
-  const { handleGeneratePskField } = useChoiceCertyficate({ edit, error, setEndpoint, endpoints });
+  const { handleGeneratePskField } = useChoiceCertificate({ edit, error, setEndpoint, endpoint });
   const handleActiveEdit = () => setEdit((prev) => !prev);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -72,20 +73,20 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
   const endpointSchema = hardware ? endpointHardwareSchema : endpointInputSchema;
 
   const handleAddNewEndpoint = () => {
-    const validate = validateEmptyEndpoint(endpoints);
+    const validate = validateEmptyEndpoint(endpoint, vrfEndpoints);
 
     if (!validate) return;
 
     if (id === null) {
-      handleActionVrfEndpoints('add', endpoints);
+      handleActionVrfEndpoints('add', endpoint);
       return setEdit(false);
     }
 
-    handleActionVrfEndpoints('change', endpoints, id);
+    handleActionVrfEndpoints('change', endpoint, id);
     return setEdit(false);
   };
   const endpointAttributes = {
-    endpoints,
+    endpoint,
     endpointSchema,
     endpointAdvancedSchema,
     error,
@@ -94,6 +95,6 @@ export const useEndpointLogic = ({ currentEndpoint, active, handleActionVrfEndpo
     onChange,
     handleGeneratePskField
   };
-  console.log(endpoints)
+
   return { endpointAttributes, handleAddNewEndpoint, handleActiveEdit };
 };

@@ -5,25 +5,27 @@
  *     available here: https://developer.cisco.com/site/license/cisco-sample-code-license/
  */
 
-import { useRef, useState, useEffect, ChangeEvent, Dispatch, SetStateAction, RefObject } from 'react';
+import { useRef,  ChangeEvent, Dispatch, SetStateAction, RefObject } from 'react';
 import { EndpointInput, UploadCertificates } from 'common/';
-import { AiFillCloseCircle } from 'react-icons/ai';
+import { AiFillCloseCircle,AiOutlineUpload } from 'react-icons/ai';
 import classNames from 'classnames';
 import { EndpointsType } from 'interface/index';
 import { useVrfLogic } from 'hooks/';
-import { decodeX509, pkcs12ToBase64 } from 'utils/';
-import { AiOutlineUpload } from 'react-icons/ai';
+import {  pkcs12ToBase64 } from 'utils/';
+
+
+
 interface HookType {
   edit: boolean;
   error: any;
   setEndpoint: Dispatch<SetStateAction<EndpointsType>>;
-  endpoints: EndpointsType;
+  endpoint: EndpointsType;
 }
 
-export const useChoiceCertyficate = ({ edit, error, setEndpoint, endpoints }: HookType) => {
+export const useChoiceCertificate = ({ edit, error, setEndpoint, endpoint }: HookType) => {
   const {
     authentication: { type, psk, private_key, local_cert, remote_cert, pkcs12_base64 }
-  } = endpoints;
+  } = endpoint;
   const { hardware } = useVrfLogic();
 
   const key = useRef<HTMLInputElement>(null);

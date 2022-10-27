@@ -15,17 +15,18 @@ import classNames from 'classnames';
 
 interface EachEndpointType {
   currentEndpoint: EndpointsType;
+  vrfEndpoints?: EndpointsType[] | null;
   active: boolean;
   handleActionVrfEndpoints: (action: string, data: EndpointsType, id?: number) => void;
   id: number | null;
 }
 
-export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, handleActionVrfEndpoints, id }) => {
+export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, vrfEndpoints, active, handleActionVrfEndpoints, id }) => {
   const { open, handleToggle } = useToggle();
   const [advanced, setAdvanced] = useState(false);
   const { show, handleToggleModal } = useModalLogic();
-  const { endpointAttributes, handleAddNewEndpoint, handleActiveEdit } = useEndpointLogic({ currentEndpoint, active, handleActionVrfEndpoints, id });
-  const { endpointSchema, endpointAdvancedSchema, endpoints, edit, error, sourceInterface, onChange, handleGeneratePskField } = endpointAttributes;
+  const { endpointAttributes, handleAddNewEndpoint, handleActiveEdit } = useEndpointLogic({ currentEndpoint, vrfEndpoints, active, handleActionVrfEndpoints, id });
+  const { endpointSchema, endpointAdvancedSchema, endpoint, edit, error, sourceInterface, onChange, handleGeneratePskField } = endpointAttributes;
 
   const handleOpenAdvanced = () => setAdvanced((prev) => !prev);
 
@@ -37,20 +38,20 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
       case 'bgp':
         return (
           <td key={el.name} className={classNames('table__column', 'table__bool')}>
-            <EndpointInput {...{ ...el, onChange, edit, error, checked: endpoints[el.name] }} />
+            <EndpointInput {...{ ...el, onChange, edit, error, checked: endpoint[el.name] }} />
           </td>
         );
       case 'remote_ip_sec': {
         return (
           <td key={el.name} className="table__column">
-            <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints[el.name], onlyNumber: true }} />
+            <EndpointInput {...{ ...el, onChange, edit, error, value: endpoint[el.name], onlyNumber: true }} />
           </td>
         );
       }
       case 'source_interface': {
         return (
           <td key={el.name} className={classNames('table__column')}>
-            <ComboBox {...{ ...el, onChange, edit, error, value: endpoints[el.name], list: 'source-Interface', sourceInterface }} />
+            <ComboBox {...{ ...el, onChange, edit, error, value: endpoint[el.name], list: 'source-Interface', sourceInterface }} />
           </td>
         );
       }
@@ -59,7 +60,7 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
       default:
         return (
           <td key={el.name} className={classNames('table__column', { table__bool: el.name === 'remote_as' })}>
-            <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints[el.name], onlyNumber: true }} />
+            <EndpointInput {...{ ...el, onChange, edit, error, value: endpoint[el.name], onlyNumber: true }} />
             {edit && <ToolTipInfo {...{ error: error[el.name] }}>{el.tooltip}</ToolTipInfo>}
           </td>
         );
@@ -69,7 +70,7 @@ export const EachEndpoint: FC<EachEndpointType> = ({ currentEndpoint, active, ha
   const advantageConfiguration = endpointAdvancedSchema.map((el) => (
     <td key={el.name} className={classNames('advanced__column')}>
       <label className="advanced__label">{el.text}</label>
-      <EndpointInput {...{ ...el, onChange, edit, error, value: endpoints.authentication['local_id'] }} />
+      <EndpointInput {...{ ...el, onChange, edit, error, value: endpoint.authentication['local_id'] }} />
     </td>
   ));
 

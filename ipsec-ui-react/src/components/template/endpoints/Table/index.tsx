@@ -32,7 +32,7 @@ export const Endpoints: FC = () => {
 
   const dynamicCreateEndpoint = vrfEndpoints && vrfEndpoints.map((el, index) => <EachEndpoint key={index} {...{ active: false, currentEndpoint: el, id: index, handleActionVrfEndpoints }} />);
 
-  const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, currentEndpoint: EndpointSchema, handleActionVrfEndpoints, id: null }} />;
+  const createNewEndpoint = open && currentLocation !== newVrf && <EachEndpoint {...{ active: true, currentEndpoint: EndpointSchema,vrfEndpoints,  handleActionVrfEndpoints, id: null }} />;
 
   return (
     <Wrapper {...{ wrapperClass: 'table__wrapper', className: 'table__wrapper', title: 'Endpoints' }}>
