@@ -43,14 +43,15 @@ export const useValidateEndpoint = () => {
   const [error, setError] = useState(validateStatus);
   const { hardware } = useVrfLogic();
 
-  const validateEmptyEndpoint = (endpoints: EndpointsType) => {
+  const validateEmptyEndpoint = (endpoints: EndpointsType, vrfEndpoints?: EndpointsType[] | null) => {
     const {
       remote_ip_sec,
       authentication: { psk, type, local_cert, remote_cert, private_key, pkcs12_base64 },
       local_ip,
       peer_ip
     } = endpoints;
-    console.log(endpoints);
+
+
     if (hardware && remote_ip_sec === '' && psk === '' && local_ip === '' && peer_ip === '') {
       setError((prev) => ({ ...prev, remote_ip_sec: true, psk: true, local_ip: true, peer_ip: true }));
       return false;
@@ -76,7 +77,7 @@ export const useValidateEndpoint = () => {
       setError((prev) => ({ ...prev, peer_ip: true }));
       return false;
     }
-    console.log(peer_ip,checkPeer !== checkLocal);
+
     if (peer_ip && checkPeer !== checkLocal) {
       setError((prev) => ({ ...prev, peer_ip: true, local_ip: true }));
       return false;
@@ -110,6 +111,14 @@ export const useValidateEndpoint = () => {
     }
     if (type === 'certs' && !hardware && !private_key) {
       setError((prev) => ({ ...prev, private_key: true }));
+      return false;
+    }
+
+
+    const exist = vrfEndpoints && vrfEndpoints.some(endpoint => endpoint.remote_ip_sec === endpoints.remote_ip_sec)
+  
+    if (exist) {
+      setError((prev) => ({ ...prev, remote_ip_sec: true}));
       return false;
     }
 
