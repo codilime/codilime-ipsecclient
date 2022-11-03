@@ -548,8 +548,18 @@ func vrfSubJsonValidSW(vrfSubJson interface{}) error {
 	if !ok {
 		return logger.ReturnNewError("wrong vrfSubJson type")
 	}
-	if err := verifyEnpoints(vrf); err != nil {
+	isBGP, err := verifyEndpoints(vrf)
+	if err != nil {
 		return err
+	}
+	if isBGP {
+		localAS, ok := vrf["local_as"].(float64)
+		if !ok {
+			return logger.ReturnNewError("no local_as or wrong type")
+		}
+		if localAS == 0 {
+			return logger.ReturnNewError("local_as cannot be 0")
+		}
 	}
 	vlans, ok := vrf["vlan"]
 	if !ok {
@@ -586,33 +596,39 @@ func vrfSubJsonValidHW(vrfSubJson interface{}) error {
 	if !ok {
 		return logger.ReturnNewError("wrong vrfSubJson type")
 	}
-	return verifyEnpoints(vrf)
+	_, err := verifyEndpoints(vrf)
+	return err
 }
 
-func verifyEnpoints(vrf map[string]interface{}) error {
+func verifyEndpoints(vrf map[string]interface{}) (bool, error) {
 	endpointInt, ok := vrf["endpoint"]
 	if !ok {
-		return nil
+		return false, nil
 	}
 	endpoints, ok := endpointInt.([]interface{})
 	if !ok {
-		return logger.ReturnNewError("wrong endpoints json type")
+		return false, logger.ReturnNewError("wrong endpoints json type")
 	}
+	isBGP := false
 	for _, e := range endpoints {
 		if e, ok := e.(map[string]interface{}); ok {
 			local_ip, ok := e["local_ip"].(string)
 			if ok && strings.Contains(local_ip, ":") {
-				return logger.ReturnNewError("endpoint local ip: IPv6 not supported")
+				return false, logger.ReturnNewError("endpoint local ip: IPv6 not supported")
 			}
 			peer_ip, ok := e["peer_ip"].(string)
 			if ok && strings.Contains(peer_ip, ":") {
-				return logger.ReturnNewError("endpoint peer ip: IPv6 not supported")
+				return false, logger.ReturnNewError("endpoint peer ip: IPv6 not supported")
+			}
+			bgp, ok := e["bgp"].(bool)
+			if ok {
+				isBGP = isBGP || bgp
 			}
 		} else {
-			return logger.ReturnNewError("wrong endpoint json type")
+			return false, logger.ReturnNewError("wrong endpoint json type")
 		}
 	}
-	return nil
+	return isBGP, nil
 }
 
 func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {

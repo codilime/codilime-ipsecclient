@@ -129,11 +129,6 @@ func _testGenerateTemplatePsk(vrf db.Vrf, vrfConf []byte, t *testing.T) {
 		EXPECT().
 		WriteFile(gomock.Eq(supervisorConfigPath), gomock.Eq([]byte(supervisorConfig)), gomock.Eq(fileMode)).
 		Return(nil)
-	fileHandler.
-		EXPECT().
-		WriteFile(gomock.Eq(frrConfigPath), gomock.Eq([]byte(frrConfigCreate)), gomock.Eq(fileMode)).
-		Return(nil)
-	supervisor.EXPECT().ReloadVtysh().Return(nil)
 	supervisor.EXPECT().ReloadSupervisor().Return(nil)
 	supervisor.EXPECT().ReloadStrongswan().Return(nil)
 
@@ -234,11 +229,6 @@ secrets {
 		EXPECT().
 		WriteFile(gomock.Eq(supervisorConfigPath), gomock.Eq([]byte(supervisorConfig)), gomock.Eq(fileMode)).
 		Return(nil)
-	fileHandler.
-		EXPECT().
-		WriteFile(gomock.Eq(frrConfigPath), gomock.Eq([]byte(frrConfigCreate)), gomock.Eq(fileMode)).
-		Return(nil)
-	supervisor.EXPECT().ReloadVtysh().Return(nil)
 	supervisor.EXPECT().ReloadSupervisor().Return(nil)
 	supervisor.EXPECT().ReloadStrongswan().Return(nil)
 
