@@ -24,7 +24,7 @@ interface eth0.{{ $vlan.Vlan }} vrf vrf-{{ $.ID }}
     ip ospf area 0
 {{ end }}
 
-router ospf vrf {{ $.ClientName }}
+router ospf vrf vrf-{{ .ID }}
     redistribute connected
     redistribute bgp
 
