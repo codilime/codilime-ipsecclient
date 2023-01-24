@@ -547,7 +547,7 @@ func getModule(modulePath string, switchCreds db.SwitchCreds) (string, error) {
 		if err != nil {
 			continue
 		}
-		if err = json.Unmarshal(module, &ret); err != nil {
+		if err = json.Unmarshal(module, &ret); err == nil {
 			return string(module), nil
 		}
 		time.Sleep(10 * time.Second)
