@@ -25,7 +25,7 @@ type HardwareGeneratorInt interface {
 	DeleteConfigs(v db.Vrf, switchCreds db.SwitchCreds) error
 	GetMonitoring(clientName *string, switchCreds db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error)
 	CheckSwitchBasicAuth(switchCreds db.SwitchCreds) (bool, error)
-	GetSwitchModel(switchCreds db.SwitchCreds) string
+	GetSwitchModel(switchCreds db.SwitchCreds) (string, error)
 }
 
 func normalizeStatus(status string) string {

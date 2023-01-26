@@ -107,10 +107,16 @@ func (a *App) initializeSettings(switchCreds db.SwitchCreds) error {
 	if err := htpasswd.SetPassword(nginxPasswordFile, username, password, htpasswd.HashBCrypt); err != nil {
 		return logger.ReturnError(err)
 	}
+
+	model, err := a.hardwareGenerator.GetSwitchModel(switchCreds)
+	if err != nil {
+		return logger.ReturnError(err)
+	}
+	
 	return logger.ReturnError(
 		a.db.SetSetting(password, "switch_username", switchCreds.Username),
 		a.db.SetSetting(password, "switch_password", switchCreds.Password),
-		a.db.SetSetting(password, "system_name", a.hardwareGenerator.GetSwitchModel(switchCreds)),
+		a.db.SetSetting(password, "system_name", model),
 		a.db.SetSetting(password, "app_version", os.Getenv("APP_VERSION")),
 		a.db.SetSetting(password, "switch_address", switchCreds.SwitchAddress),
 	)
@@ -1093,7 +1099,11 @@ func (a *App) checkSwitchBasicAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if isValid {
-		a.db.SetSetting(key, "system_name", a.hardwareGenerator.GetSwitchModel(*switchCreds))
+		model, err := a.hardwareGenerator.GetSwitchModel(*switchCreds)
+		if err != nil{
+			a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		a.db.SetSetting(key, "system_name", model)
 	}
 	api := ipsecclient_yang.Ipsecclient_Api{
 		CheckSwitchBasicAuth: db.BoolPointer(&isValid),
