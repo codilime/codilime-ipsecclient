@@ -601,7 +601,6 @@ func getKeysFromMap(map_ map[string]*yang.Entry) []string {
 }
 
 func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
-	log.Warn(switchCreds.SwitchAddress)
 	ms := yang.NewModules()
 
 	modulesToParse := []string{"Cisco-IOS-XE-crypto", "cisco-semver", "ietf-inet-types", "Cisco-IOS-XE-native",
@@ -609,7 +608,8 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 		"Cisco-IOS-XE-line", "Cisco-IOS-XE-interface-common", "Cisco-IOS-XE-logging", "Cisco-IOS-XE-ip", "Cisco-IOS-XE-interfaces",
 		"Cisco-IOS-XE-ipv6", "Cisco-IOS-XE-tunnel", "Cisco-IOS-XE-mpls", "Cisco-IOS-XE-isis", "Cisco-IOS-XE-snmp",
 		"Cisco-IOS-XE-policy", "ietf-yang-types", "Cisco-IOS-XE-atm", "Cisco-IOS-XE-l2vpn", "Cisco-IOS-XE-ethernet",
-		"Cisco-IOS-XE-ethernet-oam", "Cisco-IOS-XE-ethernet-cfm-efp", "Cisco-IOS-XE-pppoe"}
+		"Cisco-IOS-XE-ethernet-oam", "Cisco-IOS-XE-ethernet-cfm-efp", "Cisco-IOS-XE-pppoe",
+		"Cisco-IOS-XE-aaa", "Cisco-IOS-XE-hsrp", "Cisco-IOS-XE-location", "Cisco-IOS-XE-transceiver-monitor", "etf-yang-types"}
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -659,7 +659,7 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 		}
 		if module.Submodule != nil {
 			for _, submodule := range module.Submodule {
-				for _, moduleToParse := range modulesToParse { 
+				for _, moduleToParse := range modulesToParse {
 					if submodule.Name == moduleToParse {
 						if err := parse(ms, submodule.Name, submodule.Schema, switchCreds); err != nil {
 							return db.Algorithm{}, "", fmt.Errorf("parsing submodule %s: %w", submodule.Name, err)
@@ -669,24 +669,14 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 			}
 		}
 	}
-	mods := ""
-	for name, mod := range ms.Modules{
-		mods += fmt.Sprintf("%s %s\n", name, mod.Name)
-	}
-
-	submods := ""
-	for name, submod := range ms.SubModules{
-		mods += fmt.Sprintf("%s %s\n", name, submod.Name)
-	}
 
 	if errs := ms.Process(); errs != nil {
 		e := ""
-		for _, err := range errs{
-			log.Error(err.Error())
+		for _, err := range errs {
 			e += fmt.Sprintf(", %s ", err.Error())
 		}
 
-		return db.Algorithm{}, "", fmt.Errorf("process modules, modules %s, submodules:%s :%w", mods, submods, errors.New(e))
+		return db.Algorithm{}, "", fmt.Errorf("process yang modules: %w", errors.New(e))
 	}
 	nativeModule, _ := ms.GetModule("Cisco-IOS-XE-native")
 
@@ -741,7 +731,6 @@ func (*HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, er
 		return "", fmt.Errorf("decoding get switch model response: %w", err)
 	}
 
-	log.Error(model.Model)
 	return model.Model, nil
 }
 
