@@ -14,6 +14,8 @@ import (
 	"os"
 	"testing"
 
+	"ipsec_backend/logger"
+
 	"github.com/golang/mock/gomock"
 )
 
@@ -131,8 +133,12 @@ func _testGenerateTemplatePsk(vrf db.Vrf, vrfConf []byte, t *testing.T) {
 		Return(nil)
 	supervisor.EXPECT().ReloadSupervisor().Return(nil)
 	supervisor.EXPECT().ReloadStrongswan().Return(nil)
+	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
+	if err != nil {
+		panic(err)
+	}
 
-	generator := SoftwareGenerator{fileHandler, supervisor}
+	generator := SoftwareGenerator{fileHandler, supervisor, log}
 	generator.GenerateConfigs(vrf)
 }
 
@@ -237,9 +243,12 @@ secrets {
 	vrf.Endpoints[0].Authentication.LocalCert = localCert
 	vrf.Endpoints[0].Authentication.RemoteCert = remoteCert
 	vrf.Endpoints[0].Authentication.PrivateKey = privateKey
-
-	generator := SoftwareGenerator{fileHandler, supervisor}
-
+	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
+	if err != nil {
+		panic(err)
+	}
+	generator := SoftwareGenerator{fileHandler, supervisor, log}
+	
 	generator.GenerateConfigs(vrf)
 }
 
@@ -279,7 +288,11 @@ func TestDeleteTemplateCert(t *testing.T) {
 	vrf := createTestVrf()
 	vrf.Endpoints[0].Authentication.Type = "certs"
 
-	generator := SoftwareGenerator{fileHandler, supervisor}
+	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
+	if err != nil {
+		panic(err)
+	}
+	generator := SoftwareGenerator{fileHandler, supervisor, log}
 
 	generator.DeleteConfigs(vrf)
 }
@@ -307,8 +320,11 @@ func TestDeleteTemplatePsk(t *testing.T) {
 
 	vrf := createTestVrf()
 	vrf.Endpoints[0].Authentication.Type = "psk"
-
-	generator := SoftwareGenerator{fileHandler, supervisor}
+	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
+	if err != nil {
+		panic(err)
+	}
+	generator := SoftwareGenerator{fileHandler, supervisor, log}
 
 	generator.DeleteConfigs(vrf)
 }

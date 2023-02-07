@@ -8,13 +8,9 @@
 package db
 
 import (
-	"database/sql/driver"
 	"encoding/json"
-	"fmt"
 	"strings"
 
-	"log"
-	"os"
 	"strconv"
 	"time"
 
@@ -56,6 +52,7 @@ type DB struct {
 	gormDb             *gorm.DB
 	errorsRotationDays int
 	errorsRotationSize *int // Size in Bytes
+	log *logrus.Logger
 }
 
 type EndpointAuth struct {
@@ -66,25 +63,6 @@ type EndpointAuth struct {
 	RemoteCert   string `json:"remote_cert"`
 	PrivateKey   string `json:"private_key"`
 	Pkcs12Base64 string `json:"pkcs12_base64"`
-}
-
-func (e *EndpointAuth) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return logger.ReturnNewError(fmt.Sprint("EndpointAuth value was not []bytes:", value))
-	}
-	result := EndpointAuth{}
-	err := json.Unmarshal(bytes, &result)
-	*e = result
-	return logger.ReturnError(err)
-}
-
-func (e EndpointAuth) Value() (driver.Value, error) {
-	bytes, err := json.Marshal(&e)
-	if err != nil {
-		return nil, logger.ReturnError(err)
-	}
-	return bytes, nil
 }
 
 type Endpoint struct {
@@ -152,10 +130,10 @@ type Setting struct {
 	Value string
 }
 
-func (v *Vrf) GetVlans() ([]Vlan, error) {
+func (v *Vrf) GetVlans(log *logrus.Logger) ([]Vlan, error) {
 	ret := []Vlan{}
 	err := json.Unmarshal(v.Vlans, &ret)
-	return ret, logger.ReturnError(err)
+	return ret, logger.ReturnError(log, err)
 }
 
 type Masterpass struct {
@@ -184,8 +162,10 @@ type Algorithm struct {
 	Phase2KeyExchange pq.StringArray `gorm:"type:string[]"`
 }
 
-func MakeDB(dbName, errRotDaysStr, errRotSizeStr string) (*DB, error) {
-	db := new(DB)
+func MakeDB(dbName, errRotDaysStr, errRotSizeStr string, log *logrus.Logger) (*DB, error) {
+	db := &DB{
+		log: log,
+	}
 
 	if errRotDaysStr == "" {
 		db.errorsRotationDays = DefaultErrorsRotationDays
@@ -211,7 +191,7 @@ func MakeDB(dbName, errRotDaysStr, errRotSizeStr string) (*DB, error) {
 	}
 
 	newLogger := gorm_logger.New(
-		log.New(os.Stdout, "\n", log.LstdFlags),
+		log,
 		gorm_logger.Config{
 			Colorful: false, // Disable color
 		},
@@ -221,28 +201,28 @@ func MakeDB(dbName, errRotDaysStr, errRotSizeStr string) (*DB, error) {
 		FullSaveAssociations: true,
 	})
 	if err != nil {
-		return db, logger.ReturnError(err)
+		return db, logger.ReturnError(log, err)
 	}
 	if err = gormDb.AutoMigrate(&Vrf{}); err != nil {
-		return db, logger.ReturnError(err)
+		return db, logger.ReturnError(log, err)
 	}
 	if err = gormDb.AutoMigrate(&Setting{}); err != nil {
-		return db, logger.ReturnError(err)
+		return db, logger.ReturnError(log, err)
 	}
 	if err = gormDb.AutoMigrate(&Endpoint{}); err != nil {
-		return db, logger.ReturnError(err)
+		return db, logger.ReturnError(log, err)
 	}
 	if err = gormDb.AutoMigrate(&Masterpass{}); err != nil {
-		return db, logger.ReturnError(err)
+		return db, logger.ReturnError(log, err)
 	}
 	if err = gormDb.AutoMigrate(&CertificateAuthority{}); err != nil {
-		return db, logger.ReturnError(err)
+		return db, logger.ReturnError(log, err)
 	}
 	if err = gormDb.AutoMigrate(&StoredError{}); err != nil {
-		return db, logger.ReturnError(err)
+		return db, logger.ReturnError(log, err)
 	}
 	if err = gormDb.AutoMigrate(&Algorithm{}); err != nil {
-		return db, logger.ReturnError(err)
+		return db, logger.ReturnError(log, err)
 	}
 
 	db.gormDb = gormDb
@@ -254,30 +234,42 @@ func (Vrf) TableName() string {
 }
 
 func (db *DB) GetVrf(v *Vrf) error {
-	return logger.ReturnError(db.gormDb.Preload("Endpoints").First(v, v.ID).Error)
+	return logger.ReturnError(db.log, db.gormDb.Preload("Endpoints").First(v, v.ID).Error)
 }
 
 func (db *DB) UpdateVrf(v *Vrf) error {
 	var e Endpoint
-	return logger.ReturnError(
-		db.gormDb.Updates(v).Error,
-		db.gormDb.Model(v).Association("Endpoints").Replace(v.Endpoints),
-		db.gormDb.Where("vrf_id IS NULL").Delete(&e).Error,
-	)
+
+	err := db.gormDb.Updates(v).Error
+	if err != nil {
+		return logger.ReturnError(db.log, err)
+	}
+
+	err = db.gormDb.Model(v).Association("Endpoints").Replace(v.Endpoints)
+	if err != nil {
+		return logger.ReturnError(db.log, err)
+	}
+
+	err = db.gormDb.Where("vrf_id IS NULL").Delete(&e).Error
+	if err != nil {
+		return logger.ReturnError(db.log, err)
+	}
+
+	return nil
 }
 
 func (db *DB) DeleteVrf(v *Vrf) error {
-	return logger.ReturnError(db.gormDb.Select("Endpoints").Delete(v).Error)
+	return logger.ReturnError(db.log, db.gormDb.Select("Endpoints").Delete(v).Error)
 }
 
 func (db *DB) Create(value interface{}) error {
-	return logger.ReturnError(db.gormDb.Create(value).Error)
+	return logger.ReturnError(db.log, db.gormDb.Create(value).Error)
 }
 
 func (db *DB) GetVrfs() ([]Vrf, error) {
 	var vrfs []Vrf
 	res := db.gormDb.Preload("Endpoints").Find(&vrfs)
-	return vrfs, logger.ReturnError(res.Error)
+	return vrfs, logger.ReturnError(db.log, res.Error)
 }
 
 func (db *DB) getSetting(s *Setting) error {
@@ -290,20 +282,20 @@ func (db *DB) containsSetting(s *Setting) (bool, error) {
 		if res.Error == gorm.ErrRecordNotFound {
 			return false, nil
 		}
-		return false, logger.ReturnError(res.Error)
+		return false, logger.ReturnError(db.log, res.Error)
 	}
 	return true, nil
 }
 
 func (db *DB) UpdateSetting(s *Setting) error {
-	return logger.ReturnError(db.gormDb.Save(&s).Error)
+	return logger.ReturnError(db.log, db.gormDb.Save(&s).Error)
 }
 
 func (db *DB) GetStoredErrors() ([]StoredError, error) {
 	db.rotateErrorsByDate()
 
 	var storedErrors []StoredError
-	return storedErrors, logger.ReturnError(db.gormDb.Find(&storedErrors).Error)
+	return storedErrors, logger.ReturnError(db.log, db.gormDb.Find(&storedErrors).Error)
 }
 
 func (db *DB) DeleteMasterpass() error {
@@ -316,14 +308,14 @@ func (db *DB) containsMasterpass() (bool, error) {
 		if res.Error == gorm.ErrRecordNotFound {
 			return false, nil
 		}
-		return false, logger.ReturnError(res.Error)
+		return false, logger.ReturnError(db.log, res.Error)
 	}
 	return true, nil
 }
 
 func (db *DB) getMasterpass() (Masterpass, error) {
 	m := Masterpass{}
-	return m, logger.ReturnError(db.gormDb.First(&m).Error)
+	return m, logger.ReturnError(db.log, db.gormDb.First(&m).Error)
 }
 
 func (db *DB) DeleteCAs() error {
@@ -332,7 +324,7 @@ func (db *DB) DeleteCAs() error {
 
 func (db *DB) GetCAs() ([]CertificateAuthority, error) {
 	cas := []CertificateAuthority{}
-	return cas, logger.ReturnError(db.gormDb.Find(&cas).Error)
+	return cas, logger.ReturnError(db.log, db.gormDb.Find(&cas).Error)
 }
 
 func (db *DB) GetAlgorithms(algorithms *Algorithm) error {

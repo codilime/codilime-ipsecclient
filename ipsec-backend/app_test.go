@@ -57,7 +57,11 @@ func createApp(t *testing.T) (*App, *mock.MockSoftwareGeneratorInt, *mock.MockHa
 	dbInstance.EXPECT().SetSetting(password, "app_version", gomock.Any()).Return(nil)
 	dbInstance.EXPECT().SetSetting(password, "switch_address", switchCreds.SwitchAddress).Return(nil)
 	dbInstance.EXPECT().Create(gomock.Any()).Return(nil)
-	app, _ := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds)
+	log, err := logger.NewLogger("ipsecclienttest.log")
+	if err != nil {
+		log.Fatal(err)
+	}
+	app, _ := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds, log)
 	return app, softwareGenerator, hardwareGenerator, dbInstance
 }
 

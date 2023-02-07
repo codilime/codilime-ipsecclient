@@ -17,6 +17,7 @@ import (
 	"ipsec_backend/logger"
 
 	"github.com/strongswan/govici/vici"
+	"github.com/sirupsen/logrus"
 )
 
 const socketPath = "/opt/ipsec/conf/charon.vici"
@@ -30,12 +31,12 @@ type monitoringEndpoint struct {
 
 func (f *SoftwareGenerator) GetMonitoring(clientName *string) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
 	if clientName == nil {
-		return nil, logger.ReturnError(errors.New("wrong monitoring parameter"))
+		return nil, logger.ReturnError(f.log, errors.New("wrong monitoring parameter"))
 	}
 	name := strings.Replace(*clientName, "-", "_", 1)
-	statuses, err := getStrongswanState()
+	statuses, err := getStrongswanState(f.log)
 	if err != nil {
-		return nil, logger.ReturnError(err)
+		return nil, logger.ReturnError(f.log, err)
 	}
 	ret := ipsecclient_yang.Ipsecclient_Api_Monitoring{
 		Endpoint: map[uint32]*ipsecclient_yang.Ipsecclient_Api_Monitoring_Endpoint{},
@@ -59,29 +60,29 @@ func endpointIDFromKey(key string) (int, error) {
 	return strconv.Atoi(l[len(l)-1])
 }
 
-func getStrongswanState() (map[string]*monitoringEndpoint, error) {
+func getStrongswanState(log *logrus.Logger) (map[string]*monitoringEndpoint, error) {
 	options := vici.WithSocketPath(socketPath)
 	session, err := vici.NewSession(options)
 	if err != nil {
-		return nil, logger.ReturnError(err)
+		return nil, logger.ReturnError(log, err)
 	}
 	defer session.Close()
 
 	m := vici.NewMessage()
 	err = m.Set("noblock", "yes")
 	if err != nil {
-		return nil, logger.ReturnError(err)
+		return nil, logger.ReturnError(log, err)
 	}
 	ms, err := session.StreamedCommandRequest("list-conns", "list-conn", m)
 	if err != nil {
-		return nil, logger.ReturnError(err)
+		return nil, logger.ReturnError(log, err)
 	}
 	endpoints := map[string]*monitoringEndpoint{}
 	for _, m = range ms.Messages() {
 		for _, key := range m.Keys() {
 			id, err := endpointIDFromKey(key)
 			if err != nil {
-				return nil, logger.ReturnError(err)
+				return nil, logger.ReturnError(log, err)
 			}
 			e := &monitoringEndpoint{
 				status: "DOWN",
@@ -95,11 +96,11 @@ func getStrongswanState() (map[string]*monitoringEndpoint, error) {
 	m = vici.NewMessage()
 	err = m.Set("noblock", "yes")
 	if err != nil {
-		return nil, logger.ReturnError(err)
+		return nil, logger.ReturnError(log, err)
 	}
 	ms, err = session.StreamedCommandRequest("list-sas", "list-sa", m)
 	if err != nil {
-		return nil, logger.ReturnError(err)
+		return nil, logger.ReturnError(log, err)
 	}
 	for _, m = range ms.Messages() {
 		for _, key := range m.Keys() {

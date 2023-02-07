@@ -24,27 +24,27 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		a.respondWithError(w, http.StatusBadRequest, "bad id: "+idStr)
+		a.respondWithError(w, http.StatusBadRequest, "bad id: "+idStr, a.log)
 	}
 
 	vrf := db.Vrf{ID: uint32(id)}
 	if err := a.db.GetVrf(&vrf); err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
-			a.respondWithError(w, http.StatusNotFound, "Vrf not found")
+			a.respondWithError(w, http.StatusNotFound, "Vrf not found", a.log)
 		default:
-			a.respondWithError(w, http.StatusInternalServerError, err.Error())
+			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
 		}
 		return
 	}
-	key, err := getPassFromHeader(r.Header)
+	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
 		return
 	}
 	switchCreds, err := a.getSwitchCreds(key)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
 		return
 	}
 
@@ -52,13 +52,13 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 	if vrf.ID != db.HardwareVrfID {
 		monitoring, err = a.softwareGenerator.GetMonitoring(&vrf.ClientName)
 		if err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error())
+			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
 			return
 		}
 	} else {
 		monitoring, err = a.hardwareGenerator.GetMonitoring(nil, *switchCreds)
 		if err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error())
+			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
 			return
 		}
 	}
@@ -73,8 +73,8 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error())
+		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
 		return
 	}
-	respondWithMarshalledJSON(w, http.StatusOK, json)
+	respondWithMarshalledJSON(w, http.StatusOK, json, a.log)
 }

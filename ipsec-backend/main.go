@@ -12,45 +12,35 @@ import (
 	"ipsec_backend/db"
 	"ipsec_backend/logger"
 	"os"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	lvl, ok := os.LookupEnv("LOG_LEVEL")
-	if !ok {
-		lvl = "info"
-	}
-
-	parsedLvl, err := log.ParseLevel(lvl)
-	if err != nil {
-		parsedLvl = log.InfoLevel
-	}
-
-	log.SetFormatter(&logger.ErrorFormatter{})
-	log.SetLevel(parsedLvl)
-
 	switchCreds := db.SwitchCreds{
 		Username:      os.Getenv("SWITCH_USERNAME"),
 		Password:      os.Getenv("SWITCH_PASSWORD"),
 		SwitchAddress: os.Getenv("SWITCH_IP"),
 	}
 
-	softwareGenerator, err := config.NewSoftwareGenerator(&config.FileHandler{}, &config.Supervisor{})
+	log, err := logger.NewLogger()
+
+	sv := config.NewSupervisor(log)
+	softwareGenerator, err := config.NewSoftwareGenerator(&config.FileHandler{}, &sv, log)
 	if err != nil {
 		panic(err)
 	}
-	hardwareGenerator, err := config.NewHardwareGenerator(switchCreds)
+	hardwareGenerator, err := config.NewHardwareGenerator(switchCreds, log)
 	if err != nil {
 		panic(err)
 	}
 
-	dbInstance, err := db.MakeDB("/iox_data/appdata/ipsec.db", os.Getenv("ERR_ROT_DAYS"), os.Getenv("ERR_ROT_SIZE"))
+	dbInstance, err := db.MakeDB("/iox_data/appdata/ipsec.db", os.Getenv("ERR_ROT_DAYS"), os.Getenv("ERR_ROT_SIZE"), log)
 	if err != nil {
 		panic(err)
 	}
 
-	app, err := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds)
+	
+
+	app, err := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds, log)
 	if err != nil {
 		panic(err)
 	}

@@ -12,6 +12,8 @@ import (
 	"testing"
 	"time"
 
+	"ipsec_backend/logger"
+
 	"github.com/go-test/deep"
 	"gorm.io/gorm"
 )
@@ -36,7 +38,11 @@ func prepareStoredErrors(gormDb *gorm.DB) []StoredError {
 }
 
 func TestRotationSizeOrDateDefault(t *testing.T) {
-	dbInstance, _ := MakeDB("file::memory:?cache=private", "", "")
+	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
+	if err != nil {
+		panic(err)
+	}
+	dbInstance, _ := MakeDB("file::memory:?cache=private", "", "", log)
 	storedErrors := prepareStoredErrors(dbInstance.gormDb)
 	dbInstance.RotateErrorsBySizeOrDate()
 
@@ -46,7 +52,11 @@ func TestRotationSizeOrDateDefault(t *testing.T) {
 }
 
 func TestRotationDateDefault(t *testing.T) {
-	dbInstance, _ := MakeDB("file::memory:?cache=private", "", "")
+	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
+	if err != nil {
+		panic(err)
+	}
+	dbInstance, _ := MakeDB("file::memory:?cache=private", "", "", log)
 	storedErrors := prepareStoredErrors(dbInstance.gormDb)
 	dbInstance.rotateErrorsByDate()
 
@@ -56,7 +66,11 @@ func TestRotationDateDefault(t *testing.T) {
 }
 
 func TestRotationSize(t *testing.T) {
-	dbInstance, _ := MakeDB("file::memory:?cache=private", "", "5")
+	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
+	if err != nil {
+		panic(err)
+	}
+	dbInstance, _ := MakeDB("file::memory:?cache=private", "", "5", log)
 	storedErrors := prepareStoredErrors(dbInstance.gormDb)
 	dbInstance.RotateErrorsBySizeOrDate()
 
@@ -66,7 +80,11 @@ func TestRotationSize(t *testing.T) {
 }
 
 func TestRotationDate(t *testing.T) {
-	dbInstance, _ := MakeDB("file::memory:?cache=private", "15", "")
+	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
+	if err != nil {
+		panic(err)
+	}
+	dbInstance, _ := MakeDB("file::memory:?cache=private", "15", "", log)
 	storedErrors := prepareStoredErrors(dbInstance.gormDb)
 	dbInstance.rotateErrorsByDate()
 
@@ -76,7 +94,11 @@ func TestRotationDate(t *testing.T) {
 }
 
 func TestRotationSizeOrDate(t *testing.T) {
-	dbInstance, _ := MakeDB("file::memory:?cache=private", "15", "5")
+	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
+	if err != nil {
+		panic(err)
+	}
+	dbInstance, _ := MakeDB("file::memory:?cache=private", "15", "5", log)
 	storedErrors := prepareStoredErrors(dbInstance.gormDb)
 	dbInstance.RotateErrorsBySizeOrDate()
 

@@ -12,6 +12,8 @@ import (
 	"ipsec_backend/ipsecclient_yang"
 	"ipsec_backend/logger"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 const timeFormat = "2006-01-02 15:04:01 -0700"
@@ -82,14 +84,14 @@ func (e *Endpoint) FromYang(endVrf *ipsecclient_yang.Ipsecclient_Api_Vrf_Endpoin
 	}
 }
 
-func (v *Vrf) ToYang() (*ipsecclient_yang.Ipsecclient_Api_Vrf, error) {
+func (v *Vrf) ToYang(log *logrus.Logger) (*ipsecclient_yang.Ipsecclient_Api_Vrf, error) {
 	cryptoPh1 := []string{}
 	if err := json.Unmarshal(v.CryptoPh1, &cryptoPh1); err != nil {
-		return nil, logger.ReturnError(err)
+		return nil, logger.ReturnError(log, err)
 	}
 	cryptoPh2 := []string{}
 	if err := json.Unmarshal(v.CryptoPh2, &cryptoPh2); err != nil {
-		return nil, logger.ReturnError(err)
+		return nil, logger.ReturnError(log, err)
 	}
 	ph1 := strings.Join(cryptoPh1, ".")
 	ph2 := strings.Join(cryptoPh2, ".")
@@ -97,9 +99,9 @@ func (v *Vrf) ToYang() (*ipsecclient_yang.Ipsecclient_Api_Vrf, error) {
 	for _, e := range v.Endpoints {
 		endpoints[e.RemoteIPSec] = e.ToYang()
 	}
-	vlans, err := v.GetVlans()
+	vlans, err := v.GetVlans(log)
 	if err != nil {
-		return nil, logger.ReturnError(err)
+		return nil, logger.ReturnError(log, err)
 	}
 	vlansMap := map[uint32]*ipsecclient_yang.Ipsecclient_Api_Vrf_Vlan{}
 	for _, v := range vlans {
@@ -135,7 +137,7 @@ func (c *CertificateAuthority) ToYang() *ipsecclient_yang.Ipsecclient_Api_Ca {
 	}
 }
 
-func (v *Vrf) FromYang(vrfYang *ipsecclient_yang.Ipsecclient_Api_Vrf) error {
+func (v *Vrf) FromYang(vrfYang *ipsecclient_yang.Ipsecclient_Api_Vrf, log *logrus.Logger) error {
 	v.ClientName = *vrfYang.ClientName
 	vlans := []interface{}{}
 	for _, v := range vrfYang.Vlan {
@@ -147,16 +149,16 @@ func (v *Vrf) FromYang(vrfYang *ipsecclient_yang.Ipsecclient_Api_Vrf) error {
 	var err error
 	v.Vlans, err = json.Marshal(&vlans)
 	if err != nil {
-		return logger.ReturnError(err)
+		return logger.ReturnError(log, err)
 	}
 	cryptoPh1 := strings.Split(*vrfYang.CryptoPh1, ".")
 	v.CryptoPh1, err = json.Marshal(&cryptoPh1)
 	if err != nil {
-		return logger.ReturnError(err)
+		return logger.ReturnError(log, err)
 	}
 	v.CryptoPh2, err = json.Marshal(strings.Split(*vrfYang.CryptoPh2, "."))
 	if err != nil {
-		return logger.ReturnError(err)
+		return logger.ReturnError(log, err)
 	}
 	v.PhysicalInterface = *vrfYang.PhysicalInterface
 	v.Active = vrfYang.Active
