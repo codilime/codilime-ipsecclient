@@ -25,7 +25,7 @@ type ErrorFormatter struct{}
 
 func NewLogger(name ...string) (*logrus.Logger, error) {
 	filename := "ipsecclinet.log"
-	if len(filename) > 0 {
+	if len(name) > 0 {
 		filename = name[0]
 	}
 
@@ -37,7 +37,6 @@ func NewLogger(name ...string) (*logrus.Logger, error) {
 	log := logrus.New()
 	log.Out = file
 	log.Formatter = new(logrus.JSONFormatter)
-	log.Formatter.(*logrus.TextFormatter).DisableColors = true
 	log.Level = defaultLogLevel
 
 	return log, nil

@@ -8,7 +8,9 @@
 package db
 
 import (
+	"database/sql/driver"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"strconv"
@@ -63,6 +65,27 @@ type EndpointAuth struct {
 	RemoteCert   string `json:"remote_cert"`
 	PrivateKey   string `json:"private_key"`
 	Pkcs12Base64 string `json:"pkcs12_base64"`
+}
+
+func (e *EndpointAuth) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		fmt.Println(fmt.Sprint("EndpointAuth value was not []bytes:", value))
+	}
+	result := EndpointAuth{}
+	err := json.Unmarshal(bytes, &result)
+	*e = result
+
+	return err
+}
+
+func (e EndpointAuth) Value() (driver.Value, error) {
+	bytes, err := json.Marshal(&e)
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes, nil
 }
 
 type Endpoint struct {
