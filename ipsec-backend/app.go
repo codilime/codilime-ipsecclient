@@ -1047,7 +1047,7 @@ func (a *App) _getAlgorithms(key string) (db.Algorithm, error) {
 		if err != nil {
 			return algorithms, err
 		}
-		algorithms, whenEspHmac, err = config.GetAlgorithms(*switchCreds)
+		algorithms, whenEspHmac, err = config.GetAlgorithms(*switchCreds, a.log)
 		if err != nil {
 			return algorithms, err
 		}
