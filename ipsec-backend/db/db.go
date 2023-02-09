@@ -186,6 +186,8 @@ type Algorithm struct {
 }
 
 func MakeDB(dbName, errRotDaysStr, errRotSizeStr string, log *logrus.Logger) (*DB, error) {
+	log.Info("MakeDB invoked")
+
 	db := &DB{
 		log: log,
 	}
@@ -223,32 +225,41 @@ func MakeDB(dbName, errRotDaysStr, errRotSizeStr string, log *logrus.Logger) (*D
 		Logger:               newLogger,
 		FullSaveAssociations: true,
 	})
+
 	if err != nil {
 		return db, logger.ReturnError(log, err)
 	}
+
 	if err = gormDb.AutoMigrate(&Vrf{}); err != nil {
 		return db, logger.ReturnError(log, err)
 	}
+
 	if err = gormDb.AutoMigrate(&Setting{}); err != nil {
 		return db, logger.ReturnError(log, err)
 	}
+	
 	if err = gormDb.AutoMigrate(&Endpoint{}); err != nil {
 		return db, logger.ReturnError(log, err)
 	}
+
 	if err = gormDb.AutoMigrate(&Masterpass{}); err != nil {
 		return db, logger.ReturnError(log, err)
 	}
+
 	if err = gormDb.AutoMigrate(&CertificateAuthority{}); err != nil {
 		return db, logger.ReturnError(log, err)
 	}
+
 	if err = gormDb.AutoMigrate(&StoredError{}); err != nil {
 		return db, logger.ReturnError(log, err)
 	}
+
 	if err = gormDb.AutoMigrate(&Algorithm{}); err != nil {
 		return db, logger.ReturnError(log, err)
 	}
 
 	db.gormDb = gormDb
+
 	return db, nil
 }
 
@@ -257,10 +268,16 @@ func (Vrf) TableName() string {
 }
 
 func (db *DB) GetVrf(v *Vrf) error {
+	db.log.Info("GetVrf invoked")
+	db.log.Debug(v)
+
 	return logger.ReturnError(db.log, db.gormDb.Preload("Endpoints").First(v, v.ID).Error)
 }
 
 func (db *DB) UpdateVrf(v *Vrf) error {
+	db.log.Info("UpdateVrf invoked")
+	db.log.Debug(v)
+
 	var e Endpoint
 
 	err := db.gormDb.Updates(v).Error
@@ -282,79 +299,122 @@ func (db *DB) UpdateVrf(v *Vrf) error {
 }
 
 func (db *DB) DeleteVrf(v *Vrf) error {
+	db.log.Info("DeleteVrf invoked")
+	db.log.Debug(v)
+
 	return logger.ReturnError(db.log, db.gormDb.Select("Endpoints").Delete(v).Error)
 }
 
 func (db *DB) Create(value interface{}) error {
+	db.log.Info("Create invoked")
+	db.log.Debug(value)
+
 	return logger.ReturnError(db.log, db.gormDb.Create(value).Error)
 }
 
 func (db *DB) GetVrfs() ([]Vrf, error) {
+	db.log.Info("GetVrfs invoked")
+
 	var vrfs []Vrf
 	res := db.gormDb.Preload("Endpoints").Find(&vrfs)
+
 	return vrfs, logger.ReturnError(db.log, res.Error)
 }
 
 func (db *DB) getSetting(s *Setting) error {
+	db.log.Info("getSetting invoked")
+	db.log.Debug(s)
+
 	return db.gormDb.Where("name = ?", s.Name).First(s).Error
 }
 
 func (db *DB) containsSetting(s *Setting) (bool, error) {
+	db.log.Info("containsSetting invoked")
+	db.log.Debug(s)
+
 	res := db.gormDb.Where("name = ?", s.Name).First(s)
 	if res.Error != nil {
 		if res.Error == gorm.ErrRecordNotFound {
 			return false, nil
 		}
+
 		return false, logger.ReturnError(db.log, res.Error)
 	}
+	
 	return true, nil
 }
 
 func (db *DB) UpdateSetting(s *Setting) error {
+	db.log.Info("UpdateSetting invoked")
+	db.log.Debug(s)
+
 	return logger.ReturnError(db.log, db.gormDb.Save(&s).Error)
 }
 
 func (db *DB) GetStoredErrors() ([]StoredError, error) {
+	db.log.Info("GetStoredErrors invoked")
+
 	db.rotateErrorsByDate()
 
 	var storedErrors []StoredError
+
 	return storedErrors, logger.ReturnError(db.log, db.gormDb.Find(&storedErrors).Error)
 }
 
 func (db *DB) DeleteMasterpass() error {
+	db.log.Info("DeleteMasterpass invoked")
+
 	return db.gormDb.Where("1 = 1").Delete(&Masterpass{}).Error
 }
 
 func (db *DB) containsMasterpass() (bool, error) {
+	db.log.Info("containsMasterpass invoked")
+
 	res := db.gormDb.First(&Masterpass{})
 	if res.Error != nil {
 		if res.Error == gorm.ErrRecordNotFound {
 			return false, nil
 		}
+
 		return false, logger.ReturnError(db.log, res.Error)
 	}
+
 	return true, nil
 }
 
 func (db *DB) getMasterpass() (Masterpass, error) {
+	db.log.Info("getMasterpass invoked")
+
 	m := Masterpass{}
+
 	return m, logger.ReturnError(db.log, db.gormDb.First(&m).Error)
 }
 
 func (db *DB) DeleteCAs() error {
+	db.log.Info(" invoked")
+	db.log.Debug()
+
 	return db.gormDb.Where("1=1").Delete(&CertificateAuthority{}).Error
 }
 
 func (db *DB) GetCAs() ([]CertificateAuthority, error) {
+	db.log.Info("GetCAs invoked")
+
 	cas := []CertificateAuthority{}
+
 	return cas, logger.ReturnError(db.log, db.gormDb.Find(&cas).Error)
 }
 
 func (db *DB) GetAlgorithms(algorithms *Algorithm) error {
+	db.log.Info("GetAlgorithms invoked")
+	db.log.Debug(algorithms)
+
 	return db.gormDb.First(algorithms).Error
 }
 
 func (db *DB) RotateErrorsBySizeOrDate() {
+	db.log.Info(" invoked")
+
 	if db.errorsRotationSize != nil {
 		var storedErrorsSize int
 		db.gormDb.Raw("SELECT SUM(pgsize) FROM dbstat WHERE name = ?;", "stored_errors").Scan(&storedErrorsSize)
@@ -387,6 +447,9 @@ func sizeStrToInt(errRotSizeStr string) (int, error) {
 }
 
 func (db *DB) rotateErrorsByDate() {
+	db.log.Info(" invoked")
+	db.log.Debug()
+
 	if db.errorsRotationSize == nil {
 		changedTime := time.Now().AddDate(0, 0, -db.errorsRotationDays)
 		db.gormDb.Where("error_time < ?", changedTime).Delete(StoredError{})
