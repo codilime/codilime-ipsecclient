@@ -37,9 +37,11 @@ type SoftwareGenerator struct {
 }
 
 func NewSoftwareGenerator(FileHandler FileHandlerInterface, Supervisor SupervisorInterface, log *logrus.Logger) (*SoftwareGenerator, error) {
+	log.Info("NewSoftwareGenerator invoked")
 	if err := FileHandler.WriteFile("/opt/frr/vtysh.conf", []byte(""), 0644); err != nil {
 		return nil, err
 	}
+
 	return &SoftwareGenerator{FileHandler, Supervisor, log}, nil
 }
 
@@ -52,11 +54,13 @@ func vrfShouldDoFRR(vrf db.Vrf) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
 func (f *SoftwareGenerator) GenerateConfigs(vrf db.Vrf) error {
-	f.log.Infof("generating templates")
+	f.log.Info("GenerateConfigs invoked")
+
 	if err := f.saveCerts(&vrf); err != nil {
 		return logger.ReturnError(f.log, err)
 	}
@@ -84,7 +88,9 @@ func (f *SoftwareGenerator) GenerateConfigs(vrf db.Vrf) error {
 	if err := f.Supervisor.ReloadStrongswan(); err != nil {
 		return logger.ReturnError(f.log, err)
 	}
+
 	f.log.Debugf("generated templates for vrf %+v", vrf)
+
 	return nil
 }
 
@@ -127,6 +133,9 @@ func (f *SoftwareGenerator) DeleteConfigs(vrf db.Vrf) error {
 }
 
 func (f *SoftwareGenerator) saveCerts(v *db.Vrf) error {
+	f.log.Info("saveCerts invoked")
+	f.log.Debug(v)
+
 	for _, e := range v.Endpoints {
 		if e.Authentication.Type != "certs" {
 			continue
@@ -144,10 +153,14 @@ func (f *SoftwareGenerator) saveCerts(v *db.Vrf) error {
 			return logger.ReturnError(f.log, err)
 		}
 	}
+
 	return nil
 }
 
 func (f *SoftwareGenerator) deleteCerts(v db.Vrf) error {
+	f.log.Info("deleteCerts invoked")
+	f.log.Debug(v)
+
 	for _, e := range v.Endpoints {
 		if e.Authentication.Type != "certs" {
 			continue
@@ -163,6 +176,7 @@ func (f *SoftwareGenerator) deleteCerts(v db.Vrf) error {
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -179,29 +193,39 @@ func calculatePrefix(vrf db.Vrf) string {
 }
 
 func (f *SoftwareGenerator) generateStrongswanConfig(vrf db.Vrf, prefix string) error {
+	f.log.Info("generateStrongswanConfig invoked")
+	f.log.Debug(vrf, prefix)
+
 	data, err := executeStrongswanTemplate(vrf, f.log)
 	if err != nil {
 		return logger.ReturnError(f.log, err)
 	}
+
 	return f.FileHandler.WriteFile(getStrongswanFileName(prefix), []byte(data), 0644)
 }
 
 func executeStrongswanTemplate(vrf db.Vrf, log *logrus.Logger) (string, error) {
+	log.Info("executeStrongswanTemplate invoked")
+
 	t, err := template.New(strongswanTemplateFile).
 		ParseFiles(strongswanTemplatePath)
 	if err != nil {
 		return "", logger.ReturnError(log, err)
 	}
+
 	builder := strings.Builder{}
 	crypto1, err := convertToString(vrf.CryptoPh1, log)
 	if err != nil {
 		return "", logger.ReturnError(log, err)
 	}
+
 	crypto2, err := convertToString(vrf.CryptoPh2, log)
 	if err != nil {
 		return "", logger.ReturnError(log, err)
 	}
+
 	log.Debugf("generating for:\n%+v", spew.Sdump(vrf))
+
 	if err = t.Execute(&builder, struct {
 		db.Vrf
 		Crypto1 string
@@ -213,18 +237,25 @@ func executeStrongswanTemplate(vrf db.Vrf, log *logrus.Logger) (string, error) {
 	}); err != nil {
 		return "", logger.ReturnError(log, err)
 	}
+
 	return builder.String(), nil
 }
 
 func (f *SoftwareGenerator) generateSupervisorConfig(vrf db.Vrf, prefix string, log *logrus.Logger) error {
+	f.log.Info("generateSupervisorConfig invoked")
+	f.log.Debug(vrf, prefix)
+
 	data, err := executeSupervisorTemplate(vrf, log)
 	if err != nil {
 		return logger.ReturnError(log, err)
 	}
+
 	return f.FileHandler.WriteFile(getSupervisorFileName(prefix), []byte(data), 0644)
 }
 
 func executeSupervisorTemplate(vrf db.Vrf, log *logrus.Logger) (string, error) {
+	log.Info("executeSupervisorTemplate invoked")
+
 	t, err := template.New(supervisorTemplateFile).ParseFiles(supervisorTemplatePath)
 	if err != nil {
 		return "", logger.ReturnError(log, err)
@@ -238,6 +269,7 @@ func executeSupervisorTemplate(vrf db.Vrf, log *logrus.Logger) (string, error) {
 	if err != nil {
 		return "", logger.ReturnError(log, err)
 	}
+
 	vlansStr := ""
 	for _, vlan := range vlans {
 		if strings.TrimSpace(vlan.LanIP) == "" {
@@ -245,6 +277,7 @@ func executeSupervisorTemplate(vrf db.Vrf, log *logrus.Logger) (string, error) {
 		}
 		vlansStr += fmt.Sprintf("%d %s ", vlan.Vlan, vlan.LanIP)
 	}
+
 	for _, endpoint := range vrf.Endpoints {
 		localIps = append(localIps, endpoint.LocalIP)
 		if endpoint.PeerIP == "" {
@@ -279,11 +312,14 @@ func executeSupervisorTemplate(vrf db.Vrf, log *logrus.Logger) (string, error) {
 	}); err != nil {
 		return "", logger.ReturnError(log, err)
 	}
+
 	return builder.String(), nil
 
 }
 
 func convertToString(s datatypes.JSON, log *logrus.Logger) (string, error) {
+	log.Info("convertToString invoked")
+
 	m, err := s.MarshalJSON()
 	if err != nil {
 		return "", logger.ReturnError(log, err)
@@ -293,5 +329,6 @@ func convertToString(s datatypes.JSON, log *logrus.Logger) (string, error) {
 		return "", logger.ReturnError(log, err)
 	}
 	res := strings.Join(arr, "-")
+	
 	return strings.ReplaceAll(res, "--", "-"), nil
 }
