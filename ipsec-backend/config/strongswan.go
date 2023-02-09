@@ -30,17 +30,23 @@ type monitoringEndpoint struct {
 }
 
 func (f *SoftwareGenerator) GetMonitoring(clientName *string) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
+	f.log.Info("GetMonitoring invoked")
+	f.log.Debug(clientName)
+
 	if clientName == nil {
 		return nil, logger.ReturnError(f.log, errors.New("wrong monitoring parameter"))
 	}
+
 	name := strings.Replace(*clientName, "-", "_", 1)
 	statuses, err := getStrongswanState(f.log)
 	if err != nil {
 		return nil, logger.ReturnError(f.log, err)
 	}
+
 	ret := ipsecclient_yang.Ipsecclient_Api_Monitoring{
 		Endpoint: map[uint32]*ipsecclient_yang.Ipsecclient_Api_Monitoring_Endpoint{},
 	}
+
 	for k, v := range statuses {
 		if strings.Contains(k, name) {
 			ret.Endpoint[v.ID] = &ipsecclient_yang.Ipsecclient_Api_Monitoring_Endpoint{
@@ -57,10 +63,13 @@ func (f *SoftwareGenerator) GetMonitoring(clientName *string) (*ipsecclient_yang
 
 func endpointIDFromKey(key string) (int, error) {
 	l := strings.Split(key, "_")
+
 	return strconv.Atoi(l[len(l)-1])
 }
 
 func getStrongswanState(log *logrus.Logger) (map[string]*monitoringEndpoint, error) {
+	log.Info("getStrongswanState invoked")
+
 	options := vici.WithSocketPath(socketPath)
 	session, err := vici.NewSession(options)
 	if err != nil {
@@ -73,10 +82,12 @@ func getStrongswanState(log *logrus.Logger) (map[string]*monitoringEndpoint, err
 	if err != nil {
 		return nil, logger.ReturnError(log, err)
 	}
+
 	ms, err := session.StreamedCommandRequest("list-conns", "list-conn", m)
 	if err != nil {
 		return nil, logger.ReturnError(log, err)
 	}
+
 	endpoints := map[string]*monitoringEndpoint{}
 	for _, m = range ms.Messages() {
 		for _, key := range m.Keys() {
@@ -93,19 +104,23 @@ func getStrongswanState(log *logrus.Logger) (map[string]*monitoringEndpoint, err
 			endpoints[key] = e
 		}
 	}
+
 	m = vici.NewMessage()
 	err = m.Set("noblock", "yes")
 	if err != nil {
 		return nil, logger.ReturnError(log, err)
 	}
+
 	ms, err = session.StreamedCommandRequest("list-sas", "list-sa", m)
 	if err != nil {
 		return nil, logger.ReturnError(log, err)
 	}
+
 	for _, m = range ms.Messages() {
 		for _, key := range m.Keys() {
 			endpoints[key].status = m.Get(key).(*vici.Message).Get("state").(string)
 		}
 	}
+	
 	return endpoints, nil
 }
