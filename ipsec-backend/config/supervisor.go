@@ -34,6 +34,8 @@ type SupervisorInterface interface {
 }
 
 func (s *Supervisor) ReloadSupervisor() error {
+	s.log.Info("ReloadSupervisor invoked")
+
 	client, err := supervisord.NewUnixSocketClient(supervisorNetSocketPath)
 	if err != nil {
 		return logger.ReturnError(s.log, err)
@@ -53,20 +55,29 @@ func (s *Supervisor) ReloadSupervisor() error {
 }
 
 func (s *Supervisor) ReloadStrongswan() error {
+	s.log.Info("ReloadStrongswan invoked")
+
 	if err := s.RestartSupervisor(supervisorNetSocketPath, "strongswan_reload"); err != nil {
 		return logger.ReturnError(s.log, err)
 	}
+
 	return nil
 }
 
 func (s *Supervisor) ReloadVtysh() error {
+	s.log.Info("ReloadVtysh invoked")
+
 	if err := s.RestartSupervisor(supervisorNetSocketPath, "reload_vtysh"); err != nil {
 		return logger.ReturnError(s.log, err)
 	}
+
 	return nil
 }
 
 func (s *Supervisor) RestartSupervisor(socketPath, process string) error {
+	s.log.Info("RestartSupervisor invoked")
+	s.log.Debug(socketPath, process)
+
 	client, err := supervisord.NewUnixSocketClient(socketPath)
 	if err != nil {
 		return logger.ReturnError(s.log, err)
@@ -90,6 +101,9 @@ func (s *Supervisor) RestartSupervisor(socketPath, process string) error {
 }
 
 func getProcessInfosForSocketPath(socketPath string, log *logrus.Logger) ([]supervisord.ProcessInfo, error) {
+	log.Info("getProcessInfosForSocketPath invoked")
+	log.Debug(socketPath)
+
 	client, err := supervisord.NewUnixSocketClient(socketPath)
 	if err != nil {
 		return nil, logger.ReturnError(log, err)
@@ -110,16 +124,23 @@ func getProcessInfosForSocketPath(socketPath string, log *logrus.Logger) ([]supe
 }
 
 func GetProcessInfos(log *logrus.Logger) ([]supervisord.ProcessInfo, error) {
+	log.Info("GetProcessInfos invoked")
+
 	netProcesses, err := getProcessInfosForSocketPath(supervisorNetSocketPath, log)
 	if err != nil {
 		return nil, logger.ReturnError(log, err)
 	}
+
 	apiProcesses, err := getProcessInfosForSocketPath(supervisorApiSocketPath, log)
 	if err != nil {
 		return nil, logger.ReturnError(log, err)
 	}
+
 	ret := []supervisord.ProcessInfo{}
 	ret = append(ret, netProcesses...)
 	ret = append(ret, apiProcesses...)
+
+	log.Debug(ret)
+
 	return ret, nil
 }
