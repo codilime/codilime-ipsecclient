@@ -27,7 +27,9 @@ func BoolPointer(b *bool) *bool {
 	if b == nil {
 		return &ret
 	}
+
 	ret = *b
+
 	return &ret
 }
 
@@ -62,6 +64,7 @@ func stringIfNotNil(s *string) string {
 	if s == nil {
 		return ""
 	}
+
 	return *s
 }
 
@@ -85,24 +88,30 @@ func (e *Endpoint) FromYang(endVrf *ipsecclient_yang.Ipsecclient_Api_Vrf_Endpoin
 }
 
 func (v *Vrf) ToYang(log *logrus.Logger) (*ipsecclient_yang.Ipsecclient_Api_Vrf, error) {
+	log.Info("ToYang invoked")
+
 	cryptoPh1 := []string{}
 	if err := json.Unmarshal(v.CryptoPh1, &cryptoPh1); err != nil {
 		return nil, logger.ReturnError(log, err)
 	}
+
 	cryptoPh2 := []string{}
 	if err := json.Unmarshal(v.CryptoPh2, &cryptoPh2); err != nil {
 		return nil, logger.ReturnError(log, err)
 	}
+
 	ph1 := strings.Join(cryptoPh1, ".")
 	ph2 := strings.Join(cryptoPh2, ".")
 	endpoints := map[string]*ipsecclient_yang.Ipsecclient_Api_Vrf_Endpoint{}
 	for _, e := range v.Endpoints {
 		endpoints[e.RemoteIPSec] = e.ToYang()
 	}
+
 	vlans, err := v.GetVlans(log)
 	if err != nil {
 		return nil, logger.ReturnError(log, err)
 	}
+
 	vlansMap := map[uint32]*ipsecclient_yang.Ipsecclient_Api_Vrf_Vlan{}
 	for _, v := range vlans {
 		vlansMap[v.Vlan] = &ipsecclient_yang.Ipsecclient_Api_Vrf_Vlan{
@@ -110,6 +119,7 @@ func (v *Vrf) ToYang(log *logrus.Logger) (*ipsecclient_yang.Ipsecclient_Api_Vrf,
 			LanIp: StringPointer(v.LanIP),
 		}
 	}
+
 	return &ipsecclient_yang.Ipsecclient_Api_Vrf{
 		Id:                Uint32Pointer(v.ID),
 		Active:            BoolPointer(v.Active),
@@ -138,6 +148,7 @@ func (c *CertificateAuthority) ToYang() *ipsecclient_yang.Ipsecclient_Api_Ca {
 }
 
 func (v *Vrf) FromYang(vrfYang *ipsecclient_yang.Ipsecclient_Api_Vrf, log *logrus.Logger) error {
+	log.Info("FromYang invoked")
 	v.ClientName = *vrfYang.ClientName
 	vlans := []interface{}{}
 	for _, v := range vrfYang.Vlan {
@@ -146,20 +157,24 @@ func (v *Vrf) FromYang(vrfYang *ipsecclient_yang.Ipsecclient_Api_Vrf, log *logru
 			LanIP: *v.LanIp,
 		})
 	}
+
 	var err error
 	v.Vlans, err = json.Marshal(&vlans)
 	if err != nil {
 		return logger.ReturnError(log, err)
 	}
+
 	cryptoPh1 := strings.Split(*vrfYang.CryptoPh1, ".")
 	v.CryptoPh1, err = json.Marshal(&cryptoPh1)
 	if err != nil {
 		return logger.ReturnError(log, err)
 	}
+
 	v.CryptoPh2, err = json.Marshal(strings.Split(*vrfYang.CryptoPh2, "."))
 	if err != nil {
 		return logger.ReturnError(log, err)
 	}
+
 	v.PhysicalInterface = *vrfYang.PhysicalInterface
 	v.Active = vrfYang.Active
 	v.LocalAs = *vrfYang.LocalAs
@@ -169,7 +184,9 @@ func (v *Vrf) FromYang(vrfYang *ipsecclient_yang.Ipsecclient_Api_Vrf, log *logru
 		end.FromYang(e)
 		v.Endpoints = append(v.Endpoints, end)
 	}
+
 	v.OSPF = vrfYang.Ospf
+
 	return nil
 }
 
@@ -186,6 +203,7 @@ func SourceInterfacesToYang(sourceInterfaces []string) []*ipsecclient_yang.Ipsec
 	for _, sourceInterface := range sourceInterfaces {
 		yangSourceInterface = append(yangSourceInterface, &ipsecclient_yang.Ipsecclient_Api_SourceInterface{Name: StringPointer(sourceInterface)})
 	}
+
 	return yangSourceInterface
 }
 
@@ -194,6 +212,7 @@ func phase1EncryptionToYang(algorithms []string) []*ipsecclient_yang.Ipsecclient
 	for _, algorithm := range algorithms {
 		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_1Encryption{Name: StringPointer(algorithm)})
 	}
+
 	return yangAlgorithms
 }
 
@@ -202,6 +221,7 @@ func phase1IntegrityToYang(algorithms []string) []*ipsecclient_yang.Ipsecclient_
 	for _, algorithm := range algorithms {
 		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_1Integrity{Name: StringPointer(algorithm)})
 	}
+
 	return yangAlgorithms
 }
 
@@ -210,6 +230,7 @@ func phase1KeyExchangeToYang(algorithms []string) []*ipsecclient_yang.Ipsecclien
 	for _, algorithm := range algorithms {
 		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_1KeyExchange{Name: StringPointer(algorithm)})
 	}
+
 	return yangAlgorithms
 }
 
@@ -218,6 +239,7 @@ func phase2EncryptionToYang(algorithms []string) []*ipsecclient_yang.Ipsecclient
 	for _, algorithm := range algorithms {
 		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2Encryption{Name: StringPointer(algorithm)})
 	}
+
 	return yangAlgorithms
 }
 
@@ -226,6 +248,7 @@ func phase2IntegrityToYang(algorithms []string) []*ipsecclient_yang.Ipsecclient_
 	for _, algorithm := range algorithms {
 		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2Integrity{Name: StringPointer(algorithm)})
 	}
+
 	return yangAlgorithms
 }
 
@@ -234,6 +257,7 @@ func phase2KeyExchangeToYang(algorithms []string) []*ipsecclient_yang.Ipsecclien
 	for _, algorithm := range algorithms {
 		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2KeyExchange{Name: StringPointer(algorithm)})
 	}
+	
 	return yangAlgorithms
 }
 
