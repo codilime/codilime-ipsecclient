@@ -21,13 +21,17 @@ import (
 )
 
 func (f *SoftwareGenerator) storeFRRConfig(tmpFile string) error {
+	f.log.Info("storeFRRConfig invoked")
 	if err := f.FileHandler.WriteFile("/opt/frr/vtysh.conf", []byte(tmpFile), 0644); err != nil {
 		return logger.ReturnError(f.log, err)
 	}
+
 	if err := f.Supervisor.ReloadVtysh(); err != nil {
 		return logger.ReturnError(f.log, err)
 	}
+
 	log.Debugf("frr config stored:\n%s", tmpFile)
+
 	return nil
 }
 
@@ -44,32 +48,39 @@ func (d frrTemplateData) HasOSPF() bool {
 }
 
 func (f *SoftwareGenerator) generateFRRConfig(vrf db.Vrf) error {
+	f.log.Info("generateFRRConfig invoked")
 	bytes, err := ioutil.ReadFile(templatesFolder + "frr.template")
 	if err != nil {
 		return logger.ReturnError(f.log, err)
 	}
+
 	t, err := template.New("frr").Parse(string(bytes))
 	if err != nil {
 		return logger.ReturnError(f.log, err)
 	}
+
 	builder := strings.Builder{}
 	vlanList, err := vrf.GetVlans(f.log)
 	if err != nil {
 		return logger.ReturnError(f.log, err)
 	}
+
 	if err = t.Execute(&builder, frrTemplateData{
 		Vrf:      vrf,
 		VlanList: vlanList,
 	}); err != nil {
 		return logger.ReturnError(f.log, err)
 	}
+
 	template := builder.String()
 	log.Debugf("generated frr template:\n%s", template)
+
 	return logger.ReturnError(f.log, f.storeFRRConfig(template))
 }
 
 func (f *SoftwareGenerator) deleteFRRConfig(vrf db.Vrf) error {
-	log.Debugf("deleting frr config")
+	f.log.Info("deleteFRRConfig invoked")
 	frrConfig := fmt.Sprintf("no router bgp %d vrf %s\n", vrf.LocalAs, "vrf-"+strconv.Itoa(int(vrf.ID)))
+	f.log.Debug(frrConfig)
 	return logger.ReturnError(f.log, f.storeFRRConfig(frrConfig))
 }
