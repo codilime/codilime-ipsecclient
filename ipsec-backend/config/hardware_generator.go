@@ -48,14 +48,17 @@ type HardwareGenerator struct {
 }
 
 func NewHardwareGenerator(switchCreds db.SwitchCreds, log *logrus.Logger) (*HardwareGenerator, error) {
+	log.Info("NewHardwareGenerator invoked")
 	nginxLocalIp, isPresent := os.LookupEnv("NGINX_LOCAL_IP")
 	if isPresent {
 		return &HardwareGenerator{nginxLocalIp, log}, nil
 	}
+
 	return &HardwareGenerator{defaultLocalAdd, log}, nil
 }
 
 func (h *HardwareGenerator) GenerateConfigs(vrf db.Vrf, switchCreds db.SwitchCreds) error {
+	h.log.Info("GenerateConfigs invoked")
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -76,6 +79,8 @@ func (h *HardwareGenerator) GenerateConfigs(vrf db.Vrf, switchCreds db.SwitchCre
 	}
 
 	pskEndpoints, certsEndpoints := endpointSubsets(vrf)
+	h.log.Debug("pskEndpoints", pskEndpoints)
+	h.log.Debug("pskEndpoints", certsEndpoints)
 
 	if len(pskEndpoints) > 0 {
 		if err := h.doTemplateFolderCreate("psk", client, vrfWithSlices, pskEndpoints, switchCreds); err != nil {
@@ -91,16 +96,21 @@ func (h *HardwareGenerator) GenerateConfigs(vrf db.Vrf, switchCreds db.SwitchCre
 			return logger.ReturnError(h.log, err)
 		}
 	}
+
 	return nil
 }
 
 func (h *HardwareGenerator) DeleteConfigs(vrf db.Vrf, switchCreds db.SwitchCreds) error {
+	h.log.Info("DeleteConfigs invoked")
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
+
 	pskEndpoints, certsEndpoints := endpointSubsets(vrf)
+	h.log.Debug("pskEndpoints", pskEndpoints)
+	h.log.Debug("pskEndpoints", certsEndpoints)
 
 	if len(pskEndpoints) > 0 {
 		if err := h.doTemplateFolderDelete("psk", client, vrf, pskEndpoints, switchCreds); err != nil {
@@ -113,6 +123,7 @@ func (h *HardwareGenerator) DeleteConfigs(vrf db.Vrf, switchCreds db.SwitchCreds
 			return logger.ReturnError(h.log, err)
 		}
 	}
+
 	return nil
 }
 
@@ -123,6 +134,7 @@ func bgpEndpointSubset(endpoints []db.Endpoint, ipv6 bool) []db.Endpoint {
 			bgpEndpoints = append(bgpEndpoints, e)
 		}
 	}
+
 	return bgpEndpoints
 }
 
@@ -135,6 +147,7 @@ func espHmacAllowed(encryption string, whenEspHmac string) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -175,6 +188,7 @@ func getTemplateFuncMap() template.FuncMap {
 }
 
 func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *http.Client, vrf VrfWithCryptoSlices, endpoints []db.Endpoint, switchCreds db.SwitchCreds) error {
+	h.log.Info("doTemplateFolderCreate invoked")
 	files, err := ioutil.ReadDir(hwTemplatesDir + "/" + folderName)
 	if err != nil {
 		return logger.ReturnError(h.log, err)
@@ -224,6 +238,7 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 			return logger.ReturnError(h.log, err)
 		}
 	}
+
 	return nil
 }
 
@@ -249,6 +264,7 @@ func transformLocalIDType(localID string) string {
 	if net.ParseIP(localID) != nil {
 		return "address"
 	}
+
 	return "fqdn"
 }
 
@@ -264,6 +280,7 @@ func transformLocalID(localID string) string {
 			return localID[1:]
 		}
 	}
+
 	return localID
 }
 
@@ -280,6 +297,7 @@ func reverseSlice(s []fs.FileInfo) []fs.FileInfo {
 }
 
 func (h *HardwareGenerator) doTemplateFolderDelete(folderName string, client *http.Client, vrf db.Vrf, endpoints []db.Endpoint, switchCreds db.SwitchCreds) error {
+	h.log.Info("doTemplateFolderDelete invoked")
 	files, err := ioutil.ReadDir(hwTemplatesDir + "/" + folderName)
 	if err != nil {
 		return logger.ReturnError(h.log, err)
@@ -323,10 +341,12 @@ func (h *HardwareGenerator) doTemplateFolderDelete(folderName string, client *ht
 			}
 		}
 	}
+
 	return nil
 }
 
 func (h *HardwareGenerator) insertPkcs12(vrf VrfWithCryptoSlices, client *http.Client, switchCreds db.SwitchCreds) error {
+	h.log.Info("insertPkcs12 invkoed")
 	for _, e := range vrf.Endpoints {
 		if err := h.tryRestconfRequest("POST", "Cisco-IOS-XE-rpc:crypto", `{
 		"input": {
@@ -342,6 +362,7 @@ func (h *HardwareGenerator) insertPkcs12(vrf VrfWithCryptoSlices, client *http.C
 			return logger.ReturnError(h.log, err)
 		}
 	}
+
 	return nil
 }
 
@@ -363,14 +384,17 @@ func endpointSubsets(vrf db.Vrf) ([]db.Endpoint, []db.Endpoint) {
 }
 
 func (h *HardwareGenerator) tryRestconfDelete(path string, client *http.Client, switchCreds db.SwitchCreds) error {
+	h.log.Info("tryRestconfDelete invoked")
 	return logger.ReturnError(h.log, h.tryRestconfRequest("DELETE", path, "", client, switchCreds))
 }
 
 func (h *HardwareGenerator) tryRestconfPatch(path, data string, client *http.Client, switchCreds db.SwitchCreds) error {
+	h.log.Info("tryRestconfPatch invoked")
 	return logger.ReturnError(h.log, h.tryRestconfRequest("PATCH", path, data, client, switchCreds))
 }
 
 func (h *HardwareGenerator) tryRestconfRequest(method, path, data string, client *http.Client, switchCreds db.SwitchCreds) error {
+	h.log.Info("tryRestconfRequest invoked")
 	retries := 20
 	for i := 0; i < retries; i++ {
 		time.Sleep(time.Millisecond * 500)
@@ -388,16 +412,19 @@ func (h *HardwareGenerator) tryRestconfRequest(method, path, data string, client
 			return logger.ReturnError(h.log, err)
 		}
 	}
+
 	return logger.ReturnError(h.log, fmt.Errorf("%s: retry limit %d exceeded", path, retries))
 }
 
 func (h *HardwareGenerator) restconfDoRequest(method, path, data string, client *http.Client, switchCreds db.SwitchCreds) error {
+	h.log.Info("restconfDoRequest invoked")
 	h.log.Debugf("%s: %s\n%s\n", method, path, data)
 	fullPath := fmt.Sprintf(switchBase, switchCreds.SwitchAddress) + path
 	req, err := http.NewRequest(method, fullPath, strings.NewReader(data))
 	if err != nil {
 		return logger.ReturnError(h.log, err)
 	}
+
 	req.Header.Add("Content-Type", "application/yang-data+json")
 	req.Header.Add("Accept", "application/yang-data+json")
 	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
@@ -405,17 +432,21 @@ func (h *HardwareGenerator) restconfDoRequest(method, path, data string, client 
 	if err != nil {
 		return logger.ReturnError(h.log, err)
 	}
+
 	if resp.StatusCode >= 400 {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return logger.ReturnError(h.log, err)
 		}
+
 		return logger.ReturnError(h.log, errors.New(method + " to " + path + " failed (" + strconv.Itoa(resp.StatusCode) + "): " + string(body)))
 	}
+
 	return nil
 }
 
 func (h *HardwareGenerator) GetMonitoring(_ *string, switchCreds db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
+	h.log.Info("GetMonitoring invoked")
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -425,13 +456,16 @@ func (h *HardwareGenerator) GetMonitoring(_ *string, switchCreds db.SwitchCreds)
 	if err != nil {
 		return nil, logger.ReturnError(h.log, err)
 	}
+
 	if res == nil {
 		return &ipsecclient_yang.Ipsecclient_Api_Monitoring{}, nil
 	}
+
 	idents := res["Cisco-IOS-XE-crypto-oper:crypto-ipsec-ident"].([]interface{})
 	monitoring := ipsecclient_yang.Ipsecclient_Api_Monitoring{
 		Endpoint: map[uint32]*ipsecclient_yang.Ipsecclient_Api_Monitoring_Endpoint{},
 	}
+
 	for _, ident_ := range idents {
 		ident := ident_.(map[string]interface{})
 		endpointIDStr := ident["interface"].(string)[len("Tunnel"):]
@@ -447,10 +481,14 @@ func (h *HardwareGenerator) GetMonitoring(_ *string, switchCreds db.SwitchCreds)
 			Id:      db.Uint32Pointer(uint32(endpointID)),
 		}
 	}
+
 	return &monitoring, nil
 }
 
 func GetSourceInterfaces(switchCreds db.SwitchCreds, log *logrus.Logger) ([]string, error) {
+	log.Info("GetSourceInterfaces invoked")
+	log.Debug(switchCreds)
+
 	sourceInterfaces := []string{}
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -493,10 +531,14 @@ func GetSourceInterfaces(switchCreds db.SwitchCreds, log *logrus.Logger) ([]stri
 			return sourceInterfaces, nil
 		}
 	}
+
 	return sourceInterfaces, logger.ReturnError(log, fmt.Errorf("cannot get source interfaces from the switch - malformed response"))
 }
 
-func (*HardwareGenerator) CheckSwitchBasicAuth(switchCreds db.SwitchCreds) (bool, error) {
+func (h *HardwareGenerator) CheckSwitchBasicAuth(switchCreds db.SwitchCreds) (bool, error) {
+	h.log.Info("CheckSwitchBasicAuth")
+	h.log.Debug(switchCreds)
+
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -515,9 +557,11 @@ func (*HardwareGenerator) CheckSwitchBasicAuth(switchCreds db.SwitchCreds) (bool
 	if err != nil {
 		return false, err
 	}
+
 	if resp.StatusCode == 200 {
 		return true, nil
 	}
+	
 	return false, nil
 }
 
@@ -601,7 +645,9 @@ func getKeysFromMap(map_ map[string]*yang.Entry) []string {
 	return keys
 }
 
-func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
+func GetAlgorithms(switchCreds db.SwitchCreds, log *logrus.Logger) (db.Algorithm, string, error) {
+	log.Info("GetAlgorithms invoked")
+	log.Debug(switchCreds)
 	ms := yang.NewModules()
 
 	modulesToParse := []string{"Cisco-IOS-XE-crypto", "cisco-semver", "ietf-inet-types", "Cisco-IOS-XE-native",
@@ -635,26 +681,26 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 	fullPath := "https://" + switchCreds.SwitchAddress + "/restconf/data/modules-state/module"
 	req, err := http.NewRequest(http.MethodGet, fullPath, nil)
 	if err != nil {
-		return db.Algorithm{}, "", fmt.Errorf("prepare request to get modules, path: %s: %w", fullPath, err)
+		return db.Algorithm{}, "", logger.ReturnError(log, fmt.Errorf("prepare request to get modules, path: %s: %w", fullPath, err))
 	}
 	req.Header.Add("Content-Type", "application/yang-data+json")
 	req.Header.Add("Accept", "application/yang-data+json")
 	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
 	resp, err := client.Do(req)
 	if err != nil {
-		return db.Algorithm{}, "", fmt.Errorf("do request for modules: %w", err)
+		return db.Algorithm{}, "", logger.ReturnError(log, fmt.Errorf("do request for modules: %w", err))
 	}
 
 	decoder := json.NewDecoder(resp.Body)
 	if err := decoder.Decode(&modules); err != nil {
-		return db.Algorithm{}, "", fmt.Errorf("decoding modules response: %w", err)
+		return db.Algorithm{}, "", logger.ReturnError(log, fmt.Errorf("decoding modules response: %w", err))
 	}
 
 	for _, module := range modules.Modules {
 		for _, moduleToParse := range modulesToParse {
 			if module.Name == moduleToParse {
 				if err := parse(ms, module.Name, module.Schema, switchCreds); err != nil {
-					return db.Algorithm{}, "", fmt.Errorf("parsing module %s: %w", module.Name, err)
+					return db.Algorithm{}, "", logger.ReturnError(log, fmt.Errorf("parsing module %s: %w", module.Name, err))
 				}
 			}
 		}
@@ -663,7 +709,7 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 				for _, moduleToParse := range modulesToParse {
 					if submodule.Name == moduleToParse {
 						if err := parse(ms, submodule.Name, submodule.Schema, switchCreds); err != nil {
-							return db.Algorithm{}, "", fmt.Errorf("parsing submodule %s: %w", submodule.Name, err)
+							return db.Algorithm{}, "", logger.ReturnError(log, fmt.Errorf("parsing submodule %s: %w", submodule.Name, err))
 						}
 					}
 				}
@@ -671,13 +717,15 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 		}
 	}
 
+	log.Debug(modules.Modules)
+
 	if errs := ms.Process(); errs != nil {
 		e := ""
 		for _, err := range errs {
 			e += fmt.Sprintf(", %s ", err.Error())
 		}
 
-		return db.Algorithm{}, "", fmt.Errorf("process yang modules: %w", errors.New(e))
+		return db.Algorithm{}, "", logger.ReturnError(log, fmt.Errorf("process yang modules: %w", errors.New(e)))
 	}
 	nativeModule, _ := ms.GetModule("Cisco-IOS-XE-native")
 
@@ -691,8 +739,6 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 	whenEspHmac, _ := nativeModule.Dir["native"].Dir["crypto"].Dir["ipsec"].Dir["transform-set"].Dir["esp-hmac"].GetWhenXPath()
 	phase2KeyExchange := nativeModule.Dir["native"].Dir["crypto"].Dir["ipsec"].Dir["profile"].Dir["set"].Dir["pfs"].Dir["group"].Type.Enum.Names()
 
-	fmt.Printf("whenEspHmac %s\n", whenEspHmac)
-
 	return db.Algorithm{
 		Phase1Encryption:  getKeysFromMap(phase1Encryption),
 		Phase1Integrity:   getKeysFromMap(phase1Integrity),
@@ -704,6 +750,8 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 }
 
 func (h *HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, error) {
+	h.log.Info("GetSwitchModel invoked")
+
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -731,18 +779,20 @@ func (h *HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, 
 	if err := decoder.Decode(&model); err != nil {
 		return "",  nil
 	}
+	h.log.Debug(model.Model)
 
 	return model.Model, nil
 }
 
 func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds, log *logrus.Logger) (map[string]interface{}, error) {
-	log.Debugf("GET: %s\n", path)
+	log.Info("restconfGetData invoked")
 	ret := map[string]interface{}{}
 	fullPath := fmt.Sprintf(switchBase, switchCreds.SwitchAddress) + path
 	req, err := http.NewRequest("GET", fullPath, nil)
 	if err != nil {
 		return ret, logger.ReturnError(log, err)
 	}
+
 	req.Header.Add("Content-Type", "application/yang-data+json")
 	req.Header.Add("Accept", "application/yang-data+json")
 	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
@@ -750,24 +800,30 @@ func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCred
 	if err != nil {
 		return ret, logger.ReturnError(log, err)
 	}
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return ret, logger.ReturnError(log, err)
 	}
+
 	if resp.StatusCode >= 400 {
 		return ret, logger.ReturnError(log, errors.New("get on " + path + " failed (" + strconv.Itoa(resp.StatusCode) + "): " + string(body)))
 	}
+
 	if strings.TrimSpace(string(body)) == "" {
 		return nil, nil
 	}
+
 	if err := json.Unmarshal(body, &ret); err != nil {
 		fmt.Println("failed to unmarshal:", string(body))
 		return ret, logger.ReturnError(log, err)
 	}
+
 	return ret, nil
 }
 
 func restconfGetCryptoStrings(cryptoString string, log *logrus.Logger) ([]string, error) {
+	log.Info("restconfGetCryptoStrings invoked")
 	crypto := []string{}
 	if err := json.Unmarshal([]byte(cryptoString), &crypto); err != nil {
 		return nil, logger.ReturnError(log, err)
@@ -776,5 +832,6 @@ func restconfGetCryptoStrings(cryptoString string, log *logrus.Logger) ([]string
 	if len(crypto) < 2 {
 		return nil, logger.ReturnError(log, errors.New("malformed crypto: " + strings.Join(crypto, ", ")))
 	}
+	
 	return crypto, nil
 }
