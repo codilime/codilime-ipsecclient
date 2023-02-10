@@ -160,12 +160,6 @@ func ReturnErrorEx(caller int, log *logrus.Logger, errs ...error) error {
 			errStr = errStr + fmt.Sprintf("%d: %s\n", i, currentErr)
 		}
 	}
-	logrus.WithFields(logrus.Fields{
-		"err":  errStr,
-		"line": line,
-		"func": f.Name(),
-		"file": file,
-	}).Debug("")
 
 	log.WithFields(logrus.Fields{
 		"err":  errStr,
