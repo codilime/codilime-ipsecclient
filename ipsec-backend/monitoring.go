@@ -20,6 +20,8 @@ import (
 )
 
 func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
+	a.log.Info("monitoring invoked")
+
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
@@ -35,16 +37,21 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 		default:
 			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
 		}
+
 		return
 	}
+
 	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+
 		return
 	}
+
 	switchCreds, err := a.getSwitchCreds(key)
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+
 		return
 	}
 
@@ -53,28 +60,34 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 		monitoring, err = a.softwareGenerator.GetMonitoring(&vrf.ClientName)
 		if err != nil {
 			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+
 			return
 		}
 	} else {
 		monitoring, err = a.hardwareGenerator.GetMonitoring(nil, *switchCreds)
 		if err != nil {
 			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+
 			return
 		}
 	}
+
 	monitoring.Id = db.Uint32Pointer(uint32(id))
 	api := ipsecclient_yang.Ipsecclient_Api{
 		Monitoring: map[uint32]*ipsecclient_yang.Ipsecclient_Api_Monitoring{
 			uint32(id): monitoring,
 		},
 	}
+
 	json, err := ygot.EmitJSON(&api, &ygot.EmitJSONConfig{
 		Format: ygot.RFC7951,
 		Indent: "  ",
 	})
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+
 		return
 	}
+
 	respondWithMarshalledJSON(w, http.StatusOK, json, a.log)
 }
