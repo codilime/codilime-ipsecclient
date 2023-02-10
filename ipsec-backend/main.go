@@ -22,27 +22,38 @@ func main() {
 	}
 
 	log, err := logger.NewLogger()
+	log.Info("logger created")
 
 	sv := config.NewSupervisor(log)
+	log.Info("Supervisor created")
+
 	softwareGenerator, err := config.NewSoftwareGenerator(&config.FileHandler{}, &sv, log)
 	if err != nil {
 		panic(err)
 	}
+
+	log.Info("SoftwareGenerator created")
 	hardwareGenerator, err := config.NewHardwareGenerator(switchCreds, log)
 	if err != nil {
 		panic(err)
 	}
+
+	log.Info("HardwareGenerator created")
 
 	dbInstance, err := db.MakeDB("/iox_data/appdata/ipsec.db", os.Getenv("ERR_ROT_DAYS"), os.Getenv("ERR_ROT_SIZE"), log)
 	if err != nil {
 		panic(err)
 	}
 
-	
+	log.Info("DB created")
 
 	app, err := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds, log)
 	if err != nil {
 		panic(err)
 	}
+
+	log.Info("App created")
+	log.Info("Running app...")
+
 	app.Run("0.0.0.0:8000")
 }
