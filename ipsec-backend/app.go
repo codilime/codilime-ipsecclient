@@ -79,13 +79,13 @@ func (a *App) ensureHWVRF() error {
 	if err == nil {
 		return nil
 	}
-	
+
 	if strings.Contains(err.Error(),
 		"UNIQUE constraint failed: vrfs.id") {
 		return nil
 	}
 
-	return logger.ReturnError(a.log, err)
+	return logger.LogErrorReturnFirst(a.log, err)
 }
 
 func NewApp(dbInstance db.DBinterface, softwareGenerator config.SoftwareGeneratorInt,
@@ -100,11 +100,11 @@ func NewApp(dbInstance db.DBinterface, softwareGenerator config.SoftwareGenerato
 	app.hardwareGenerator = hardwareGenerator
 	app.initializeRoutes()
 	if err := app.initializeSettings(switchCreds); err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, logger.LogErrorReturnFirst(log, err)
 	}
 
 	if err := app.ensureHWVRF(); err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, logger.LogErrorReturnFirst(log, err)
 	}
 
 	log.Info("NewApp created")
@@ -117,35 +117,54 @@ func (a *App) initializeSettings(switchCreds db.SwitchCreds) error {
 
 	password := "cisco123"
 	if err := htpasswd.SetPassword(nginxPasswordFile, username, password, htpasswd.HashBCrypt); err != nil {
-		return logger.ReturnError(a.log, err)
+		return logger.LogErrorReturnFirst(a.log, err)
 	}
 
 	model, err := a.hardwareGenerator.GetSwitchModel(switchCreds)
 	if err != nil {
-		return logger.ReturnError(a.log, err)
+		return logger.LogErrorReturnFirst(a.log, err)
 	}
 
-	return logger.ReturnError(a.log,
-		a.db.SetSetting(password, "switch_username", switchCreds.Username),
-		a.db.SetSetting(password, "switch_password", switchCreds.Password),
-		a.db.SetSetting(password, "system_name", model),
-		a.db.SetSetting(password, "app_version", os.Getenv("APP_VERSION")),
-		a.db.SetSetting(password, "switch_address", switchCreds.SwitchAddress),
-	)
+	err = a.db.SetSetting(password, "switch_username", switchCreds.Username)
+	if err != nil {
+		return logger.LogErrorReturnFirst(a.log, err)
+	}
+
+	err = a.db.SetSetting(password, "switch_password", switchCreds.Password)
+	if err != nil {
+		return logger.LogErrorReturnFirst(a.log, err)
+	}
+
+	err = a.db.SetSetting(password, "system_name", model)
+	if err != nil {
+		return logger.LogErrorReturnFirst(a.log, err)
+	}
+
+	err = a.db.SetSetting(password, "app_version", os.Getenv("APP_VERSION"))
+	if err != nil {
+		return logger.LogErrorReturnFirst(a.log, err)
+	}
+
+	err = a.db.SetSetting(password, "switch_address", switchCreds.SwitchAddress)
+	if err != nil {
+		return logger.LogErrorReturnFirst(a.log, err)
+	}
+
+	return nil
 }
 
 func (a *App) _changePassword(oldPass, newPass string) error {
 	a.log.Info("_changePassword invoked")
 	if err := htpasswd.SetPassword(nginxPasswordFile, username, newPass, htpasswd.HashBCrypt); err != nil {
-		return logger.ReturnError(a.log, err)
+		return logger.LogErrorReturnFirst(a.log, err)
 	}
 
 	cmd := exec.Command("nginx", "-s", "reload")
 	if _, err := cmd.Output(); err != nil {
-		return logger.ReturnError(a.log, err)
+		return logger.LogErrorReturnFirst(a.log, err)
 	}
 
-	return logger.ReturnError(a.log, a.db.ChangePassword(oldPass, newPass))
+	return logger.LogErrorReturnFirst(a.log, a.db.ChangePassword(oldPass, newPass))
 }
 
 func (a *App) Run(addr string) {
@@ -186,7 +205,7 @@ func getPassFromHeader(header http.Header, log *logrus.Logger) (string, error) {
 	based := strings.TrimRight(authHeader[0][prefixLen:], "=")
 	decodedBasicAuth, err := base64.RawStdEncoding.DecodeString(based)
 	if err != nil {
-		return "", logger.ReturnError(log, err)
+		return "", logger.LogErrorReturnFirst(log, err)
 	}
 
 	return strings.Split(string(decodedBasicAuth), ":")[1], nil
@@ -223,7 +242,7 @@ func (a *App) changePassword(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
 		return
 	}
-	
+
 	respondWithJSON(w, http.StatusNoContent, nil, a.log)
 }
 
@@ -258,30 +277,34 @@ func ClearCAs(log *logrus.Logger) error {
 
 	dir, err := ioutil.ReadDir(CAsDir)
 	if err != nil {
-		return logger.ReturnError(log, err)
+		return logger.LogErrorReturnFirst(log, err)
 	}
 
-	errs := []error{}
 	for _, d := range dir {
-		errs = append(errs, os.RemoveAll(path.Join([]string{CAsDir, d.Name()}...)))
+		err := os.RemoveAll(path.Join([]string{CAsDir, d.Name()}...))
+		if err != nil {
+			return err
+		}
 	}
 
-	return logger.ReturnError(log, errs...)
+	return nil
 }
 
 func writeCAs(cas []db.CertificateAuthority, log *logrus.Logger) error {
 	log.Info("writeCAs invoked")
 
 	if err := ClearCAs(log); err != nil {
-		return logger.ReturnError(log, err)
+		return logger.LogErrorReturnFirst(log, err)
 	}
 
-	errs := []error{}
 	for _, ca := range cas {
-		errs = append(errs, ioutil.WriteFile(fmt.Sprintf("%s/%d.pem", CAsDir, ca.ID), []byte(ca.CA), 0644))
+		err := ioutil.WriteFile(fmt.Sprintf("%s/%d.pem", CAsDir, ca.ID), []byte(ca.CA), 0644)
+		if err != nil {
+			return err
+		}
 	}
 
-	return logger.ReturnError(log, errs...)
+	return nil
 }
 
 func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
@@ -299,7 +322,7 @@ func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
 		return
 	}
-	
+
 	if err := api.Validate(); err != nil {
 		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
 		return
@@ -596,7 +619,7 @@ func vrfValid(vrf db.Vrf, log *logrus.Logger) (bool, error) {
 
 	vlans, err := vrf.GetVlans(log)
 	if err != nil {
-		return false, logger.ReturnError(log, err)
+		return false, logger.LogErrorReturnFirst(log, err)
 	}
 
 	for _, v := range vlans {
@@ -618,37 +641,37 @@ func (a *App) _updateBackends(key string, vrf, oldVrf *db.Vrf) error {
 	a.log.Info("_updateBackends invoked")
 	// save and retrieve the vrf to update the endpoints ids
 	if err := a.db.EncryptPSK(key, vrf); err != nil {
-		return logger.ReturnError(a.log, err)
+		return logger.LogErrorReturnFirst(a.log, err)
 	}
 
 	if err := a.db.UpdateVrf(vrf); err != nil {
-		return logger.ReturnError(a.log, err)
+		return logger.LogErrorReturnFirst(a.log, err)
 	}
 	if err := a.db.GetVrf(vrf); err != nil {
-		return logger.ReturnError(a.log, err)
+		return logger.LogErrorReturnFirst(a.log, err)
 	}
 
 	if err := a.db.DecryptPSK(key, vrf); err != nil {
-		return logger.ReturnError(a.log, err)
+		return logger.LogErrorReturnFirst(a.log, err)
 	}
 
 	// handle backends
 	if *oldVrf.Active != *vrf.Active {
 		if *vrf.Active {
 			if err := a.generateConfigs(key, *vrf); err != nil {
-				return logger.ReturnError(a.log, err)
+				return logger.LogErrorReturnFirst(a.log, err)
 			}
 		} else {
 			if err := a.deleteConfigs(key, *oldVrf); err != nil {
-				return logger.ReturnError(a.log, err)
+				return logger.LogErrorReturnFirst(a.log, err)
 			}
 		}
 	} else if *vrf.Active {
 		if err := a.deleteConfigs(key, *oldVrf); err != nil {
-			return logger.ReturnError(a.log, err)
+			return logger.LogErrorReturnFirst(a.log, err)
 		}
 		if err := a.generateConfigs(key, *vrf); err != nil {
-			return logger.ReturnError(a.log, err)
+			return logger.LogErrorReturnFirst(a.log, err)
 		}
 	}
 
@@ -868,7 +891,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	a.log.Info("updateVrf invoked")
-	
+
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
@@ -895,7 +918,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	vrfSubJson, ok := j["vrf"]
 	if !ok {
 		a.respondWithError(w, http.StatusBadRequest, "malformed json", a.log)
-		
+
 		return
 	}
 
@@ -995,17 +1018,17 @@ func (a *App) getSwitchCreds(key string) (*db.SwitchCreds, error) {
 	var err error
 	username, err := a.db.GetSetting(key, "switch_username")
 	if err != nil {
-		return nil, logger.ReturnError(a.log, err)
+		return nil, logger.LogErrorReturnFirst(a.log, err)
 	}
 
 	password, err := a.db.GetSetting(key, "switch_password")
 	if err != nil {
-		return nil, logger.ReturnError(a.log, err)
+		return nil, logger.LogErrorReturnFirst(a.log, err)
 	}
 
 	switchAddress, err := a.db.GetSetting(key, "switch_address")
 	if err != nil {
-		return nil, logger.ReturnError(a.log, err)
+		return nil, logger.LogErrorReturnFirst(a.log, err)
 	}
 
 	whenEspHmac, err := a.db.GetSetting(key, "when_esp_hmac")
@@ -1089,11 +1112,11 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 
 	err = a.deleteConfigs(key, vrf)
 	if err != nil {
-		logger.ReturnError(a.log, err)
+		logger.LogErrorReturnFirst(a.log, err)
 		a.db.DeleteVrf(&vrf)
 		err = nil
 		if id == db.HardwareVrfID {
-			err =  a.ensureHWVRF()
+			err = a.ensureHWVRF()
 		}
 	}
 
@@ -1103,7 +1126,7 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 
 	a.log.Info("Delete vrf completed")
 	a.log.Debug(fmt.Sprintf("Delete vrf completed|deleted vrf: %v", vrf))
-	
+
 	respondWithJSON(w, http.StatusNoContent, nil, a.log)
 }
 
@@ -1120,14 +1143,14 @@ func getLastBytesOfFile(fname string, maxBytes int64, log *logrus.Logger) ([]byt
 
 	file, err := os.Open(fname)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, logger.LogErrorReturnFirst(log, err)
 	}
 
 	defer file.Close()
 
 	stat, err := os.Stat(fname)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, logger.LogErrorReturnFirst(log, err)
 	}
 
 	bytes := min(maxBytes, stat.Size())
@@ -1135,7 +1158,7 @@ func getLastBytesOfFile(fname string, maxBytes int64, log *logrus.Logger) ([]byt
 	start := stat.Size() - bytes
 	_, err = file.ReadAt(buf, start)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, logger.LogErrorReturnFirst(log, err)
 	}
 
 	return buf, nil
@@ -1188,7 +1211,7 @@ func (a *App) getErrors(w http.ResponseWriter, r *http.Request) {
 	storedErrors, err := a.db.GetStoredErrors()
 	if err != nil {
 		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
-		
+
 		return
 	}
 
@@ -1370,7 +1393,7 @@ func respondWithMarshalledJSON(w http.ResponseWriter, code int, response string,
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	if _, err := w.Write([]byte(response)); err != nil {
-		logger.ReturnNewError("Error while writing the response: " + err.Error(), log)
+		logger.ReturnNewError("Error while writing the response: "+err.Error(), log)
 	}
 }
 
@@ -1378,7 +1401,7 @@ func (a *App) respondWithError(w http.ResponseWriter, code int, message string, 
 	a.log.Info("respondWithError invoked")
 
 	a.storeError(message)
-	logger.ReturnErrorEx(2,log, fmt.Errorf(message))
+	logger.ReturnErrorEx(2, log, fmt.Errorf(message))
 	respondWithJSON(w, code, map[string]string{"result": "error", "error": message}, log)
 }
 
@@ -1398,7 +1421,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}, log *
 	w.WriteHeader(code)
 	if payload != nil {
 		if _, err := w.Write(response); err != nil {
-			logger.ReturnNewError("Error while writing the response: " + err.Error(), log)
+			logger.ReturnNewError("Error while writing the response: "+err.Error(), log)
 		}
 	}
 }

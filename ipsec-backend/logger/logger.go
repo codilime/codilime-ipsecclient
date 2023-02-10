@@ -98,8 +98,8 @@ func (f *ErrorFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 }
 
 //Fatal logs error and fails
-func Fatal(log *logrus.Logger, errs ...error) {
-	ReturnErrorEx(2, log, errs...) // ignore the return value
+func Fatal(log *logrus.Logger, err error) {
+	ReturnErrorEx(2, log, err) // ignore the return value
 	fmt.Println("FATAL EXIT")
 	os.Exit(1)
 }
@@ -129,50 +129,38 @@ func InfoDebug(info, debug string, log *logrus.Logger) {
 	}
 }
 
-//ReturnError logs error, but returns it, allowing returning of errors to be chained in a "stack trace"
-func ReturnError(log *logrus.Logger, errs ...error) error {
-	return ReturnErrorEx(2, log, errs...)
+//LogErrorReturnFirst logs error, but returns it, allowing returning of errors to be chained in a "stack trace"
+func LogErrorReturnFirst(log *logrus.Logger, err error) error {
+	return ReturnErrorEx(2, log, err)
 }
 
-func ReturnErrorEx(caller int, log *logrus.Logger, errs ...error) error {
-	empty := true
-	for _, v := range errs {
-		if v != nil {
-			empty = false
-		}
-	}
-
-	if empty {
-		return nil
+func ReturnErrorEx(caller int, log *logrus.Logger, err error) error {
+	if err == nil {
+		return err
 	}
 
 	pc, file, line, _ := runtime.Caller(caller)
 	f := runtime.FuncForPC(pc)
-	errStr := ""
-	if len(errs) == 1 {
-		errStr = errs[0].Error()
-	} else {
-		for i, err := range errs {
-			currentErr := "<nil>"
-			if err != nil {
-				currentErr = err.Error()
-			}
-			errStr = errStr + fmt.Sprintf("%d: %s\n", i, currentErr)
-		}
-	}
 
 	log.WithFields(logrus.Fields{
-		"err":  errStr,
+		"err":  err.Error(),
 		"line": line,
 		"func": f.Name(),
 		"file": file,
 	}).Error("")
-	if len(errs) == 1 {
-		return errs[0]
-	}
-	return errors.New(errStr)
+
+	return getFirstError(err)
 }
 
 func ReturnNewError(err string, log *logrus.Logger) error {
 	return ReturnErrorEx(2, log, errors.New(err))
+}
+
+func getFirstError(err error) error {
+	errInside := errors.Unwrap(err)
+	if err == nil {
+		return err
+	} else {
+		return getFirstError(errInside)
+	}
 }
