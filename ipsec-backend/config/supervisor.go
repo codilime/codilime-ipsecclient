@@ -10,8 +10,6 @@ package config
 import (
 	"fmt"
 
-	"ipsec_backend/logger"
-
 	"github.com/abrander/go-supervisord"
 	"github.com/sirupsen/logrus"
 )
@@ -19,13 +17,14 @@ import (
 const supervisorNetSocketPath = "/opt/super/supervisord.sock"
 const supervisorApiSocketPath = "/opt/super/supervisord.sock"
 
-type Supervisor struct{
+type Supervisor struct {
 	log *logrus.Logger
 }
 
-func NewSupervisor(log *logrus.Logger) Supervisor{
-	return Supervisor{log:log}
+func NewSupervisor(log *logrus.Logger) Supervisor {
+	return Supervisor{log: log}
 }
+
 //go:generate mockgen -source=supervisor.go -destination=../mock/supervisor_mock.go -package mock
 type SupervisorInterface interface {
 	ReloadSupervisor() error
@@ -38,17 +37,17 @@ func (s *Supervisor) ReloadSupervisor() error {
 
 	client, err := supervisord.NewUnixSocketClient(supervisorNetSocketPath)
 	if err != nil {
-		return logger.ReturnError(s.log, err)
+		return fmt.Errorf("connect to supervison though unix socket: %w", err)
 	}
 
 	defer func() {
 		if err := client.Close(); err != nil {
-			s.log.Error(fmt.Errorf("error during closing supervisor connection %v", err))
+			s.log.Error(fmt.Errorf("closing supervisor connection %v", err))
 		}
 	}()
 
 	if err = client.Update(); err != nil {
-		return logger.ReturnError(s.log, err)
+		return fmt.Errorf("update supervisor client: %w", err)
 	}
 
 	return nil
@@ -58,7 +57,7 @@ func (s *Supervisor) ReloadStrongswan() error {
 	s.log.Info("ReloadStrongswan invoked")
 
 	if err := s.RestartSupervisor(supervisorNetSocketPath, "strongswan_reload"); err != nil {
-		return logger.ReturnError(s.log, err)
+		return fmt.Errorf("restarting supervisor: %w", err)
 	}
 
 	return nil
@@ -68,7 +67,7 @@ func (s *Supervisor) ReloadVtysh() error {
 	s.log.Info("ReloadVtysh invoked")
 
 	if err := s.RestartSupervisor(supervisorNetSocketPath, "reload_vtysh"); err != nil {
-		return logger.ReturnError(s.log, err)
+		return fmt.Errorf("restarting supervisor: %w", err)
 	}
 
 	return nil
@@ -80,21 +79,21 @@ func (s *Supervisor) RestartSupervisor(socketPath, process string) error {
 
 	client, err := supervisord.NewUnixSocketClient(socketPath)
 	if err != nil {
-		return logger.ReturnError(s.log, err)
+		return fmt.Errorf("connect to supervison though unix socket: %w", err)
 	}
 
 	defer func() {
 		if err := client.Close(); err != nil {
-			s.log.Error(fmt.Errorf("error during closing supervisor connection %v", err))
+			s.log.Error(fmt.Errorf("closing supervisor connection %v", err))
 		}
 	}()
 
 	if err := client.StopProcess(process, true); err != nil {
-		return logger.ReturnError(s.log, err)
+		return fmt.Errorf("stopping %s process: %w", process, err)
 	}
 
 	if err := client.StartProcess(process, true); err != nil {
-		return logger.ReturnError(s.log, err)
+		return fmt.Errorf("starting %s process: %w", process, err)
 	}
 
 	return nil
@@ -106,18 +105,18 @@ func getProcessInfosForSocketPath(socketPath string, log *logrus.Logger) ([]supe
 
 	client, err := supervisord.NewUnixSocketClient(socketPath)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("connect to supervison though unix socket: %w", err)
 	}
 
 	defer func() {
 		if err := client.Close(); err != nil {
-			log.Error(fmt.Errorf("error during closing supervisor connection %v", err))
+			log.Error(fmt.Errorf("closing supervisor connection %v", err))
 		}
 	}()
 
 	infos, err := client.GetAllProcessInfo()
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("getting all process info: %w", err)
 	}
 
 	return infos, nil
@@ -128,12 +127,12 @@ func GetProcessInfos(log *logrus.Logger) ([]supervisord.ProcessInfo, error) {
 
 	netProcesses, err := getProcessInfosForSocketPath(supervisorNetSocketPath, log)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("getting process info for socket %s: %w",supervisorNetSocketPath, err)
 	}
 
 	apiProcesses, err := getProcessInfosForSocketPath(supervisorApiSocketPath, log)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("getting process info for socket %s: %w",supervisorApiSocketPath, err)
 	}
 
 	ret := []supervisord.ProcessInfo{}
