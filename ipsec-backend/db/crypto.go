@@ -12,7 +12,7 @@ import (
 	"crypto/cipher"
 	"crypto/sha256"
 	"encoding/base64"
-	"ipsec_backend/logger"
+	"fmt"
 	"math/rand"
 
 	"github.com/sirupsen/logrus"
@@ -23,17 +23,17 @@ func encrypt(key, data []byte, log *logrus.Logger) ([]byte, error) {
 
 	blockCipher, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("creating new cipher: %w", err)
 	}
 
 	gcm, err := cipher.NewGCM(blockCipher)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("creating new GCM: %w", err)
 	}
 
 	nonce := make([]byte, gcm.NonceSize())
 	if _, err = rand.Read(nonce); err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("generating random bytes: %w", err)
 	}
 	ciphertext := gcm.Seal(nonce, nonce, data, nil)
 
@@ -49,18 +49,18 @@ func decrypt(key, data []byte, log *logrus.Logger) ([]byte, error) {
 
 	blockCipher, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("creating new cipher: %w", err)
 	}
 
 	gcm, err := cipher.NewGCM(blockCipher)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("creating new GCM: %w", err)
 	}
 
 	nonce, ciphertext := data[:gcm.NonceSize()], data[gcm.NonceSize():]
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil,  fmt.Errorf("opening gcm: %w", err)
 	}
 
 	return plaintext, nil
@@ -81,7 +81,7 @@ func (db *DB) EnsureMasterPass(key, masterpass string) error {
 
 	contains, err := db.containsMasterpass()
 	if err != nil {
-		return logger.ReturnError(db.log, err)
+		return fmt.Errorf("checking masterpass: %w", err)
 	}
 
 	if !contains {
@@ -89,12 +89,15 @@ func (db *DB) EnsureMasterPass(key, masterpass string) error {
 		keySha := sha256.Sum256([]byte(key))
 		encryptedMasterpass, err := encrypt(keySha[:], []byte(masterpass), db.log)
 		if err != nil {
-			return logger.ReturnError(db.log, err)
+			return fmt.Errorf("encrypting masterpass: %w", err)
 		}
 		encryptedBasedMasterpass := make([]byte, base64.RawStdEncoding.EncodedLen(len(encryptedMasterpass)))
 		base64.RawStdEncoding.Encode(encryptedBasedMasterpass, encryptedMasterpass)
 		m.Masterpass = string(encryptedBasedMasterpass)
-		return db.Create(&m)
+		err = db.Create(&m)
+		if err != nil {
+			return fmt.Errorf("creating masterpass: %w", err)
+		}
 	}
 
 	return nil
@@ -105,12 +108,12 @@ func (db *DB) GetMasterpass(key string) (string, error) {
 
 	m, err := db.getMasterpass()
 	if err != nil {
-		return "", logger.ReturnError(db.log, err)
+		return "", fmt.Errorf("getting masterpass: %w", err)
 	}
 
 	encryptedMasterpass, err := base64.RawStdEncoding.DecodeString(string(m.Masterpass))
 	if err != nil {
-		return "", logger.ReturnError(db.log, err)
+		return "", fmt.Errorf("decoding masterpass: %w", err)
 	}
 
 	keySha := sha256.Sum256([]byte(key))
@@ -126,17 +129,17 @@ func (db *DB) SetSetting(pass, name, value string) error {
 	s := Setting{}
 	s.Name = name
 	if err := db.EnsureMasterPass(pass, RandString(32)); err != nil {
-		return logger.ReturnError(db.log, err)
+		return fmt.Errorf("ensuring masterpass: %w", err)
 	}
 
 	masterpass, err := db.GetMasterpass(pass)
 	if err != nil {
-		return logger.ReturnError(db.log, err)
+		return fmt.Errorf("getting masterpass: %w", err)
 	}
 
 	encryptedValue, err := encrypt([]byte(masterpass), []byte(value), db.log)
 	if err != nil {
-		return logger.ReturnError(db.log, err)
+		return fmt.Errorf("encrypting masterpass: %w", err)
 	}
 
 	encryptedBasedValue := make([]byte, base64.RawStdEncoding.EncodedLen(len(encryptedValue)))
@@ -144,14 +147,21 @@ func (db *DB) SetSetting(pass, name, value string) error {
 	contains, err := db.containsSetting(&s)
 	s.Value = string(encryptedBasedValue)
 	if err != nil {
-		return logger.ReturnError(db.log, err)
-	}
-	
-	if !contains {
-		return logger.ReturnError(db.log, db.Create(&s))
+		return fmt.Errorf("checking setting %s: %w",s.Name, err)
 	}
 
-	return logger.ReturnError(db.log, db.UpdateSetting(&s))
+	if !contains {
+		err = db.Create(&s)
+		if err != nil {
+			return fmt.Errorf("creating setting %s: %w", s.Name, err)
+		}
+	}
+
+	err = db.UpdateSetting(&s)
+	if err != nil {
+		return fmt.Errorf("updating setting %s: %w", s.Name, err)
+	}
+	return nil
 }
 
 func (db *DB) GetSetting(pass, name string) (string, error) {
@@ -166,12 +176,12 @@ func (db *DB) GetSetting(pass, name string) (string, error) {
 	}
 
 	if err := db.getSetting(&s); err != nil {
-		return "", logger.ReturnError(db.log, err)
+		return "", fmt.Errorf("getting setting %s: %w", s.Name, err)
 	}
 
 	encryptedValue, err := base64.RawStdEncoding.DecodeString(string(s.Value))
 	if err != nil {
-		return "", logger.ReturnError(db.log, err)
+		return "", fmt.Errorf("decoding string %s: %w", s.Name, err)
 	}
 
 	b, err := decrypt([]byte(masterpass), encryptedValue, db.log)
@@ -185,7 +195,7 @@ func (db *DB) EncryptPSK(key string, v *Vrf) error {
 
 	masterpass, err := db.GetMasterpass(key)
 	if err != nil {
-		return logger.ReturnError(db.log, err)
+		return fmt.Errorf("getting masterpass: %w", err)
 	}
 
 	for i, e := range v.Endpoints {
@@ -195,7 +205,7 @@ func (db *DB) EncryptPSK(key string, v *Vrf) error {
 
 		encPSK, err := encrypt([]byte(masterpass), []byte(e.Authentication.PSK), db.log)
 		if err != nil {
-			return logger.ReturnError(db.log, err)
+			return fmt.Errorf("encrypting masterpass: %w", err)
 		}
 
 		encBytes := make([]byte, base64.RawStdEncoding.EncodedLen(len(encPSK)))
@@ -212,7 +222,7 @@ func (db *DB) DecryptPSK(key string, v *Vrf) error {
 
 	masterpass, err := db.GetMasterpass(key)
 	if err != nil {
-		return logger.ReturnError(db.log, err)
+		return fmt.Errorf("getting masterpass: %w", err)
 	}
 
 	for i, e := range v.Endpoints {
@@ -222,12 +232,12 @@ func (db *DB) DecryptPSK(key string, v *Vrf) error {
 
 		decBytes, err := base64.RawStdEncoding.DecodeString(e.Authentication.PSK)
 		if err != nil {
-			return logger.ReturnError(db.log, err)
+			return fmt.Errorf("decoding string: %w", err)
 		}
 
 		decPSK, err := decrypt([]byte(masterpass), decBytes, db.log)
 		if err != nil {
-			return logger.ReturnError(db.log, err)
+			return fmt.Errorf("decrypting masterpass: %w", err)
 		}
 
 		v.Endpoints[i].Authentication.PSK = string(decPSK)
@@ -241,17 +251,17 @@ func (db *DB) ChangePassword(oldPass, newPass string) error {
 
 	masterpass, err := db.GetMasterpass(oldPass)
 	if err != nil {
-		return logger.ReturnError(db.log, err)
+		return fmt.Errorf("getting masterpass: %w", err)
 	}
 
 	err = db.DeleteMasterpass()
 	if err != nil {
-		return logger.ReturnError(db.log, err)
+		return fmt.Errorf("deleting masterpass: %w", err)
 	}
 
 	err = db.EnsureMasterPass(newPass, masterpass)
 	if err != nil {
-		return logger.ReturnError(db.log, err)
+		return fmt.Errorf("ensuring masterpass: %w", err)
 	}
 
 	return nil
