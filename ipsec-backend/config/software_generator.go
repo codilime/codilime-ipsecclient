@@ -278,7 +278,7 @@ func executeSupervisorTemplate(vrf db.Vrf, log *logrus.Logger) (string, error) {
 	peerIps := make([]string, 0, len(vrf.Endpoints))
 	nats := make([]string, 0, len(vrf.Endpoints))
 	ids := make([]string, 0, len(vrf.Endpoints))
-	vlans, err := vrf.GetVlans(log)
+	vlans, err := vrf.GetVlans()
 	if err != nil {
 		return "", fmt.Errorf("get vlans: %w", err)
 	}

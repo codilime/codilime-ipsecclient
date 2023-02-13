@@ -617,7 +617,7 @@ func vrfValid(vrf db.Vrf, log *logrus.Logger) (bool, error) {
 		return false, nil
 	}
 
-	vlans, err := vrf.GetVlans(log)
+	vlans, err := vrf.GetVlans()
 	if err != nil {
 		return false, logger.LogErrorReturnFirst(log, err)
 	}

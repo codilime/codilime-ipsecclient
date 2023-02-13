@@ -59,7 +59,7 @@ func (f *SoftwareGenerator) generateFRRConfig(vrf db.Vrf) error {
 	}
 
 	builder := strings.Builder{}
-	vlanList, err := vrf.GetVlans(f.log)
+	vlanList, err := vrf.GetVlans()
 	if err != nil {
 		return fmt.Errorf("get vlands: %w", err)
 	}
