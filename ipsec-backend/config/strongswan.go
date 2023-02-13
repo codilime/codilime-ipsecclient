@@ -9,15 +9,15 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"ipsec_backend/ipsecclient_yang"
 	"strconv"
 	"strings"
 
 	"ipsec_backend/db"
-	"ipsec_backend/logger"
 
-	"github.com/strongswan/govici/vici"
 	"github.com/sirupsen/logrus"
+	"github.com/strongswan/govici/vici"
 )
 
 const socketPath = "/opt/ipsec/conf/charon.vici"
@@ -34,13 +34,13 @@ func (f *SoftwareGenerator) GetMonitoring(clientName *string) (*ipsecclient_yang
 	f.log.Debug(clientName)
 
 	if clientName == nil {
-		return nil, logger.ReturnError(f.log, errors.New("wrong monitoring parameter"))
+		return nil, errors.New("wrong monitoring parameter")
 	}
 
 	name := strings.Replace(*clientName, "-", "_", 1)
 	statuses, err := getStrongswanState(f.log)
 	if err != nil {
-		return nil, logger.ReturnError(f.log, err)
+		return nil, fmt.Errorf("get strongswan state %w:", err)
 	}
 
 	ret := ipsecclient_yang.Ipsecclient_Api_Monitoring{
@@ -73,19 +73,19 @@ func getStrongswanState(log *logrus.Logger) (map[string]*monitoringEndpoint, err
 	options := vici.WithSocketPath(socketPath)
 	session, err := vici.NewSession(options)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("creating new vici session: %w", err)
 	}
 	defer session.Close()
 
 	m := vici.NewMessage()
 	err = m.Set("noblock", "yes")
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("setting noblock vici message: %w", err)
 	}
 
 	ms, err := session.StreamedCommandRequest("list-conns", "list-conn", m)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("listing connections: %w", err)
 	}
 
 	endpoints := map[string]*monitoringEndpoint{}
@@ -93,7 +93,7 @@ func getStrongswanState(log *logrus.Logger) (map[string]*monitoringEndpoint, err
 		for _, key := range m.Keys() {
 			id, err := endpointIDFromKey(key)
 			if err != nil {
-				return nil, logger.ReturnError(log, err)
+				return nil, fmt.Errorf("getting endpoint ID from key %s: %w", key, err)
 			}
 			e := &monitoringEndpoint{
 				status: "DOWN",
@@ -108,12 +108,12 @@ func getStrongswanState(log *logrus.Logger) (map[string]*monitoringEndpoint, err
 	m = vici.NewMessage()
 	err = m.Set("noblock", "yes")
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("setting noblock vici message 2: %w", err)
 	}
 
 	ms, err = session.StreamedCommandRequest("list-sas", "list-sa", m)
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("listing sas: %w", err)
 	}
 
 	for _, m = range ms.Messages() {
@@ -121,6 +121,6 @@ func getStrongswanState(log *logrus.Logger) (map[string]*monitoringEndpoint, err
 			endpoints[key].status = m.Get(key).(*vici.Message).Get("state").(string)
 		}
 	}
-	
+
 	return endpoints, nil
 }
