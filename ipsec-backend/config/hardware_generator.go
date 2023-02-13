@@ -787,6 +787,8 @@ func (h *HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, 
 	fullPath := "https://" + switchCreds.SwitchAddress + "/restconf/data/Cisco-IOS-XE-device-hardware-oper:device-hardware-data/device-hardware/device-inventory=hw-type-chassis,1/part-number"
 	req, err := http.NewRequest(http.MethodGet, fullPath, nil)
 	if err != nil {
+		h.log.Error(fmt.Errorf("prepare get switch model request, path: %s: %w", fullPath, err))
+
 		return "", nil
 	}
 
@@ -795,6 +797,7 @@ func (h *HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, 
 	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
 	resp, err := client.Do(req)
 	if err != nil {
+		h.log.Error(fmt.Errorf("do get switch model request: %w", err))
 		return "", nil
 	}
 
@@ -804,6 +807,7 @@ func (h *HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, 
 
 	decoder := json.NewDecoder(resp.Body)
 	if err := decoder.Decode(&model); err != nil {
+		h.log.Error("decoding get switch model response: %w", err)
 		return "",  nil
 	}
 
