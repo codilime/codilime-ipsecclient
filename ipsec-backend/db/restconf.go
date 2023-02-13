@@ -9,8 +9,8 @@ package db
 
 import (
 	"encoding/json"
+	"fmt"
 	"ipsec_backend/ipsecclient_yang"
-	"ipsec_backend/logger"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -92,12 +92,12 @@ func (v *Vrf) ToYang(log *logrus.Logger) (*ipsecclient_yang.Ipsecclient_Api_Vrf,
 
 	cryptoPh1 := []string{}
 	if err := json.Unmarshal(v.CryptoPh1, &cryptoPh1); err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("unmarshalling phase 1 crypto: %w", err)
 	}
 
 	cryptoPh2 := []string{}
 	if err := json.Unmarshal(v.CryptoPh2, &cryptoPh2); err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("unmarshalling phase 2 crypto: %w", err)
 	}
 
 	ph1 := strings.Join(cryptoPh1, ".")
@@ -107,9 +107,9 @@ func (v *Vrf) ToYang(log *logrus.Logger) (*ipsecclient_yang.Ipsecclient_Api_Vrf,
 		endpoints[e.RemoteIPSec] = e.ToYang()
 	}
 
-	vlans, err := v.GetVlans(log)
+	vlans, err := v.GetVlans()
 	if err != nil {
-		return nil, logger.ReturnError(log, err)
+		return nil, fmt.Errorf("getting vlans: %w", err)
 	}
 
 	vlansMap := map[uint32]*ipsecclient_yang.Ipsecclient_Api_Vrf_Vlan{}
@@ -161,18 +161,18 @@ func (v *Vrf) FromYang(vrfYang *ipsecclient_yang.Ipsecclient_Api_Vrf, log *logru
 	var err error
 	v.Vlans, err = json.Marshal(&vlans)
 	if err != nil {
-		return logger.ReturnError(log, err)
+		return fmt.Errorf("marshalling vlans: %w", err)
 	}
 
 	cryptoPh1 := strings.Split(*vrfYang.CryptoPh1, ".")
 	v.CryptoPh1, err = json.Marshal(&cryptoPh1)
 	if err != nil {
-		return logger.ReturnError(log, err)
+		return fmt.Errorf("marshalling crypto phase 1: %w", err)
 	}
 
 	v.CryptoPh2, err = json.Marshal(strings.Split(*vrfYang.CryptoPh2, "."))
 	if err != nil {
-		return logger.ReturnError(log, err)
+		return fmt.Errorf("marshalling crypto phase 2: %w", err)
 	}
 
 	v.PhysicalInterface = *vrfYang.PhysicalInterface
@@ -257,7 +257,7 @@ func phase2KeyExchangeToYang(algorithms []string) []*ipsecclient_yang.Ipsecclien
 	for _, algorithm := range algorithms {
 		yangAlgorithms = append(yangAlgorithms, &ipsecclient_yang.Ipsecclient_Api_Algorithm_Phase_2KeyExchange{Name: StringPointer(algorithm)})
 	}
-	
+
 	return yangAlgorithms
 }
 
