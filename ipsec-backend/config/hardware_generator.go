@@ -702,24 +702,24 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 	}, whenEspHmac, nil
 }
 
-func (*HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, error) {
+func (h *HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, error) {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
 	fullPath := "https://" + switchCreds.SwitchAddress + "/restconf/data/Cisco-IOS-XE-device-hardware-oper:device-hardware-data/device-hardware/device-inventory=hw-type-chassis,1/part-number"
-	log.Error(fullPath)
 	req, err := http.NewRequest(http.MethodGet, fullPath, nil)
 	if err != nil {
-		return "", fmt.Errorf("prepare get switch model request, path: %s: %w", fullPath, err)
+		return "", nil
 	}
+
 	req.Header.Add("Content-Type", "application/yang-data+json")
 	req.Header.Add("Accept", "application/yang-data+json")
 	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("do request for switch model: %w", err)
+		return "", nil
 	}
 
 	var model struct {
@@ -728,7 +728,7 @@ func (*HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, er
 
 	decoder := json.NewDecoder(resp.Body)
 	if err := decoder.Decode(&model); err != nil {
-		return "", fmt.Errorf("decoding get switch model response: %w", err)
+		return "",  nil
 	}
 
 	return model.Model, nil
