@@ -45,6 +45,7 @@ const (
 	settingNamePath          = restconfBasePath + "/setting={name:[a-zA-Z0-9-_]+}"
 	passPath                 = restconfBasePath + "/password"
 	checkSwitchBasicAuthPath = restconfBasePath + "/check-switch-basic-auth"
+	changeLogLevelPath       = restconfBasePath + "/dev-log-level={level:[a-zA-Z0-9-_]+}"
 
 	pkcs12Path = "/pkcs12/{id:[0-9]+}"
 
@@ -192,6 +193,7 @@ func (a *App) initializeRoutes() {
 	a.router.HandleFunc(CAPath, a.setCAs).Methods(http.MethodPost)
 	a.router.HandleFunc(CAPath, a.getCAs).Methods(http.MethodGet)
 	a.router.HandleFunc(pkcs12Path, a.getPkcs12).Methods(http.MethodGet)
+	a.router.HandleFunc(changeLogLevelPath, a.changeLogLevel).Methods(http.MethodPost)
 }
 
 func getPassFromHeader(header http.Header, log *logrus.Logger) (string, error) {
@@ -270,6 +272,23 @@ func (a *App) getPkcs12(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.WriteHeader(http.StatusOK)
 	w.Write(decBytes)
+}
+
+func (a *App) changeLogLevel(w http.ResponseWriter, r *http.Request) {
+	a.log.Info("changeLogLevel invoked")
+
+	vars := mux.Vars(r)
+	strLvl := vars["level"]
+	a.log.Debug(strLvl)
+	lvl, err := logrus.ParseLevel(strLvl)
+	if err != nil {
+		a.respondWithError(w, http.StatusBadRequest, "unknown log level: "+strLvl, a.log)
+	}
+
+	a.log.SetLevel(lvl)
+	a.log.Infof("log level changed to: %", lvl.String())
+	
+	respondWithJSON(w, http.StatusOK, nil, a.log)
 }
 
 func ClearCAs(log *logrus.Logger) error {
