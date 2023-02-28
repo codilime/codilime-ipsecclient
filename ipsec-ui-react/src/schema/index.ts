@@ -12,7 +12,7 @@ export const vrfSchema = yup.object().shape({
   active: yup.boolean(),
   local_as: yup.number(),
   endpoint: yup.array(),
-  vlan: yup.array().min(1).required('There need at least one Vlan and Lan IP'),
+  vlan: yup.array().min(1).required('At least one Vlan or Lan IP is required'),
   crypto_ph1: yup.string(),
   crypto_ph2: yup.string(),
   ospf: yup.boolean()
@@ -30,7 +30,7 @@ export const hardwareSchame = yup.object().shape({
 });
 
 export const newLoginSchema = yup.object().shape({
-  password: yup.string().min(8, 'Your new password have to at least 8 chars').required(),
+  password: yup.string().min(8, 'New password must consist of at least 8 characters').required(),
   newPasswordConfirmation: yup
     .string()
     .required()
