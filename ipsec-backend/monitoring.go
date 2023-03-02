@@ -8,6 +8,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"ipsec_backend/ipsecclient_yang"
 	"net/http"
 	"strconv"
@@ -26,16 +28,16 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		a.respondWithError(w, http.StatusBadRequest, "bad id: "+idStr, a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New(fmt.Sprintf("unparsable id: %s", idStr)), a.log)
 	}
 
 	vrf := db.Vrf{ID: uint32(id)}
 	if err := a.db.GetVrf(&vrf); err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
-			a.respondWithError(w, http.StatusNotFound, "Vrf not found", a.log)
+			a.respondWithError(w, http.StatusNotFound, errors.New("vrf not found"), a.log)
 		default:
-			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+			a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		}
 
 		return
@@ -43,14 +45,14 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 
 	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
 
 	switchCreds, err := a.getSwitchCreds(key)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
@@ -59,14 +61,14 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 	if vrf.ID != db.HardwareVrfID {
 		monitoring, err = a.softwareGenerator.GetMonitoring(&vrf.ClientName)
 		if err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+			a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 			return
 		}
 	} else {
 		monitoring, err = a.hardwareGenerator.GetMonitoring(nil, *switchCreds)
 		if err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+			a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 			return
 		}
@@ -84,7 +86,7 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}

@@ -158,7 +158,7 @@ func ReturnNewError(err string, log *logrus.Logger) error {
 
 func getFirstError(err error) error {
 	errInside := errors.Unwrap(err)
-	if err == nil {
+	if errInside == nil {
 		return err
 	} else {
 		return getFirstError(errInside)

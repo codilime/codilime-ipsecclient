@@ -10,6 +10,7 @@ package main
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"ipsec_backend/config"
@@ -218,30 +219,30 @@ func (a *App) changePassword(w http.ResponseWriter, r *http.Request) {
 
 	oldPass, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error(), a.log)
+		a.respondWithError(w, http.StatusUnauthorized, err, a.log)
 		return
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	api := ipsecclient_yang.Ipsecclient_Api{}
 	err = ipsecclient_yang.Unmarshal(body, &api)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	if err := api.Validate(); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 		return
 	}
 
 	if err := a._changePassword(oldPass, *api.Password); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -253,19 +254,19 @@ func (a *App) getPkcs12(w http.ResponseWriter, r *http.Request) {
 
 	endpointID, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	hwVrf := db.Vrf{ID: db.HardwareVrfID}
 	if err := a.db.GetVrf(&hwVrf); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	decBytes, err := base64.RawStdEncoding.WithPadding('=').DecodeString(hwVrf.EndpointByID(uint32(endpointID)).Authentication.Pkcs12Base64)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -282,7 +283,7 @@ func (a *App) changeLogLevel(w http.ResponseWriter, r *http.Request) {
 	a.log.Debug(strLvl)
 	lvl, err := logrus.ParseLevel(strLvl)
 	if err != nil {
-		a.respondWithError(w, http.StatusBadRequest, "unknown log level: "+strLvl, a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New(fmt.Sprintf("unknown log level %s", lvl)), a.log)
 	}
 
 	a.log.SetLevel(lvl)
@@ -331,19 +332,19 @@ func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	api := ipsecclient_yang.Ipsecclient_Api{}
 	err = ipsecclient_yang.Unmarshal(body, &api, nil)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	if err := api.Validate(); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 		return
 	}
 
@@ -355,19 +356,19 @@ func (a *App) setCAs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := a.db.DeleteCAs(); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	if len(cas) > 0 {
 		if err := a.db.Create(&cas); err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+			a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 			return
 		}
 	}
 
 	if err := writeCAs(cas, a.log); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -381,7 +382,7 @@ func (a *App) getCAs(w http.ResponseWriter, r *http.Request) {
 	a.log.Info("getCAs invoked")
 	cas, err := a.db.GetCAs()
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -398,7 +399,7 @@ func (a *App) getCAs(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -412,47 +413,47 @@ func (a *App) apiSetSetting(w http.ResponseWriter, r *http.Request) {
 
 	name := mux.Vars(r)["name"]
 	if name == "masterpass" {
-		a.respondWithError(w, http.StatusBadRequest, "masterpass cannot be used as a setting name", a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New("masterpass cannot be used as a setting name"), a.log)
 		return
 	}
 
 	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error(), a.log)
+		a.respondWithError(w, http.StatusUnauthorized, err, a.log)
 		return
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	j := map[string]interface{}{}
 	if err := json.Unmarshal(body, &j); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 		return
 	}
 
 	settingJson, err := json.Marshal(j["setting"])
 	if err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 		return
 	}
 
 	setting := ipsecclient_yang.Ipsecclient_Api_Setting{}
 	if err := ipsecclient_yang.Unmarshal(settingJson, &setting); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 		return
 	}
 
 	if err := setting.Validate(); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 		return
 	}
 
 	if err := a.db.SetSetting(key, name, *setting.Value); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -472,19 +473,19 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 
 	name := mux.Vars(r)["name"]
 	if name == "masterpass" {
-		a.respondWithError(w, http.StatusBadRequest, "masterpass cannot be used as a setting name", a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New("masterpass cannot be used as a setting name"), a.log)
 		return
 	}
 
 	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error(), a.log)
+		a.respondWithError(w, http.StatusUnauthorized, err, a.log)
 		return
 	}
 
 	value, err := a.db.GetSetting(key, name)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -497,7 +498,7 @@ func (a *App) apiGetSetting(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -512,24 +513,24 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 	vrfsMap := map[string]*ipsecclient_yang.Ipsecclient_Api_Vrf{}
 	vrfs, err := a.db.GetVrfs()
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error(), a.log)
+		a.respondWithError(w, http.StatusUnauthorized, err, a.log)
 		return
 	}
 
 	for _, v := range vrfs {
 		if err := a.db.DecryptPSK(key, &v); err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+			a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 			return
 		}
 		vrfYang, err := v.ToYang(a.log)
 		if err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+			a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 			return
 		}
 		vrfsMap[v.ClientName] = vrfYang
@@ -544,7 +545,7 @@ func (a *App) getVrfs(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -559,7 +560,7 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		a.respondWithError(w, http.StatusBadRequest, "Invalid vrf ID", a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New("invalid vrf ID"), a.log)
 		return
 	}
 
@@ -567,9 +568,9 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 	if err := a.db.GetVrf(&vrf); err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
-			a.respondWithError(w, http.StatusNotFound, "Vrf not found", a.log)
+			a.respondWithError(w, http.StatusNotFound, errors.New("vrf not found"), a.log)
 		default:
-			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+			a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		}
 
 		return
@@ -577,20 +578,20 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 
 	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error(), a.log)
+		a.respondWithError(w, http.StatusUnauthorized, err, a.log)
 
 		return
 	}
 
 	if err := a.db.DecryptPSK(key, &vrf); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
 
 	vrfYang, err := vrf.ToYang(a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
@@ -600,7 +601,7 @@ func (a *App) getVrf(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
@@ -812,41 +813,41 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	j := map[string]interface{}{}
 	if err := json.Unmarshal(body, &j); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 		return
 	}
 
 	vrfSubJson, ok := j["vrf"]
 	if !ok {
-		a.respondWithError(w, http.StatusBadRequest, "malformed json", a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New("malformed json"), a.log)
 		return
 	}
 
 	if err := vrfSubJsonValidSW(vrfSubJson, a.log); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 		return
 	}
 
 	vrfJson, err := json.Marshal(vrfSubJson)
 	if err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 		return
 	}
 
 	yangVrf := ipsecclient_yang.Ipsecclient_Api_Vrf{}
 	if err := ipsecclient_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 		return
 	}
 
 	if err := yangVrf.Validate(); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 		return
 	}
 
@@ -854,12 +855,12 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 	vrf.FromYang(&yangVrf, a.log)
 	valid, err := vrfCreateValid(vrf, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	if !valid {
-		a.respondWithError(w, http.StatusBadRequest, "vrf invalid", a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New("vrf invalid"), a.log)
 		return
 	}
 
@@ -869,22 +870,22 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 
 	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error(), a.log)
+		a.respondWithError(w, http.StatusUnauthorized, err, a.log)
 		return
 	}
 
 	if err := a.db.EncryptPSK(key, &vrf); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	if err := a.db.Create(&vrf); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
 	if err := a.db.DecryptPSK(key, &vrf); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -892,7 +893,7 @@ func (a *App) createVrf(w http.ResponseWriter, r *http.Request) {
 		ID:     vrf.ID,
 		Active: db.BoolPointer(nil),
 	}); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -914,7 +915,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		a.respondWithError(w, http.StatusBadRequest, "Invalid vrf ID", a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New("invalid vrf ID"), a.log)
 
 		return
 	}
@@ -922,34 +923,34 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	a.log.Debugf("update vrf request %s\n", body)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
 
 	j := map[string]interface{}{}
 	if err := json.Unmarshal(body, &j); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 
 		return
 	}
 
 	vrfSubJson, ok := j["vrf"]
 	if !ok {
-		a.respondWithError(w, http.StatusBadRequest, "malformed json", a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New("malformed json"), a.log)
 
 		return
 	}
 
 	if id != db.HardwareVrfID {
 		if err := vrfSubJsonValidSW(vrfSubJson, a.log); err != nil {
-			a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+			a.respondWithError(w, http.StatusBadRequest, err, a.log)
 
 			return
 		}
 	} else {
 		if err := vrfSubJsonValidHW(vrfSubJson, a.log); err != nil {
-			a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+			a.respondWithError(w, http.StatusBadRequest, err, a.log)
 
 			return
 		}
@@ -957,27 +958,27 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 
 	vrfJson, err := json.Marshal(vrfSubJson)
 	if err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 
 		return
 	}
 
 	yangVrf := ipsecclient_yang.Ipsecclient_Api_Vrf{}
 	if err := ipsecclient_yang.Unmarshal(vrfJson, &yangVrf); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 
 		return
 	}
 
 	if err := yangVrf.Validate(); err != nil {
-		a.respondWithError(w, http.StatusBadRequest, err.Error(), a.log)
+		a.respondWithError(w, http.StatusBadRequest, err, a.log)
 
 		return
 	}
 
 	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error(), a.log)
+		a.respondWithError(w, http.StatusUnauthorized, err, a.log)
 
 		return
 	}
@@ -988,13 +989,13 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 
 	valid, err := vrfUpdateValid(vrf, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
 
 	if !valid {
-		a.respondWithError(w, http.StatusBadRequest, "vrf invalid", a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New("vrf invalid"), a.log)
 
 		return
 	}
@@ -1003,14 +1004,14 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	oldVrf.ID = uint32(id)
 
 	if err := a.db.GetVrf(&oldVrf); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
 
 	if vrf.ID == db.HardwareVrfID && vrf.ClientName != oldVrf.ClientName {
 		// can't change the hardware vrf name
-		a.respondWithError(w, http.StatusBadRequest, "Cannot change the hardware vrf name", a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New("Cannot change the hardware vrf name"), a.log)
 
 		return
 	}
@@ -1020,7 +1021,7 @@ func (a *App) updateVrf(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := a._updateBackends(key, &vrf, &oldVrf); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
@@ -1104,27 +1105,27 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		a.respondWithError(w, http.StatusBadRequest, "Invalid Vrf ID", a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New("invalid Vrf ID"), a.log)
 
 		return
 	}
 
 	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error(), a.log)
+		a.respondWithError(w, http.StatusUnauthorized, err, a.log)
 
 		return
 	}
 
 	vrf := db.Vrf{ID: uint32(id)}
 	if err := a.db.GetVrf(&vrf); err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
 
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
@@ -1140,7 +1141,7 @@ func (a *App) deleteVrf(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 	}
 
 	a.log.Info("Delete vrf completed")
@@ -1188,7 +1189,7 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 
 	processInfos, err := config.GetProcessInfos(a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
@@ -1200,7 +1201,7 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 	for _, info := range processInfos {
 		log, err := getLastBytesOfFile(info.StdoutLogfile, lastLogBytes, a.log)
 		if err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+			a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 			return
 		}
@@ -1216,7 +1217,7 @@ func (a *App) getLogs(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
@@ -1229,7 +1230,7 @@ func (a *App) getErrors(w http.ResponseWriter, r *http.Request) {
 
 	storedErrors, err := a.db.GetStoredErrors()
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
@@ -1248,7 +1249,7 @@ func (a *App) getErrors(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
@@ -1261,21 +1262,21 @@ func (a *App) getSourceInterfaces(w http.ResponseWriter, r *http.Request) {
 
 	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error(), a.log)
+		a.respondWithError(w, http.StatusUnauthorized, err, a.log)
 
 		return
 	}
 
 	switchCreds, err := a.getSwitchCreds(key)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
 
 	sourceInterfaces, err := config.GetSourceInterfaces(*switchCreds, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
@@ -1289,7 +1290,7 @@ func (a *App) getSourceInterfaces(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -1331,13 +1332,13 @@ func (a *App) getAlgorithms(w http.ResponseWriter, r *http.Request) {
 
 	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error(), a.log)
+		a.respondWithError(w, http.StatusUnauthorized, err, a.log)
 		return
 	}
 
 	algorithms, err := a._getAlgorithms(key)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -1350,7 +1351,7 @@ func (a *App) getAlgorithms(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
@@ -1363,20 +1364,20 @@ func (a *App) checkSwitchBasicAuth(w http.ResponseWriter, r *http.Request) {
 
 	key, err := getPassFromHeader(r.Header, a.log)
 	if err != nil {
-		a.respondWithError(w, http.StatusUnauthorized, err.Error(), a.log)
+		a.respondWithError(w, http.StatusUnauthorized, err, a.log)
 		return
 	}
 
 	switchCreds, err := a.getSwitchCreds(key)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
 
 	isValid, err := a.hardwareGenerator.CheckSwitchBasicAuth(*switchCreds)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 
 		return
 	}
@@ -1384,7 +1385,7 @@ func (a *App) checkSwitchBasicAuth(w http.ResponseWriter, r *http.Request) {
 	if isValid {
 		model, err := a.hardwareGenerator.GetSwitchModel(*switchCreds)
 		if err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+			a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		}
 
 		a.db.SetSetting(key, "system_name", model)
@@ -1399,7 +1400,7 @@ func (a *App) checkSwitchBasicAuth(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err.Error(), a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
 		return
 	}
 
@@ -1412,16 +1413,16 @@ func respondWithMarshalledJSON(w http.ResponseWriter, code int, response string,
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	if _, err := w.Write([]byte(response)); err != nil {
-		logger.ReturnNewError("Error while writing the response: "+err.Error(), log)
+		logger.ReturnNewError("writing the response: "+err.Error(), log)
 	}
 }
 
-func (a *App) respondWithError(w http.ResponseWriter, code int, message string, log *logrus.Logger) {
+func (a *App) respondWithError(w http.ResponseWriter, code int, err error, log *logrus.Logger) {
 	a.log.Info("respondWithError invoked")
-
-	a.storeError(message)
-	logger.ReturnErrorEx(2, log, fmt.Errorf(message))
-	respondWithJSON(w, code, map[string]string{"result": "error", "error": message}, log)
+	err = logger.ReturnErrorEx(2, log, err)
+	a.storeError(err.Error())
+	
+	respondWithJSON(w, code, map[string]string{"result": "error", "error": err.Error()}, log)
 }
 
 func (a *App) storeError(message string) {
@@ -1440,7 +1441,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}, log *
 	w.WriteHeader(code)
 	if payload != nil {
 		if _, err := w.Write(response); err != nil {
-			logger.ReturnNewError("Error while writing the response: "+err.Error(), log)
+			logger.ReturnNewError("writing the response: "+err.Error(), log)
 		}
 	}
 }
