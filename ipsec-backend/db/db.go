@@ -11,13 +11,14 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"log"
+	"os"
 	"strings"
 
 	"strconv"
 	"time"
 
 	"github.com/lib/pq"
-	logrus "github.com/sirupsen/logrus"
 	"gorm.io/datatypes"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -52,7 +53,6 @@ type DB struct {
 	gormDb             *gorm.DB
 	errorsRotationDays int
 	errorsRotationSize *int // Size in Bytes
-	log                *logrus.Logger
 }
 
 type EndpointAuth struct {
@@ -157,7 +157,7 @@ func (v *Vrf) GetVlans() ([]Vlan, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unmarshaling vlans: %w", err)
 	}
-	
+
 	return ret, nil
 }
 
@@ -187,11 +187,8 @@ type Algorithm struct {
 	Phase2KeyExchange pq.StringArray `gorm:"type:string[]"`
 }
 
-func MakeDB(dbName, errRotDaysStr, errRotSizeStr string, log *logrus.Logger) (*DB, error) {
-	log.Info("MakeDB invoked")
-
+func MakeDB(dbName, errRotDaysStr, errRotSizeStr string) (*DB, error) {
 	db := &DB{
-		log: log,
 	}
 
 	if errRotDaysStr == "" {
@@ -218,7 +215,7 @@ func MakeDB(dbName, errRotDaysStr, errRotSizeStr string, log *logrus.Logger) (*D
 	}
 
 	newLogger := gorm_logger.New(
-		log,
+		log.New(os.Stdout, "\n", log.LstdFlags),
 		gorm_logger.Config{
 			Colorful: false, // Disable color
 		},
@@ -228,7 +225,7 @@ func MakeDB(dbName, errRotDaysStr, errRotSizeStr string, log *logrus.Logger) (*D
 		FullSaveAssociations: true,
 	})
 	if err != nil {
-		return db, fmt.Errorf("opening db %s: %w",dbName, err)
+		return db, fmt.Errorf("opening db %s: %w", dbName, err)
 	}
 
 	if err = gormDb.AutoMigrate(&Vrf{}); err != nil {
@@ -269,9 +266,6 @@ func (Vrf) TableName() string {
 }
 
 func (db *DB) GetVrf(v *Vrf) error {
-	db.log.Info("GetVrf invoked")
-	db.log.Debug(v)
-
 	err := db.gormDb.Preload("Endpoints").First(v, v.ID).Error
 	if err != nil {
 		return fmt.Errorf("preloading endpoints: %w", err)
@@ -281,9 +275,6 @@ func (db *DB) GetVrf(v *Vrf) error {
 }
 
 func (db *DB) UpdateVrf(v *Vrf) error {
-	db.log.Info("UpdateVrf invoked")
-	db.log.Debug(v)
-
 	var e Endpoint
 
 	err := db.gormDb.Updates(v).Error
@@ -305,9 +296,6 @@ func (db *DB) UpdateVrf(v *Vrf) error {
 }
 
 func (db *DB) DeleteVrf(v *Vrf) error {
-	db.log.Info("DeleteVrf invoked")
-	db.log.Debug(v)
-
 	err := db.gormDb.Select("Endpoints").Delete(v).Error
 	if err != nil {
 		return fmt.Errorf("deleting endpoints: %w", err)
@@ -317,9 +305,6 @@ func (db *DB) DeleteVrf(v *Vrf) error {
 }
 
 func (db *DB) Create(value interface{}) error {
-	db.log.Info("Create invoked")
-	db.log.Debug(value)
-
 	err := db.gormDb.Create(value).Error
 	if err != nil {
 		return fmt.Errorf("creating value: %w", err)
@@ -329,8 +314,6 @@ func (db *DB) Create(value interface{}) error {
 }
 
 func (db *DB) GetVrfs() ([]Vrf, error) {
-	db.log.Info("GetVrfs invoked")
-
 	var vrfs []Vrf
 	res := db.gormDb.Preload("Endpoints").Find(&vrfs)
 	err := res.Error
@@ -338,13 +321,10 @@ func (db *DB) GetVrfs() ([]Vrf, error) {
 		return nil, fmt.Errorf("getting vrfs: %w", err)
 	}
 
-	return vrfs,nil
+	return vrfs, nil
 }
 
 func (db *DB) getSetting(s *Setting) error {
-	db.log.Info("getSetting invoked")
-	db.log.Debug(s)
-
 	err := db.gormDb.Where("name = ?", s.Name).First(s).Error
 	if err != nil {
 		return fmt.Errorf("getting setting %s: %w", s.Name, err)
@@ -354,9 +334,6 @@ func (db *DB) getSetting(s *Setting) error {
 }
 
 func (db *DB) containsSetting(s *Setting) (bool, error) {
-	db.log.Info("containsSetting invoked")
-	db.log.Debug(s)
-
 	res := db.gormDb.Where("name = ?", s.Name).First(s)
 	if res.Error != nil {
 		if res.Error == gorm.ErrRecordNotFound {
@@ -370,9 +347,6 @@ func (db *DB) containsSetting(s *Setting) (bool, error) {
 }
 
 func (db *DB) UpdateSetting(s *Setting) error {
-	db.log.Info("UpdateSetting invoked")
-	db.log.Debug(s)
-
 	err := db.gormDb.Save(&s).Error
 	if err != nil {
 		return fmt.Errorf("saving setting %s: %w", s.Name, err)
@@ -382,8 +356,6 @@ func (db *DB) UpdateSetting(s *Setting) error {
 }
 
 func (db *DB) GetStoredErrors() ([]StoredError, error) {
-	db.log.Info("GetStoredErrors invoked")
-
 	db.rotateErrorsByDate()
 
 	var storedErrors []StoredError
@@ -396,8 +368,6 @@ func (db *DB) GetStoredErrors() ([]StoredError, error) {
 }
 
 func (db *DB) DeleteMasterpass() error {
-	db.log.Info("DeleteMasterpass invoked")
-
 	err := db.gormDb.Where("1 = 1").Delete(&Masterpass{}).Error
 	if err != nil {
 		return fmt.Errorf("deleting masterpass: %w", err)
@@ -407,8 +377,6 @@ func (db *DB) DeleteMasterpass() error {
 }
 
 func (db *DB) containsMasterpass() (bool, error) {
-	db.log.Info("containsMasterpass invoked")
-
 	res := db.gormDb.First(&Masterpass{})
 	if res.Error != nil {
 		if res.Error == gorm.ErrRecordNotFound {
@@ -422,8 +390,6 @@ func (db *DB) containsMasterpass() (bool, error) {
 }
 
 func (db *DB) getMasterpass() (Masterpass, error) {
-	db.log.Info("getMasterpass invoked")
-
 	m := Masterpass{}
 	err := db.gormDb.First(&m).Error
 	if err != nil {
@@ -434,8 +400,6 @@ func (db *DB) getMasterpass() (Masterpass, error) {
 }
 
 func (db *DB) DeleteCAs() error {
-	db.log.Info("DeleteCAs invoked")
-
 	err := db.gormDb.Where("1=1").Delete(&CertificateAuthority{}).Error
 	if err != nil {
 		return fmt.Errorf("deleting CAs: %w", err)
@@ -445,8 +409,6 @@ func (db *DB) DeleteCAs() error {
 }
 
 func (db *DB) GetCAs() ([]CertificateAuthority, error) {
-	db.log.Info("GetCAs invoked")
-
 	cas := []CertificateAuthority{}
 	err := db.gormDb.Find(&cas).Error
 	if err != nil {
@@ -457,9 +419,6 @@ func (db *DB) GetCAs() ([]CertificateAuthority, error) {
 }
 
 func (db *DB) GetAlgorithms(algorithms *Algorithm) error {
-	db.log.Info("GetAlgorithms invoked")
-	db.log.Debug(algorithms)
-
 	err := db.gormDb.First(algorithms).Error
 
 	if err != nil {
@@ -470,8 +429,6 @@ func (db *DB) GetAlgorithms(algorithms *Algorithm) error {
 }
 
 func (db *DB) RotateErrorsBySizeOrDate() {
-	db.log.Info("RotateErrorsBySizeOrDate invoked")
-
 	if db.errorsRotationSize != nil {
 		var storedErrorsSize int
 		db.gormDb.Raw("SELECT SUM(pgsize) FROM dbstat WHERE name = ?;", "stored_errors").Scan(&storedErrorsSize)
@@ -482,7 +439,6 @@ func (db *DB) RotateErrorsBySizeOrDate() {
 				break
 			}
 
-			logrus.Infof("delete error %+v", storedError)
 			db.gormDb.Delete(&storedError)
 			db.gormDb.Raw("SELECT SUM(pgsize) FROM dbstat WHERE name = ?;", "stored_errors").Scan(&storedErrorsSize)
 		}
@@ -504,8 +460,6 @@ func sizeStrToInt(errRotSizeStr string) (int, error) {
 }
 
 func (db *DB) rotateErrorsByDate() {
-	db.log.Info("rotateErrorsByDate invoked")
-
 	if db.errorsRotationSize == nil {
 		changedTime := time.Now().AddDate(0, 0, -db.errorsRotationDays)
 		db.gormDb.Where("error_time < ?", changedTime).Delete(StoredError{})

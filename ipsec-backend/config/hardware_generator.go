@@ -26,7 +26,7 @@ import (
 	"time"
 
 	"github.com/openconfig/goyang/pkg/yang"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -43,21 +43,21 @@ type VrfWithCryptoSlices struct {
 
 type HardwareGenerator struct {
 	localAddr string
-	log       *logrus.Logger
+	devlog *log.Logger
 }
 
-func NewHardwareGenerator(switchCreds db.SwitchCreds, log *logrus.Logger) (*HardwareGenerator, error) {
-	log.Info("NewHardwareGenerator invoked")
+func NewHardwareGenerator(switchCreds db.SwitchCreds, devlog *log.Logger) (*HardwareGenerator, error) {
+	devlog.Debug("NewHardwareGenerator invoked")
 	nginxLocalIp, isPresent := os.LookupEnv("NGINX_LOCAL_IP")
 	if isPresent {
-		return &HardwareGenerator{nginxLocalIp, log}, nil
+		return &HardwareGenerator{nginxLocalIp, devlog}, nil
 	}
 
-	return &HardwareGenerator{defaultLocalAdd, log}, nil
+	return &HardwareGenerator{defaultLocalAdd, devlog}, nil
 }
 
 func (h *HardwareGenerator) GenerateConfigs(vrf db.Vrf, switchCreds db.SwitchCreds) error {
-	h.log.Info("GenerateConfigs invoked")
+	h.devlog.Debug("GenerateConfigs invoked")
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -67,19 +67,17 @@ func (h *HardwareGenerator) GenerateConfigs(vrf db.Vrf, switchCreds db.SwitchCre
 	vrfWithSlices := VrfWithCryptoSlices{}
 	vrfWithSlices.Vrf = vrf
 	var err error
-	vrfWithSlices.CryptoPh1Slice, err = restconfGetCryptoStrings(string(vrf.CryptoPh1), h.log)
+	vrfWithSlices.CryptoPh1Slice, err = restconfGetCryptoStrings(string(vrf.CryptoPh1))
 	if err != nil {
 		return fmt.Errorf("get crypto strings for phase 1 during config generation: %w", err)
 	}
 
-	vrfWithSlices.CryptoPh2Slice, err = restconfGetCryptoStrings(string(vrf.CryptoPh2), h.log)
+	vrfWithSlices.CryptoPh2Slice, err = restconfGetCryptoStrings(string(vrf.CryptoPh2))
 	if err != nil {
 		return fmt.Errorf("get crypto strings for phase 2 during config generation: %w", err)
 	}
 
 	pskEndpoints, certsEndpoints := endpointSubsets(vrf)
-	h.log.Debug("pskEndpoints", pskEndpoints)
-	h.log.Debug("pskEndpoints", certsEndpoints)
 
 	if len(pskEndpoints) > 0 {
 		if err := h.doTemplateFolderCreate("psk", client, vrfWithSlices, pskEndpoints, switchCreds); err != nil {
@@ -96,11 +94,13 @@ func (h *HardwareGenerator) GenerateConfigs(vrf db.Vrf, switchCreds db.SwitchCre
 		}
 	}
 
+	h.devlog.Info("Configs generated")
+
 	return nil
 }
 
 func (h *HardwareGenerator) DeleteConfigs(vrf db.Vrf, switchCreds db.SwitchCreds) error {
-	h.log.Info("DeleteConfigs invoked")
+	h.devlog.Debug("DeleteConfigs invoked")
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -108,8 +108,6 @@ func (h *HardwareGenerator) DeleteConfigs(vrf db.Vrf, switchCreds db.SwitchCreds
 	}
 
 	pskEndpoints, certsEndpoints := endpointSubsets(vrf)
-	h.log.Debug("pskEndpoints", pskEndpoints)
-	h.log.Debug("pskEndpoints", certsEndpoints)
 
 	if len(pskEndpoints) > 0 {
 		if err := h.doTemplateFolderDelete("psk", client, vrf, pskEndpoints, switchCreds); err != nil {
@@ -122,6 +120,8 @@ func (h *HardwareGenerator) DeleteConfigs(vrf db.Vrf, switchCreds db.SwitchCreds
 			return fmt.Errorf("doTemplateFolderCreate for certs during config deletion: %w", err)
 		}
 	}
+
+	h.devlog.Info("Configs deleted")
 
 	return nil
 }
@@ -187,7 +187,7 @@ func getTemplateFuncMap() template.FuncMap {
 }
 
 func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *http.Client, vrf VrfWithCryptoSlices, endpoints []db.Endpoint, switchCreds db.SwitchCreds) error {
-	h.log.Info("doTemplateFolderCreate invoked")
+	h.devlog.Debug("doTemplateFolderCreate invoked")
 	files, err := ioutil.ReadDir(hwTemplatesDir + "/" + folderName)
 	if err != nil {
 		return fmt.Errorf("read dir: %w", err)
@@ -213,7 +213,7 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 		templ := strings.Join(lines[7:], "\n")
 		t, err := template.New(file.Name()).Funcs(getTemplateFuncMap()).Parse(templ)
 		if err != nil {
-			return fmt.Errorf("create new template %s: %w",file.Name(), err)
+			return fmt.Errorf("create new template %s: %w", file.Name(), err)
 		}
 		builder := strings.Builder{}
 		if err = t.Execute(&builder, struct {
@@ -231,7 +231,7 @@ func (h *HardwareGenerator) doTemplateFolderCreate(folderName string, client *ht
 			bgpEndpoints,
 			switchCreds.WhenEspHmac,
 		}); err != nil {
-			return fmt.Errorf("execute template %s: %w",t.Name(), err)
+			return fmt.Errorf("execute template %s: %w", t.Name(), err)
 		}
 		if err := h.tryRestconfPatch(url, builder.String(), client, switchCreds); err != nil {
 			return fmt.Errorf("making restconft patch request: %w", err)
@@ -303,11 +303,11 @@ func reverseSlice(s []fs.FileInfo) []fs.FileInfo {
 }
 
 func (h *HardwareGenerator) doTemplateFolderDelete(folderName string, client *http.Client, vrf db.Vrf, endpoints []db.Endpoint, switchCreds db.SwitchCreds) error {
-	h.log.Info("doTemplateFolderDelete invoked")
+	h.devlog.Debug("doTemplateFolderDelete invoked")
 
 	files, err := ioutil.ReadDir(hwTemplatesDir + "/" + folderName)
 	if err != nil {
-		return fmt.Errorf("read dir %s for template folder delete: %w",hwTemplatesDir + "/" + folderName, err)
+		return fmt.Errorf("read dir %s for template folder delete: %w", hwTemplatesDir+"/"+folderName, err)
 	}
 
 	files = reverseSlice(files)
@@ -317,13 +317,13 @@ func (h *HardwareGenerator) doTemplateFolderDelete(folderName string, client *ht
 	for _, file := range files {
 		bytes, err := ioutil.ReadFile(hwTemplatesDir + "/" + folderName + "/" + file.Name())
 		if err != nil {
-			return fmt.Errorf("read file %s for template folder delete: %w",hwTemplatesDir + "/" + folderName + "/" + file.Name(), err)
+			return fmt.Errorf("read file %s for template folder delete: %w", hwTemplatesDir+"/"+folderName+"/"+file.Name(), err)
 		}
 		lines := strings.Split(string(bytes), "\n")
 		deleteUrlTemplate := lines[6]
 		t, err := template.New(file.Name()).Parse(deleteUrlTemplate)
 		if err != nil {
-			return fmt.Errorf("parse template %s for template folder delete: %w",file.Name(), err)
+			return fmt.Errorf("parse template %s for template folder delete: %w", file.Name(), err)
 		}
 		builder := strings.Builder{}
 		if err = t.Execute(&builder, struct {
@@ -337,14 +337,15 @@ func (h *HardwareGenerator) doTemplateFolderDelete(folderName string, client *ht
 			bgpEndpointsIpv4,
 			bgpEndpointsIpv6,
 		}); err != nil {
-			return fmt.Errorf("execute template %s for template folder delete: %w",t.Name(), err)
+			return fmt.Errorf("execute template %s for template folder delete: %w", t.Name(), err)
 		}
 		for _, url := range strings.Split(builder.String(), " ") {
 			if strings.TrimSpace(url) == "" {
 				continue
 			}
 			if err := h.tryRestconfDelete(url, client, switchCreds); err != nil {
-				h.log.Error(err) // but don't stop execution for this, ignore delete errors
+				log.Error(err) // but don't stop execution for this, ignore delete errors
+				h.devlog.Error(err)
 			}
 		}
 	}
@@ -353,7 +354,7 @@ func (h *HardwareGenerator) doTemplateFolderDelete(folderName string, client *ht
 }
 
 func (h *HardwareGenerator) insertPkcs12(vrf VrfWithCryptoSlices, client *http.Client, switchCreds db.SwitchCreds) error {
-	h.log.Info("insertPkcs12 invkoed")
+	h.devlog.Debug("insertPkcs12 invkoed")
 	for _, e := range vrf.Endpoints {
 		if err := h.tryRestconfRequest("POST", "Cisco-IOS-XE-rpc:crypto", `{
 		"input": {
@@ -391,7 +392,7 @@ func endpointSubsets(vrf db.Vrf) ([]db.Endpoint, []db.Endpoint) {
 }
 
 func (h *HardwareGenerator) tryRestconfDelete(path string, client *http.Client, switchCreds db.SwitchCreds) error {
-	h.log.Info("tryRestconfDelete invoked")
+	h.devlog.Debug("tryRestconfDelete invoked")
 	err := h.tryRestconfRequest("DELETE", path, "", client, switchCreds)
 	if err != nil {
 		return fmt.Errorf("restconf delete: %w", err)
@@ -401,7 +402,7 @@ func (h *HardwareGenerator) tryRestconfDelete(path string, client *http.Client, 
 }
 
 func (h *HardwareGenerator) tryRestconfPatch(path, data string, client *http.Client, switchCreds db.SwitchCreds) error {
-	h.log.Info("tryRestconfPatch invoked")
+	h.devlog.Debug("tryRestconfPatch invoked")
 	err := h.tryRestconfRequest("PATCH", path, data, client, switchCreds)
 	if err != nil {
 		return fmt.Errorf("restconf patch: %w", err)
@@ -411,23 +412,23 @@ func (h *HardwareGenerator) tryRestconfPatch(path, data string, client *http.Cli
 }
 
 func (h *HardwareGenerator) tryRestconfRequest(method, path, data string, client *http.Client, switchCreds db.SwitchCreds) error {
-	h.log.Info("tryRestconfRequest invoked")
+	h.devlog.Debug("tryRestconfRequest invoked")
 
 	retries := 20
 	for i := 0; i < retries; i++ {
 		time.Sleep(time.Millisecond * 500)
-		h.log.Debugf("%s: %s (%d)\n", method, path, i)
+		h.devlog.Debugf("%s: %s (%d)\n", method, path, i)
 		err := h.restconfDoRequest(method, path, data, client, switchCreds)
 		if err == nil {
-			h.log.Debugf("%s successful", method)
+			h.devlog.Debugf("%s successful", method)
 			return nil
 		} else {
 			if strings.Contains(err.Error(), "lock-denied") {
-				h.log.Debugf("%s lock denied", method)
+				h.devlog.Debugf("%s lock denied", method)
 				continue
 			}
 
-			h.log.Debugf("%s other error encountered", method)
+			h.devlog.Debugf("%s other error encountered", method)
 
 			return fmt.Errorf("restconf request: %w", err)
 		}
@@ -437,8 +438,7 @@ func (h *HardwareGenerator) tryRestconfRequest(method, path, data string, client
 }
 
 func (h *HardwareGenerator) restconfDoRequest(method, path, data string, client *http.Client, switchCreds db.SwitchCreds) error {
-	h.log.Info("restconfDoRequest invoked")
-	h.log.Debugf("%s: %s\n%s\n", method, path, data)
+	h.devlog.Debug("restconfDoRequest invoked")
 
 	fullPath := fmt.Sprintf(switchBase, switchCreds.SwitchAddress) + path
 	req, err := http.NewRequest(method, fullPath, strings.NewReader(data))
@@ -460,21 +460,21 @@ func (h *HardwareGenerator) restconfDoRequest(method, path, data string, client 
 			return fmt.Errorf("read restconf responce body: %w", err)
 		}
 
-		return errors.New(method+" to "+path+" failed ("+strconv.Itoa(resp.StatusCode)+"): "+string(body))
+		return errors.New(method + " to " + path + " failed (" + strconv.Itoa(resp.StatusCode) + "): " + string(body))
 	}
 
 	return nil
 }
 
 func (h *HardwareGenerator) GetMonitoring(_ *string, switchCreds db.SwitchCreds) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
-	h.log.Info("GetMonitoring invoked")
+	h.devlog.Debug("GetMonitoring invoked")
 
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	res, err := restconfGetData("Cisco-IOS-XE-crypto-oper:crypto-oper-data/crypto-ipsec-ident", client, switchCreds, h.log)
+	res, err := restconfGetData("Cisco-IOS-XE-crypto-oper:crypto-oper-data/crypto-ipsec-ident", client, switchCreds)
 	if err != nil {
 		return nil, fmt.Errorf("get indent data: %w", err)
 	}
@@ -507,10 +507,7 @@ func (h *HardwareGenerator) GetMonitoring(_ *string, switchCreds db.SwitchCreds)
 	return &monitoring, nil
 }
 
-func GetSourceInterfaces(switchCreds db.SwitchCreds, log *logrus.Logger) ([]string, error) {
-	log.Info("GetSourceInterfaces invoked")
-	log.Debug(switchCreds)
-
+func GetSourceInterfaces(switchCreds db.SwitchCreds) ([]string, error) {
 	sourceInterfaces := []string{}
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -520,13 +517,13 @@ func GetSourceInterfaces(switchCreds db.SwitchCreds, log *logrus.Logger) ([]stri
 	var res map[string]interface{}
 	var err error
 	for retries := 5; retries > 0; retries-- {
-		res, err = restconfGetData("Cisco-IOS-XE-native:native/interface", client, switchCreds, log)
+		res, err = restconfGetData("Cisco-IOS-XE-native:native/interface", client, switchCreds)
 		if err == nil && res != nil {
 			break
 		}
 	}
 	if err != nil {
-		return nil,  fmt.Errorf("get interface data %w:", err)
+		return nil, fmt.Errorf("get interface data %w:", err)
 	}
 
 	if res == nil {
@@ -559,8 +556,7 @@ func GetSourceInterfaces(switchCreds db.SwitchCreds, log *logrus.Logger) ([]stri
 }
 
 func (h *HardwareGenerator) CheckSwitchBasicAuth(switchCreds db.SwitchCreds) (bool, error) {
-	h.log.Info("CheckSwitchBasicAuth")
-	h.log.Debug(switchCreds)
+	h.devlog.Debug("CheckSwitchBasicAuth")
 
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -671,10 +667,7 @@ func getKeysFromMap(map_ map[string]*yang.Entry) []string {
 	return keys
 }
 
-func GetAlgorithms(switchCreds db.SwitchCreds, log *logrus.Logger) (db.Algorithm, string, error) {
-	log.Info("GetAlgorithms invoked")
-	log.Debug(switchCreds)
-
+func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 	ms := yang.NewModules()
 
 	modulesToParse := []string{"Cisco-IOS-XE-crypto", "cisco-semver", "ietf-inet-types", "Cisco-IOS-XE-native",
@@ -744,8 +737,6 @@ func GetAlgorithms(switchCreds db.SwitchCreds, log *logrus.Logger) (db.Algorithm
 		}
 	}
 
-	log.Debug(modules.Modules)
-
 	if errs := ms.Process(); errs != nil {
 		e := ""
 		for _, err := range errs {
@@ -777,7 +768,7 @@ func GetAlgorithms(switchCreds db.SwitchCreds, log *logrus.Logger) (db.Algorithm
 }
 
 func (h *HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, error) {
-	h.log.Info("GetSwitchModel invoked")
+	h.devlog.Debug("GetSwitchModel invoked")
 
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -787,7 +778,8 @@ func (h *HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, 
 	fullPath := "https://" + switchCreds.SwitchAddress + "/restconf/data/Cisco-IOS-XE-device-hardware-oper:device-hardware-data/device-hardware/device-inventory=hw-type-chassis,1/part-number"
 	req, err := http.NewRequest(http.MethodGet, fullPath, nil)
 	if err != nil {
-		h.log.Error(fmt.Errorf("prepare get switch model request, path: %s: %w", fullPath, err))
+		log.Error(fmt.Errorf("prepare get switch model request, path: %s: %w", fullPath, err))
+		h.devlog.Error(fmt.Errorf("prepare get switch model request, path: %s: %w", fullPath, err))
 
 		return "", nil
 	}
@@ -797,7 +789,7 @@ func (h *HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, 
 	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
 	resp, err := client.Do(req)
 	if err != nil {
-		h.log.Error(fmt.Errorf("do get switch model request: %w", err))
+		log.Error(fmt.Errorf("do get switch model request: %w", err))
 		return "", nil
 	}
 
@@ -807,22 +799,19 @@ func (h *HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, 
 
 	decoder := json.NewDecoder(resp.Body)
 	if err := decoder.Decode(&model); err != nil {
-		h.log.Error("decoding get switch model response: %w", err)
-		return "",  nil
+		log.Error("decoding get switch model response: %w", err)
+		return "", nil
 	}
-
-	h.log.Debug(model.Model)
 
 	return model.Model, nil
 }
 
-func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds, log *logrus.Logger) (map[string]interface{}, error) {
-	log.Info("restconfGetData invoked")
+func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds) (map[string]interface{}, error) {
 	ret := map[string]interface{}{}
 	fullPath := fmt.Sprintf(switchBase, switchCreds.SwitchAddress) + path
 	req, err := http.NewRequest("GET", fullPath, nil)
 	if err != nil {
-		return ret, fmt.Errorf("prepare http request %s: %w",fullPath, err)
+		return ret, fmt.Errorf("prepare http request %s: %w", fullPath, err)
 	}
 
 	req.Header.Add("Content-Type", "application/yang-data+json")
@@ -839,7 +828,7 @@ func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCred
 	}
 
 	if resp.StatusCode >= 400 {
-		return ret, errors.New("get on "+path+" failed ("+strconv.Itoa(resp.StatusCode)+"): "+string(body))
+		return ret, errors.New("get on " + path + " failed (" + strconv.Itoa(resp.StatusCode) + "): " + string(body))
 	}
 
 	if strings.TrimSpace(string(body)) == "" {
@@ -853,15 +842,14 @@ func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCred
 	return ret, nil
 }
 
-func restconfGetCryptoStrings(cryptoString string, log *logrus.Logger) ([]string, error) {
-	log.Info("restconfGetCryptoStrings invoked")
+func restconfGetCryptoStrings(cryptoString string) ([]string, error) {
 	crypto := []string{}
 	if err := json.Unmarshal([]byte(cryptoString), &crypto); err != nil {
 		return nil, fmt.Errorf("unmarshal crypto string: %w", err)
 	}
 
 	if len(crypto) < 2 {
-		return nil, errors.New("malformed crypto: "+strings.Join(crypto, ", "))
+		return nil, errors.New("malformed crypto: " + strings.Join(crypto, ", "))
 	}
 
 	return crypto, nil

@@ -18,7 +18,7 @@ import (
 	"ipsec_backend/db"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/datatypes"
 )
 
@@ -33,18 +33,18 @@ const (
 type SoftwareGenerator struct {
 	FileHandler FileHandlerInterface
 	Supervisor  SupervisorInterface
-	log         *logrus.Logger
+	devlog *log.Logger
 }
 
-func NewSoftwareGenerator(FileHandler FileHandlerInterface, Supervisor SupervisorInterface, log *logrus.Logger) (*SoftwareGenerator, error) {
-	log.Info("NewSoftwareGenerator invoked")
+func NewSoftwareGenerator(FileHandler FileHandlerInterface, Supervisor SupervisorInterface, devlog *log.Logger) (*SoftwareGenerator, error) {
+	devlog.Debug("NewSoftwareGenerator invoked")
 	const path = "/opt/frr/vtysh.conf"
 
 	if err := FileHandler.WriteFile(path, []byte(""), 0644); err != nil {
 		return nil, fmt.Errorf("write to file %s: %w", path, err)
 	}
 
-	return &SoftwareGenerator{FileHandler, Supervisor, log}, nil
+	return &SoftwareGenerator{FileHandler, Supervisor, devlog}, nil
 }
 
 func vrfShouldDoFRR(vrf db.Vrf) bool {
@@ -61,7 +61,7 @@ func vrfShouldDoFRR(vrf db.Vrf) bool {
 }
 
 func (f *SoftwareGenerator) GenerateConfigs(vrf db.Vrf) error {
-	f.log.Info("GenerateConfigs invoked")
+	log.Info("GenerateConfigs invoked")
 
 	if err := f.saveCerts(&vrf); err != nil {
 		return fmt.Errorf("saving certs: %w", err)
@@ -73,7 +73,7 @@ func (f *SoftwareGenerator) GenerateConfigs(vrf db.Vrf) error {
 		return fmt.Errorf("generating strongswan config: %w", err)
 	}
 
-	if err := f.generateSupervisorConfig(vrf, prefix, f.log); err != nil {
+	if err := f.generateSupervisorConfig(vrf, prefix); err != nil {
 		return fmt.Errorf("generating supervisor config: %w", err)
 	}
 
@@ -91,13 +91,13 @@ func (f *SoftwareGenerator) GenerateConfigs(vrf db.Vrf) error {
 		return fmt.Errorf("reloading strongswan: %w", err)
 	}
 
-	f.log.Debugf("generated templates for vrf %+v", vrf)
+	log.Debugf("generated templates for vrf %+v", vrf)
 
 	return nil
 }
 
 func (f *SoftwareGenerator) DeleteConfigs(vrf db.Vrf) error {
-	f.log.Infof("deleting templates")
+	log.Infof("deleting templates")
 	prefix := calculatePrefix(vrf)
 
 	err := f.FileHandler.RemoveAll(getSupervisorFileName(prefix))
@@ -130,14 +130,14 @@ func (f *SoftwareGenerator) DeleteConfigs(vrf db.Vrf) error {
 		return fmt.Errorf("delete certs : %w", err)
 	}
 
-	f.log.Debugf("deleted templates for vrf %+v", vrf)
+	log.Debugf("deleted templates for vrf %+v", vrf)
 
 	return nil
 }
 
 func (f *SoftwareGenerator) saveCerts(v *db.Vrf) error {
-	f.log.Info("saveCerts invoked")
-	f.log.Debug(v)
+	log.Info("saveCerts invoked")
+	log.Debug(v)
 
 	for _, e := range v.Endpoints {
 		if e.Authentication.Type != "certs" {
@@ -161,8 +161,8 @@ func (f *SoftwareGenerator) saveCerts(v *db.Vrf) error {
 }
 
 func (f *SoftwareGenerator) deleteCerts(v db.Vrf) error {
-	f.log.Info("deleteCerts invoked")
-	f.log.Debug(v)
+	log.Info("deleteCerts invoked")
+	log.Debug(v)
 
 	for _, e := range v.Endpoints {
 		if e.Authentication.Type != "certs" {
@@ -196,10 +196,10 @@ func calculatePrefix(vrf db.Vrf) string {
 }
 
 func (f *SoftwareGenerator) generateStrongswanConfig(vrf db.Vrf, prefix string) error {
-	f.log.Info("generateStrongswanConfig invoked")
-	f.log.Debug(vrf, prefix)
+	log.Info("generateStrongswanConfig invoked")
+	log.Debug(vrf, prefix)
 
-	data, err := executeStrongswanTemplate(vrf, f.log)
+	data, err := executeStrongswanTemplate(vrf)
 	if err != nil {
 		return fmt.Errorf("execute strongswan template: %w", err)
 	}
@@ -208,11 +208,11 @@ func (f *SoftwareGenerator) generateStrongswanConfig(vrf db.Vrf, prefix string) 
 	if err != nil {
 		return fmt.Errorf("writing to file: %w", err)
 	}
-	
+
 	return nil
 }
 
-func executeStrongswanTemplate(vrf db.Vrf, log *logrus.Logger) (string, error) {
+func executeStrongswanTemplate(vrf db.Vrf) (string, error) {
 	log.Info("executeStrongswanTemplate invoked")
 
 	t, err := template.New(strongswanTemplateFile).
@@ -222,12 +222,12 @@ func executeStrongswanTemplate(vrf db.Vrf, log *logrus.Logger) (string, error) {
 	}
 
 	builder := strings.Builder{}
-	crypto1, err := convertToString(vrf.CryptoPh1, log)
+	crypto1, err := convertToString(vrf.CryptoPh1)
 	if err != nil {
 		return "", fmt.Errorf("convert to string crypto phase 1: %w", err)
 	}
 
-	crypto2, err := convertToString(vrf.CryptoPh2, log)
+	crypto2, err := convertToString(vrf.CryptoPh2)
 	if err != nil {
 		return "", fmt.Errorf("convert to string crypto phase 2: %w", err)
 	}
@@ -249,11 +249,11 @@ func executeStrongswanTemplate(vrf db.Vrf, log *logrus.Logger) (string, error) {
 	return builder.String(), nil
 }
 
-func (f *SoftwareGenerator) generateSupervisorConfig(vrf db.Vrf, prefix string, log *logrus.Logger) error {
-	f.log.Info("generateSupervisorConfig invoked")
-	f.log.Debug(vrf, prefix)
+func (f *SoftwareGenerator) generateSupervisorConfig(vrf db.Vrf, prefix string) error {
+	log.Info("generateSupervisorConfig invoked")
+	log.Debug(vrf, prefix)
 
-	data, err := executeSupervisorTemplate(vrf, log)
+	data, err := executeSupervisorTemplate(vrf)
 	if err != nil {
 		return fmt.Errorf("execute supervisor template: %w", err)
 	}
@@ -266,7 +266,7 @@ func (f *SoftwareGenerator) generateSupervisorConfig(vrf db.Vrf, prefix string, 
 	return nil
 }
 
-func executeSupervisorTemplate(vrf db.Vrf, log *logrus.Logger) (string, error) {
+func executeSupervisorTemplate(vrf db.Vrf) (string, error) {
 	log.Info("executeSupervisorTemplate invoked")
 
 	t, err := template.New(supervisorTemplateFile).ParseFiles(supervisorTemplatePath)
@@ -323,13 +323,13 @@ func executeSupervisorTemplate(vrf db.Vrf, log *logrus.Logger) (string, error) {
 		EndpointIDs: strings.Join(ids, " "),
 		Vlans:       vlansStr,
 	}); err != nil {
-		return "", fmt.Errorf("execute template %s: %w",t.Name(), err)
+		return "", fmt.Errorf("execute template %s: %w", t.Name(), err)
 	}
 
 	return builder.String(), nil
 }
 
-func convertToString(s datatypes.JSON, log *logrus.Logger) (string, error) {
+func convertToString(s datatypes.JSON) (string, error) {
 	log.Info("convertToString invoked")
 
 	m, err := s.MarshalJSON()

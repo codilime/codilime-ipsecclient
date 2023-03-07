@@ -299,5 +299,6 @@ export const headerLogs: HeadersLogsType[] = [
   { name: HeadersNameProps.reloadVtysh, value: HeadersNameValue.reloadVtysh },
   { name: HeadersNameProps.strongswan, value: HeadersNameValue.strongswan },
   { name: HeadersNameProps.strongswanReload, value: HeadersNameValue.strongswanReload },
-  { name: HeadersNameProps.vrfs, value: HeadersNameValue.vrfs }
+  { name: HeadersNameProps.vrfs, value: HeadersNameValue.vrfs },
+  { name: HeadersNameProps.dev, value: HeadersNameValue.dev }
 ];

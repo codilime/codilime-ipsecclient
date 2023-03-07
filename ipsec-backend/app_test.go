@@ -57,11 +57,11 @@ func createApp(t *testing.T) (*App, *mock.MockSoftwareGeneratorInt, *mock.MockHa
 	dbInstance.EXPECT().SetSetting(password, "app_version", gomock.Any()).Return(nil)
 	dbInstance.EXPECT().SetSetting(password, "switch_address", switchCreds.SwitchAddress).Return(nil)
 	dbInstance.EXPECT().Create(gomock.Any()).Return(nil)
-	log, err := logger.NewLogger("ipsecclienttest.log")
-	if err != nil {
-		log.Fatal(err)
+	devlog, err := logger.NewDevLogger(log.InfoLevel)
+	if err != nil{
+		panic(err)
 	}
-	app, _ := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds, log)
+	app, _ := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds, devlog)
 	return app, softwareGenerator, hardwareGenerator, dbInstance
 }
 
@@ -518,27 +518,27 @@ func createTestVrf() db.Vrf {
 	disablePeerIps := false
 	ospf := false
 	return db.Vrf{
-		0,
-		"test vrf",
-		datatypes.JSON(`[{"vlan":1000,"lan_ip":"11.11.0.0/30"},{"vlan":2000,"lan_ip":"22.22.0.0/30"}]`),
-		datatypes.JSON(`"aes128.sha256.modp1536"`),
-		datatypes.JSON(`"aes128.sha256.modp1536"`),
-		"test_interface",
-		&active,
-		3,
-		&disablePeerIps,
-		&ospf,
-		[]db.Endpoint{{
-			0,
-			0,
-			"192.168.0.1",
-			"0.0.0.1",
-			"10.42.0.1",
-			3,
-			true,
-			false,
-			"eth3",
-			db.EndpointAuth{"psk", "psk23", "test@codilime.com", "", "", "", ""}}}}
+		ID: 0,
+		ClientName: "test vrf",
+		Vlans: datatypes.JSON(`[{"vlan":1000,"lan_ip":"11.11.0.0/30"},{"vlan":2000,"lan_ip":"22.22.0.0/30"}]`),
+		CryptoPh1: datatypes.JSON(`"aes128.sha256.modp1536"`),
+		CryptoPh2: datatypes.JSON(`"aes128.sha256.modp1536"`),
+		PhysicalInterface: "test_interface",
+		Active: &active,
+		LocalAs: 3,
+		DisablePeerIps: &disablePeerIps,
+		OSPF: &ospf,
+		Endpoints: []db.Endpoint{{
+			ID: 0,
+			VrfID: 0,
+			RemoteIPSec: "192.168.0.1",
+			LocalIP: "0.0.0.1",
+			PeerIP: "10.42.0.1",
+			RemoteAS: 3,
+			NAT: true,
+			BGP: false,
+			SourceInterface: "eth3",
+			Authentication: db.EndpointAuth{Type: "psk", PSK: "psk23", LocalID: "test@codilime.com", LocalCert: "", RemoteCert: "", PrivateKey: "", Pkcs12Base64: ""}}}}
 }
 
 func getCreatedVrf(vrf db.Vrf, vrfId, endpointId int) db.Vrf {

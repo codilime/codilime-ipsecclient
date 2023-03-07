@@ -182,7 +182,8 @@ export enum HeadersNameProps {
   reloadVtysh = 'reload vtysh',
   strongswan = 'strongswan',
   strongswanReload = 'strongswan reload',
-  vrfs = 'Vrfs / NAT'
+  vrfs = 'Vrfs / NAT',
+  dev = 'dev'
 }
 export enum HeadersNameValue {
   api = 'api',
@@ -191,7 +192,8 @@ export enum HeadersNameValue {
   reloadVtysh = 'reload_vtysh',
   strongswan = 'strongswan',
   strongswanReload = 'strongswan_reload',
-  vrfs = 'Vrfs / NAT'
+  vrfs = 'Vrfs / NAT',
+  dev = 'dev'
 }
 
 export interface HeadersLogsType {

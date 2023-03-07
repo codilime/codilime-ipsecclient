@@ -16,7 +16,7 @@ import (
 
 	"ipsec_backend/db"
 
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/strongswan/govici/vici"
 )
 
@@ -30,15 +30,15 @@ type monitoringEndpoint struct {
 }
 
 func (f *SoftwareGenerator) GetMonitoring(clientName *string) (*ipsecclient_yang.Ipsecclient_Api_Monitoring, error) {
-	f.log.Info("GetMonitoring invoked")
-	f.log.Debug(clientName)
+	log.Info("GetMonitoring invoked")
+	log.Debug(clientName)
 
 	if clientName == nil {
 		return nil, errors.New("wrong monitoring parameter")
 	}
 
 	name := strings.Replace(*clientName, "-", "_", 1)
-	statuses, err := getStrongswanState(f.log)
+	statuses, err := getStrongswanState()
 	if err != nil {
 		return nil, fmt.Errorf("get strongswan state %w:", err)
 	}
@@ -67,7 +67,7 @@ func endpointIDFromKey(key string) (int, error) {
 	return strconv.Atoi(l[len(l)-1])
 }
 
-func getStrongswanState(log *logrus.Logger) (map[string]*monitoringEndpoint, error) {
+func getStrongswanState() (map[string]*monitoringEndpoint, error) {
 	log.Info("getStrongswanState invoked")
 
 	options := vici.WithSocketPath(socketPath)

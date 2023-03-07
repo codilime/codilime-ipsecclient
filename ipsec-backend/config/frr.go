@@ -20,7 +20,7 @@ import (
 )
 
 func (f *SoftwareGenerator) storeFRRConfig(tmpFile string) error {
-	f.log.Info("storeFRRConfig invoked")
+	log.Info("storeFRRConfig invoked")
 	if err := f.FileHandler.WriteFile("/opt/frr/vtysh.conf", []byte(tmpFile), 0644); err != nil {
 		return fmt.Errorf("write file: %w", err)
 	}
@@ -47,7 +47,7 @@ func (d frrTemplateData) HasOSPF() bool {
 }
 
 func (f *SoftwareGenerator) generateFRRConfig(vrf db.Vrf) error {
-	f.log.Info("generateFRRConfig invoked")
+	log.Info("generateFRRConfig invoked")
 	bytes, err := ioutil.ReadFile(templatesFolder + "frr.template")
 	if err != nil {
 		return fmt.Errorf("read file: %w", err)
@@ -84,9 +84,9 @@ func (f *SoftwareGenerator) generateFRRConfig(vrf db.Vrf) error {
 }
 
 func (f *SoftwareGenerator) deleteFRRConfig(vrf db.Vrf) error {
-	f.log.Info("deleteFRRConfig invoked")
+	log.Info("deleteFRRConfig invoked")
 	frrConfig := fmt.Sprintf("no router bgp %d vrf %s\n", vrf.LocalAs, "vrf-"+strconv.Itoa(int(vrf.ID)))
-	f.log.Debug(frrConfig)
+	log.Debug(frrConfig)
 	err := f.storeFRRConfig(frrConfig)
 	if err != nil {
 		return fmt.Errorf("store frr config during deletion: %w", err)

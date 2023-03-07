@@ -11,7 +11,10 @@ import (
 	"ipsec_backend/config"
 	"ipsec_backend/db"
 	"ipsec_backend/logger"
+
 	"os"
+
+	apilog "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -21,39 +24,54 @@ func main() {
 		SwitchAddress: os.Getenv("SWITCH_IP"),
 	}
 
-	log, err := logger.NewLogger()
-	log.Info("logger created")
+	lvl, ok := os.LookupEnv("LOG_LEVEL")
+	if !ok {
+		lvl = "info"
+	}
 
-	sv := config.NewSupervisor(log)
-	log.Info("Supervisor created")
+	parsedLvl, err := apilog.ParseLevel(lvl)
+	if err != nil {
+		parsedLvl = apilog.InfoLevel
+	}
 
-	softwareGenerator, err := config.NewSoftwareGenerator(&config.FileHandler{}, &sv, log)
+	apilog.SetFormatter(&logger.ErrorFormatter{})
+	apilog.SetLevel(parsedLvl)
+
+	devlog, err := logger.NewDevLogger(parsedLvl)
+	if err != nil{
+		panic(err)
+	}
+
+	sv := config.NewSupervisor(devlog)
+	devlog.Debug("Supervisor created")
+
+	softwareGenerator, err := config.NewSoftwareGenerator(&config.FileHandler{}, &sv, devlog)
 	if err != nil {
 		panic(err)
 	}
 
-	log.Info("SoftwareGenerator created")
-	hardwareGenerator, err := config.NewHardwareGenerator(switchCreds, log)
+	devlog.Debug("SoftwareGenerator created")
+	hardwareGenerator, err := config.NewHardwareGenerator(switchCreds, devlog)
 	if err != nil {
 		panic(err)
 	}
 
-	log.Info("HardwareGenerator created")
+	devlog.Debug("HardwareGenerator created")
 
-	dbInstance, err := db.MakeDB("/iox_data/appdata/ipsec.db", os.Getenv("ERR_ROT_DAYS"), os.Getenv("ERR_ROT_SIZE"), log)
+	dbInstance, err := db.MakeDB("/iox_data/appdata/ipsec.db", os.Getenv("ERR_ROT_DAYS"), os.Getenv("ERR_ROT_SIZE"))
 	if err != nil {
 		panic(err)
 	}
 
-	log.Info("DB created")
+	devlog.Debug("DB created")
 
-	app, err := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds, log)
+	app, err := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds, devlog)
 	if err != nil {
 		panic(err)
 	}
 
-	log.Info("App created")
-	log.Info("Running app...")
+	devlog.Debug("App created")
+	devlog.Debug("Running app...")
 
 	app.Run("0.0.0.0:8000")
 }

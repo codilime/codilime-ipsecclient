@@ -10,13 +10,13 @@ package config
 import (
 	"fmt"
 	"ipsec_backend/db"
+	"ipsec_backend/logger"
 	"ipsec_backend/mock"
 	"os"
 	"testing"
 
-	"ipsec_backend/logger"
-
 	"github.com/golang/mock/gomock"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -133,12 +133,11 @@ func _testGenerateTemplatePsk(vrf db.Vrf, vrfConf []byte, t *testing.T) {
 		Return(nil)
 	supervisor.EXPECT().ReloadSupervisor().Return(nil)
 	supervisor.EXPECT().ReloadStrongswan().Return(nil)
-	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
-	if err != nil {
+	devlog, err := logger.NewDevLogger(log.InfoLevel)
+	if err != nil{
 		panic(err)
 	}
-
-	generator := SoftwareGenerator{fileHandler, supervisor, log}
+	generator := SoftwareGenerator{fileHandler, supervisor, devlog}
 	generator.GenerateConfigs(vrf)
 }
 
@@ -243,11 +242,11 @@ secrets {
 	vrf.Endpoints[0].Authentication.LocalCert = localCert
 	vrf.Endpoints[0].Authentication.RemoteCert = remoteCert
 	vrf.Endpoints[0].Authentication.PrivateKey = privateKey
-	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
-	if err != nil {
+	devlog, err := logger.NewDevLogger(log.InfoLevel)
+	if err != nil{
 		panic(err)
 	}
-	generator := SoftwareGenerator{fileHandler, supervisor, log}
+	generator := SoftwareGenerator{fileHandler, supervisor, devlog}
 	
 	generator.GenerateConfigs(vrf)
 }
@@ -287,12 +286,11 @@ func TestDeleteTemplateCert(t *testing.T) {
 
 	vrf := createTestVrf()
 	vrf.Endpoints[0].Authentication.Type = "certs"
-
-	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
-	if err != nil {
+	devlog, err := logger.NewDevLogger(log.InfoLevel)
+	if err != nil{
 		panic(err)
 	}
-	generator := SoftwareGenerator{fileHandler, supervisor, log}
+	generator := SoftwareGenerator{fileHandler, supervisor, devlog}
 
 	generator.DeleteConfigs(vrf)
 }
@@ -320,11 +318,11 @@ func TestDeleteTemplatePsk(t *testing.T) {
 
 	vrf := createTestVrf()
 	vrf.Endpoints[0].Authentication.Type = "psk"
-	log, err := logger.NewLogger("ipsecclient_config_generator_test.log")
-	if err != nil {
+	devlog, err := logger.NewDevLogger(log.InfoLevel)
+	if err != nil{
 		panic(err)
 	}
-	generator := SoftwareGenerator{fileHandler, supervisor, log}
+	generator := SoftwareGenerator{fileHandler, supervisor, devlog}
 
 	generator.DeleteConfigs(vrf)
 }
@@ -419,25 +417,25 @@ func createTestVrf() db.Vrf {
 	disablePeerIps := false
 	ospf := false
 	return db.Vrf{
-		2,
-		"test vrf",
-		[]byte(`[{"vlan":1000,"lan_ip":"11.11.0.0/30"},{"vlan":2000,"lan_ip":"22.22.0.0/30"}]`),
-		[]byte(`["aes128","sha256","modp2048"]`),
-		[]byte(`["cast128","sha512","modp1024"]`),
-		"test_interface",
-		&active,
-		3,
-		&disablePeerIps,
-		&ospf,
-		[]db.Endpoint{{
-			1,
-			2,
-			"192.168.0.1",
-			"0.0.0.1",
-			"10.42.0.1",
-			3,
-			true,
-			false,
-			"eth3",
-			db.EndpointAuth{"psk", "psk23", "", "", "", "", ""}}}}
+		ID: 2,
+		ClientName: "test vrf",
+		Vlans: []byte(`[{"vlan":1000,"lan_ip":"11.11.0.0/30"},{"vlan":2000,"lan_ip":"22.22.0.0/30"}]`),
+		CryptoPh1: []byte(`["aes128","sha256","modp2048"]`),
+		CryptoPh2: []byte(`["cast128","sha512","modp1024"]`),
+		PhysicalInterface: "test_interface",
+		Active: &active,
+		LocalAs: 3,
+		DisablePeerIps: &disablePeerIps,
+		OSPF: &ospf,
+		Endpoints: []db.Endpoint{{
+			ID: 1,
+			VrfID: 2,
+			RemoteIPSec: "192.168.0.1",
+			LocalIP: "0.0.0.1",
+			PeerIP: "10.42.0.1",
+			RemoteAS: 3,
+			NAT: true,
+			BGP: false,
+			SourceInterface: "eth3",
+			Authentication: db.EndpointAuth{Type: "psk", PSK: "psk23", LocalID: "", LocalCert: "", RemoteCert: "", PrivateKey: "", Pkcs12Base64: ""}}}}
 }

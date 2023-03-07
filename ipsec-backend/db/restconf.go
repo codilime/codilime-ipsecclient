@@ -12,8 +12,6 @@ import (
 	"fmt"
 	"ipsec_backend/ipsecclient_yang"
 	"strings"
-
-	"github.com/sirupsen/logrus"
 )
 
 const timeFormat = "2006-01-02 15:04:01 -0700"
@@ -87,9 +85,7 @@ func (e *Endpoint) FromYang(endVrf *ipsecclient_yang.Ipsecclient_Api_Vrf_Endpoin
 	}
 }
 
-func (v *Vrf) ToYang(log *logrus.Logger) (*ipsecclient_yang.Ipsecclient_Api_Vrf, error) {
-	log.Info("ToYang invoked")
-
+func (v *Vrf) ToYang() (*ipsecclient_yang.Ipsecclient_Api_Vrf, error) {
 	cryptoPh1 := []string{}
 	if err := json.Unmarshal(v.CryptoPh1, &cryptoPh1); err != nil {
 		return nil, fmt.Errorf("unmarshalling phase 1 crypto: %w", err)
@@ -147,8 +143,7 @@ func (c *CertificateAuthority) ToYang() *ipsecclient_yang.Ipsecclient_Api_Ca {
 	}
 }
 
-func (v *Vrf) FromYang(vrfYang *ipsecclient_yang.Ipsecclient_Api_Vrf, log *logrus.Logger) error {
-	log.Info("FromYang invoked")
+func (v *Vrf) FromYang(vrfYang *ipsecclient_yang.Ipsecclient_Api_Vrf) error {
 	v.ClientName = *vrfYang.ClientName
 	vlans := []interface{}{}
 	for _, v := range vrfYang.Vlan {

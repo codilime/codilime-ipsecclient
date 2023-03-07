@@ -22,37 +22,35 @@ import (
 )
 
 func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
-	a.log.Info("monitoring invoked")
-
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		a.respondWithError(w, http.StatusBadRequest, errors.New(fmt.Sprintf("unparsable id: %s", idStr)), a.log)
+		a.respondWithError(w, http.StatusBadRequest, errors.New(fmt.Sprintf("unparsable id: %s", idStr)))
 	}
 
 	vrf := db.Vrf{ID: uint32(id)}
 	if err := a.db.GetVrf(&vrf); err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
-			a.respondWithError(w, http.StatusNotFound, errors.New("vrf not found"), a.log)
+			a.respondWithError(w, http.StatusNotFound, errors.New("vrf not found"))
 		default:
-			a.respondWithError(w, http.StatusInternalServerError, err, a.log)
+			a.respondWithError(w, http.StatusInternalServerError, err)
 		}
 
 		return
 	}
 
-	key, err := getPassFromHeader(r.Header, a.log)
+	key, err := getPassFromHeader(a.devlog, r.Header)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err)
 
 		return
 	}
 
 	switchCreds, err := a.getSwitchCreds(key)
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err)
 
 		return
 	}
@@ -61,14 +59,14 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 	if vrf.ID != db.HardwareVrfID {
 		monitoring, err = a.softwareGenerator.GetMonitoring(&vrf.ClientName)
 		if err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err, a.log)
+			a.respondWithError(w, http.StatusInternalServerError, err)
 
 			return
 		}
 	} else {
 		monitoring, err = a.hardwareGenerator.GetMonitoring(nil, *switchCreds)
 		if err != nil {
-			a.respondWithError(w, http.StatusInternalServerError, err, a.log)
+			a.respondWithError(w, http.StatusInternalServerError, err)
 
 			return
 		}
@@ -86,10 +84,10 @@ func (a *App) monitoring(w http.ResponseWriter, r *http.Request) {
 		Indent: "  ",
 	})
 	if err != nil {
-		a.respondWithError(w, http.StatusInternalServerError, err, a.log)
+		a.respondWithError(w, http.StatusInternalServerError, err)
 
 		return
 	}
 
-	respondWithMarshalledJSON(w, http.StatusOK, json, a.log)
+	respondWithMarshalledJSON(a.devlog, w, http.StatusOK, json)
 }

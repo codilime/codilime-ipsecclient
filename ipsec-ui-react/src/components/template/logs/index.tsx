@@ -41,7 +41,8 @@ export const Logs: FC<LogsType> = ({ logData, open }) => {
       case 'frr':
       case 'reload_vtysh':
       case 'strongswan':
-      case 'strongswan_reload': {
+      case 'strongswan_reload':
+      case 'dev': {
         return <EachLog key={name} {...{ log, name, activePopup: open, active: activePage === name }} />;
       }
 
