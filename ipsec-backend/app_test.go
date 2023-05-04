@@ -49,12 +49,13 @@ func createApp(t *testing.T) (*App, *mock.MockSoftwareGeneratorInt, *mock.MockHa
 	softwareGenerator := mock.NewMockSoftwareGeneratorInt(ctrl)
 	hardwareGenerator := mock.NewMockHardwareGeneratorInt(ctrl)
 	dbInstance := mock.NewMockDBinterface(ctrl)
-	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("switch_username"), switchCreds.Username).Return(nil)
-	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("switch_password"), switchCreds.Password).Return(nil)
-	hardwareGenerator.EXPECT().GetSwitchModel(gomock.Eq(switchCreds)).Return(switchModel)
-	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("system_name"), gomock.Eq(switchModel)).Return(nil)
-	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("app_version"), gomock.Any()).Return(nil)
-	dbInstance.EXPECT().SetSetting(gomock.Eq(password), gomock.Eq("switch_address"), switchCreds.SwitchAddress).Return(nil)
+	hardwareGenerator.EXPECT().GetSwitchModel(switchCreds).Return(switchModel, nil)
+	dbInstance.EXPECT().SetSetting(password, "switch_username", switchCreds.Username).Return(nil)
+	dbInstance.EXPECT().SetSetting(password, "switch_password", switchCreds.Password).Return(nil)
+	
+	dbInstance.EXPECT().SetSetting(password, "system_name", switchModel).Return(nil)
+	dbInstance.EXPECT().SetSetting(password, "app_version", gomock.Any()).Return(nil)
+	dbInstance.EXPECT().SetSetting(password, "switch_address", switchCreds.SwitchAddress).Return(nil)
 	dbInstance.EXPECT().Create(gomock.Any()).Return(nil)
 	app, _ := NewApp(dbInstance, softwareGenerator, hardwareGenerator, switchCreds)
 	return app, softwareGenerator, hardwareGenerator, dbInstance
@@ -67,7 +68,7 @@ func TestGetVrfs(t *testing.T) {
 	setCryptoDB(&expectedVrfs[0], cryptoAlgorythms, t)
 
 	dbInstance.EXPECT().GetVrfs().Return(expectedVrfs, nil)
-	dbInstance.EXPECT().DecryptPSK(gomock.Eq(password), gomock.Eq(&expectedVrfs[0])).Return(nil)
+	dbInstance.EXPECT().DecryptPSK(password, &expectedVrfs[0]).Return(nil)
 
 	req, _ := http.NewRequest(http.MethodGet, vrfPath, nil)
 	req.SetBasicAuth(username, password)

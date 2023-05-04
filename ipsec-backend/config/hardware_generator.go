@@ -530,7 +530,7 @@ func getModule(modulePath string, switchCreds db.SwitchCreds) (string, error) {
 	}
 	req, err := http.NewRequest(http.MethodGet, modulePath, nil)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("prepare request to get module: %s: %w", modulePath, err)
 	}
 	req.Header.Add("Content-Type", "application/yang-data+json")
 	req.Header.Add("Accept", "application/yang-data+json")
@@ -538,33 +538,32 @@ func getModule(modulePath string, switchCreds db.SwitchCreds) (string, error) {
 
 	for retries := 5; retries > 0; retries-- {
 		var resp *http.Response
-		var ret map[string]interface{}
 		resp, err = client.Do(req)
 		if err != nil {
 			continue
 		}
 		module, err = io.ReadAll(resp.Body)
-		if err != nil {
-			continue
-		}
-		if err = json.Unmarshal(module, &ret); err != nil {
+		if err == nil {
 			return string(module), nil
 		}
-		time.Sleep(10 * time.Second)
-		err = fmt.Errorf("cannot get algorithms from the hardware")
+
+		time.Sleep(3 * time.Second)
+		err = fmt.Errorf("cannot get %s algorithm from the hardware: %w", modulePath, err)
 	}
+
 	return "", err
 }
 
 func parse(ms *yang.Modules, moduleName string, modulePath string, switchCreds db.SwitchCreds) error {
 	module, err := getModule(modulePath, switchCreds)
 	if err != nil {
-		return err
+		return fmt.Errorf("get module %s: %w", modulePath, err)
 	}
 
 	if err := ms.Parse(module, moduleName); err != nil {
-		return err
+		return fmt.Errorf("parse yang module: %s, content: %s, %w", moduleName, module, err)
 	}
+
 	return nil
 }
 
@@ -609,7 +608,8 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 		"Cisco-IOS-XE-line", "Cisco-IOS-XE-interface-common", "Cisco-IOS-XE-logging", "Cisco-IOS-XE-ip", "Cisco-IOS-XE-interfaces",
 		"Cisco-IOS-XE-ipv6", "Cisco-IOS-XE-tunnel", "Cisco-IOS-XE-mpls", "Cisco-IOS-XE-isis", "Cisco-IOS-XE-snmp",
 		"Cisco-IOS-XE-policy", "ietf-yang-types", "Cisco-IOS-XE-atm", "Cisco-IOS-XE-l2vpn", "Cisco-IOS-XE-ethernet",
-		"Cisco-IOS-XE-ethernet-oam", "Cisco-IOS-XE-ethernet-cfm-efp", "Cisco-IOS-XE-pppoe"}
+		"Cisco-IOS-XE-ethernet-oam", "Cisco-IOS-XE-ethernet-cfm-efp", "Cisco-IOS-XE-pppoe",
+		"Cisco-IOS-XE-aaa", "Cisco-IOS-XE-hsrp", "Cisco-IOS-XE-location", "Cisco-IOS-XE-transceiver-monitor", "etf-yang-types"}
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -634,36 +634,35 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 	fullPath := "https://" + switchCreds.SwitchAddress + "/restconf/data/modules-state/module"
 	req, err := http.NewRequest(http.MethodGet, fullPath, nil)
 	if err != nil {
-		fmt.Printf("GetAlgorithms 1")
-		return db.Algorithm{}, "", err
+		return db.Algorithm{}, "", fmt.Errorf("prepare request to get modules, path: %s: %w", fullPath, err)
 	}
 	req.Header.Add("Content-Type", "application/yang-data+json")
 	req.Header.Add("Accept", "application/yang-data+json")
 	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
 	resp, err := client.Do(req)
 	if err != nil {
-		return db.Algorithm{}, "", err
+		return db.Algorithm{}, "", fmt.Errorf("do request for modules: %w", err)
 	}
 
 	decoder := json.NewDecoder(resp.Body)
 	if err := decoder.Decode(&modules); err != nil {
-		return db.Algorithm{}, "", err
+		return db.Algorithm{}, "", fmt.Errorf("decoding modules response: %w", err)
 	}
 
 	for _, module := range modules.Modules {
 		for _, moduleToParse := range modulesToParse {
 			if module.Name == moduleToParse {
 				if err := parse(ms, module.Name, module.Schema, switchCreds); err != nil {
-					return db.Algorithm{}, "", err
+					return db.Algorithm{}, "", fmt.Errorf("parsing module %s: %w", module.Name, err)
 				}
 			}
 		}
 		if module.Submodule != nil {
-			for _, moduleToParse := range modulesToParse {
-				for _, submodule := range module.Submodule {
+			for _, submodule := range module.Submodule {
+				for _, moduleToParse := range modulesToParse {
 					if submodule.Name == moduleToParse {
 						if err := parse(ms, submodule.Name, submodule.Schema, switchCreds); err != nil {
-							return db.Algorithm{}, "", err
+							return db.Algorithm{}, "", fmt.Errorf("parsing submodule %s: %w", submodule.Name, err)
 						}
 					}
 				}
@@ -672,7 +671,12 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 	}
 
 	if errs := ms.Process(); errs != nil {
-		return db.Algorithm{}, "", err
+		e := ""
+		for _, err := range errs {
+			e += fmt.Sprintf(", %s ", err.Error())
+		}
+
+		return db.Algorithm{}, "", fmt.Errorf("process yang modules: %w", errors.New(e))
 	}
 	nativeModule, _ := ms.GetModule("Cisco-IOS-XE-native")
 
@@ -698,23 +702,24 @@ func GetAlgorithms(switchCreds db.SwitchCreds) (db.Algorithm, string, error) {
 	}, whenEspHmac, nil
 }
 
-func (*HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) string {
+func (*HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) (string, error) {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	fullPath := "https://" + switchCreds.SwitchAddress + "/restconf/data/Cisco-IOS-XE-native:native/Cisco-IOS-XE-switch:switch=1/provision"
+	fullPath := "https://" + switchCreds.SwitchAddress + "/restconf/data/Cisco-IOS-XE-device-hardware-oper:device-hardware-data/device-hardware/device-inventory=hw-type-chassis,1/part-number"
+	log.Error(fullPath)
 	req, err := http.NewRequest(http.MethodGet, fullPath, nil)
 	if err != nil {
-		return ""
+		return "", fmt.Errorf("prepare get switch model request, path: %s: %w", fullPath, err)
 	}
 	req.Header.Add("Content-Type", "application/yang-data+json")
 	req.Header.Add("Accept", "application/yang-data+json")
 	req.SetBasicAuth(switchCreds.Username, switchCreds.Password)
 	resp, err := client.Do(req)
 	if err != nil {
-		return ""
+		return "", fmt.Errorf("do request for switch model: %w", err)
 	}
 
 	var model struct {
@@ -723,9 +728,10 @@ func (*HardwareGenerator) GetSwitchModel(switchCreds db.SwitchCreds) string {
 
 	decoder := json.NewDecoder(resp.Body)
 	if err := decoder.Decode(&model); err != nil {
-		return ""
+		return "", fmt.Errorf("decoding get switch model response: %w", err)
 	}
-	return model.Model
+
+	return model.Model, nil
 }
 
 func restconfGetData(path string, client *http.Client, switchCreds db.SwitchCreds) (map[string]interface{}, error) {

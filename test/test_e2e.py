@@ -30,13 +30,18 @@ def wait_for_ipsecclient():
         log.info("waiting for ipsecclient...")
         try:
             r = requests.get(VRFS_URL, auth=basicAuth, verify=False)
-            if r.status_code < 400:
-                log.info("ipsecclient is ready")
-                return
-            time.sleep(3)
-        except:
-            time.sleep(3)
+        except Exception as e:
+            log.info(e)
+            time.sleep(10)
             continue
+        
+        log.info(r.status_code)
+        if r.status_code < 400:
+            log.info("ipsecclient is ready")
+            break
+        time.sleep(10)
+        
+            
 
 
 def setup_module():
